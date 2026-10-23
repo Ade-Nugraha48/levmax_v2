@@ -481,14 +481,9 @@ class _ChatAiScreenState extends State<ChatAiScreen> {
                       bottomRight: Radius.circular(16),
                       topLeft: Radius.circular(4),
                     ),
-                    border: const Border(
-                      left: BorderSide(
-                        color: Color(0xFF00F4FE),
-                        width: 3.5,
-                      ),
-                      top: BorderSide(color: Color(0xFF2C1E4E), width: 0.8),
-                      right: BorderSide(color: Color(0xFF2C1E4E), width: 0.8),
-                      bottom: BorderSide(color: Color(0xFF2C1E4E), width: 0.8),
+                    border: Border.all(
+                      color: const Color(0xFF2C1E4E),
+                      width: 0.8,
                     ),
                     boxShadow: [
                       BoxShadow(
@@ -498,46 +493,70 @@ class _ChatAiScreenState extends State<ChatAiScreen> {
                       ),
                     ],
                   ),
-                  padding: const EdgeInsets.fromLTRB(14, 12, 14, 14),
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      // Header Tag: SYSTEM CORE // ADVISOR
-                      Row(
-                        mainAxisSize: MainAxisSize.min,
+                  child: ClipRRect(
+                    borderRadius: const BorderRadius.only(
+                      topRight: Radius.circular(16),
+                      bottomLeft: Radius.circular(16),
+                      bottomRight: Radius.circular(16),
+                      topLeft: Radius.circular(4),
+                    ),
+                    child: IntrinsicHeight(
+                      child: Row(
+                        crossAxisAlignment: CrossAxisAlignment.stretch,
                         children: [
+                          // Garis aksen cyan vertikal di sebelah kiri
                           Container(
-                            width: 5,
-                            height: 5,
-                            decoration: const BoxDecoration(
-                              shape: BoxShape.circle,
-                              color: Color(0xFF00F4FE),
-                            ),
+                            width: 3.5,
+                            color: const Color(0xFF00F4FE),
                           ),
-                          const SizedBox(width: 6),
-                          Text(
-                            'SYSTEM CORE // ADVISOR',
-                            style: GoogleFonts.spaceGrotesk(
-                              fontSize: 9,
-                              fontWeight: FontWeight.w700,
-                              letterSpacing: 0.8,
-                              color: const Color(0xFF00F4FE),
+                          Expanded(
+                            child: Padding(
+                              padding: const EdgeInsets.fromLTRB(14, 12, 14, 14),
+                              child: Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  // Header Tag: SYSTEM CORE // ADVISOR
+                                  Row(
+                                    mainAxisSize: MainAxisSize.min,
+                                    children: [
+                                      Container(
+                                        width: 5,
+                                        height: 5,
+                                        decoration: const BoxDecoration(
+                                          shape: BoxShape.circle,
+                                          color: Color(0xFF00F4FE),
+                                        ),
+                                      ),
+                                      const SizedBox(width: 6),
+                                      Text(
+                                        'SYSTEM CORE // ADVISOR',
+                                        style: GoogleFonts.spaceGrotesk(
+                                          fontSize: 9,
+                                          fontWeight: FontWeight.w700,
+                                          letterSpacing: 0.8,
+                                          color: const Color(0xFF00F4FE),
+                                        ),
+                                      ),
+                                    ],
+                                  ),
+                                  const SizedBox(height: 8),
+
+                                  // Isi Pesan Teks
+                                  Text(
+                                    text,
+                                    style: GoogleFonts.plusJakartaSans(
+                                      fontSize: 13,
+                                      height: 1.45,
+                                      color: const Color(0xFFE9DEF2),
+                                    ),
+                                  ),
+                                ],
+                              ),
                             ),
                           ),
                         ],
                       ),
-                      const SizedBox(height: 8),
-
-                      // Isi Pesan Teks
-                      Text(
-                        text,
-                        style: GoogleFonts.plusJakartaSans(
-                          fontSize: 13,
-                          height: 1.45,
-                          color: const Color(0xFFE9DEF2),
-                        ),
-                      ),
-                    ],
+                    ),
                   ),
                 ),
 
