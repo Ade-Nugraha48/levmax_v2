@@ -6,6 +6,7 @@ import '../../services/hive_service.dart';
 import '../../services/notif_service.dart';
 import '../../services/supabase_service.dart';
 import '../features/appearance_quest_screen.dart';
+import '../features/quest_sensor.dart';
 
 class TabHome extends StatefulWidget {
   const TabHome({super.key});
@@ -1019,6 +1020,16 @@ class _TabHomeState extends State<TabHome> {
         );
         if (result == true) {
           completeQuest(30, 20, qId, q['title'] as String);
+        }
+      } else if (qId == 'cardio') {
+        final result = await Navigator.push<bool>(
+          context,
+          MaterialPageRoute(
+            builder: (context) => const QuestSensorScreen(),
+          ),
+        );
+        if (result == true) {
+          completeQuest(20, 15, qId, q['title'] as String);
         }
       } else {
         completeQuest(
