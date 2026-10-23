@@ -1,9 +1,10 @@
 import 'dart:async';
-import 'dart:math' as math;
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:intl/intl.dart';
 import '../../services/hive_service.dart';
+import '../../services/notif_service.dart';
+import '../../services/supabase_service.dart';
 
 class TabHome extends StatefulWidget {
   const TabHome({super.key});
@@ -17,7 +18,6 @@ class _TabHomeState extends State<TabHome> {
   String _hunterName = 'hunter_sung';
   String _rank = 'Rank F';
   int _currentExp = 25;
-  final int _maxExp = 100;
   int _currentHp = 3;
   final int _maxHp = 3;
   int _gold = 0;
@@ -92,16 +92,80 @@ class _TabHomeState extends State<TabHome> {
     }
   }
 
-  void _executeQuest({
-    required String questId,
-    required String questTitle,
-    required int expReward,
-    required int goldReward,
-  }) {
-    if (_completedQuests.contains(questId)) {
+  int get _calculatedMaxExp {
+    if (_currentExp >= 2500) return 5000;
+    if (_currentExp >= 1500) return 2500;
+    if (_currentExp >= 1000) return 1500;
+    if (_currentExp >= 600) return 1000;
+    if (_currentExp >= 300) return 600;
+    if (_currentExp >= 100) return 300;
+    return 100;
+  }
+
+  int _rankToScore(String rankStr) {
+    final clean = rankStr.toUpperCase().replaceAll('RANK', '').trim();
+    switch (clean) {
+      case 'S':
+        return 7;
+      case 'A':
+        return 6;
+      case 'B':
+        return 5;
+      case 'C':
+        return 4;
+      case 'D':
+        return 3;
+      case 'E':
+        return 2;
+      case 'F':
+      default:
+        return 1;
+    }
+  }
+
+  /// Menghitung rank berdasarkan akumulasi EXP: F (0-99), E (100-299), D (300-599), C (600-999), B (1000-1499), A (1500-2499), S (2500+)
+  String _calculateRank(int exp) {
+    if (exp >= 2500) return 'Rank S';
+    if (exp >= 1500) return 'Rank A';
+    if (exp >= 1000) return 'Rank B';
+    if (exp >= 600) return 'Rank C';
+    if (exp >= 300) return 'Rank D';
+    if (exp >= 100) return 'Rank E';
+    return 'Rank F';
+  }
+
+  /// Memeriksa apakah terjadi kenaikan peringkat Hunter
+  void checkRankUp(int currentExp) {
+    final newRank = _calculateRank(currentExp);
+    if (_rankToScore(newRank) > _rankToScore(_rank)) {
+      setState(() {
+        _rank = newRank;
+      });
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text(
+              'Level Up! Peringkat Hunter Anda Naik!',
+              style: GoogleFonts.spaceGrotesk(
+                fontWeight: FontWeight.w700,
+                color: Colors.white,
+              ),
+            ),
+            backgroundColor: const Color(0xFFB026FF),
+            duration: const Duration(seconds: 3),
+          ),
+        );
+      }
+    }
+  }
+
+  /// Menyelesaikan quest: menambah EXP & Gold, memeriksa rank-up, dan sinkronisasi ke DB
+  void completeQuest(int expReward, int goldReward, [String? questId, String? questTitle]) {
+    final qId = questId ?? '${expReward}_$goldReward';
+    if (_completedQuests.contains(qId)) {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
-          content: Text('$questTitle sudah diselesaikan hari ini!'),
+          content: Text('${questTitle ?? 'Quest'} sudah diselesaikan hari ini!'),
           backgroundColor: const Color(0xFF2C1E4E),
           duration: const Duration(seconds: 1),
         ),
@@ -110,15 +174,40 @@ class _TabHomeState extends State<TabHome> {
     }
 
     setState(() {
-      _completedQuests.add(questId);
-      _currentExp = math.min(_maxExp, _currentExp + expReward);
+      _completedQuests.add(qId);
+      _currentExp += expReward;
       _gold += goldReward;
     });
+
+    checkRankUp(_currentExp);
+
+    // 1. Simpan ke sesi lokal Hive
+    final session = HiveService.getSession();
+    final userId = session['userId']?.toString() ?? 'anonymous';
+    final username = session['username']?.toString() ?? _hunterName;
+    HiveService.saveSession(
+      userId: userId,
+      username: username,
+      rank: _rank,
+      exp: _currentExp,
+      gold: _gold,
+      hp: _currentHp,
+    );
+
+    // 2. Sinkronisasi asinkron ke Supabase (jika user telah login)
+    if (userId != 'anonymous') {
+      SupabaseService.updateUserStats(
+        userId: userId,
+        exp: _currentExp,
+        gold: _gold,
+        rank: _rank,
+      );
+    }
 
     ScaffoldMessenger.of(context).showSnackBar(
       SnackBar(
         content: Text(
-          'QUEST SELESAI: $questTitle (+$expReward EXP, +$goldReward Gold)!',
+          'QUEST SELESAI: ${questTitle ?? 'Daily Quest'} (+$expReward EXP, +$goldReward Gold)!',
           style: GoogleFonts.spaceGrotesk(
             fontWeight: FontWeight.w700,
             color: Colors.white,
@@ -272,7 +361,8 @@ class _TabHomeState extends State<TabHome> {
 
   /// 2. Hero Hunter Matrix Profile Card
   Widget _buildHunterMatrixCard() {
-    final double expProgress = (_currentExp / _maxExp).clamp(0.0, 1.0);
+    final int targetMaxExp = _calculatedMaxExp;
+    final double expProgress = (_currentExp / targetMaxExp).clamp(0.0, 1.0);
     final int expPercent = (expProgress * 100).toInt();
 
     return Container(
@@ -533,7 +623,7 @@ class _TabHomeState extends State<TabHome> {
                     ),
                   ),
                   Text(
-                    '$_currentExp / $_maxExp EXP ($expPercent%)',
+                    '$_currentExp / $targetMaxExp EXP ($expPercent%)',
                     style: GoogleFonts.spaceGrotesk(
                       fontSize: 10,
                       fontWeight: FontWeight.w700,
@@ -1027,11 +1117,11 @@ class _TabHomeState extends State<TabHome> {
                     const SizedBox(height: 5),
                     InkWell(
                       borderRadius: BorderRadius.circular(8),
-                      onTap: () => _executeQuest(
-                        questId: qId,
-                        questTitle: q['title'] as String,
-                        expReward: q['exp'] as int,
-                        goldReward: q['gold'] as int,
+                      onTap: () => completeQuest(
+                        q['exp'] as int,
+                        q['gold'] as int,
+                        qId,
+                        q['title'] as String,
                       ),
                       child: Container(
                         padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
@@ -1202,11 +1292,13 @@ class _TabHomeState extends State<TabHome> {
           color: Color(0xFFE9DEF2),
           size: 20,
         ),
-        onPressed: () {
+        onPressed: () async {
+          await NotifService.showQuestReminder();
+          if (!mounted) return;
           ScaffoldMessenger.of(context).showSnackBar(
             SnackBar(
               content: Text(
-                'SYSTEM ALERT: Tidak ada penalti harian yang aktif saat ini.',
+                'SYSTEM ALERT: Notifikasi pengingat quest dikirim ke status bar HP!',
                 style: GoogleFonts.spaceGrotesk(fontSize: 12),
               ),
               backgroundColor: const Color(0xFF1F1927),
