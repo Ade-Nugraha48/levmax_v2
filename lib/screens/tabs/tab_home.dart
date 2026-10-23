@@ -8,6 +8,7 @@ import '../../services/supabase_service.dart';
 import '../features/appearance_quest_screen.dart';
 import '../features/chat_ai_screen.dart';
 import '../features/quest_sensor.dart';
+import '../features/study_focus_screen.dart';
 import '../features/workout_hub_screen.dart';
 
 class TabHome extends StatefulWidget {
@@ -1047,6 +1048,21 @@ class _TabHomeState extends State<TabHome> {
         );
         if (result == true) {
           completeQuest(20, 15, qId, q['title'] as String);
+        }
+      } else if (qId == 'mana_focus') {
+        final result = await Navigator.push<Map<String, dynamic>>(
+          context,
+          MaterialPageRoute(
+            builder: (context) => const StudyFocusScreen(),
+          ),
+        );
+        if (result != null) {
+          completeQuest(
+            result['exp'] as int? ?? (q['exp'] as int),
+            result['gold'] as int? ?? (q['gold'] as int),
+            qId,
+            q['title'] as String,
+          );
         }
       } else {
         completeQuest(
