@@ -990,7 +990,7 @@ class _TabHomeState extends State<TabHome> {
         'icon': Icons.menu_book_rounded,
         'iconColor': const Color(0xFFDCB8FC),
         'iconBg': const Color(0xFF231B33),
-        'btnText': 'FOCUS (30M)',
+        'btnText': 'FOCUS',
         'btnColor': Colors.transparent,
         'btnTextColor': const Color(0xFFDCB8FC),
         'isActionCyan': false,
@@ -1173,7 +1173,8 @@ class _TabHomeState extends State<TabHome> {
                           borderRadius: BorderRadius.circular(8),
                           onTap: () => handleQuestAction(q),
                           child: Container(
-                            padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
+                            width: 96,
+                            height: 32,
                             decoration: BoxDecoration(
                               color: isDone
                                   ? const Color(0xFF2D2736)
@@ -1200,7 +1201,9 @@ class _TabHomeState extends State<TabHome> {
                                       ),
                                     ],
                             ),
+                            alignment: Alignment.center,
                             child: Row(
+                              mainAxisAlignment: MainAxisAlignment.center,
                               mainAxisSize: MainAxisSize.min,
                               children: [
                                 Icon(
@@ -1208,7 +1211,7 @@ class _TabHomeState extends State<TabHome> {
                                   size: 13,
                                   color: isDone ? const Color(0xFF00F4FE) : q['btnTextColor'] as Color,
                                 ),
-                                const SizedBox(width: 3),
+                                const SizedBox(width: 4),
                                 Text(
                                   isDone ? 'DONE' : q['btnText'] as String,
                                   style: GoogleFonts.spaceGrotesk(
@@ -1292,24 +1295,57 @@ class _TabHomeState extends State<TabHome> {
             ),
           ),
           const SizedBox(width: 8),
-          Container(
-            padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 7),
-            decoration: BoxDecoration(
-              color: const Color(0xFF00F4FE),
-              borderRadius: BorderRadius.circular(8),
-              boxShadow: [
-                BoxShadow(
-                  color: const Color(0xFF00F4FE).withValues(alpha: 0.35),
-                  blurRadius: 10,
+          InkWell(
+            borderRadius: BorderRadius.circular(8),
+            onTap: () {
+              ScaffoldMessenger.of(context).showSnackBar(
+                SnackBar(
+                  content: Text(
+                    'Scouting Rank E Blue Gate (0.4 KM)...',
+                    style: GoogleFonts.spaceGrotesk(
+                      fontWeight: FontWeight.w700,
+                      color: Colors.black,
+                    ),
+                  ),
+                  backgroundColor: const Color(0xFF00F4FE),
+                  duration: const Duration(seconds: 2),
                 ),
-              ],
-            ),
-            child: Text(
-              'SCOUT',
-              style: GoogleFonts.spaceGrotesk(
-                fontSize: 11,
-                fontWeight: FontWeight.w800,
-                color: Colors.black,
+              );
+            },
+            child: Container(
+              width: 96,
+              height: 32,
+              decoration: BoxDecoration(
+                color: const Color(0xFF00F4FE),
+                borderRadius: BorderRadius.circular(8),
+                boxShadow: [
+                  BoxShadow(
+                    color: const Color(0xFF00F4FE).withValues(alpha: 0.35),
+                    blurRadius: 10,
+                  ),
+                ],
+              ),
+              alignment: Alignment.center,
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  const Icon(
+                    Icons.navigation_rounded,
+                    size: 13,
+                    color: Colors.black,
+                  ),
+                  const SizedBox(width: 4),
+                  Text(
+                    'SCOUT',
+                    style: GoogleFonts.spaceGrotesk(
+                      fontSize: 9.5,
+                      fontWeight: FontWeight.w800,
+                      letterSpacing: 0.4,
+                      color: Colors.black,
+                    ),
+                  ),
+                ],
               ),
             ),
           ),
