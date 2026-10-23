@@ -25,8 +25,7 @@ class _LoginScreenState extends State<LoginScreen> {
   @override
   void initState() {
     super.initState();
-    // Di dalam initState, buat pengecekan sesi dari Hive & picu popup biometrik jika sudah login
-    _checkStoredSessionAndBiometrics();
+    // Otentikasi biometrik bersifat opsional saat user menekan tombol biometrik
   }
 
   @override
@@ -36,17 +35,6 @@ class _LoginScreenState extends State<LoginScreen> {
     super.dispose();
   }
 
-  /// Cek sesi dari Hive. Jika isLoggedIn true, langsung picu popup biometrik
-  Future<void> _checkStoredSessionAndBiometrics() async {
-    final session = HiveService.getSession();
-    final bool isLoggedIn = session['isLoggedIn'] == true;
-
-    if (isLoggedIn) {
-      WidgetsBinding.instance.addPostFrameCallback((_) {
-        _triggerBiometricAuth(autoPrompt: true);
-      });
-    }
-  }
 
   /// Autentikasi biometrik menggunakan local_auth
   Future<void> _triggerBiometricAuth({bool autoPrompt = false}) async {

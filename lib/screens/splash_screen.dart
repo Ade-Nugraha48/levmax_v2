@@ -1,9 +1,6 @@
 import 'dart:math' as math;
 import 'package:flutter/material.dart';
-import 'package:local_auth/local_auth.dart';
-import '../services/hive_service.dart';
 import 'auth/login_screen.dart';
-import 'main_navigation.dart';
 
 /// Halaman Pertama: Awakening Splash Screen bertema Solo Leveling
 /// Mengadaptasi visual web Tailwind dengan animasi murni Flutter (SingleTickerProviderStateMixin)
@@ -17,8 +14,6 @@ class SplashScreen extends StatefulWidget {
 class _SplashScreenState extends State<SplashScreen>
     with SingleTickerProviderStateMixin {
   late final AnimationController _controller;
-  final LocalAuthentication _localAuth = LocalAuthentication();
-
   @override
   void initState() {
     super.initState();
@@ -31,56 +26,12 @@ class _SplashScreenState extends State<SplashScreen>
     _handleInitializationAndRouting();
   }
 
-  /// Cek sesi lokal di Hive dan trigger otentikasi biometrik jika sudah pernah login
+  /// Menunggu durasi animasi splash lalu langsung navigasi ke layar Login tanpa pop-up biometrik otomatis
   Future<void> _handleInitializationAndRouting() async {
-    // Delay minimal agar animasi Awakening dinikmati user
     await Future.delayed(const Duration(milliseconds: 2400));
     if (!mounted) return;
 
-    final session = HiveService.getSession();
-    final bool isLoggedIn = session['isLoggedIn'] == true;
-
-    if (isLoggedIn) {
-      await _authenticateBiometrics();
-    } else {
-      _navigateToLogin();
-    }
-  }
-
-  /// Bypass autentikasi biometrik langsung dari splash screen
-  Future<void> _authenticateBiometrics() async {
-    try {
-      final bool canAuthenticateWithBiometrics =
-          await _localAuth.canCheckBiometrics;
-      final bool canAuthenticate = canAuthenticateWithBiometrics ||
-          await _localAuth.isDeviceSupported();
-
-      if (canAuthenticate) {
-        final bool didAuthenticate = await _localAuth.authenticate(
-          localizedReason:
-              'Pindai sidik jari untuk otorisasi akses cepat ke Hunter System',
-        );
-
-        if (didAuthenticate && mounted) {
-          _navigateToMain();
-          return;
-        }
-      }
-    } catch (e) {
-      debugPrint('[SplashBiometrics] Error: $e');
-    }
-
-    // Jika biometrik gagal atau dibatalkan, arahkan ke Login manual
-    if (mounted) {
-      _navigateToLogin();
-    }
-  }
-
-  void _navigateToMain() {
-    Navigator.pushReplacement(
-      context,
-      MaterialPageRoute(builder: (context) => const MainNavigation()),
-    );
+    _navigateToLogin();
   }
 
   void _navigateToLogin() {
@@ -409,28 +360,13 @@ class _SplashScreenState extends State<SplashScreen>
             builder: (context, child) {
               return Transform.rotate(
                 angle: -_controller.value * 2 * math.pi * 1.5,
-                child: Container(
+                child: const SizedBox(
                   width: 96,
                   height: 96,
-                  decoration: BoxDecoration(
-                    shape: BoxShape.circle,
-                    border: Border(
-                      top: BorderSide(
-                        color: const Color(0xFFC05CFF).withValues(alpha: 0.9),
-                        width: 2.0,
-                      ),
-                      right: BorderSide(
-                        color: const Color(0xFFC05CFF).withValues(alpha: 0.65),
-                        width: 2.0,
-                      ),
-                      bottom: const BorderSide(
-                        color: Colors.transparent,
-                        width: 2.0,
-                      ),
-                      left: const BorderSide(
-                        color: Colors.transparent,
-                        width: 2.0,
-                      ),
+                  child: CustomPaint(
+                    painter: _ArcRingPainter(
+                      color: Color(0xFFC05CFF),
+                      strokeWidth: 2.0,
                     ),
                   ),
                 ),
@@ -530,72 +466,78 @@ class _SplashScreenState extends State<SplashScreen>
               ),
             ],
           ),
-          child: Row(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              // Titik Ungu Neon
-              Container(
-                width: 7,
-                height: 7,
-                decoration: const BoxDecoration(
-                  shape: BoxShape.circle,
-                  color: Color(0xFFB026FF),
-                  boxShadow: [
-                    BoxShadow(
-                      color: Color(0xFFB026FF),
-                      blurRadius: 6,
-                      spreadRadius: 1,
-                    ),
-                  ],
-                ),
-              ),
-              const SizedBox(width: 8),
-              RichText(
-                text: const TextSpan(
-                  style: TextStyle(
-                    fontFamily: 'monospace',
-                    fontSize: 9.5,
-                    letterSpacing: 1.1,
-                    color: Color(0xFFCBD5E1),
+          child: FittedBox(
+            fit: BoxFit.scaleDown,
+            child: Row(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                // Titik Ungu Neon
+                Container(
+                  width: 7,
+                  height: 7,
+                  decoration: const BoxDecoration(
+                    shape: BoxShape.circle,
+                    color: Color(0xFFB026FF),
+                    boxShadow: [
+                      BoxShadow(
+                        color: Color(0xFFB026FF),
+                        blurRadius: 6,
+                        spreadRadius: 1,
+                      ),
+                    ],
                   ),
-                  children: [
-                    TextSpan(text: 'SUPABASE RPC: '),
-                    TextSpan(
-                      text: 'CONNECTING',
-                      style: TextStyle(
-                        color: Color(0xFF00F0FF),
-                        fontWeight: FontWeight.bold,
-                      ),
-                    ),
-                    TextSpan(
-                      text: '  |  BIOMETRIC SENSOR: ',
-                      style: TextStyle(color: Color(0xFF8B829E)),
-                    ),
-                    TextSpan(
-                      text: 'ARMED',
-                      style: TextStyle(
-                        color: Color(0xFF00FF88),
-                        fontWeight: FontWeight.bold,
-                      ),
-                    ),
-                  ],
                 ),
-              ),
-            ],
+                const SizedBox(width: 8),
+                RichText(
+                  text: const TextSpan(
+                    style: TextStyle(
+                      fontFamily: 'monospace',
+                      fontSize: 9.5,
+                      letterSpacing: 1.1,
+                      color: Color(0xFFCBD5E1),
+                    ),
+                    children: [
+                      TextSpan(text: 'SUPABASE RPC: '),
+                      TextSpan(
+                        text: 'CONNECTING',
+                        style: TextStyle(
+                          color: Color(0xFF00F0FF),
+                          fontWeight: FontWeight.bold,
+                        ),
+                      ),
+                      TextSpan(
+                        text: '  |  BIOMETRIC SENSOR: ',
+                        style: TextStyle(color: Color(0xFF8B829E)),
+                      ),
+                      TextSpan(
+                        text: 'ARMED',
+                        style: TextStyle(
+                          color: Color(0xFF00FF88),
+                          fontWeight: FontWeight.bold,
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+              ],
+            ),
           ),
         ),
 
         const SizedBox(height: 8),
 
         // Version & Mobile Architecture Core Tag
-        const Text(
-          'V1.0.0  •  MOBILE ARCHITECTURE CORE',
-          style: TextStyle(
-            fontFamily: 'monospace',
-            fontSize: 9.0,
-            fontWeight: FontWeight.w600,
-            letterSpacing: 2.0,
-            color: Color(0xFF6E6485),
+        const FittedBox(
+          fit: BoxFit.scaleDown,
+          child: Text(
+            'V1.0.0  •  MOBILE ARCHITECTURE CORE',
+            style: TextStyle(
+              fontFamily: 'monospace',
+              fontSize: 9.0,
+              fontWeight: FontWeight.w600,
+              letterSpacing: 2.0,
+              color: Color(0xFF6E6485),
+            ),
           ),
         ),
       ],
@@ -639,5 +581,47 @@ class _DashedCirclePainter extends CustomPainter {
 
   @override
   bool shouldRepaint(covariant _DashedCirclePainter oldDelegate) =>
+      oldDelegate.color != color || oldDelegate.strokeWidth != strokeWidth;
+}
+
+/// Custom Painter untuk menggambar busur cincin Layer 2 tanpa memicu error non-uniform circle border
+class _ArcRingPainter extends CustomPainter {
+  final Color color;
+  final double strokeWidth;
+
+  const _ArcRingPainter({
+    required this.color,
+    this.strokeWidth = 2.0,
+  });
+
+  @override
+  void paint(Canvas canvas, Size size) {
+    final rect = Rect.fromLTWH(
+      strokeWidth / 2,
+      strokeWidth / 2,
+      size.width - strokeWidth,
+      size.height - strokeWidth,
+    );
+
+    final paint1 = Paint()
+      ..color = color.withValues(alpha: 0.9)
+      ..strokeWidth = strokeWidth
+      ..style = PaintingStyle.stroke
+      ..strokeCap = StrokeCap.round;
+
+    final paint2 = Paint()
+      ..color = color.withValues(alpha: 0.65)
+      ..strokeWidth = strokeWidth
+      ..style = PaintingStyle.stroke
+      ..strokeCap = StrokeCap.round;
+
+    // Busur atas ke kanan (dari -pi/2 sepanjang pi/2)
+    canvas.drawArc(rect, -math.pi / 2, math.pi / 2, false, paint1);
+    // Busur lanjutan kanan ke bawah (dari 0 sepanjang pi/3)
+    canvas.drawArc(rect, 0, math.pi / 3, false, paint2);
+  }
+
+  @override
+  bool shouldRepaint(covariant _ArcRingPainter oldDelegate) =>
       oldDelegate.color != color || oldDelegate.strokeWidth != strokeWidth;
 }
