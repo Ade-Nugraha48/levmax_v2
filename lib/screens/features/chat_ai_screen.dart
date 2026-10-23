@@ -1,5 +1,6 @@
 import 'dart:io';
 import 'package:flutter/material.dart';
+import 'package:flutter_markdown/flutter_markdown.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:image_picker/image_picker.dart';
 import '../../services/gemini_service.dart';
@@ -541,14 +542,11 @@ class _ChatAiScreenState extends State<ChatAiScreen> {
                                   ),
                                   const SizedBox(height: 8),
 
-                                  // Isi Pesan Teks
-                                  Text(
-                                    text,
-                                    style: GoogleFonts.plusJakartaSans(
-                                      fontSize: 13,
-                                      height: 1.45,
-                                      color: const Color(0xFFE9DEF2),
-                                    ),
+                                  // Isi Pesan Teks Terformat Markdown (Bold, Lists, Italic, Code, dll)
+                                  MarkdownBody(
+                                    data: text,
+                                    selectable: true,
+                                    styleSheet: _buildAiMarkdownStyleSheet(),
                                   ),
                                 ],
                               ),
@@ -626,13 +624,28 @@ class _ChatAiScreenState extends State<ChatAiScreen> {
                     ],
                   ),
                   padding: const EdgeInsets.all(14),
-                  child: Text(
-                    text,
-                    style: GoogleFonts.plusJakartaSans(
-                      fontSize: 13,
-                      height: 1.4,
-                      color: Colors.white,
-                      fontWeight: FontWeight.w500,
+                  child: MarkdownBody(
+                    data: text,
+                    selectable: true,
+                    styleSheet: MarkdownStyleSheet(
+                      p: GoogleFonts.plusJakartaSans(
+                        fontSize: 13,
+                        height: 1.45,
+                        color: Colors.white,
+                        fontWeight: FontWeight.w500,
+                      ),
+                      strong: GoogleFonts.plusJakartaSans(
+                        fontSize: 13,
+                        height: 1.45,
+                        color: Colors.white,
+                        fontWeight: FontWeight.w800,
+                      ),
+                      em: GoogleFonts.plusJakartaSans(
+                        fontSize: 13,
+                        height: 1.45,
+                        color: const Color(0xFFF4D9FF),
+                        fontStyle: FontStyle.italic,
+                      ),
                     ),
                   ),
                 ),
@@ -720,6 +733,89 @@ class _ChatAiScreenState extends State<ChatAiScreen> {
           ),
         );
       },
+    );
+  }
+
+  /// Helper untuk styling Markdown pada pesan AI agar terlihat rapi dan berstandar chat modern
+  MarkdownStyleSheet _buildAiMarkdownStyleSheet() {
+    return MarkdownStyleSheet(
+      p: GoogleFonts.plusJakartaSans(
+        fontSize: 13,
+        height: 1.55,
+        color: const Color(0xFFE9DEF2),
+      ),
+      strong: GoogleFonts.plusJakartaSans(
+        fontSize: 13,
+        height: 1.55,
+        fontWeight: FontWeight.w800,
+        color: const Color(0xFF00F4FE), // Neon cyan highlight untuk kata berbobot / bold!
+      ),
+      em: GoogleFonts.plusJakartaSans(
+        fontSize: 13,
+        height: 1.55,
+        fontStyle: FontStyle.italic,
+        color: const Color(0xFFDCB8FC),
+      ),
+      h1: GoogleFonts.sora(
+        fontSize: 16,
+        fontWeight: FontWeight.w700,
+        color: const Color(0xFF00F4FE),
+      ),
+      h2: GoogleFonts.sora(
+        fontSize: 15,
+        fontWeight: FontWeight.w700,
+        color: const Color(0xFF00F4FE),
+      ),
+      h3: GoogleFonts.sora(
+        fontSize: 14,
+        fontWeight: FontWeight.w700,
+        color: const Color(0xFF63F7FF),
+      ),
+      listBullet: GoogleFonts.spaceGrotesk(
+        fontSize: 13,
+        fontWeight: FontWeight.w700,
+        color: const Color(0xFF00F4FE),
+      ),
+      listIndent: 22.0,
+      code: GoogleFonts.spaceGrotesk(
+        fontSize: 11.5,
+        color: const Color(0xFF00F4FE),
+        backgroundColor: const Color(0xFF140D28),
+      ),
+      codeblockDecoration: BoxDecoration(
+        color: const Color(0xFF140D28),
+        borderRadius: BorderRadius.circular(8),
+        border: Border.all(
+          color: const Color(0xFF2C1E4E),
+          width: 0.8,
+        ),
+      ),
+      codeblockPadding: const EdgeInsets.all(10),
+      blockquoteDecoration: BoxDecoration(
+        color: const Color(0xFF140D28),
+        borderRadius: BorderRadius.circular(4),
+        border: const Border(
+          left: BorderSide(
+            color: Color(0xFF00F4FE),
+            width: 3.0,
+          ),
+        ),
+      ),
+      blockquotePadding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
+      blockquote: GoogleFonts.plusJakartaSans(
+        fontSize: 12.5,
+        fontStyle: FontStyle.italic,
+        color: const Color(0xFFDCB8FC),
+      ),
+      horizontalRuleDecoration: BoxDecoration(
+        border: Border(
+          top: BorderSide(
+            color: const Color(0xFF2C1E4E),
+            width: 1.0,
+          ),
+        ),
+      ),
+      blockSpacing: 10.0,
     );
   }
 
