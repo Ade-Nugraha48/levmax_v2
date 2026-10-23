@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:google_fonts/google_fonts.dart';
 import 'package:local_auth/local_auth.dart';
 import '../../services/hash_service.dart';
 import '../../services/hive_service.dart';
@@ -158,786 +159,693 @@ class _LoginScreenState extends State<LoginScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: const Color(0xFF16111E), // Dark Abyss
+      backgroundColor: const Color(0xFF16111E), // Dark Abyss Background
       body: SafeArea(
         child: Stack(
           children: [
-            // 1. Ambient Background Glows (Mana Surge & Cyber Backlight)
+            // 1. Ambient Diffuse Background Glows (No sharp circle edges)
             Positioned(
-              top: -50,
+              top: -80,
               left: 0,
               right: 0,
-              child: Center(
-                child: Container(
-                  width: 280,
-                  height: 280,
-                  decoration: BoxDecoration(
-                    shape: BoxShape.circle,
-                    color: const Color(0xFFB026FF).withValues(alpha: 0.16),
-                    boxShadow: [
-                      BoxShadow(
-                        color: const Color(0xFFB026FF).withValues(alpha: 0.22),
-                        blurRadius: 90,
-                        spreadRadius: 30,
+              child: IgnorePointer(
+                child: Center(
+                  child: Container(
+                    width: 340,
+                    height: 340,
+                    decoration: BoxDecoration(
+                      shape: BoxShape.circle,
+                      gradient: RadialGradient(
+                        colors: [
+                          const Color(0xFFB026FF).withValues(alpha: 0.20),
+                          const Color(0xFFB026FF).withValues(alpha: 0.05),
+                          Colors.transparent,
+                        ],
+                        stops: const [0.0, 0.45, 1.0],
                       ),
-                    ],
+                    ),
                   ),
                 ),
               ),
             ),
             Positioned(
-              bottom: -20,
+              bottom: 0,
               left: 0,
               right: 0,
-              child: Center(
-                child: Container(
-                  width: 240,
-                  height: 240,
-                  decoration: BoxDecoration(
-                    shape: BoxShape.circle,
-                    color: const Color(0xFF00F4FE).withValues(alpha: 0.08),
-                    boxShadow: [
-                      BoxShadow(
-                        color: const Color(0xFF00F4FE).withValues(alpha: 0.12),
-                        blurRadius: 90,
-                        spreadRadius: 25,
+              child: IgnorePointer(
+                child: Center(
+                  child: Container(
+                    width: 300,
+                    height: 300,
+                    decoration: BoxDecoration(
+                      shape: BoxShape.circle,
+                      gradient: RadialGradient(
+                        colors: [
+                          const Color(0xFF00F4FE).withValues(alpha: 0.08),
+                          const Color(0xFF00F4FE).withValues(alpha: 0.02),
+                          Colors.transparent,
+                        ],
+                        stops: const [0.0, 0.45, 1.0],
                       ),
-                    ],
+                    ),
                   ),
                 ),
               ),
             ),
 
-            // 2. Main Scrollable Content
-            LayoutBuilder(
-              builder: (context, constraints) {
-                return SingleChildScrollView(
-                  physics: const BouncingScrollPhysics(),
-                  child: ConstrainedBox(
-                    constraints: BoxConstraints(minHeight: constraints.maxHeight),
-                    child: Padding(
-                      padding: const EdgeInsets.symmetric(horizontal: 20.0, vertical: 12.0),
-                      child: Column(
-                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                        crossAxisAlignment: CrossAxisAlignment.stretch,
+            // 2. Main Content Flow (Compact Stitch Top-to-Bottom Layout)
+            SingleChildScrollView(
+              physics: const BouncingScrollPhysics(),
+              padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 8.0),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.stretch,
+                children: [
+                  // Top Header: Protocol Status Pill & System Version
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      // Pill "HUNTER AUTHENTICATION PORTAL"
+                      Container(
+                        padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
+                        decoration: BoxDecoration(
+                          color: const Color(0xFF110C19).withValues(alpha: 0.80),
+                          borderRadius: BorderRadius.circular(999),
+                        ),
+                        child: Row(
+                          mainAxisSize: MainAxisSize.min,
+                          children: [
+                            Container(
+                              width: 6,
+                              height: 6,
+                              decoration: const BoxDecoration(
+                                shape: BoxShape.circle,
+                                color: Color(0xFF00F4FE),
+                                boxShadow: [
+                                  BoxShadow(
+                                    color: Color(0xFF00F4FE),
+                                    blurRadius: 8,
+                                    spreadRadius: 1,
+                                  ),
+                                ],
+                              ),
+                            ),
+                            const SizedBox(width: 6),
+                            Text(
+                              'HUNTER AUTHENTICATION PORTAL',
+                              style: GoogleFonts.spaceGrotesk(
+                                fontSize: 10,
+                                fontWeight: FontWeight.w500,
+                                letterSpacing: 1.0,
+                                color: const Color(0xFFE6FEFF),
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+
+                      // Right: Shield & SYS_V2.4
+                      Row(
+                        mainAxisSize: MainAxisSize.min,
                         children: [
-                          // Top Section: Header & Hero
-                          Column(
+                          const Icon(
+                            Icons.shield_outlined,
+                            size: 15,
+                            color: Color(0xFFE5B5FF),
+                          ),
+                          const SizedBox(width: 4),
+                          Text(
+                            'SYS_V2.4',
+                            style: GoogleFonts.spaceGrotesk(
+                              fontSize: 10,
+                              fontWeight: FontWeight.w500,
+                              letterSpacing: 0.8,
+                              color: const Color(0xFFD2C1D7),
+                            ),
+                          ),
+                        ],
+                      ),
+                    ],
+                  ),
+
+                  const SizedBox(height: 10),
+
+                  // Center Hero: Awakened Brand Logo & Title
+                  Column(
+                    children: [
+                      Stack(
+                        alignment: Alignment.center,
+                        children: [
+                          // Soft radial diffuse purple backlight
+                          Container(
+                            width: 160,
+                            height: 80,
+                            decoration: BoxDecoration(
+                              shape: BoxShape.circle,
+                              gradient: RadialGradient(
+                                colors: [
+                                  const Color(0xFFB026FF).withValues(alpha: 0.35),
+                                  Colors.transparent,
+                                ],
+                              ),
+                            ),
+                          ),
+                          Image.asset(
+                            'assets/images/solo_leveling_logo.png',
+                            height: 76,
+                            fit: BoxFit.contain,
+                          ),
+                        ],
+                      ),
+                      const SizedBox(height: 6),
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          Container(
+                            width: 16,
+                            height: 1,
+                            decoration: const BoxDecoration(
+                              gradient: LinearGradient(
+                                colors: [Colors.transparent, Color(0xFFE5B5FF)],
+                              ),
+                            ),
+                          ),
+                          const SizedBox(width: 6),
+                          Text(
+                            'LEVMAX • THE SYSTEM AWAKENING',
+                            style: GoogleFonts.spaceGrotesk(
+                              fontSize: 11,
+                              fontWeight: FontWeight.w600,
+                              letterSpacing: 2.2,
+                              color: const Color(0xFFE5B5FF),
+                            ),
+                          ),
+                          const SizedBox(width: 6),
+                          Container(
+                            width: 16,
+                            height: 1,
+                            decoration: const BoxDecoration(
+                              gradient: LinearGradient(
+                                colors: [Color(0xFFE5B5FF), Colors.transparent],
+                              ),
+                            ),
+                          ),
+                        ],
+                      ),
+                    ],
+                  ),
+
+                  const SizedBox(height: 10),
+
+                  // Main System Auth Card
+                  Container(
+                    decoration: BoxDecoration(
+                      color: const Color(0xFF1F1927).withValues(alpha: 0.95),
+                      borderRadius: BorderRadius.circular(12),
+                      boxShadow: [
+                        BoxShadow(
+                          color: Colors.black.withValues(alpha: 0.5),
+                          blurRadius: 24,
+                          offset: const Offset(0, 10),
+                        ),
+                      ],
+                    ),
+                    child: Stack(
+                      children: [
+                        // Top Glowing Accent Line
+                        Positioned(
+                          top: 0,
+                          left: 70,
+                          right: 70,
+                          child: Container(
+                            height: 1.0,
+                            decoration: BoxDecoration(
+                              gradient: LinearGradient(
+                                colors: [
+                                  Colors.transparent,
+                                  const Color(0xFFE5B5FF).withValues(alpha: 0.8),
+                                  Colors.transparent,
+                                ],
+                              ),
+                            ),
+                          ),
+                        ),
+
+                        Padding(
+                          padding: const EdgeInsets.all(16.0),
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.stretch,
                             children: [
-                              // Top Header: Protocol Status Pill & System Version
+                              // Field 1: Hunter Identity
                               Row(
                                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                                 children: [
-                                  // Pill "HUNTER AUTHENTICATION PORTAL"
-                                  Container(
-                                    padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4.5),
-                                    decoration: BoxDecoration(
-                                      color: const Color(0xFF110C19).withValues(alpha: 0.85),
-                                      borderRadius: BorderRadius.circular(20),
-                                      border: Border.all(
-                                        color: const Color(0xFF2D2736),
-                                        width: 0.8,
+                                  Row(
+                                    children: [
+                                      const Icon(
+                                        Icons.badge_outlined,
+                                        size: 13,
+                                        color: Color(0xFFE5B5FF),
                                       ),
+                                      const SizedBox(width: 5),
+                                      Text(
+                                        'HUNTER IDENTITY',
+                                        style: GoogleFonts.spaceGrotesk(
+                                          fontSize: 10,
+                                          fontWeight: FontWeight.w500,
+                                          letterSpacing: 1.0,
+                                          color: const Color(0xFFD2C1D7),
+                                        ),
+                                      ),
+                                    ],
+                                  ),
+                                  Text(
+                                    'CLASS: UNKNOWN',
+                                    style: GoogleFonts.spaceGrotesk(
+                                      fontSize: 10,
+                                      fontWeight: FontWeight.w600,
+                                      color: const Color(0xFFE5B5FF),
+                                    ),
+                                  ),
+                                ],
+                              ),
+
+                              const SizedBox(height: 5),
+
+                              // Inset Input 1
+                              Container(
+                                height: 42,
+                                decoration: BoxDecoration(
+                                  color: const Color(0xFF110C19),
+                                  borderRadius: BorderRadius.circular(8),
+                                ),
+                                child: TextField(
+                                  controller: _usernameController,
+                                  style: GoogleFonts.plusJakartaSans(
+                                    color: const Color(0xFFE9DEF2),
+                                    fontSize: 14,
+                                  ),
+                                  cursorColor: const Color(0xFFB026FF),
+                                  decoration: InputDecoration(
+                                    isDense: true,
+                                    hintText: 'Sung Jin-Woo / Codename',
+                                    hintStyle: GoogleFonts.plusJakartaSans(
+                                      color: const Color(0xFF9B8BA1).withValues(alpha: 0.40),
+                                      fontSize: 14,
+                                    ),
+                                    prefixIcon: const Icon(
+                                      Icons.person_outline,
+                                      color: Color(0xFF9B8BA1),
+                                      size: 18,
+                                    ),
+                                    border: InputBorder.none,
+                                    contentPadding: const EdgeInsets.symmetric(
+                                      horizontal: 12,
+                                      vertical: 11,
+                                    ),
+                                  ),
+                                ),
+                              ),
+
+                              const SizedBox(height: 10),
+
+                              // Field 2: Security Cipher
+                              Row(
+                                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                children: [
+                                  Row(
+                                    children: [
+                                      const Icon(
+                                        Icons.vpn_key_outlined,
+                                        size: 13,
+                                        color: Color(0xFFE5B5FF),
+                                      ),
+                                      const SizedBox(width: 5),
+                                      Text(
+                                        'SECURITY CIPHER',
+                                        style: GoogleFonts.spaceGrotesk(
+                                          fontSize: 10,
+                                          fontWeight: FontWeight.w500,
+                                          letterSpacing: 1.0,
+                                          color: const Color(0xFFD2C1D7),
+                                        ),
+                                      ),
+                                    ],
+                                  ),
+                                  Container(
+                                    padding: const EdgeInsets.symmetric(
+                                      horizontal: 6,
+                                      vertical: 2,
+                                    ),
+                                    decoration: BoxDecoration(
+                                      color: const Color(0xFF2D2736),
+                                      borderRadius: BorderRadius.circular(4),
                                     ),
                                     child: Row(
                                       mainAxisSize: MainAxisSize.min,
                                       children: [
                                         Container(
-                                          width: 6,
-                                          height: 6,
+                                          width: 4,
+                                          height: 4,
                                           decoration: const BoxDecoration(
                                             shape: BoxShape.circle,
                                             color: Color(0xFF00F4FE),
-                                            boxShadow: [
-                                              BoxShadow(
-                                                color: Color(0xFF00F4FE),
-                                                blurRadius: 8,
-                                                spreadRadius: 1.5,
-                                              ),
-                                            ],
                                           ),
                                         ),
-                                        const SizedBox(width: 7),
-                                        const Text(
-                                          'HUNTER AUTHENTICATION PORTAL',
-                                          style: TextStyle(
-                                            fontFamily: 'Sora',
-                                            fontSize: 9.5,
+                                        const SizedBox(width: 4),
+                                        Text(
+                                          'SHA-256 READY',
+                                          style: GoogleFonts.spaceGrotesk(
+                                            fontSize: 9,
                                             fontWeight: FontWeight.w600,
-                                            letterSpacing: 1.2,
-                                            color: Color(0xFFE6FEFF),
+                                            letterSpacing: 0.8,
+                                            color: const Color(0xFFE6FEFF),
                                           ),
                                         ),
                                       ],
                                     ),
                                   ),
+                                ],
+                              ),
 
-                                  // Right: Shield & SYS_V2.4
-                                  const Row(
-                                    mainAxisSize: MainAxisSize.min,
-                                    children: [
-                                      Icon(
-                                        Icons.security_rounded,
-                                        size: 15,
-                                        color: Color(0xFFE5B5FF),
+                              const SizedBox(height: 5),
+
+                              // Inset Input 2
+                              Container(
+                                height: 42,
+                                decoration: BoxDecoration(
+                                  color: const Color(0xFF110C19),
+                                  borderRadius: BorderRadius.circular(8),
+                                ),
+                                child: TextField(
+                                  controller: _passwordController,
+                                  obscureText: _isObscure,
+                                  style: GoogleFonts.plusJakartaSans(
+                                    color: const Color(0xFFE9DEF2),
+                                    fontSize: 14,
+                                    letterSpacing: _isObscure ? 2.0 : 0.5,
+                                  ),
+                                  cursorColor: const Color(0xFFB026FF),
+                                  decoration: InputDecoration(
+                                    isDense: true,
+                                    hintText: 'Enter Awakened Keyphrase',
+                                    hintStyle: GoogleFonts.plusJakartaSans(
+                                      color: const Color(0xFF9B8BA1).withValues(alpha: 0.40),
+                                      fontSize: 14,
+                                      letterSpacing: 0,
+                                    ),
+                                    prefixIcon: const Icon(
+                                      Icons.lock_outline,
+                                      color: Color(0xFF9B8BA1),
+                                      size: 18,
+                                    ),
+                                    suffixIcon: GestureDetector(
+                                      onTap: () {
+                                        setState(() {
+                                          _isObscure = !_isObscure;
+                                        });
+                                      },
+                                      child: Icon(
+                                        _isObscure
+                                            ? Icons.visibility_outlined
+                                            : Icons.visibility_off_outlined,
+                                        color: const Color(0xFF9B8BA1),
+                                        size: 18,
                                       ),
-                                      SizedBox(width: 4),
-                                      Text(
-                                        'SYS_V2.4',
-                                        style: TextStyle(
-                                          fontFamily: 'Sora',
-                                          fontSize: 10,
-                                          fontWeight: FontWeight.w600,
-                                          letterSpacing: 1.0,
-                                          color: Color(0xFFD2C1D7),
+                                    ),
+                                    border: InputBorder.none,
+                                    contentPadding: const EdgeInsets.symmetric(
+                                      horizontal: 12,
+                                      vertical: 11,
+                                    ),
+                                  ),
+                                ),
+                              ),
+
+                              const SizedBox(height: 8),
+
+                              // Stay Synchronized & Lost Cipher
+                              Row(
+                                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                children: [
+                                  GestureDetector(
+                                    onTap: () {
+                                      setState(() {
+                                        _staySynchronized = !_staySynchronized;
+                                      });
+                                    },
+                                    child: Row(
+                                      mainAxisSize: MainAxisSize.min,
+                                      children: [
+                                        Container(
+                                          width: 14,
+                                          height: 14,
+                                          decoration: BoxDecoration(
+                                            color: _staySynchronized
+                                                ? const Color(0xFFB026FF)
+                                                : const Color(0xFF110C19),
+                                            borderRadius: BorderRadius.circular(3),
+                                          ),
+                                          child: _staySynchronized
+                                              ? const Icon(
+                                                  Icons.check,
+                                                  size: 11,
+                                                  color: Colors.white,
+                                                )
+                                              : null,
                                         ),
+                                        const SizedBox(width: 8),
+                                        Text(
+                                          'Stay Synchronized',
+                                          style: GoogleFonts.spaceGrotesk(
+                                            fontSize: 10,
+                                            color: const Color(0xFFD2C1D7),
+                                          ),
+                                        ),
+                                      ],
+                                    ),
+                                  ),
+                                  GestureDetector(
+                                    onTap: () {
+                                      ScaffoldMessenger.of(context).showSnackBar(
+                                        const SnackBar(
+                                          content: Text(
+                                            'Cipher Recovery: Hubungi Sovereign Hunter System.',
+                                          ),
+                                          backgroundColor: Color(0xFF2D2736),
+                                        ),
+                                      );
+                                    },
+                                    child: Text(
+                                      'LOST CIPHER?',
+                                      style: GoogleFonts.spaceGrotesk(
+                                        fontSize: 10,
+                                        letterSpacing: 0.6,
+                                        color: const Color(0xFFDCB8FC),
                                       ),
-                                    ],
+                                    ),
                                   ),
                                 ],
                               ),
 
                               const SizedBox(height: 12),
 
-                              // Center Hero: Awakened Brand Logo
+                              // Primary Button: AWAKEN (LOGIN)
+                              Container(
+                                height: 44,
+                                width: double.infinity,
+                                decoration: BoxDecoration(
+                                  borderRadius: BorderRadius.circular(8),
+                                  gradient: const LinearGradient(
+                                    colors: [
+                                      Color(0xFF7B2CBF),
+                                      Color(0xFF9D4EDD),
+                                      Color(0xFFB026FF),
+                                    ],
+                                    begin: Alignment.centerLeft,
+                                    end: Alignment.centerRight,
+                                  ),
+                                  boxShadow: [
+                                    BoxShadow(
+                                      color: const Color(0xFFB026FF).withValues(alpha: 0.45),
+                                      blurRadius: 24,
+                                      spreadRadius: 0,
+                                    ),
+                                  ],
+                                ),
+                                child: Material(
+                                  color: Colors.transparent,
+                                  child: InkWell(
+                                    borderRadius: BorderRadius.circular(8),
+                                    onTap: _isLoading ? null : _handleLogin,
+                                    child: Center(
+                                      child: _isLoading
+                                          ? const SizedBox(
+                                              width: 20,
+                                              height: 20,
+                                              child: CircularProgressIndicator(
+                                                strokeWidth: 2.0,
+                                                color: Colors.white,
+                                              ),
+                                            )
+                                          : Row(
+                                              mainAxisAlignment: MainAxisAlignment.center,
+                                              children: [
+                                                const Icon(
+                                                  Icons.bolt_rounded,
+                                                  color: Color(0xFF00F4FE),
+                                                  size: 18,
+                                                ),
+                                                const SizedBox(width: 8),
+                                                Text(
+                                                  'AWAKEN (LOGIN)',
+                                                  style: GoogleFonts.spaceGrotesk(
+                                                    fontSize: 13,
+                                                    fontWeight: FontWeight.w600,
+                                                    letterSpacing: 0.8,
+                                                    color: const Color(0xFFFFFDFF),
+                                                  ),
+                                                ),
+                                              ],
+                                            ),
+                                    ),
+                                  ),
+                                ),
+                              ),
+
+                              const SizedBox(height: 14),
+
+                              // Biometric Separator: OR FAST SYSTEM ACCESS
                               Stack(
                                 alignment: Alignment.center,
                                 children: [
                                   Container(
-                                    width: 140,
-                                    height: 70,
-                                    decoration: BoxDecoration(
-                                      shape: BoxShape.circle,
-                                      boxShadow: [
-                                        BoxShadow(
-                                          color: const Color(0xFFB026FF).withValues(alpha: 0.45),
-                                          blurRadius: 40,
-                                          spreadRadius: 10,
-                                        ),
-                                      ],
-                                    ),
+                                    height: 1,
+                                    color: const Color(0xFF383241),
                                   ),
-                                  Image.asset(
-                                    'assets/images/solo_leveling_logo.png',
-                                    height: 74,
-                                    fit: BoxFit.contain,
-                                    errorBuilder: (context, error, stackTrace) => Image.network(
-                                      'https://lh3.googleusercontent.com/aida-public/AB6AXuBt-Ugw9qKLfyMF_yb9l94IOUsbDQo6Tur25xVa5B6hEYjde831VoInnKBQnc4J-KMjnI79iPaIJnl56xGscNn8vaQqvszSmP_KF9xUSw0LnSSjBi_LwfeaMPiPjjSpQP8oTe27xvvARYejzoArDLMPb84-NJI0_SerQNfE-5mD8YixH8t7Ks3pokp6mdNYjyhDYEBAvpx5AkfVfSPpsggeHolfd-2Uj5FDFbZTb1OhE67rnxTFsgy0pXi-UgSEOTnd5Q',
-                                      height: 74,
-                                      fit: BoxFit.contain,
+                                  Container(
+                                    color: const Color(0xFF1F1927),
+                                    padding: const EdgeInsets.symmetric(
+                                      horizontal: 10,
+                                      vertical: 2,
+                                    ),
+                                    child: Text(
+                                      'OR FAST SYSTEM ACCESS',
+                                      style: GoogleFonts.spaceGrotesk(
+                                        fontSize: 10,
+                                        fontWeight: FontWeight.w500,
+                                        letterSpacing: 1.5,
+                                        color: const Color(0xFF9B8BA1),
+                                      ),
                                     ),
                                   ),
                                 ],
                               ),
 
-                              const SizedBox(height: 6),
+                              const SizedBox(height: 12),
 
-                              // Sub-brand line: — LEVMAX • THE SYSTEM AWAKENING —
+                              // Dual Biometric Pods (Fingerprint & Face Scan)
                               Row(
-                                mainAxisAlignment: MainAxisAlignment.center,
                                 children: [
-                                  Container(
-                                    width: 18,
-                                    height: 1,
-                                    decoration: const BoxDecoration(
-                                      gradient: LinearGradient(
-                                        colors: [Colors.transparent, Color(0xFFE5B5FF)],
-                                      ),
+                                  // Pod 1: Fingerprint Pod
+                                  Expanded(
+                                    child: _buildBiometricPod(
+                                      title: 'FINGERPRINT',
+                                      subtitle: 'Mana Resonance',
+                                      icon: Icons.fingerprint_rounded,
+                                      iconColor: const Color(0xFFE5B5FF),
+                                      glowColor: const Color(0xFFB026FF),
+                                      onTap: () => _triggerBiometricAuth(autoPrompt: false),
                                     ),
                                   ),
-                                  const SizedBox(width: 8),
-                                  const Text(
-                                    'LEVMAX • THE SYSTEM AWAKENING',
-                                    style: TextStyle(
-                                      fontFamily: 'Sora',
-                                      fontSize: 9.5,
-                                      fontWeight: FontWeight.w600,
-                                      letterSpacing: 2.2,
-                                      color: Color(0xFFE5B5FF),
-                                    ),
-                                  ),
-                                  const SizedBox(width: 8),
-                                  Container(
-                                    width: 18,
-                                    height: 1,
-                                    decoration: const BoxDecoration(
-                                      gradient: LinearGradient(
-                                        colors: [Color(0xFFE5B5FF), Colors.transparent],
-                                      ),
+                                  const SizedBox(width: 10),
+                                  // Pod 2: Face Scan Pod
+                                  Expanded(
+                                    child: _buildBiometricPod(
+                                      title: 'FACE SCAN',
+                                      subtitle: 'Neural Recognition',
+                                      icon: Icons.document_scanner_outlined,
+                                      iconColor: const Color(0xFF00F4FE),
+                                      glowColor: const Color(0xFF00F4FE),
+                                      onTap: () => _triggerBiometricAuth(autoPrompt: false),
                                     ),
                                   ),
                                 ],
                               ),
                             ],
                           ),
+                        ),
+                      ],
+                    ),
+                  ),
 
-                          const SizedBox(height: 12),
+                  const SizedBox(height: 14),
 
-                          // Main System Auth Card
+                  // Footer: Registration Link & Status Protocol
+                  Column(
+                    children: [
+                      GestureDetector(
+                        onTap: () {
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                              builder: (context) => const RegisterScreen(),
+                            ),
+                          );
+                        },
+                        child: Row(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            Text(
+                              'Unregistered Hunter? ',
+                              style: GoogleFonts.spaceGrotesk(
+                                fontSize: 11,
+                                color: const Color(0xFFD2C1D7),
+                              ),
+                            ),
+                            Text(
+                              'Awaken New Record',
+                              style: GoogleFonts.spaceGrotesk(
+                                fontSize: 11,
+                                fontWeight: FontWeight.w600,
+                                color: const Color(0xFFE5B5FF),
+                              ),
+                            ),
+                            const SizedBox(width: 4),
+                            const Icon(
+                              Icons.arrow_forward_rounded,
+                              size: 13,
+                              color: Color(0xFFE5B5FF),
+                            ),
+                          ],
+                        ),
+                      ),
+                      const SizedBox(height: 6),
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
                           Container(
-                            decoration: BoxDecoration(
-                              color: const Color(0xFF1F1927).withValues(alpha: 0.95),
-                              borderRadius: BorderRadius.circular(16),
-                              border: Border.all(
-                                color: const Color(0xFF2D2736),
-                                width: 1.0,
-                              ),
-                              boxShadow: [
-                                BoxShadow(
-                                  color: Colors.black.withValues(alpha: 0.5),
-                                  blurRadius: 24,
-                                  offset: const Offset(0, 10),
-                                ),
-                              ],
-                            ),
-                            child: Stack(
-                              children: [
-                                // Top Glowing Accent Line
-                                Positioned(
-                                  top: 0,
-                                  left: 60,
-                                  right: 60,
-                                  child: Container(
-                                    height: 1.2,
-                                    decoration: const BoxDecoration(
-                                      gradient: LinearGradient(
-                                        colors: [
-                                          Colors.transparent,
-                                          Color(0xFFE5B5FF),
-                                          Colors.transparent,
-                                        ],
-                                      ),
-                                    ),
-                                  ),
-                                ),
-
-                                Padding(
-                                  padding: const EdgeInsets.all(16.0),
-                                  child: Column(
-                                    crossAxisAlignment: CrossAxisAlignment.stretch,
-                                    children: [
-                                      // Field 1: Hunter Identity
-                                      const Row(
-                                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                                        children: [
-                                          Row(
-                                            children: [
-                                              Icon(
-                                                Icons.badge_outlined,
-                                                size: 14,
-                                                color: Color(0xFFE5B5FF),
-                                              ),
-                                              SizedBox(width: 6),
-                                              Text(
-                                                'HUNTER IDENTITY',
-                                                style: TextStyle(
-                                                  fontFamily: 'Sora',
-                                                  fontSize: 10,
-                                                  fontWeight: FontWeight.w600,
-                                                  letterSpacing: 1.1,
-                                                  color: Color(0xFFD2C1D7),
-                                                ),
-                                              ),
-                                            ],
-                                          ),
-                                          Text(
-                                            'CLASS: UNKNOWN',
-                                            style: TextStyle(
-                                              fontFamily: 'Sora',
-                                              fontSize: 9.5,
-                                              fontWeight: FontWeight.w700,
-                                              letterSpacing: 0.8,
-                                              color: Color(0xFFE5B5FF),
-                                            ),
-                                          ),
-                                        ],
-                                      ),
-
-                                      const SizedBox(height: 6),
-
-                                      TextField(
-                                        controller: _usernameController,
-                                        style: const TextStyle(
-                                          fontFamily: 'Sora',
-                                          color: Color(0xFFE9DEF2),
-                                          fontSize: 13,
-                                        ),
-                                        cursorColor: const Color(0xFFB026FF),
-                                        decoration: InputDecoration(
-                                          hintText: 'Sung Jin-Woo / Codename',
-                                          hintStyle: TextStyle(
-                                            fontFamily: 'Sora',
-                                            color: const Color(0xFF9B8BA1).withValues(alpha: 0.45),
-                                            fontSize: 12.5,
-                                          ),
-                                          prefixIcon: const Icon(
-                                            Icons.person_outline,
-                                            color: Color(0xFF9B8BA1),
-                                            size: 19,
-                                          ),
-                                          filled: true,
-                                          fillColor: const Color(0xFF110C19),
-                                          contentPadding: const EdgeInsets.symmetric(
-                                            horizontal: 14,
-                                            vertical: 12,
-                                          ),
-                                          border: OutlineInputBorder(
-                                            borderRadius: BorderRadius.circular(10),
-                                            borderSide: const BorderSide(
-                                              color: Color(0xFF231D2B),
-                                              width: 1.0,
-                                            ),
-                                          ),
-                                          enabledBorder: OutlineInputBorder(
-                                            borderRadius: BorderRadius.circular(10),
-                                            borderSide: const BorderSide(
-                                              color: Color(0xFF231D2B),
-                                              width: 1.0,
-                                            ),
-                                          ),
-                                          focusedBorder: OutlineInputBorder(
-                                            borderRadius: BorderRadius.circular(10),
-                                            borderSide: const BorderSide(
-                                              color: Color(0xFFB026FF),
-                                              width: 1.2,
-                                            ),
-                                          ),
-                                        ),
-                                      ),
-
-                                      const SizedBox(height: 12),
-
-                                      // Field 2: Security Cipher
-                                      Row(
-                                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                                        children: [
-                                          const Row(
-                                            children: [
-                                              Icon(
-                                                Icons.vpn_key_outlined,
-                                                size: 14,
-                                                color: Color(0xFFE5B5FF),
-                                              ),
-                                              SizedBox(width: 6),
-                                              Text(
-                                                'SECURITY CIPHER',
-                                                style: TextStyle(
-                                                  fontFamily: 'Sora',
-                                                  fontSize: 10,
-                                                  fontWeight: FontWeight.w600,
-                                                  letterSpacing: 1.1,
-                                                  color: Color(0xFFD2C1D7),
-                                                ),
-                                              ),
-                                            ],
-                                          ),
-                                          Container(
-                                            padding: const EdgeInsets.symmetric(
-                                              horizontal: 6,
-                                              vertical: 2.5,
-                                            ),
-                                            decoration: BoxDecoration(
-                                              color: const Color(0xFF2D2736),
-                                              borderRadius: BorderRadius.circular(4),
-                                            ),
-                                            child: Row(
-                                              mainAxisSize: MainAxisSize.min,
-                                              children: [
-                                                Container(
-                                                  width: 4,
-                                                  height: 4,
-                                                  decoration: const BoxDecoration(
-                                                    shape: BoxShape.circle,
-                                                    color: Color(0xFF00F4FE),
-                                                    boxShadow: [
-                                                      BoxShadow(
-                                                        color: Color(0xFF00F4FE),
-                                                        blurRadius: 4,
-                                                        spreadRadius: 1,
-                                                      ),
-                                                    ],
-                                                  ),
-                                                ),
-                                                const SizedBox(width: 4),
-                                                const Text(
-                                                  'SHA-256 READY',
-                                                  style: TextStyle(
-                                                    fontFamily: 'Sora',
-                                                    fontSize: 8.5,
-                                                    fontWeight: FontWeight.w700,
-                                                    letterSpacing: 0.8,
-                                                    color: Color(0xFF00F4FE),
-                                                  ),
-                                                ),
-                                              ],
-                                            ),
-                                          ),
-                                        ],
-                                      ),
-
-                                      const SizedBox(height: 6),
-
-                                      TextField(
-                                        controller: _passwordController,
-                                        obscureText: _isObscure,
-                                        style: const TextStyle(
-                                          fontFamily: 'Sora',
-                                          color: Color(0xFFE9DEF2),
-                                          fontSize: 13,
-                                        ),
-                                        cursorColor: const Color(0xFFB026FF),
-                                        decoration: InputDecoration(
-                                          hintText: 'Enter Awakened Keyphrase',
-                                          hintStyle: TextStyle(
-                                            fontFamily: 'Sora',
-                                            color: const Color(0xFF9B8BA1).withValues(alpha: 0.45),
-                                            fontSize: 12.5,
-                                          ),
-                                          prefixIcon: const Icon(
-                                            Icons.lock_outline,
-                                            color: Color(0xFF9B8BA1),
-                                            size: 19,
-                                          ),
-                                          suffixIcon: IconButton(
-                                            icon: Icon(
-                                              _isObscure
-                                                  ? Icons.visibility_outlined
-                                                  : Icons.visibility_off_outlined,
-                                              color: const Color(0xFF9B8BA1),
-                                              size: 19,
-                                            ),
-                                            onPressed: () {
-                                              setState(() {
-                                                _isObscure = !_isObscure;
-                                              });
-                                            },
-                                          ),
-                                          filled: true,
-                                          fillColor: const Color(0xFF110C19),
-                                          contentPadding: const EdgeInsets.symmetric(
-                                            horizontal: 14,
-                                            vertical: 12,
-                                          ),
-                                          border: OutlineInputBorder(
-                                            borderRadius: BorderRadius.circular(10),
-                                            borderSide: const BorderSide(
-                                              color: Color(0xFF231D2B),
-                                              width: 1.0,
-                                            ),
-                                          ),
-                                          enabledBorder: OutlineInputBorder(
-                                            borderRadius: BorderRadius.circular(10),
-                                            borderSide: const BorderSide(
-                                              color: Color(0xFF231D2B),
-                                              width: 1.0,
-                                            ),
-                                          ),
-                                          focusedBorder: OutlineInputBorder(
-                                            borderRadius: BorderRadius.circular(10),
-                                            borderSide: const BorderSide(
-                                              color: Color(0xFFB026FF),
-                                              width: 1.2,
-                                            ),
-                                          ),
-                                        ),
-                                      ),
-
-                                      const SizedBox(height: 10),
-
-                                      // Stay Synchronized & Lost Cipher
-                                      Row(
-                                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                                        children: [
-                                          GestureDetector(
-                                            onTap: () {
-                                              setState(() {
-                                                _staySynchronized = !_staySynchronized;
-                                              });
-                                            },
-                                            child: Row(
-                                              mainAxisSize: MainAxisSize.min,
-                                              children: [
-                                                Container(
-                                                  width: 15,
-                                                  height: 15,
-                                                  decoration: BoxDecoration(
-                                                    color: _staySynchronized
-                                                        ? const Color(0xFFB026FF)
-                                                        : const Color(0xFF110C19),
-                                                    borderRadius: BorderRadius.circular(3.5),
-                                                    border: Border.all(
-                                                      color: _staySynchronized
-                                                          ? const Color(0xFFB026FF)
-                                                          : const Color(0xFF4F4255),
-                                                      width: 1.2,
-                                                    ),
-                                                  ),
-                                                  child: _staySynchronized
-                                                      ? const Icon(
-                                                          Icons.check,
-                                                          size: 11,
-                                                          color: Colors.white,
-                                                        )
-                                                      : null,
-                                                ),
-                                                const SizedBox(width: 8),
-                                                const Text(
-                                                  'Stay Synchronized',
-                                                  style: TextStyle(
-                                                    fontFamily: 'Sora',
-                                                    fontSize: 11,
-                                                    fontWeight: FontWeight.w400,
-                                                    color: Color(0xFFD2C1D7),
-                                                  ),
-                                                ),
-                                              ],
-                                            ),
-                                          ),
-                                          GestureDetector(
-                                            onTap: () {
-                                              ScaffoldMessenger.of(context).showSnackBar(
-                                                const SnackBar(
-                                                  content: Text(
-                                                    'Cipher Recovery: Hubungi System Administrator / Sovereign.',
-                                                  ),
-                                                  backgroundColor: Color(0xFF2D2736),
-                                                ),
-                                              );
-                                            },
-                                            child: const Text(
-                                              'LOST CIPHER?',
-                                              style: TextStyle(
-                                                fontFamily: 'Sora',
-                                                fontSize: 10,
-                                                fontWeight: FontWeight.w600,
-                                                letterSpacing: 0.8,
-                                                color: Color(0xFFDCB8FC),
-                                              ),
-                                            ),
-                                          ),
-                                        ],
-                                      ),
-
-                                      const SizedBox(height: 14),
-
-                                      // Primary Button: AWAKEN (LOGIN)
-                                      Container(
-                                        height: 48,
-                                        decoration: BoxDecoration(
-                                          borderRadius: BorderRadius.circular(10),
-                                          gradient: const LinearGradient(
-                                            colors: [
-                                              Color(0xFF7B2CBF),
-                                              Color(0xFF9D4EDD),
-                                              Color(0xFFB026FF),
-                                            ],
-                                            begin: Alignment.centerLeft,
-                                            end: Alignment.centerRight,
-                                          ),
-                                          boxShadow: [
-                                            BoxShadow(
-                                              color: const Color(0xFFB026FF).withValues(alpha: 0.45),
-                                              blurRadius: 20,
-                                              spreadRadius: 1,
-                                              offset: const Offset(0, 4),
-                                            ),
-                                          ],
-                                        ),
-                                        child: Material(
-                                          color: Colors.transparent,
-                                          child: InkWell(
-                                            borderRadius: BorderRadius.circular(10),
-                                            onTap: _isLoading ? null : _handleLogin,
-                                            child: Center(
-                                              child: _isLoading
-                                                  ? const SizedBox(
-                                                      width: 22,
-                                                      height: 22,
-                                                      child: CircularProgressIndicator(
-                                                        strokeWidth: 2.2,
-                                                        color: Colors.white,
-                                                      ),
-                                                    )
-                                                  : const Row(
-                                                      mainAxisAlignment: MainAxisAlignment.center,
-                                                      children: [
-                                                        Icon(
-                                                          Icons.bolt_rounded,
-                                                          color: Color(0xFF00F4FE),
-                                                          size: 20,
-                                                        ),
-                                                        SizedBox(width: 7),
-                                                        Text(
-                                                          'AWAKEN (LOGIN)',
-                                                          style: TextStyle(
-                                                            fontFamily: 'Sora',
-                                                            fontSize: 13,
-                                                            fontWeight: FontWeight.w800,
-                                                            letterSpacing: 1.4,
-                                                            color: Colors.white,
-                                                          ),
-                                                        ),
-                                                      ],
-                                                    ),
-                                            ),
-                                          ),
-                                        ),
-                                      ),
-
-                                      const SizedBox(height: 14),
-
-                                      // Biometric Separator: OR FAST SYSTEM ACCESS
-                                      Stack(
-                                        alignment: Alignment.center,
-                                        children: [
-                                          const Divider(
-                                            color: Color(0xFF383241),
-                                            thickness: 1,
-                                          ),
-                                          Container(
-                                            padding: const EdgeInsets.symmetric(
-                                              horizontal: 10,
-                                              vertical: 2.5,
-                                            ),
-                                            decoration: BoxDecoration(
-                                              color: const Color(0xFF1F1927),
-                                              borderRadius: BorderRadius.circular(4),
-                                            ),
-                                            child: const Text(
-                                              'OR FAST SYSTEM ACCESS',
-                                              style: TextStyle(
-                                                fontFamily: 'Sora',
-                                                fontSize: 9.5,
-                                                fontWeight: FontWeight.w600,
-                                                letterSpacing: 1.1,
-                                                color: Color(0xFF9B8BA1),
-                                              ),
-                                            ),
-                                          ),
-                                        ],
-                                      ),
-
-                                      const SizedBox(height: 12),
-
-                                      // Dual Biometric Pods (Fingerprint & Face Scan)
-                                      Row(
-                                        children: [
-                                          // Pod 1: Fingerprint Pod
-                                          Expanded(
-                                            child: _buildBiometricPod(
-                                              title: 'FINGERPRINT',
-                                              subtitle: 'Mana Resonance',
-                                              icon: Icons.fingerprint_rounded,
-                                              iconColor: const Color(0xFFE5B5FF),
-                                              glowColor: const Color(0xFFB026FF),
-                                              onTap: () => _triggerBiometricAuth(autoPrompt: false),
-                                            ),
-                                          ),
-                                          const SizedBox(width: 12),
-                                          // Pod 2: Face Scan Pod
-                                          Expanded(
-                                            child: _buildBiometricPod(
-                                              title: 'FACE SCAN',
-                                              subtitle: 'Neural Recognition',
-                                              icon: Icons.document_scanner_outlined,
-                                              iconColor: const Color(0xFF00F4FE),
-                                              glowColor: const Color(0xFF00F4FE),
-                                              onTap: () => _triggerBiometricAuth(autoPrompt: false),
-                                            ),
-                                          ),
-                                        ],
-                                      ),
-                                    ],
-                                  ),
-                                ),
-                              ],
+                            width: 5,
+                            height: 5,
+                            decoration: const BoxDecoration(
+                              shape: BoxShape.circle,
+                              color: Color(0xFFB026FF),
                             ),
                           ),
-
-                          const SizedBox(height: 14),
-
-                          // Footer: Registration Link & Status Protocol
-                          Column(
-                            children: [
-                              GestureDetector(
-                                onTap: () {
-                                  Navigator.push(
-                                    context,
-                                    MaterialPageRoute(
-                                      builder: (context) => const RegisterScreen(),
-                                    ),
-                                  );
-                                },
-                                child: const Row(
-                                  mainAxisAlignment: MainAxisAlignment.center,
-                                  children: [
-                                    Text(
-                                      'Unregistered Hunter? ',
-                                      style: TextStyle(
-                                        fontFamily: 'Sora',
-                                        fontSize: 11.5,
-                                        fontWeight: FontWeight.w400,
-                                        color: Color(0xFFD2C1D7),
-                                      ),
-                                    ),
-                                    Text(
-                                      'Awaken New Record',
-                                      style: TextStyle(
-                                        fontFamily: 'Sora',
-                                        fontSize: 11.5,
-                                        fontWeight: FontWeight.w700,
-                                        color: Color(0xFFE5B5FF),
-                                      ),
-                                    ),
-                                    SizedBox(width: 4),
-                                    Icon(
-                                      Icons.arrow_forward_rounded,
-                                      size: 13,
-                                      color: Color(0xFFE5B5FF),
-                                    ),
-                                  ],
-                                ),
-                              ),
-                              const SizedBox(height: 8),
-                              Row(
-                                mainAxisAlignment: MainAxisAlignment.center,
-                                children: [
-                                  Container(
-                                    width: 5,
-                                    height: 5,
-                                    decoration: const BoxDecoration(
-                                      shape: BoxShape.circle,
-                                      color: Color(0xFFB026FF),
-                                      boxShadow: [
-                                        BoxShadow(
-                                          color: Color(0xFFB026FF),
-                                          blurRadius: 4,
-                                          spreadRadius: 1,
-                                        ),
-                                      ],
-                                    ),
-                                  ),
-                                  const SizedBox(width: 6),
-                                  const Text(
-                                    'SYSTEM SHADOW PROTOCOL • SECURE GATE',
-                                    style: TextStyle(
-                                      fontFamily: 'Sora',
-                                      fontSize: 9,
-                                      fontWeight: FontWeight.w600,
-                                      letterSpacing: 1.4,
-                                      color: Color(0xFF9B8BA1),
-                                    ),
-                                  ),
-                                ],
-                              ),
-                            ],
+                          const SizedBox(width: 6),
+                          Text(
+                            'SYSTEM SHADOW PROTOCOL • SECURE GATE',
+                            style: GoogleFonts.spaceGrotesk(
+                              fontSize: 10,
+                              letterSpacing: 1.5,
+                              color: const Color(0xFF9B8BA1),
+                            ),
                           ),
                         ],
                       ),
-                    ),
+                    ],
                   ),
-                );
-              },
+                ],
+              ),
             ),
           ],
         ),
@@ -957,20 +865,16 @@ class _LoginScreenState extends State<LoginScreen> {
       color: Colors.transparent,
       child: InkWell(
         onTap: onTap,
-        borderRadius: BorderRadius.circular(10),
+        borderRadius: BorderRadius.circular(8),
         child: Container(
           padding: const EdgeInsets.symmetric(vertical: 10, horizontal: 8),
           decoration: BoxDecoration(
             color: const Color(0xFF110C19),
-            borderRadius: BorderRadius.circular(10),
-            border: Border.all(
-              color: const Color(0xFF231D2B),
-              width: 1.0,
-            ),
+            borderRadius: BorderRadius.circular(8),
             boxShadow: [
               BoxShadow(
-                color: Colors.black.withValues(alpha: 0.3),
-                blurRadius: 6,
+                color: Colors.black.withValues(alpha: 0.25),
+                blurRadius: 4,
                 offset: const Offset(0, 2),
               ),
             ],
@@ -978,16 +882,16 @@ class _LoginScreenState extends State<LoginScreen> {
           child: Column(
             children: [
               Container(
-                width: 38,
-                height: 38,
+                width: 40,
+                height: 40,
                 decoration: BoxDecoration(
                   shape: BoxShape.circle,
                   color: const Color(0xFF231D2B),
                   boxShadow: [
                     BoxShadow(
-                      color: glowColor.withValues(alpha: 0.25),
-                      blurRadius: 10,
-                      spreadRadius: 1,
+                      color: glowColor.withValues(alpha: 0.35),
+                      blurRadius: 14,
+                      spreadRadius: 0,
                     ),
                   ],
                 ),
@@ -1002,21 +906,19 @@ class _LoginScreenState extends State<LoginScreen> {
               const SizedBox(height: 6),
               Text(
                 title,
-                style: const TextStyle(
-                  fontFamily: 'Sora',
-                  fontSize: 9.5,
-                  fontWeight: FontWeight.w700,
+                style: GoogleFonts.spaceGrotesk(
+                  fontSize: 10,
+                  fontWeight: FontWeight.w600,
                   letterSpacing: 0.8,
-                  color: Color(0xFFE9DEF2),
+                  color: const Color(0xFFE9DEF2),
                 ),
               ),
               const SizedBox(height: 2),
               Text(
                 subtitle,
-                style: const TextStyle(
-                  fontFamily: 'Sora',
-                  fontSize: 8.5,
-                  color: Color(0xFF9B8BA1),
+                style: GoogleFonts.spaceGrotesk(
+                  fontSize: 9,
+                  color: const Color(0xFF9B8BA1),
                 ),
               ),
             ],
