@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:hive_flutter/hive_flutter.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
-import 'package:levmax_v2/screens/auth/login_screen.dart';
+import 'package:levmax_v2/screens/splash_screen.dart';
 import 'package:levmax_v2/utils/constants.dart';
 
 Future<void> main() async {
@@ -34,7 +34,7 @@ class LevMaxApp extends StatelessWidget {
       debugShowCheckedModeBanner: false,
       theme: AppTheme.darkTheme,
       themeMode: ThemeMode.dark,
-      home: const LoginScreen(),
+      home: const SplashScreen(),
     );
   }
 }
