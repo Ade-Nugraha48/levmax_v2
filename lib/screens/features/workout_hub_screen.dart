@@ -227,10 +227,10 @@ class _WorkoutHubScreenState extends State<WorkoutHubScreen>
     ),
   };
 
-  // 2. State Lokal
+  // 2. State Lokal (Dimulai kosongan dari awal: 0 Reps & 0 Sets)
   late String _activeExercise;
-  late int _currentReps;
-  List<bool> _setsCompleted = [true, true, false];
+  int _currentReps = 0;
+  List<bool> _setsCompleted = [false, false, false];
   bool _isClaimed = false;
 
   // 3. Controller Animasi Biomekanik Canvas
@@ -239,11 +239,22 @@ class _WorkoutHubScreenState extends State<WorkoutHubScreen>
 
   WorkoutProtocol get _currentProtocol => _protocolsData[_activeExercise]!;
 
+  /// Jumlah set yang telah diselesaikan (0 - 3)
+  int get _completedSetsCount => _setsCompleted.where((e) => e).length;
+
+  /// Aturan Validasi Selesai: Semua 3 sets telah dicentang DAN repetisi mencapai target protokol
+  bool get _isProtocolReady {
+    final bool allSetsDone = _setsCompleted.length == 3 && _setsCompleted.every((done) => done);
+    final bool repsReached = _currentReps >= _currentProtocol.targetReps;
+    return allSetsDone && repsReached;
+  }
+
   @override
   void initState() {
     super.initState();
     _activeExercise = widget.initialExercise;
-    _currentReps = _currentProtocol.defaultReps;
+    _currentReps = 0; // Kosongan dari awal (0 repetisi)
+    _setsCompleted = [false, false, false]; // Kosongan dari awal (belum ada set selesai)
 
     // Animasi perulangan biomekanik halus (2.4 detik cycle dengan bolak-balik)
     _animController = AnimationController(
@@ -263,31 +274,31 @@ class _WorkoutHubScreenState extends State<WorkoutHubScreen>
     super.dispose();
   }
 
-  /// Mengganti latihan aktif dan mereset nilai repetisi
+  /// Mengganti latihan aktif dan mereset nilai repetisi & set ke kosongan
   void _selectExercise(String key) {
     if (_activeExercise == key) return;
     setState(() {
       _activeExercise = key;
-      _currentReps = _currentProtocol.defaultReps;
-      _setsCompleted = [true, true, false];
+      _currentReps = 0; // Reset ke 0
+      _setsCompleted = [false, false, false]; // Reset ke kosongan
       _isClaimed = false;
     });
   }
 
-  /// Menambah repetisi
-  void _incrementReps() {
+  /// Menambah repetisi (+1 biasa, atau +5 dengan long press)
+  void _incrementReps({int count = 1}) {
     if (_currentReps < _currentProtocol.targetReps) {
       setState(() {
-        _currentReps++;
+        _currentReps = min(_currentReps + count, _currentProtocol.targetReps);
       });
     }
   }
 
-  /// Mengurangi repetisi
-  void _decrementReps() {
+  /// Mengurangi repetisi (-1 biasa, atau -5 dengan long press)
+  void _decrementReps({int count = 1}) {
     if (_currentReps > 0) {
       setState(() {
-        _currentReps--;
+        _currentReps = max(_currentReps - count, 0);
       });
     }
   }
@@ -299,13 +310,50 @@ class _WorkoutHubScreenState extends State<WorkoutHubScreen>
     });
   }
 
-  /// Menyelesaikan protokol dan mengirim reward ke pemanggil
+  /// Menyelesaikan protokol dan mengirim reward ke pemanggil hanya jika rules terpenuhi
   void _handleCompleteProtocol() {
+    final protocol = _currentProtocol;
+
+    // Validasi Mutlak: User baru bisa menyelesaikan ketika sets dan reps benar-benar selesai semua
+    if (!_isProtocolReady) {
+      final int remainingSets = 3 - _completedSetsCount;
+      final int remainingReps = protocol.targetReps - _currentReps;
+      String warningMsg;
+      if (remainingSets > 0 && remainingReps > 0) {
+        warningMsg = 'Hunter! Selesaikan $remainingSets set lagi dan capai ${protocol.targetReps} repetisi ($remainingReps lagi)!';
+      } else if (remainingSets > 0) {
+        warningMsg = 'Hunter! Selesaikan $remainingSets set lagi untuk menyelesaikan protokol!';
+      } else {
+        warningMsg = 'Hunter! Tambah repetisi hingga mencapai target ${protocol.targetReps} ($remainingReps lagi)!';
+      }
+
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Row(
+            children: [
+              const Icon(Icons.warning_amber_rounded, color: Colors.white, size: 20),
+              const SizedBox(width: 8),
+              Expanded(
+                child: Text(
+                  warningMsg,
+                  style: GoogleFonts.spaceGrotesk(
+                    fontWeight: FontWeight.w700,
+                    color: Colors.white,
+                  ),
+                ),
+              ),
+            ],
+          ),
+          backgroundColor: const Color(0xFF93000A),
+          duration: const Duration(seconds: 2),
+        ),
+      );
+      return;
+    }
+
     setState(() {
       _isClaimed = true;
     });
-
-    final protocol = _currentProtocol;
 
     ScaffoldMessenger.of(context).showSnackBar(
       SnackBar(
@@ -1509,11 +1557,12 @@ class _WorkoutHubScreenState extends State<WorkoutHubScreen>
                   ],
                 ),
 
-                // Tombol Stepper - dan +
+                // Tombol Stepper - dan + (Mendukung Tap +1 & Long Press +5)
                 Row(
                   children: [
                     GestureDetector(
                       onTap: _decrementReps,
+                      onLongPress: () => _decrementReps(count: 5),
                       child: Container(
                         width: 38,
                         height: 38,
@@ -1537,6 +1586,7 @@ class _WorkoutHubScreenState extends State<WorkoutHubScreen>
                     const SizedBox(width: 8),
                     GestureDetector(
                       onTap: _incrementReps,
+                      onLongPress: () => _incrementReps(count: 5),
                       child: Container(
                         width: 38,
                         height: 38,
@@ -1569,59 +1619,110 @@ class _WorkoutHubScreenState extends State<WorkoutHubScreen>
     );
   }
 
-  /// 9. Tombol Utama Claim Reward
+  /// 9. Tombol Utama Claim Reward (Terkunci sampai Reps & Sets benar-benar selesai sesuai rules)
   Widget _buildClaimRewardButton(WorkoutProtocol protocol) {
+    final bool isReady = _isProtocolReady;
+
+    String buttonText;
+    IconData buttonIcon;
+
+    if (_isClaimed) {
+      buttonText = 'PROTOCOL COMPLETED! REWARD GRANTED ✓';
+      buttonIcon = Icons.verified_rounded;
+    } else if (isReady) {
+      buttonText = 'COMPLETE PROTOCOL & CLAIM REWARD (+${protocol.expReward} EXP, +${protocol.goldReward} GOLD)';
+      buttonIcon = Icons.check_circle_rounded;
+    } else {
+      final int remainingSets = 3 - _completedSetsCount;
+      final int remainingReps = protocol.targetReps - _currentReps;
+      if (remainingSets > 0 && remainingReps > 0) {
+        buttonText = 'SELESAIKAN $remainingSets SET & $remainingReps REPS LAGI';
+      } else if (remainingSets > 0) {
+        buttonText = 'SELESAIKAN $remainingSets SET LAGI (CENTANG SET)';
+      } else {
+        buttonText = 'CAPAI TARGET REPETISI ($remainingReps REPS LAGI)';
+      }
+      buttonIcon = Icons.lock_outline_rounded;
+    }
+
     return GestureDetector(
       onTap: _isClaimed ? null : _handleCompleteProtocol,
       child: AnimatedContainer(
-        duration: const Duration(milliseconds: 200),
+        duration: const Duration(milliseconds: 250),
         width: double.infinity,
-        height: 50,
+        height: 52,
         decoration: BoxDecoration(
-          gradient: _isClaimed
-              ? const LinearGradient(
-                  colors: [Color(0xFF00F4FE), Color(0xFF00C0CA)],
-                )
+          color: _isClaimed
+              ? const Color(0xFF00F4FE)
+              : isReady
+                  ? null
+                  : const Color(0xFF16111E),
+          gradient: _isClaimed || !isReady
+              ? null
               : const LinearGradient(
                   colors: [
                     Color(0xFF7000A8),
                     Color(0xFFB026FF),
-                    Color(0xFFE5B5FF),
+                    Color(0xFF00F4FE),
                   ],
                 ),
           borderRadius: BorderRadius.circular(12),
+          border: Border.all(
+            color: _isClaimed
+                ? const Color(0xFF00F4FE)
+                : isReady
+                    ? const Color(0xFF00F4FE).withValues(alpha: 0.8)
+                    : const Color(0xFF383241),
+            width: isReady ? 1.5 : 1.0,
+          ),
           boxShadow: [
-            BoxShadow(
-              color: _isClaimed
-                  ? const Color(0xFF00F4FE).withValues(alpha: 0.5)
-                  : const Color(0xFFB026FF).withValues(alpha: 0.55),
-              blurRadius: 16,
-              offset: const Offset(0, 4),
-            ),
+            if (isReady && !_isClaimed)
+              BoxShadow(
+                color: const Color(0xFFB026FF).withValues(alpha: 0.5),
+                blurRadius: 18,
+                offset: const Offset(0, 4),
+              ),
+            if (_isClaimed)
+              BoxShadow(
+                color: const Color(0xFF00F4FE).withValues(alpha: 0.5),
+                blurRadius: 16,
+              ),
           ],
         ),
         child: Center(
-          child: Row(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              Icon(
-                Icons.check_circle_rounded,
-                size: 19,
-                color: _isClaimed ? Colors.black : Colors.white,
-              ),
-              const SizedBox(width: 8),
-              Text(
-                _isClaimed
-                    ? 'PROTOCOL COMPLETED! REWARD GRANTED ✓'
-                    : 'COMPLETE PROTOCOL & CLAIM REWARD (+${protocol.expReward} EXP, +${protocol.goldReward} GOLD)',
-                style: GoogleFonts.spaceGrotesk(
-                  fontSize: 10.5,
-                  fontWeight: FontWeight.w800,
-                  letterSpacing: 0.6,
-                  color: _isClaimed ? Colors.black : Colors.white,
+          child: Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 12.0),
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                Icon(
+                  buttonIcon,
+                  size: 19,
+                  color: _isClaimed
+                      ? Colors.black
+                      : isReady
+                          ? Colors.white
+                          : const Color(0xFF9B8BA1),
                 ),
-              ),
-            ],
+                const SizedBox(width: 8),
+                Flexible(
+                  child: Text(
+                    buttonText,
+                    textAlign: TextAlign.center,
+                    style: GoogleFonts.spaceGrotesk(
+                      fontSize: isReady ? 10.5 : 10.0,
+                      fontWeight: FontWeight.w800,
+                      letterSpacing: 0.6,
+                      color: _isClaimed
+                          ? Colors.black
+                          : isReady
+                              ? Colors.white
+                              : const Color(0xFF9B8BA1),
+                    ),
+                  ),
+                ),
+              ],
+            ),
           ),
         ),
       ),
