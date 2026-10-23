@@ -7,6 +7,7 @@ import '../../services/notif_service.dart';
 import '../../services/supabase_service.dart';
 import '../features/appearance_quest_screen.dart';
 import '../features/quest_sensor.dart';
+import '../features/workout_hub_screen.dart';
 
 class TabHome extends StatefulWidget {
   const TabHome({super.key});
@@ -1011,7 +1012,22 @@ class _TabHomeState extends State<TabHome> {
         return;
       }
 
-      if (qId == 'appearance') {
+      if (qId == 'pushup') {
+        final result = await Navigator.push<Map<String, dynamic>>(
+          context,
+          MaterialPageRoute(
+            builder: (context) => const WorkoutHubScreen(),
+          ),
+        );
+        if (result != null) {
+          completeQuest(
+            result['exp'] as int? ?? (q['exp'] as int),
+            result['gold'] as int? ?? (q['gold'] as int),
+            qId,
+            q['title'] as String,
+          );
+        }
+      } else if (qId == 'appearance') {
         final result = await Navigator.push<bool>(
           context,
           MaterialPageRoute(
