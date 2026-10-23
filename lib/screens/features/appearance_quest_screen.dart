@@ -2,9 +2,9 @@ import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 
 /// AppearanceQuestScreen
-/// Layar penuh / modal detail Protokol Penampilan (Appearance Protocol)
-/// Bertema Solo Leveling (Shadow Awakening HUD).
-/// Sesuai PRD LevMax: 5 Sub-Quest perawatan diri dengan checkbox kustom bercahaya neon.
+/// Layar Protokol Penampilan (Solo Leveling HUD Aesthetic)
+/// Mengimplementasikan 5 Sub-Quest harian dengan validasi state dinamis
+/// serta desain visual 1:1 persis referensi visual Solo Leveling / Stitch.
 class AppearanceQuestScreen extends StatefulWidget {
   const AppearanceQuestScreen({super.key});
 
@@ -109,123 +109,103 @@ class _AppearanceQuestScreenState extends State<AppearanceQuestScreen> {
     final bool isAllCompleted = currentDone == totalCount;
 
     return Scaffold(
-      backgroundColor: const Color(0xFF08050E), // Deep Abyss Black #08050E
+      backgroundColor: const Color(0xFF16111E), // Background #16111E
       body: SafeArea(
         bottom: false,
-        child: Column(
+        child: Stack(
           children: [
-            // 1. Top System App Bar (Header)
-            _buildTopSystemAppBar(context),
+            Column(
+              children: [
+                // 1. Top System App Bar (Header #16111E)
+                _buildTopSystemAppBar(context),
 
-            // 2. Main Protocol Container (Body Scrollable)
-            Expanded(
-              child: Container(
-                margin: const EdgeInsets.only(top: 8),
-                decoration: BoxDecoration(
-                  color: const Color(0xFF110C19), // Background #110C19
-                  borderRadius: const BorderRadius.only(
-                    topLeft: Radius.circular(24),
-                    topRight: Radius.circular(24),
-                  ),
-                  border: const Border(
-                    top: BorderSide(
-                      color: Color(0xFFB026FF), // Garis neon tipis di atasnya
-                      width: 1.5,
-                    ),
-                    left: BorderSide(color: Color(0xFF24193F), width: 1.0),
-                    right: BorderSide(color: Color(0xFF24193F), width: 1.0),
-                  ),
-                  boxShadow: [
-                    BoxShadow(
-                      color: const Color(0xFFB026FF).withValues(alpha: 0.35), // Shadow ungu #B026FF
-                      blurRadius: 28,
-                      spreadRadius: 2,
-                      offset: const Offset(0, -6),
-                    ),
-                  ],
-                ),
-                child: Column(
-                  children: [
-                    // Drag Indicator Handle
-                    Center(
-                      child: Container(
-                        margin: const EdgeInsets.only(top: 12, bottom: 6),
-                        width: 44,
-                        height: 4,
-                        decoration: BoxDecoration(
-                          color: const Color(0xFF382956),
-                          borderRadius: BorderRadius.circular(4),
-                        ),
+                // 2. Main Protocol Container (Body #110C19 dengan border atas bulat)
+                Expanded(
+                  child: Container(
+                    decoration: BoxDecoration(
+                      color: const Color(0xFF110C19), // Midnight Abyss Inner Card
+                      borderRadius: const BorderRadius.only(
+                        topLeft: Radius.circular(24),
+                        topRight: Radius.circular(24),
                       ),
+                      border: Border.all(
+                        color: const Color(0xFF2C1E4E),
+                        width: 1.0,
+                      ),
+                      boxShadow: [
+                        BoxShadow(
+                          color: const Color(0xFFB026FF).withValues(alpha: 0.2),
+                          blurRadius: 24,
+                          offset: const Offset(0, -6),
+                        ),
+                      ],
                     ),
-
-                    // Scrollable Content
-                    Expanded(
-                      child: SingleChildScrollView(
-                        physics: const BouncingScrollPhysics(),
-                        padding: const EdgeInsets.symmetric(horizontal: 20.0, vertical: 10.0),
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.stretch,
-                          children: [
-                            // 3. Header Quest & Reward Box
-                            _buildHeaderQuestAndReward(currentDone, totalCount),
-
-                            const SizedBox(height: 18),
-
-                            // Subtitle Guide Banner
-                            Container(
-                              padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 9),
-                              decoration: BoxDecoration(
-                                color: const Color(0xFF160E2A),
-                                borderRadius: BorderRadius.circular(12),
-                                border: Border.all(
-                                  color: const Color(0xFF2C1E4E),
-                                  width: 1.0,
-                                ),
-                              ),
-                              child: Row(
-                                children: [
-                                  const Icon(
-                                    Icons.auto_awesome_rounded,
-                                    size: 15,
-                                    color: Color(0xFF00F4FE),
-                                  ),
-                                  const SizedBox(width: 8),
-                                  Expanded(
-                                    child: Text(
-                                      'SYSTEM MANDATE: Selesaikan seluruh fase perawatan diri untuk memperkuat Physical Aura & Dermal Defense.',
-                                      style: GoogleFonts.sora(
-                                        fontSize: 9.5,
-                                        fontWeight: FontWeight.w600,
-                                        height: 1.35,
-                                        color: const Color(0xFFD8B4F8),
-                                      ),
-                                    ),
-                                  ),
-                                ],
-                              ),
+                    child: Column(
+                      children: [
+                        // Drag Indicator Handle
+                        Center(
+                          child: Container(
+                            margin: const EdgeInsets.only(top: 10, bottom: 8),
+                            width: 42,
+                            height: 4,
+                            decoration: BoxDecoration(
+                              color: const Color(0xFF382956),
+                              borderRadius: BorderRadius.circular(4),
                             ),
-
-                            const SizedBox(height: 16),
-
-                            // 4. 5 Sub-Quest Checklist (Phase I - V)
-                            ..._checklistPhases.asMap().entries.map((entry) {
-                              final int index = entry.key;
-                              final Map<String, dynamic> item = entry.value;
-                              return _buildSubQuestChecklistItem(index, item);
-                            }),
-
-                            const SizedBox(height: 12),
-                          ],
+                          ),
                         ),
-                      ),
-                    ),
 
-                    // 5. Sticky Submit Button di bagian paling bawah
-                    _buildStickySubmitButton(context, isAllCompleted, currentDone, totalCount),
-                  ],
+                        // Scrollable Content
+                        Expanded(
+                          child: SingleChildScrollView(
+                            physics: const BouncingScrollPhysics(),
+                            padding: const EdgeInsets.fromLTRB(16.0, 4.0, 16.0, 115.0),
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.stretch,
+                              children: [
+                                // Hero Quest Title & Mandate Box
+                                _buildHeroQuestSection(currentDone),
+
+                                const SizedBox(height: 14),
+
+                                // System Mandate Container
+                                _buildMandateBox(),
+
+                                const SizedBox(height: 14),
+
+                                // Reward Card
+                                _buildRewardCard(),
+
+                                const SizedBox(height: 20),
+
+                                // Header List Protokol Fase
+                                _buildProtocolListHeader(),
+
+                                const SizedBox(height: 12),
+
+                                // List Protokol Fase (5 Sub-Quest)
+                                ..._checklistPhases.asMap().entries.map((entry) {
+                                  final int index = entry.key;
+                                  final Map<String, dynamic> item = entry.value;
+                                  return _buildSubQuestItem(index, item);
+                                }),
+                              ],
+                            ),
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
                 ),
-              ),
+              ],
+            ),
+
+            // 5. Sticky Execution Footer
+            Positioned(
+              left: 0,
+              right: 0,
+              bottom: 0,
+              child: _buildStickyFooter(context, isAllCompleted, currentDone),
             ),
           ],
         ),
@@ -240,120 +220,126 @@ class _AppearanceQuestScreenState extends State<AppearanceQuestScreen> {
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
-          // Tombol Back (Kiri)
-          Container(
-            decoration: BoxDecoration(
-              color: const Color(0xFF160F2B),
-              borderRadius: BorderRadius.circular(12),
-              border: Border.all(
-                color: const Color(0xFF2C1E4E),
-                width: 1.0,
+          // Tombol Back Kiri
+          GestureDetector(
+            onTap: () => Navigator.pop(context),
+            child: Container(
+              width: 38,
+              height: 38,
+              decoration: BoxDecoration(
+                color: const Color(0xFF1F1927),
+                borderRadius: BorderRadius.circular(10),
+                border: Border.all(
+                  color: const Color(0xFF2C1E4E),
+                  width: 1.0,
+                ),
               ),
-            ),
-            child: IconButton(
-              icon: const Icon(Icons.arrow_back_ios_new_rounded),
-              color: const Color(0xFFD8B4F8),
-              iconSize: 18,
-              onPressed: () => Navigator.pop(context),
+              child: const Center(
+                child: Icon(
+                  Icons.arrow_back_ios_new_rounded,
+                  color: Color(0xFFE9DEF2),
+                  size: 16,
+                ),
+              ),
             ),
           ),
 
-          // Teks "SYSTEM HUD" dengan titik pulse cyan, dan "HUNTER STATUS WINDOW"
+          // Judul Tengah: SYSTEM HUD & HUNTER STATUS WINDOW
           Column(
             mainAxisSize: MainAxisSize.min,
             children: [
               Row(
                 mainAxisSize: MainAxisSize.min,
                 children: [
+                  Text(
+                    'SYSTEM HUD',
+                    style: GoogleFonts.spaceGrotesk(
+                      fontSize: 10,
+                      fontWeight: FontWeight.w700,
+                      letterSpacing: 1.4,
+                      color: const Color(0xFF00F4FE),
+                    ),
+                  ),
+                  const SizedBox(width: 4),
                   Container(
-                    width: 7,
-                    height: 7,
+                    width: 5,
+                    height: 5,
                     decoration: const BoxDecoration(
                       shape: BoxShape.circle,
-                      color: Color(0xFF00F4FE), // Cyan Pulse Point
+                      color: Color(0xFF00F4FE),
                       boxShadow: [
                         BoxShadow(
                           color: Color(0xFF00F4FE),
-                          blurRadius: 8,
-                          spreadRadius: 2,
+                          blurRadius: 6,
+                          spreadRadius: 1,
                         ),
                       ],
                     ),
                   ),
-                  const SizedBox(width: 8),
-                  Text(
-                    'SYSTEM HUD',
-                    style: GoogleFonts.sora(
-                      fontSize: 11,
-                      fontWeight: FontWeight.w900,
-                      letterSpacing: 2.0,
-                      color: const Color(0xFF00F4FE),
-                    ),
-                  ),
                 ],
               ),
-              const SizedBox(height: 2),
+              const SizedBox(height: 1),
               Text(
-                'HUNTER STATUS WINDOW',
+                'HUNTER STATUS...',
                 style: GoogleFonts.sora(
-                  fontSize: 8.5,
-                  fontWeight: FontWeight.w600,
-                  letterSpacing: 1.2,
-                  color: const Color(0xFF8B829E),
+                  fontSize: 13,
+                  fontWeight: FontWeight.w800,
+                  letterSpacing: 0.6,
+                  color: Colors.white,
                 ),
               ),
             ],
           ),
 
-          // Kanan: Badge "RANK: S" (cyan border) dan ikon Profil (background ungu)
+          // Kanan: Badge RANK: S dan Avatar Profil
           Row(
             mainAxisSize: MainAxisSize.min,
             children: [
-              // Badge RANK: S dengan Cyan Border
+              // Badge RANK: S dengan Cyan Accent & Bolt Icon
               Container(
                 padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
                 decoration: BoxDecoration(
-                  color: const Color(0xFF0E1A29),
+                  color: const Color(0xFF141E2D),
                   borderRadius: BorderRadius.circular(8),
                   border: Border.all(
-                    color: const Color(0xFF00F4FE),
-                    width: 1.2,
+                    color: const Color(0xFF00F4FE).withValues(alpha: 0.7),
+                    width: 1.0,
                   ),
-                  boxShadow: [
-                    BoxShadow(
-                      color: const Color(0xFF00F4FE).withValues(alpha: 0.3),
-                      blurRadius: 8,
-                      spreadRadius: 0,
+                ),
+                child: Row(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    const Icon(
+                      Icons.bolt_rounded,
+                      size: 13,
+                      color: Color(0xFF00F4FE),
+                    ),
+                    const SizedBox(width: 2),
+                    Text(
+                      'RANK: S',
+                      style: GoogleFonts.spaceGrotesk(
+                        fontSize: 9.5,
+                        fontWeight: FontWeight.w800,
+                        letterSpacing: 0.5,
+                        color: const Color(0xFF00F4FE),
+                      ),
                     ),
                   ],
                 ),
-                child: Text(
-                  'RANK: S',
-                  style: GoogleFonts.sora(
-                    fontSize: 9.5,
-                    fontWeight: FontWeight.w900,
-                    letterSpacing: 1.0,
-                    color: const Color(0xFF00F4FE),
-                  ),
-                ),
               ),
               const SizedBox(width: 8),
-              // Ikon Profil dengan Background Ungu
+
+              // Avatar Profil bundar ungu muda
               Container(
-                width: 36,
-                height: 36,
+                width: 34,
+                height: 34,
                 decoration: BoxDecoration(
                   shape: BoxShape.circle,
-                  color: const Color(0xFF7B2CBF),
-                  border: Border.all(
-                    color: const Color(0xFFB026FF),
-                    width: 1.2,
-                  ),
+                  color: const Color(0xFFD8B4F8),
                   boxShadow: [
                     BoxShadow(
-                      color: const Color(0xFFB026FF).withValues(alpha: 0.5),
-                      blurRadius: 10,
-                      spreadRadius: 1,
+                      color: const Color(0xFFB026FF).withValues(alpha: 0.4),
+                      blurRadius: 8,
                     ),
                   ],
                 ),
@@ -361,7 +347,7 @@ class _AppearanceQuestScreenState extends State<AppearanceQuestScreen> {
                   child: Icon(
                     Icons.person_rounded,
                     size: 20,
-                    color: Colors.white,
+                    color: Color(0xFF1A1228),
                   ),
                 ),
               ),
@@ -372,428 +358,639 @@ class _AppearanceQuestScreenState extends State<AppearanceQuestScreen> {
     );
   }
 
-  /// 3. Header Quest & Reward Box
-  Widget _buildHeaderQuestAndReward(int completedCount, int totalCount) {
+  /// 2. Hero Quest Title Section
+  Widget _buildHeroQuestSection(int currentDone) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
-        // Top Info Row: "DAILY SYSTEM QUEST" & Indikator dinamis "X / 5 SELESAI"
+        // Baris Atas: Titik Ungu Berkedip + "DAILY SYSTEM QUEST" & Pill "X / 5 SELESAI"
         Row(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
-            Text(
-              'DAILY SYSTEM QUEST',
-              style: GoogleFonts.sora(
-                fontSize: 10,
-                fontWeight: FontWeight.w800,
-                letterSpacing: 1.6,
-                color: const Color(0xFFB026FF),
-              ),
+            Row(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                Container(
+                  width: 7,
+                  height: 7,
+                  decoration: const BoxDecoration(
+                    shape: BoxShape.circle,
+                    color: Color(0xFFB026FF),
+                    boxShadow: [
+                      BoxShadow(
+                        color: Color(0xFFB026FF),
+                        blurRadius: 6,
+                        spreadRadius: 1,
+                      ),
+                    ],
+                  ),
+                ),
+                const SizedBox(width: 6),
+                Text(
+                  'DAILY SYSTEM QUEST',
+                  style: GoogleFonts.spaceGrotesk(
+                    fontSize: 10.5,
+                    fontWeight: FontWeight.w700,
+                    letterSpacing: 1.2,
+                    color: const Color(0xFFE5B5FF),
+                  ),
+                ),
+              ],
             ),
+            // Pill Indikator Dinamis
             Container(
               padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
               decoration: BoxDecoration(
-                color: const Color(0xFF1B1133),
-                borderRadius: BorderRadius.circular(10),
+                color: const Color(0xFF1F1927),
+                borderRadius: BorderRadius.circular(6),
                 border: Border.all(
-                  color: const Color(0xFFB026FF).withValues(alpha: 0.6),
+                  color: const Color(0xFF383241),
                   width: 1.0,
                 ),
               ),
               child: Text(
-                '$completedCount / $totalCount SELESAI',
-                style: GoogleFonts.sora(
+                '$currentDone / $totalCount SELESAI',
+                style: GoogleFonts.spaceGrotesk(
                   fontSize: 10,
-                  fontWeight: FontWeight.w800,
+                  fontWeight: FontWeight.w700,
                   letterSpacing: 0.8,
-                  color: const Color(0xFFF3EFF5),
+                  color: const Color(0xFFE9DEF2),
                 ),
               ),
             ),
           ],
         ),
 
-        const SizedBox(height: 6),
+        const SizedBox(height: 8),
 
-        // Judul Besar: "PROTOKOL PENAMPILAN" (Warna Cyan / efek glow)
+        // Judul Besar: "PROTOKOL PENAMPILAN" (Cyan dengan Shadow Glow)
         Text(
           'PROTOKOL PENAMPILAN',
           style: GoogleFonts.sora(
             fontSize: 22,
             fontWeight: FontWeight.w900,
-            letterSpacing: 2.2,
-            color: const Color(0xFF00F4FE), // Cyan
-            shadows: const [
+            letterSpacing: 1.4,
+            color: const Color(0xFF00F4FE),
+            shadows: [
               Shadow(
-                color: Color(0xFF00F4FE),
+                color: const Color(0xFF00F4FE).withValues(alpha: 0.8),
                 blurRadius: 16,
               ),
               Shadow(
-                color: Color(0xFF0096C7),
-                blurRadius: 28,
+                color: const Color(0xFF0096C7).withValues(alpha: 0.5),
+                blurRadius: 26,
               ),
             ],
           ),
         ),
 
-        const SizedBox(height: 12),
+        const SizedBox(height: 4),
 
-        // Kotak Reward: Background #1F1927. Menampilkan "+30 EXP" (ungu) dan "+20 GOLD" (emas/kuning)
-        Container(
-          padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 12),
-          decoration: BoxDecoration(
-            color: const Color(0xFF1F1927), // Background #1F1927
-            borderRadius: BorderRadius.circular(16),
-            border: Border.all(
-              color: const Color(0xFF33254C),
-              width: 1.0,
-            ),
-            boxShadow: [
-              BoxShadow(
-                color: Colors.black.withValues(alpha: 0.35),
-                blurRadius: 12,
-                offset: const Offset(0, 3),
-              ),
-            ],
-          ),
-          child: Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: [
-              Row(
-                children: [
-                  const Icon(
-                    Icons.military_tech_rounded,
-                    size: 20,
-                    color: Color(0xFFD8B4F8),
-                  ),
-                  const SizedBox(width: 8),
-                  Text(
-                    'REWARD PROTOKOL',
-                    style: GoogleFonts.sora(
-                      fontSize: 10.5,
-                      fontWeight: FontWeight.w800,
-                      letterSpacing: 1.0,
-                      color: const Color(0xFFD8B4F8),
-                    ),
-                  ),
-                ],
-              ),
-              Row(
-                children: [
-                  // Reward EXP (Ungu)
-                  Container(
-                    padding: const EdgeInsets.symmetric(horizontal: 9, vertical: 4),
-                    decoration: BoxDecoration(
-                      color: const Color(0xFF150B24),
-                      borderRadius: BorderRadius.circular(8),
-                      border: Border.all(
-                        color: const Color(0xFFB026FF).withValues(alpha: 0.5),
-                        width: 1.0,
-                      ),
-                    ),
-                    child: Text(
-                      '+30 EXP',
-                      style: GoogleFonts.sora(
-                        fontSize: 11,
-                        fontWeight: FontWeight.w900,
-                        letterSpacing: 0.6,
-                        color: const Color(0xFFB026FF), // Ungu #B026FF
-                      ),
-                    ),
-                  ),
-
-                  const SizedBox(width: 8),
-
-                  // Reward GOLD (Emas / Kuning)
-                  Container(
-                    padding: const EdgeInsets.symmetric(horizontal: 9, vertical: 4),
-                    decoration: BoxDecoration(
-                      color: const Color(0xFF1F1706),
-                      borderRadius: BorderRadius.circular(8),
-                      border: Border.all(
-                        color: const Color(0xFFFFD166).withValues(alpha: 0.5),
-                        width: 1.0,
-                      ),
-                    ),
-                    child: Text(
-                      '+20 GOLD',
-                      style: GoogleFonts.sora(
-                        fontSize: 11,
-                        fontWeight: FontWeight.w900,
-                        letterSpacing: 0.6,
-                        color: const Color(0xFFFFD166), // Emas / Kuning #FFD166
-                      ),
-                    ),
-                  ),
-                ],
-              ),
-            ],
+        // Subjudul: "DUNGEON ID: SEC-709 • CLASS: S-TIER BUFF"
+        Text(
+          'DUNGEON ID: SEC-709 • CLASS: S-TIER BUFF',
+          style: GoogleFonts.spaceGrotesk(
+            fontSize: 9.5,
+            fontWeight: FontWeight.w700,
+            letterSpacing: 1.2,
+            color: const Color(0xFF9B8BA1),
           ),
         ),
       ],
     );
   }
 
-  /// 4. 5 Sub-Quest Checklist (Phase I - V) dengan Checkbox Kustom & Efek Teks LineThrough
-  Widget _buildSubQuestChecklistItem(int index, Map<String, dynamic> item) {
-    final bool isChecked = _isPhaseDone(index);
-
-    return Padding(
-      padding: const EdgeInsets.only(bottom: 10.0),
-      child: Material(
-        color: Colors.transparent,
-        child: InkWell(
-          borderRadius: BorderRadius.circular(16),
-          onTap: () => _togglePhase(index),
-          child: AnimatedContainer(
-            duration: const Duration(milliseconds: 220),
-            padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 12),
-            decoration: BoxDecoration(
-              color: isChecked ? const Color(0xFF18112D) : const Color(0xFF0F0A1C),
-              borderRadius: BorderRadius.circular(16),
-              border: Border.all(
-                color: isChecked
-                    ? const Color(0xFFB026FF).withValues(alpha: 0.85)
-                    : const Color(0xFF23183D),
-                width: 1.2,
-              ),
-              boxShadow: isChecked
-                  ? [
-                      BoxShadow(
-                        color: const Color(0xFFB026FF).withValues(alpha: 0.2),
-                        blurRadius: 12,
-                        spreadRadius: 1,
-                      ),
-                    ]
-                  : null,
+  /// System Mandate Container
+  Widget _buildMandateBox() {
+    return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 12),
+      decoration: BoxDecoration(
+        color: const Color(0xFF1F1927),
+        borderRadius: BorderRadius.circular(12),
+        border: Border.all(
+          color: const Color(0xFF383241),
+          width: 1.0,
+        ),
+      ),
+      child: Row(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          const Padding(
+            padding: EdgeInsets.only(top: 1.0),
+            child: Icon(
+              Icons.auto_awesome,
+              size: 18,
+              color: Color(0xFF00F4FE),
             ),
-            child: Row(
+          ),
+          const SizedBox(width: 10),
+          Expanded(
+            child: RichText(
+              text: TextSpan(
+                style: GoogleFonts.plusJakartaSans(
+                  fontSize: 11,
+                  height: 1.45,
+                  color: const Color(0xFFD2C1D7),
+                ),
+                children: [
+                  TextSpan(
+                    text: 'SYSTEM MANDATE: ',
+                    style: GoogleFonts.spaceGrotesk(
+                      fontWeight: FontWeight.w700,
+                      color: const Color(0xFF00F4FE),
+                    ),
+                  ),
+                  const TextSpan(
+                    text: 'Selesaikan seluruh fase perawatan diri untuk memperkuat ',
+                  ),
+                  TextSpan(
+                    text: 'Physical Aura',
+                    style: GoogleFonts.plusJakartaSans(
+                      fontWeight: FontWeight.w700,
+                      color: const Color(0xFFE5B5FF),
+                    ),
+                  ),
+                  const TextSpan(
+                    text: ' & ',
+                  ),
+                  TextSpan(
+                    text: 'Dermal Defense',
+                    style: GoogleFonts.plusJakartaSans(
+                      fontWeight: FontWeight.w700,
+                      color: const Color(0xFF00F4FE),
+                    ),
+                  ),
+                  const TextSpan(text: '.'),
+                ],
+              ),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  /// 3. Reward Card
+  Widget _buildRewardCard() {
+    return Container(
+      padding: const EdgeInsets.all(12),
+      decoration: BoxDecoration(
+        color: const Color(0xFF1F1927),
+        borderRadius: BorderRadius.circular(14),
+        border: Border.all(
+          color: const Color(0xFF383241),
+          width: 1.0,
+        ),
+        boxShadow: [
+          BoxShadow(
+            color: const Color(0xFFB026FF).withValues(alpha: 0.15),
+            blurRadius: 16,
+            offset: const Offset(0, 4),
+          ),
+        ],
+      ),
+      child: Row(
+        children: [
+          // Ikon Medali di Kotak Ungu
+          Container(
+            width: 44,
+            height: 44,
+            decoration: BoxDecoration(
+              color: const Color(0xFF2D164D),
+              borderRadius: BorderRadius.circular(10),
+              border: Border.all(
+                color: const Color(0xFFB026FF).withValues(alpha: 0.4),
+                width: 1.0,
+              ),
+            ),
+            child: const Center(
+              child: Icon(
+                Icons.military_tech_rounded,
+                size: 24,
+                color: Color(0xFFE5B5FF),
+              ),
+            ),
+          ),
+
+          const SizedBox(width: 12),
+
+          // Label "CLEAR REWARD" & Teks "Reward Protokol"
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                // Ikon Fase Perawatan
-                Container(
-                  width: 38,
-                  height: 38,
-                  decoration: BoxDecoration(
-                    shape: BoxShape.circle,
-                    color: const Color(0xFF160F2C),
-                    border: Border.all(
-                      color: isChecked
-                          ? const Color(0xFF00F4FE).withValues(alpha: 0.6)
-                          : const Color(0xFF332454),
-                      width: 1.0,
-                    ),
-                  ),
-                  child: Icon(
-                    item['icon'] as IconData,
-                    size: 19,
-                    color: isChecked ? const Color(0xFF00F4FE) : const Color(0xFF8B829E),
+                Text(
+                  'CLEAR REWARD',
+                  style: GoogleFonts.spaceGrotesk(
+                    fontSize: 9.5,
+                    fontWeight: FontWeight.w700,
+                    letterSpacing: 1.0,
+                    color: const Color(0xFF9B8BA1),
                   ),
                 ),
-
-                const SizedBox(width: 12),
-
-                // Teks Judul & Deskripsi dengan Efek LineThrough & Opacity jika Checked
-                Expanded(
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Text(
-                        item['phase'] as String,
-                        style: GoogleFonts.sora(
-                          fontSize: 8.5,
-                          fontWeight: FontWeight.w700,
-                          letterSpacing: 1.0,
-                          color: isChecked ? const Color(0xFF6B6280) : const Color(0xFF8B829E),
-                        ),
-                      ),
-                      const SizedBox(height: 2),
-                      Text(
-                        item['title'] as String,
-                        style: GoogleFonts.sora(
-                          fontSize: 13,
-                          fontWeight: FontWeight.w800,
-                          decoration: isChecked ? TextDecoration.lineThrough : null,
-                          decorationColor: const Color(0xFF8B829E),
-                          decorationThickness: 1.8,
-                          color: isChecked
-                              ? const Color(0xFF8B829E) // Opacity diturunkan
-                              : const Color(0xFFF3EFF5),
-                        ),
-                      ),
-                      const SizedBox(height: 2),
-                      Text(
-                        item['desc'] as String,
-                        style: GoogleFonts.sora(
-                          fontSize: 9.5,
-                          height: 1.3,
-                          decoration: isChecked ? TextDecoration.lineThrough : null,
-                          decorationColor: const Color(0xFF5D5373),
-                          color: isChecked
-                              ? const Color(0xFF5D5373) // Opacity diturunkan
-                              : const Color(0xFF706785),
-                        ),
-                      ),
-                    ],
-                  ),
-                ),
-
-                const SizedBox(width: 10),
-
-                // Checkbox Kustom: Container kotak. Jika checked: background ungu #B026FF + glow + ikon check putih.
-                // Jika unchecked: background abu-abu gelap, ikon transparan.
-                AnimatedContainer(
-                  duration: const Duration(milliseconds: 200),
-                  width: 26,
-                  height: 26,
-                  decoration: BoxDecoration(
-                    borderRadius: BorderRadius.circular(8),
-                    color: isChecked ? const Color(0xFFB026FF) : const Color(0xFF1E172E),
-                    border: Border.all(
-                      color: isChecked ? const Color(0xFFD8B4F8) : const Color(0xFF4C386D),
-                      width: 1.4,
-                    ),
-                    boxShadow: isChecked
-                        ? [
-                            BoxShadow(
-                              color: const Color(0xFFB026FF).withValues(alpha: 0.85),
-                              blurRadius: 14,
-                              spreadRadius: 2,
-                            ),
-                            BoxShadow(
-                              color: const Color(0xFF00F4FE).withValues(alpha: 0.4),
-                              blurRadius: 8,
-                              spreadRadius: 0,
-                            ),
-                          ]
-                        : null,
-                  ),
-                  child: Center(
-                    child: Icon(
-                      Icons.check_rounded,
-                      size: 18,
-                      color: isChecked ? Colors.white : Colors.transparent,
-                    ),
+                const SizedBox(height: 2),
+                Text(
+                  'Reward Protokol',
+                  style: GoogleFonts.sora(
+                    fontSize: 14,
+                    fontWeight: FontWeight.w700,
+                    color: const Color(0xFFE9DEF2),
                   ),
                 ),
               ],
             ),
+          ),
+
+          // Badge Kanan: +30 EXP (ungu) dan +20 GOLD (cyan)
+          Row(
+            children: [
+              Container(
+                padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
+                decoration: BoxDecoration(
+                  color: const Color(0xFF2D164D),
+                  borderRadius: BorderRadius.circular(8),
+                  border: Border.all(
+                    color: const Color(0xFFB026FF).withValues(alpha: 0.5),
+                    width: 1.0,
+                  ),
+                ),
+                child: Text(
+                  '+30 EXP',
+                  style: GoogleFonts.spaceGrotesk(
+                    fontSize: 10,
+                    fontWeight: FontWeight.w800,
+                    color: const Color(0xFFE5B5FF),
+                  ),
+                ),
+              ),
+              const SizedBox(width: 6),
+              Container(
+                padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
+                decoration: BoxDecoration(
+                  color: const Color(0xFF0A2730),
+                  borderRadius: BorderRadius.circular(8),
+                  border: Border.all(
+                    color: const Color(0xFF00F4FE).withValues(alpha: 0.5),
+                    width: 1.0,
+                  ),
+                ),
+                child: Text(
+                  '+20 GOLD',
+                  style: GoogleFonts.spaceGrotesk(
+                    fontSize: 10,
+                    fontWeight: FontWeight.w800,
+                    color: const Color(0xFF00F4FE),
+                  ),
+                ),
+              ),
+            ],
+          ),
+        ],
+      ),
+    );
+  }
+
+  /// Header List Protokol Fase
+  Widget _buildProtocolListHeader() {
+    return Row(
+      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+      children: [
+        Text(
+          'PROTOKOL FASE (5)',
+          style: GoogleFonts.spaceGrotesk(
+            fontSize: 10.5,
+            fontWeight: FontWeight.w700,
+            letterSpacing: 1.0,
+            color: const Color(0xFF9B8BA1),
+          ),
+        ),
+        Text(
+          'LIVE SYNC ACTIVE',
+          style: GoogleFonts.spaceGrotesk(
+            fontSize: 10,
+            fontWeight: FontWeight.w800,
+            letterSpacing: 0.8,
+            color: const Color(0xFF00F4FE),
+          ),
+        ),
+      ],
+    );
+  }
+
+  /// 4. Sub-Quest Item (List Protokol Fase)
+  Widget _buildSubQuestItem(int index, Map<String, dynamic> item) {
+    final bool isChecked = _isPhaseDone(index);
+
+    return Padding(
+      padding: const EdgeInsets.only(bottom: 10.0),
+      child: GestureDetector(
+        onTap: () => _togglePhase(index),
+        child: AnimatedContainer(
+          duration: const Duration(milliseconds: 200),
+          padding: const EdgeInsets.all(12),
+          decoration: BoxDecoration(
+            color: const Color(0xFF1F1927),
+            borderRadius: BorderRadius.circular(14),
+            border: Border.all(
+              color: isChecked
+                  ? const Color(0xFF00F4FE).withValues(alpha: 0.45)
+                  : const Color(0xFF383241),
+              width: 1.0,
+            ),
+            boxShadow: isChecked
+                ? [
+                    BoxShadow(
+                      color: const Color(0xFFB026FF).withValues(alpha: 0.15),
+                      blurRadius: 10,
+                      spreadRadius: 1,
+                    ),
+                  ]
+                : null,
+          ),
+          child: Row(
+            children: [
+              // Ikon Kotak Bundar di Kiri (Glowing Cyan jika Checked, Muted jika belum)
+              AnimatedContainer(
+                duration: const Duration(milliseconds: 200),
+                width: 44,
+                height: 44,
+                decoration: BoxDecoration(
+                  color: isChecked ? const Color(0xFF0A2730) : const Color(0xFF16111E),
+                  borderRadius: BorderRadius.circular(10),
+                  border: Border.all(
+                    color: isChecked
+                        ? const Color(0xFF00F4FE).withValues(alpha: 0.6)
+                        : const Color(0xFF2C223A),
+                    width: 1.0,
+                  ),
+                  boxShadow: isChecked
+                      ? [
+                          BoxShadow(
+                            color: const Color(0xFF00F4FE).withValues(alpha: 0.3),
+                            blurRadius: 8,
+                          ),
+                        ]
+                      : null,
+                ),
+                child: Center(
+                  child: Icon(
+                    item['icon'] as IconData,
+                    size: 22,
+                    color: isChecked ? const Color(0xFF00F4FE) : const Color(0xFF6B6280),
+                  ),
+                ),
+              ),
+
+              const SizedBox(width: 12),
+
+              // Bagian Tengah: Tag Fase, Judul, Deskripsi
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    // Tag Fase (Cyan jika aktif, abu-abu jika belum)
+                    Text(
+                      item['phase'] as String,
+                      style: GoogleFonts.spaceGrotesk(
+                        fontSize: 9,
+                        fontWeight: FontWeight.w700,
+                        letterSpacing: 1.0,
+                        color: isChecked ? const Color(0xFF00F4FE) : const Color(0xFF9B8BA1),
+                      ),
+                    ),
+                    const SizedBox(height: 2),
+
+                    // Judul Sub-Quest (Strikethrough jika checked)
+                    Text(
+                      item['title'] as String,
+                      maxLines: 1,
+                      overflow: TextOverflow.ellipsis,
+                      style: GoogleFonts.sora(
+                        fontSize: 13.5,
+                        fontWeight: FontWeight.w700,
+                        decoration: isChecked ? TextDecoration.lineThrough : null,
+                        decorationColor: const Color(0xFF9B8BA1),
+                        decorationThickness: 1.8,
+                        color: isChecked
+                            ? const Color(0xFF9B8BA1).withValues(alpha: 0.6)
+                            : const Color(0xFFE9DEF2),
+                      ),
+                    ),
+                    const SizedBox(height: 2),
+
+                    // Deskripsi Sub-Quest (Strikethrough jika checked)
+                    Text(
+                      item['desc'] as String,
+                      maxLines: 1,
+                      overflow: TextOverflow.ellipsis,
+                      style: GoogleFonts.plusJakartaSans(
+                        fontSize: 10,
+                        decoration: isChecked ? TextDecoration.lineThrough : null,
+                        decorationColor: const Color(0xFF6B6280),
+                        color: isChecked
+                            ? const Color(0xFF6B6280).withValues(alpha: 0.5)
+                            : const Color(0xFF9B8BA1),
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+
+              const SizedBox(width: 10),
+
+              // Checkbox Kanan: Ungu #B026FF jika checked, Abu-abu gelap jika belum
+              AnimatedContainer(
+                duration: const Duration(milliseconds: 180),
+                width: 28,
+                height: 28,
+                decoration: BoxDecoration(
+                  borderRadius: BorderRadius.circular(8),
+                  color: isChecked ? const Color(0xFFB026FF) : const Color(0xFF16111E),
+                  border: Border.all(
+                    color: isChecked ? const Color(0xFFD8B4F8) : const Color(0xFF383241),
+                    width: 1.4,
+                  ),
+                  boxShadow: isChecked
+                      ? [
+                          BoxShadow(
+                            color: const Color(0xFFB026FF).withValues(alpha: 0.7),
+                            blurRadius: 10,
+                            spreadRadius: 1,
+                          ),
+                        ]
+                      : null,
+                ),
+                child: Center(
+                  child: Icon(
+                    Icons.check_rounded,
+                    size: 19,
+                    color: isChecked ? Colors.white : Colors.transparent,
+                  ),
+                ),
+              ),
+            ],
           ),
         ),
       ),
     );
   }
 
-  /// 5. Sticky Submit Button: Di bagian paling bawah dengan warna ungu #8A2BE2 terang dan glow shadow ungu
-  Widget _buildStickySubmitButton(
+  /// 5. Sticky Execution Footer
+  Widget _buildStickyFooter(
     BuildContext context,
     bool isAllCompleted,
-    int completedCount,
-    int totalCount,
+    int currentDone,
   ) {
     return Container(
       padding: EdgeInsets.only(
-        left: 20.0,
-        right: 20.0,
-        top: 14.0,
+        left: 16.0,
+        right: 16.0,
+        top: 12.0,
         bottom: MediaQuery.of(context).padding.bottom > 0
-            ? MediaQuery.of(context).padding.bottom + 10.0
-            : 20.0,
+            ? MediaQuery.of(context).padding.bottom + 6.0
+            : 16.0,
       ),
-      decoration: const BoxDecoration(
-        color: Color(0xFF110C19),
-        border: Border(
+      decoration: BoxDecoration(
+        color: const Color(0xFF16111E),
+        border: const Border(
           top: BorderSide(
             color: Color(0xFF24193F),
             width: 1.0,
           ),
         ),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black.withValues(alpha: 0.6),
+            blurRadius: 18,
+            offset: const Offset(0, -4),
+          ),
+        ],
       ),
-      child: Container(
-        height: 52,
-        decoration: BoxDecoration(
-          borderRadius: BorderRadius.circular(16),
-          gradient: isAllCompleted
-              ? const LinearGradient(
-                  colors: [Color(0xFF8A2BE2), Color(0xFFB026FF)], // Ungu #8A2BE2 terang
-                  begin: Alignment.centerLeft,
-                  end: Alignment.centerRight,
-                )
-              : const LinearGradient(
-                  colors: [Color(0xFF4D1D80), Color(0xFF7B2CBF)],
-                  begin: Alignment.centerLeft,
-                  end: Alignment.centerRight,
+      child: Column(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          // Tombol SUBMIT PROTOCOL Besar
+          Container(
+            height: 52,
+            decoration: BoxDecoration(
+              borderRadius: BorderRadius.circular(14),
+              gradient: isAllCompleted
+                  ? const LinearGradient(
+                      colors: [Color(0xFF7B2CBF), Color(0xFFB026FF)],
+                      begin: Alignment.centerLeft,
+                      end: Alignment.centerRight,
+                    )
+                  : const LinearGradient(
+                      colors: [Color(0xFF5A1E8F), Color(0xFF7B2CBF)],
+                      begin: Alignment.centerLeft,
+                      end: Alignment.centerRight,
+                    ),
+              boxShadow: [
+                BoxShadow(
+                  color: const Color(0xFFB026FF).withValues(alpha: isAllCompleted ? 0.65 : 0.35),
+                  blurRadius: 20,
+                  spreadRadius: 1,
+                  offset: const Offset(0, 4),
                 ),
-          boxShadow: [
-            BoxShadow(
-              color: const Color(0xFF8A2BE2).withValues(alpha: isAllCompleted ? 0.65 : 0.4),
-              blurRadius: 22,
-              spreadRadius: 2,
-              offset: const Offset(0, 4),
+              ],
             ),
-          ],
-        ),
-        child: Material(
-          color: Colors.transparent,
-          child: InkWell(
-            borderRadius: BorderRadius.circular(16),
-            onTap: () {
-              // Validasi: Wajib 5 sub-quest selesai sebelum reward diklaim
-              if (completedCount == 5) {
-                ScaffoldMessenger.of(context).showSnackBar(
-                  SnackBar(
-                    content: Text(
-                      'Protokol Penampilan Selesai! Reward +30 EXP & +20 Gold berhasil diklaim!',
-                      style: GoogleFonts.sora(
-                        fontWeight: FontWeight.w700,
+            child: Material(
+              color: Colors.transparent,
+              child: InkWell(
+                borderRadius: BorderRadius.circular(14),
+                onTap: () {
+                  // Validasi 5 sub-quest
+                  if (currentDone == 5) {
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      SnackBar(
+                        content: Text(
+                          'Protokol Penampilan Selesai! Reward +30 EXP & +20 Gold berhasil diklaim!',
+                          style: GoogleFonts.sora(
+                            fontWeight: FontWeight.w700,
+                            color: Colors.white,
+                          ),
+                        ),
+                        backgroundColor: const Color(0xFFB026FF),
+                        duration: const Duration(seconds: 2),
+                      ),
+                    );
+                    Navigator.pop(context, true);
+                  } else {
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      SnackBar(
+                        content: Text(
+                          'Selesaikan semua protokol terlebih dahulu!',
+                          style: GoogleFonts.sora(
+                            fontWeight: FontWeight.w600,
+                            color: Colors.white,
+                          ),
+                        ),
+                        backgroundColor: const Color(0xFF93000A),
+                        duration: const Duration(seconds: 2),
+                      ),
+                    );
+                  }
+                },
+                child: Center(
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      const Icon(
+                        Icons.verified_user_rounded,
+                        size: 20,
                         color: Colors.white,
                       ),
-                    ),
-                    backgroundColor: const Color(0xFFB026FF),
-                    duration: const Duration(seconds: 2),
-                  ),
-                );
-                // Return true ke pemanggil (tab_home)
-                Navigator.pop(context, true);
-              } else {
-                ScaffoldMessenger.of(context).showSnackBar(
-                  SnackBar(
-                    content: Text(
-                      'Selesaikan semua protokol terlebih dahulu!',
-                      style: GoogleFonts.sora(
-                        fontWeight: FontWeight.w600,
-                        color: Colors.white,
+                      const SizedBox(width: 8),
+                      Text(
+                        'SUBMIT PROTOCOL',
+                        style: GoogleFonts.spaceGrotesk(
+                          fontSize: 14,
+                          fontWeight: FontWeight.w800,
+                          letterSpacing: 1.5,
+                          color: Colors.white,
+                        ),
                       ),
-                    ),
-                    backgroundColor: const Color(0xFF93000A), // Red error
-                    duration: const Duration(seconds: 2),
+                    ],
                   ),
-                );
-              }
-            },
-            child: Center(
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  const Icon(
-                    Icons.verified_rounded,
-                    size: 20,
-                    color: Colors.white,
-                  ),
-                  const SizedBox(width: 8),
-                  Text(
-                    'SUBMIT PROTOCOL',
-                    style: GoogleFonts.sora(
-                      fontSize: 13.5,
-                      fontWeight: FontWeight.w900,
-                      letterSpacing: 1.5,
-                      color: Colors.white,
-                    ),
-                  ),
-                ],
+                ),
               ),
             ),
           ),
-        ),
+
+          const SizedBox(height: 8),
+
+          // Teks di bawah tombol: "• AUTO-SYNC WITH DUNGEON CORE"
+          Row(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              Container(
+                width: 5,
+                height: 5,
+                decoration: const BoxDecoration(
+                  shape: BoxShape.circle,
+                  color: Color(0xFF00F4FE),
+                  boxShadow: [
+                    BoxShadow(
+                      color: Color(0xFF00F4FE),
+                      blurRadius: 4,
+                      spreadRadius: 1,
+                    ),
+                  ],
+                ),
+              ),
+              const SizedBox(width: 6),
+              Text(
+                'AUTO-SYNC WITH DUNGEON CORE',
+                style: GoogleFonts.spaceGrotesk(
+                  fontSize: 9,
+                  fontWeight: FontWeight.w700,
+                  letterSpacing: 1.2,
+                  color: const Color(0xFF9B8BA1),
+                ),
+              ),
+            ],
+          ),
+        ],
       ),
     );
   }
