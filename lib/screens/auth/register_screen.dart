@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:google_fonts/google_fonts.dart';
 import '../../services/hash_service.dart';
 import '../../services/supabase_service.dart';
 import '../../utils/constants.dart';
@@ -17,6 +18,10 @@ class _RegisterScreenState extends State<RegisterScreen> {
   bool _isObscure = true;
   bool _isConfirmObscure = true;
   bool _isLoading = false;
+
+  // State untuk Toggle Biometrik (UI Visual)
+  bool _fingerprintEnroll = true;
+  bool _faceScanEnroll = false;
 
   @override
   void dispose() {
@@ -109,419 +114,908 @@ class _RegisterScreenState extends State<RegisterScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: const Color(0xFF0B0713), // Deep Abyss Black
+      backgroundColor: const Color(0xFF16111E), // Dark Abyss Surface
       body: SafeArea(
-        child: LayoutBuilder(
-          builder: (context, constraints) {
-            return SingleChildScrollView(
+        child: Stack(
+          children: [
+            // Ambient Shadow Portal Aura (Top center glow)
+            Positioned(
+              top: -30,
+              left: 0,
+              right: 0,
+              child: IgnorePointer(
+                child: Center(
+                  child: Container(
+                    width: 300,
+                    height: 200,
+                    decoration: BoxDecoration(
+                      shape: BoxShape.circle,
+                      gradient: RadialGradient(
+                        colors: [
+                          const Color(0xFFB026FF).withValues(alpha: 0.22),
+                          const Color(0xFF8868A6).withValues(alpha: 0.08),
+                          Colors.transparent,
+                        ],
+                        stops: const [0.0, 0.5, 1.0],
+                      ),
+                    ),
+                  ),
+                ),
+              ),
+            ),
+
+            // Main Content Area
+            SingleChildScrollView(
               physics: const BouncingScrollPhysics(),
-              child: ConstrainedBox(
-                constraints: BoxConstraints(minHeight: constraints.maxHeight),
-                child: Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 24.0, vertical: 16.0),
+              padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 10.0),
+              child: Center(
+                child: ConstrainedBox(
+                  constraints: const BoxConstraints(maxWidth: 420),
                   child: Column(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     crossAxisAlignment: CrossAxisAlignment.stretch,
                     children: [
-              // Top Bar with Back Button
-              Row(
-                children: [
-                  IconButton(
-                    icon: const Icon(Icons.arrow_back_ios_new_rounded),
-                    color: const Color(0xFFD8B4F8),
-                    iconSize: 18,
-                    onPressed: () => Navigator.pop(context),
-                  ),
-                  const SizedBox(width: 4),
-                  Container(
-                    padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 5),
-                    decoration: BoxDecoration(
-                      color: const Color(0xFF120D24),
-                      borderRadius: BorderRadius.circular(16),
-                      border: Border.all(
-                        color: const Color(0xFF2C1E4E),
-                        width: 1.0,
-                      ),
-                    ),
-                    child: const Text(
-                      'NODE PROTOCOL: NEW-RECORD',
-                      style: TextStyle(
-                        fontFamily: 'Sora',
-                        fontSize: 10,
-                        fontWeight: FontWeight.w600,
-                        letterSpacing: 1.0,
-                        color: AppColors.manaCyan,
-                      ),
-                    ),
-                  ),
-                ],
-              ),
+                      // 1. Top System Status Bar: Back Button & Node Pill
+                      _buildTopBar(),
 
-              const SizedBox(height: 16),
+                      const SizedBox(height: 12),
 
-              // Header Titles
-              Center(
-                child: Column(
-                  children: [
-                    Container(
-                      width: 58,
-                      height: 58,
-                      decoration: BoxDecoration(
-                        shape: BoxShape.circle,
-                        color: const Color(0xFF160F2C),
-                        border: Border.all(
-                          color: const Color(0xFF8A2BE2),
-                          width: 1.5,
-                        ),
-                        boxShadow: [
-                          BoxShadow(
-                            color: const Color(0xFF8A2BE2).withValues(alpha: 0.35),
-                            blurRadius: 18,
-                            spreadRadius: 2,
-                          ),
-                        ],
-                      ),
-                      child: const Center(
-                        child: Icon(
-                          Icons.how_to_reg_rounded,
-                          size: 30,
-                          color: Color(0xFFB026FF),
-                        ),
-                      ),
-                    ),
-                    const SizedBox(height: 12),
-                    const Text(
-                      'SYSTEM REGISTRATION',
-                      style: TextStyle(
-                        fontFamily: 'Sora',
-                        fontSize: 22,
-                        fontWeight: FontWeight.w900,
-                        letterSpacing: 2.0,
-                        color: Color(0xFFF3EFF5),
-                      ),
-                    ),
-                    const SizedBox(height: 4),
-                    const Text(
-                      'REGISTER NEW HUNTER CREDENTIALS',
-                      style: TextStyle(
-                        fontFamily: 'Sora',
-                        fontSize: 10.5,
-                        fontWeight: FontWeight.w600,
-                        letterSpacing: 1.5,
-                        color: Color(0xFFD8B4F8),
-                      ),
-                    ),
-                  ],
-                ),
-              ),
+                      // 2. Awakening Portal Crest & System Header
+                      _buildHeader(),
 
-              const SizedBox(height: 16),
+                      const SizedBox(height: 14),
 
-              // Registration Form Card
-              Container(
-                padding: const EdgeInsets.all(18),
-                decoration: BoxDecoration(
-                  color: const Color(0xFF120D24),
-                  borderRadius: BorderRadius.circular(18),
-                  border: Border.all(
-                    color: const Color(0xFF2C1E4E),
-                    width: 1.2,
-                  ),
-                  boxShadow: [
-                    BoxShadow(
-                      color: Colors.black.withValues(alpha: 0.4),
-                      blurRadius: 15,
-                      offset: const Offset(0, 4),
-                    ),
-                  ],
-                ),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    // Username
-                    const Text(
-                      'NEW HUNTER CODENAME',
-                      style: TextStyle(
-                        fontFamily: 'Sora',
-                        fontSize: 10,
-                        fontWeight: FontWeight.w700,
-                        letterSpacing: 0.8,
-                        color: Color(0xFFD8B4F8),
-                      ),
-                    ),
-                    const SizedBox(height: 6),
-                    TextField(
-                      controller: _usernameController,
-                      style: const TextStyle(
-                        fontFamily: 'Sora',
-                        color: Color(0xFFF3EFF5),
-                        fontSize: 13,
-                      ),
-                      cursorColor: const Color(0xFFB026FF),
-                      decoration: InputDecoration(
-                        hintText: 'e.g. SungJinWoo',
-                        hintStyle: const TextStyle(
-                          color: Color(0xFF5D5373),
-                          fontSize: 12,
-                        ),
-                        prefixIcon: const Icon(
-                          Icons.person_add_alt_1_outlined,
-                          color: Color(0xFFD8B4F8),
-                          size: 18,
-                        ),
-                        filled: true,
-                        fillColor: const Color(0xFF0D0818),
-                        contentPadding: const EdgeInsets.symmetric(horizontal: 14, vertical: 12),
-                        enabledBorder: OutlineInputBorder(
-                          borderRadius: BorderRadius.circular(12),
-                          borderSide: const BorderSide(
-                            color: Color(0xFF24193F),
-                            width: 1.0,
-                          ),
-                        ),
-                        focusedBorder: OutlineInputBorder(
-                          borderRadius: BorderRadius.circular(12),
-                          borderSide: const BorderSide(
-                            color: Color(0xFFB026FF),
-                            width: 1.5,
-                          ),
-                        ),
-                      ),
-                    ),
-                    const SizedBox(height: 12),
+                      // 3. Registration HUD Terminal Card
+                      _buildTerminalCard(),
 
-                    // Password
-                    const Text(
-                      'CREATE SECURITY CIPHER',
-                      style: TextStyle(
-                        fontFamily: 'Sora',
-                        fontSize: 10,
-                        fontWeight: FontWeight.w700,
-                        letterSpacing: 0.8,
-                        color: Color(0xFFD8B4F8),
-                      ),
-                    ),
-                    const SizedBox(height: 6),
-                    TextField(
-                      controller: _passwordController,
-                      obscureText: _isObscure,
-                      style: const TextStyle(
-                        fontFamily: 'Sora',
-                        color: Color(0xFFF3EFF5),
-                        fontSize: 13,
-                      ),
-                      cursorColor: const Color(0xFFB026FF),
-                      decoration: InputDecoration(
-                        hintText: 'Minimum 6 characters',
-                        hintStyle: const TextStyle(
-                          color: Color(0xFF5D5373),
-                          fontSize: 12,
-                        ),
-                        prefixIcon: const Icon(
-                          Icons.lock_outline_rounded,
-                          color: Color(0xFFD8B4F8),
-                          size: 18,
-                        ),
-                        suffixIcon: IconButton(
-                          icon: Icon(
-                            _isObscure ? Icons.visibility_off_outlined : Icons.visibility_outlined,
-                            color: const Color(0xFF8B829E),
-                            size: 18,
-                          ),
-                          onPressed: () {
-                            setState(() {
-                              _isObscure = !_isObscure;
-                            });
-                          },
-                        ),
-                        filled: true,
-                        fillColor: const Color(0xFF0D0818),
-                        contentPadding: const EdgeInsets.symmetric(horizontal: 14, vertical: 12),
-                        enabledBorder: OutlineInputBorder(
-                          borderRadius: BorderRadius.circular(12),
-                          borderSide: const BorderSide(
-                            color: Color(0xFF24193F),
-                            width: 1.0,
-                          ),
-                        ),
-                        focusedBorder: OutlineInputBorder(
-                          borderRadius: BorderRadius.circular(12),
-                          borderSide: const BorderSide(
-                            color: Color(0xFFB026FF),
-                            width: 1.5,
-                          ),
-                        ),
-                      ),
-                    ),
-                    const SizedBox(height: 12),
+                      const SizedBox(height: 10),
 
-                    // Confirm Password
-                    const Text(
-                      'CONFIRM CIPHER',
-                      style: TextStyle(
-                        fontFamily: 'Sora',
-                        fontSize: 10,
-                        fontWeight: FontWeight.w700,
-                        letterSpacing: 0.8,
-                        color: Color(0xFFD8B4F8),
-                      ),
-                    ),
-                    const SizedBox(height: 6),
-                    TextField(
-                      controller: _confirmPasswordController,
-                      obscureText: _isConfirmObscure,
-                      style: const TextStyle(
-                        fontFamily: 'Sora',
-                        color: Color(0xFFF3EFF5),
-                        fontSize: 13,
-                      ),
-                      cursorColor: const Color(0xFFB026FF),
-                      decoration: InputDecoration(
-                        hintText: 'Re-enter your passcode',
-                        hintStyle: const TextStyle(
-                          color: Color(0xFF5D5373),
-                          fontSize: 12,
-                        ),
-                        prefixIcon: const Icon(
-                          Icons.verified_user_outlined,
-                          color: Color(0xFFD8B4F8),
-                          size: 18,
-                        ),
-                        suffixIcon: IconButton(
-                          icon: Icon(
-                            _isConfirmObscure ? Icons.visibility_off_outlined : Icons.visibility_outlined,
-                            color: const Color(0xFF8B829E),
-                            size: 18,
-                          ),
-                          onPressed: () {
-                            setState(() {
-                              _isConfirmObscure = !_isConfirmObscure;
-                            });
-                          },
-                        ),
-                        filled: true,
-                        fillColor: const Color(0xFF0D0818),
-                        contentPadding: const EdgeInsets.symmetric(horizontal: 14, vertical: 12),
-                        enabledBorder: OutlineInputBorder(
-                          borderRadius: BorderRadius.circular(12),
-                          borderSide: const BorderSide(
-                            color: Color(0xFF24193F),
-                            width: 1.0,
-                          ),
-                        ),
-                        focusedBorder: OutlineInputBorder(
-                          borderRadius: BorderRadius.circular(12),
-                          borderSide: const BorderSide(
-                            color: Color(0xFFB026FF),
-                            width: 1.5,
-                          ),
-                        ),
-                      ),
-                    ),
-                  ],
-                ),
-              ),
+                      // 4. Monarch Directive Lore Banner
+                      _buildMonarchBanner(),
 
-              const SizedBox(height: 18),
+                      const SizedBox(height: 12),
 
-              // Submit Button
-              Container(
-                height: 50,
-                decoration: BoxDecoration(
-                  borderRadius: BorderRadius.circular(14),
-                  gradient: const LinearGradient(
-                    colors: [Color(0xFF7B2CBF), Color(0xFFB026FF)],
-                    begin: Alignment.centerLeft,
-                    end: Alignment.centerRight,
-                  ),
-                  boxShadow: [
-                    BoxShadow(
-                      color: const Color(0xFFB026FF).withValues(alpha: 0.4),
-                      blurRadius: 16,
-                      offset: const Offset(0, 3),
-                    ),
-                  ],
-                ),
-                child: Material(
-                  color: Colors.transparent,
-                  child: InkWell(
-                    borderRadius: BorderRadius.circular(14),
-                    onTap: _isLoading ? null : _handleRegister,
-                    child: Center(
-                      child: _isLoading
-                          ? const SizedBox(
-                              width: 22,
-                              height: 22,
-                              child: CircularProgressIndicator(
-                                strokeWidth: 2.2,
-                                color: Colors.white,
-                              ),
-                            )
-                          : const Row(
-                              mainAxisAlignment: MainAxisAlignment.center,
-                              children: [
-                                Icon(
-                                  Icons.app_registration_rounded,
-                                  color: Colors.white,
-                                  size: 20,
-                                ),
-                                SizedBox(width: 8),
-                                Text(
-                                  'INITIATE REGISTRATION',
-                                  style: TextStyle(
-                                    fontFamily: 'Sora',
-                                    fontSize: 13.5,
-                                    fontWeight: FontWeight.w800,
-                                    letterSpacing: 1.2,
-                                    color: Colors.white,
-                                  ),
-                                ),
-                              ],
-                            ),
-                    ),
-                  ),
-                ),
-              ),
+                      // 5. Footer: Login Redirection & Security Tag
+                      _buildFooter(),
 
-              const SizedBox(height: 16),
-
-              // Back to Login link
-              Row(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  const Text(
-                    "Already have a Hunter ID? ",
-                    style: TextStyle(
-                      fontFamily: 'Sora',
-                      fontSize: 12,
-                      color: Color(0xFF8B829E),
-                    ),
-                  ),
-                  GestureDetector(
-                    onTap: () => Navigator.pop(context),
-                    child: const Text(
-                      'Portal Login',
-                      style: TextStyle(
-                        fontFamily: 'Sora',
-                        fontSize: 12,
-                        fontWeight: FontWeight.w700,
-                        color: Color(0xFFB026FF),
-                        decoration: TextDecoration.underline,
-                        decorationColor: Color(0xFFB026FF),
-                      ),
-                    ),
-                  ),
-                ],
-              ),
-              const SizedBox(height: 6),
+                      const SizedBox(height: 10),
                     ],
                   ),
                 ),
               ),
-            );
-          },
+            ),
+          ],
         ),
       ),
+    );
+  }
+
+  /// 1. Top Bar: Chevron Left & NODE: NEW-RECORD Pill
+  Widget _buildTopBar() {
+    return Row(
+      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+      children: [
+        // Back Button
+        InkWell(
+          borderRadius: BorderRadius.circular(12),
+          onTap: () => Navigator.pop(context),
+          child: Container(
+            width: 36,
+            height: 36,
+            decoration: BoxDecoration(
+              color: const Color(0xFF2D2736),
+              borderRadius: BorderRadius.circular(12),
+            ),
+            child: const Center(
+              child: Icon(
+                Icons.chevron_left_rounded,
+                color: Color(0xFFE5B5FF),
+                size: 22,
+              ),
+            ),
+          ),
+        ),
+
+        // Node Pill
+        Container(
+          padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4.5),
+          decoration: BoxDecoration(
+            color: const Color(0xFF110C19),
+            borderRadius: BorderRadius.circular(999),
+          ),
+          child: Row(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Container(
+                width: 6,
+                height: 6,
+                decoration: const BoxDecoration(
+                  shape: BoxShape.circle,
+                  color: Color(0xFF00F4FE),
+                  boxShadow: [
+                    BoxShadow(
+                      color: Color(0xFF00F4FE),
+                      blurRadius: 6,
+                      spreadRadius: 1,
+                    ),
+                  ],
+                ),
+              ),
+              const SizedBox(width: 6),
+              Text(
+                'NODE: NEW-RECORD',
+                style: GoogleFonts.spaceGrotesk(
+                  fontSize: 10,
+                  fontWeight: FontWeight.w600,
+                  letterSpacing: 1.2,
+                  color: const Color(0xFFE6FEFF),
+                ),
+              ),
+            ],
+          ),
+        ),
+      ],
+    );
+  }
+
+  /// 2. Awakening Portal Crest & System Header
+  Widget _buildHeader() {
+    return Column(
+      children: [
+        // Center Hunter Crest Avatar Badge with Glow & Rank Indicator
+        SizedBox(
+          width: 60,
+          height: 60,
+          child: Stack(
+            alignment: Alignment.center,
+            children: [
+              // Glow Backdrop
+              Container(
+                width: 54,
+                height: 54,
+                decoration: BoxDecoration(
+                  shape: BoxShape.circle,
+                  gradient: const RadialGradient(
+                    colors: [
+                      Color(0xFFB026FF),
+                      Color(0xFF00F4FE),
+                      Colors.transparent,
+                    ],
+                    stops: [0.2, 0.7, 1.0],
+                  ),
+                  boxShadow: [
+                    BoxShadow(
+                      color: const Color(0xFFB026FF).withValues(alpha: 0.45),
+                      blurRadius: 16,
+                      spreadRadius: 2,
+                    ),
+                  ],
+                ),
+              ),
+              // Outer Ring
+              Container(
+                width: 52,
+                height: 52,
+                decoration: const BoxDecoration(
+                  shape: BoxShape.circle,
+                  color: Color(0xFF2D2736),
+                ),
+                child: Center(
+                  child: Container(
+                    width: 42,
+                    height: 42,
+                    decoration: const BoxDecoration(
+                      shape: BoxShape.circle,
+                      color: Color(0xFF110C19),
+                    ),
+                    child: const Center(
+                      child: Icon(
+                        Icons.how_to_reg_rounded,
+                        color: Color(0xFFE5B5FF),
+                        size: 24,
+                      ),
+                    ),
+                  ),
+                ),
+              ),
+              // Rank: E Badge at bottom right
+              Positioned(
+                bottom: 0,
+                right: 0,
+                child: Container(
+                  padding: const EdgeInsets.symmetric(horizontal: 5, vertical: 1.5),
+                  decoration: BoxDecoration(
+                    color: const Color(0xFFB026FF),
+                    borderRadius: BorderRadius.circular(999),
+                    boxShadow: [
+                      BoxShadow(
+                        color: Colors.black.withValues(alpha: 0.5),
+                        blurRadius: 4,
+                        offset: const Offset(0, 2),
+                      ),
+                    ],
+                  ),
+                  child: Text(
+                    'RANK: E',
+                    style: GoogleFonts.spaceGrotesk(
+                      fontSize: 8,
+                      fontWeight: FontWeight.w700,
+                      letterSpacing: 0.4,
+                      color: Colors.white,
+                    ),
+                  ),
+                ),
+              ),
+            ],
+          ),
+        ),
+
+        const SizedBox(height: 8),
+
+        // [ SYSTEM AWAKENING ]
+        Text(
+          '[ SYSTEM AWAKENING ]',
+          style: GoogleFonts.spaceGrotesk(
+            fontSize: 10.5,
+            fontWeight: FontWeight.w700,
+            letterSpacing: 2.0,
+            color: const Color(0xFF00DCE5),
+          ),
+        ),
+
+        const SizedBox(height: 3),
+
+        // SYSTEM REGISTRATION
+        Text(
+          'SYSTEM REGISTRATION',
+          style: GoogleFonts.sora(
+            fontSize: 21,
+            fontWeight: FontWeight.w700,
+            letterSpacing: 0.4,
+            color: const Color(0xFFE9DEF2),
+          ),
+        ),
+
+        const SizedBox(height: 3),
+
+        // Subtext
+        Text(
+          'Register New Hunter Credentials to bind Mana Core',
+          textAlign: TextAlign.center,
+          style: GoogleFonts.plusJakartaSans(
+            fontSize: 11.5,
+            fontWeight: FontWeight.w400,
+            color: const Color(0xFFDCB8FC),
+          ),
+        ),
+      ],
+    );
+  }
+
+  /// 3. Registration HUD Terminal Card (Inputs + Biometrics + Action Button)
+  Widget _buildTerminalCard() {
+    return Container(
+      decoration: BoxDecoration(
+        color: const Color(0xFF1F1927),
+        borderRadius: BorderRadius.circular(16),
+        border: Border.all(
+          color: const Color(0xFF383241),
+          width: 1.0,
+        ),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black.withValues(alpha: 0.4),
+            blurRadius: 18,
+            offset: const Offset(0, 6),
+          ),
+        ],
+      ),
+      child: ClipRRect(
+        borderRadius: BorderRadius.circular(16),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.stretch,
+          children: [
+            // Top HUD Accent Bar (LinearGradient)
+            Container(
+              height: 2,
+              decoration: const BoxDecoration(
+                gradient: LinearGradient(
+                  colors: [
+                    Colors.transparent,
+                    Color(0xFFB026FF),
+                    Colors.transparent,
+                  ],
+                ),
+              ),
+            ),
+
+            Padding(
+              padding: const EdgeInsets.all(14.0),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.stretch,
+                children: [
+                  // Field 1: Hunter Codename
+                  _buildInputLabel(
+                    icon: Icons.person_rounded,
+                    iconColor: const Color(0xFFE5B5FF),
+                    label: 'HUNTER CODENAME',
+                    badge: 'UNIQUE IDENTIFIER',
+                    badgeColor: const Color(0xFF9B8BA1),
+                  ),
+                  const SizedBox(height: 5),
+                  _buildTextField(
+                    controller: _usernameController,
+                    hint: 'e.g. SungJinwoo_99',
+                    prefixIcon: Icons.fingerprint_rounded,
+                  ),
+
+                  const SizedBox(height: 11),
+
+                  // Field 2: Create Security Cipher
+                  _buildInputLabel(
+                    icon: Icons.lock_rounded,
+                    iconColor: const Color(0xFFE5B5FF),
+                    label: 'CREATE SECURITY CIPHER',
+                    badge: 'MIN. 8 RUNES',
+                    badgeColor: const Color(0xFF9B8BA1),
+                  ),
+                  const SizedBox(height: 5),
+                  _buildTextField(
+                    controller: _passwordController,
+                    hint: '••••••••••••',
+                    prefixIcon: Icons.key_rounded,
+                    isPassword: true,
+                    isObscured: _isObscure,
+                    onToggleVisibility: () => setState(() => _isObscure = !_isObscure),
+                  ),
+
+                  const SizedBox(height: 11),
+
+                  // Field 3: Confirm Security Cipher
+                  _buildInputLabel(
+                    icon: Icons.verified_user_rounded,
+                    iconColor: const Color(0xFF00DCE5),
+                    label: 'CONFIRM CIPHER',
+                    badge: 'CORE SYNC',
+                    badgeColor: const Color(0xFF00DCE5),
+                  ),
+                  const SizedBox(height: 5),
+                  _buildTextField(
+                    controller: _confirmPasswordController,
+                    hint: '••••••••••••',
+                    prefixIcon: Icons.shield_rounded,
+                    isPassword: true,
+                    isObscured: _isConfirmObscure,
+                    onToggleVisibility: () => setState(() => _isConfirmObscure = !_isConfirmObscure),
+                  ),
+
+                  const SizedBox(height: 13),
+
+                  // Section Header: Otentikasi Biometrik
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      Row(
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          const Icon(
+                            Icons.security_rounded,
+                            size: 13,
+                            color: Color(0xFFE5B5FF),
+                          ),
+                          const SizedBox(width: 4),
+                          Text(
+                            'OTENTIKASI BIOMETRIK',
+                            style: GoogleFonts.spaceGrotesk(
+                              fontSize: 10,
+                              fontWeight: FontWeight.w600,
+                              letterSpacing: 0.8,
+                              color: const Color(0xFF9B8BA1),
+                            ),
+                          ),
+                        ],
+                      ),
+                      Text(
+                        'OPSIONAL • MULTI-LAYER',
+                        style: GoogleFonts.spaceGrotesk(
+                          fontSize: 9,
+                          fontWeight: FontWeight.w600,
+                          letterSpacing: 0.5,
+                          color: const Color(0xFFDCB8FC),
+                        ),
+                      ),
+                    ],
+                  ),
+
+                  const SizedBox(height: 8),
+
+                  // Biometric Toggle 1: Fingerprint
+                  _buildBiometricBox(
+                    icon: Icons.fingerprint_rounded,
+                    iconColor: const Color(0xFFB026FF),
+                    iconBgColor: const Color(0xFF1F1638),
+                    borderColor: const Color(0xFFB026FF).withValues(alpha: 0.35),
+                    title: 'Pindai Sidik Jari (Fingerprint)',
+                    badgeText: 'SIAP DIDAFTARKAN',
+                    badgeBgColor: const Color(0xFFB026FF).withValues(alpha: 0.20),
+                    badgeTextColor: const Color(0xFFE5B5FF),
+                    badgeBorderColor: const Color(0xFFB026FF).withValues(alpha: 0.40),
+                    subtitle: 'Daftarkan sidik jari perangkat untuk autentika...',
+                    switchValue: _fingerprintEnroll,
+                    activeTrackColor: const Color(0xFFB026FF),
+                    onChanged: (val) => setState(() => _fingerprintEnroll = val),
+                  ),
+
+                  const SizedBox(height: 7),
+
+                  // Biometric Toggle 2: Face Scan
+                  _buildBiometricBox(
+                    icon: Icons.face_rounded,
+                    iconColor: const Color(0xFF00F4FE),
+                    iconBgColor: const Color(0xFF0A2730),
+                    borderColor: const Color(0xFF00F4FE).withValues(alpha: 0.35),
+                    title: 'Pengenalan Wajah (Face Scan)',
+                    badgeText: 'KAMERA DEPAN',
+                    badgeBgColor: const Color(0xFF00F4FE).withValues(alpha: 0.20),
+                    badgeTextColor: const Color(0xFF00DCE5),
+                    badgeBorderColor: const Color(0xFF00F4FE).withValues(alpha: 0.40),
+                    subtitle: 'Daftarkan biometrik wajah via kamera depan',
+                    switchValue: _faceScanEnroll,
+                    activeTrackColor: const Color(0xFF00F4FE),
+                    onChanged: (val) => setState(() => _faceScanEnroll = val),
+                  ),
+
+                  const SizedBox(height: 12),
+
+                  // Submit Button: DAFTAR SEKARANG (REGISTER)
+                  Container(
+                    height: 46,
+                    decoration: BoxDecoration(
+                      borderRadius: BorderRadius.circular(10),
+                      gradient: const LinearGradient(
+                        colors: [Color(0xFF7B2CBF), Color(0xFFB026FF)],
+                        begin: Alignment.centerLeft,
+                        end: Alignment.centerRight,
+                      ),
+                      boxShadow: [
+                        BoxShadow(
+                          color: const Color(0xFFB026FF).withValues(alpha: 0.35),
+                          blurRadius: 14,
+                          offset: const Offset(0, 3),
+                        ),
+                      ],
+                    ),
+                    child: Material(
+                      color: Colors.transparent,
+                      child: InkWell(
+                        borderRadius: BorderRadius.circular(10),
+                        onTap: _isLoading ? null : _handleRegister,
+                        child: Center(
+                          child: _isLoading
+                              ? const SizedBox(
+                                  width: 20,
+                                  height: 20,
+                                  child: CircularProgressIndicator(
+                                    strokeWidth: 2.2,
+                                    color: Colors.white,
+                                  ),
+                                )
+                              : Row(
+                                  mainAxisAlignment: MainAxisAlignment.center,
+                                  children: [
+                                    const Icon(
+                                      Icons.bolt_rounded,
+                                      color: Colors.white,
+                                      size: 19,
+                                    ),
+                                    const SizedBox(width: 6),
+                                    Text(
+                                      'DAFTAR SEKARANG (REGISTER)',
+                                      style: GoogleFonts.spaceGrotesk(
+                                        fontSize: 12.5,
+                                        fontWeight: FontWeight.w700,
+                                        letterSpacing: 1.0,
+                                        color: Colors.white,
+                                      ),
+                                    ),
+                                    const SizedBox(width: 6),
+                                    const Icon(
+                                      Icons.arrow_forward_rounded,
+                                      color: Colors.white,
+                                      size: 17,
+                                    ),
+                                  ],
+                                ),
+                        ),
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  /// Widget Helper: Label + Badge di atas TextFormField
+  Widget _buildInputLabel({
+    required IconData icon,
+    required Color iconColor,
+    required String label,
+    required String badge,
+    required Color badgeColor,
+  }) {
+    return Row(
+      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+      children: [
+        Row(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Icon(icon, size: 13, color: iconColor),
+            const SizedBox(width: 4),
+            Text(
+              label,
+              style: GoogleFonts.spaceGrotesk(
+                fontSize: 10,
+                fontWeight: FontWeight.w600,
+                letterSpacing: 0.8,
+                color: const Color(0xFFD2C1D7),
+              ),
+            ),
+          ],
+        ),
+        Text(
+          badge,
+          style: GoogleFonts.spaceGrotesk(
+            fontSize: 9.5,
+            fontWeight: FontWeight.w600,
+            letterSpacing: 0.6,
+            color: badgeColor,
+          ),
+        ),
+      ],
+    );
+  }
+
+  /// Widget Helper: Styled TextField
+  Widget _buildTextField({
+    required TextEditingController controller,
+    required String hint,
+    required IconData prefixIcon,
+    bool isPassword = false,
+    bool isObscured = false,
+    VoidCallback? onToggleVisibility,
+  }) {
+    return Container(
+      height: 44,
+      decoration: BoxDecoration(
+        color: const Color(0xFF110C19),
+        borderRadius: BorderRadius.circular(10),
+        border: Border.all(
+          color: const Color(0xFF383241),
+          width: 1.0,
+        ),
+      ),
+      child: TextField(
+        controller: controller,
+        obscureText: isPassword ? isObscured : false,
+        style: GoogleFonts.plusJakartaSans(
+          fontSize: 13,
+          color: const Color(0xFFE9DEF2),
+        ),
+        cursorColor: const Color(0xFFB026FF),
+        decoration: InputDecoration(
+          isDense: true,
+          hintText: hint,
+          hintStyle: GoogleFonts.plusJakartaSans(
+            fontSize: 13,
+            color: const Color(0xFF4F4255),
+          ),
+          prefixIcon: Icon(
+            prefixIcon,
+            color: const Color(0xFF6E6078),
+            size: 18,
+          ),
+          suffixIcon: isPassword
+              ? IconButton(
+                  icon: Icon(
+                    isObscured ? Icons.visibility_outlined : Icons.visibility_off_outlined,
+                    color: const Color(0xFF9B8BA1),
+                    size: 18,
+                  ),
+                  onPressed: onToggleVisibility,
+                )
+              : null,
+          border: InputBorder.none,
+          contentPadding: const EdgeInsets.symmetric(horizontal: 10, vertical: 12),
+        ),
+      ),
+    );
+  }
+
+  /// Widget Helper: Biometric Toggle Box
+  Widget _buildBiometricBox({
+    required IconData icon,
+    required Color iconColor,
+    required Color iconBgColor,
+    required Color borderColor,
+    required String title,
+    required String badgeText,
+    required Color badgeBgColor,
+    required Color badgeTextColor,
+    required Color badgeBorderColor,
+    required String subtitle,
+    required bool switchValue,
+    required Color activeTrackColor,
+    required ValueChanged<bool> onChanged,
+  }) {
+    return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 7),
+      decoration: BoxDecoration(
+        color: const Color(0xFF110C19),
+        borderRadius: BorderRadius.circular(10),
+        border: Border.all(
+          color: borderColor,
+          width: 1.0,
+        ),
+      ),
+      child: Row(
+        children: [
+          // Icon Box
+          Container(
+            width: 32,
+            height: 32,
+            decoration: BoxDecoration(
+              color: iconBgColor,
+              borderRadius: BorderRadius.circular(8),
+              border: Border.all(
+                color: borderColor,
+                width: 1.0,
+              ),
+            ),
+            child: Icon(icon, size: 18, color: iconColor),
+          ),
+
+          const SizedBox(width: 8),
+
+          // Texts
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                Row(
+                  children: [
+                    Flexible(
+                      child: Text(
+                        title,
+                        maxLines: 1,
+                        overflow: TextOverflow.ellipsis,
+                        style: GoogleFonts.spaceGrotesk(
+                          fontSize: 11.5,
+                          fontWeight: FontWeight.w600,
+                          color: const Color(0xFFE9DEF2),
+                        ),
+                      ),
+                    ),
+                    const SizedBox(width: 5),
+                    Container(
+                      padding: const EdgeInsets.symmetric(horizontal: 4.5, vertical: 1.5),
+                      decoration: BoxDecoration(
+                        color: badgeBgColor,
+                        borderRadius: BorderRadius.circular(4),
+                        border: Border.all(color: badgeBorderColor, width: 0.8),
+                      ),
+                      child: Text(
+                        badgeText,
+                        style: GoogleFonts.spaceGrotesk(
+                          fontSize: 7.5,
+                          fontWeight: FontWeight.w700,
+                          color: badgeTextColor,
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+                const SizedBox(height: 1),
+                Text(
+                  subtitle,
+                  maxLines: 1,
+                  overflow: TextOverflow.ellipsis,
+                  style: GoogleFonts.plusJakartaSans(
+                    fontSize: 9.5,
+                    color: const Color(0xFF9B8BA1),
+                  ),
+                ),
+              ],
+            ),
+          ),
+
+          const SizedBox(width: 4),
+
+          // Switch
+          SizedBox(
+            height: 28,
+            width: 40,
+            child: FittedBox(
+              fit: BoxFit.contain,
+              child: Switch(
+                value: switchValue,
+                onChanged: onChanged,
+                activeThumbColor: Colors.white,
+                activeTrackColor: activeTrackColor,
+                inactiveThumbColor: const Color(0xFF9B8BA1),
+                inactiveTrackColor: const Color(0xFF383241),
+              ),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  /// 4. Monarch Directive Lore Banner
+  Widget _buildMonarchBanner() {
+    return Container(
+      padding: const EdgeInsets.all(8),
+      decoration: BoxDecoration(
+        color: const Color(0xFF1F1927),
+        borderRadius: BorderRadius.circular(10),
+        border: Border.all(
+          color: const Color(0xFF383241),
+          width: 1.0,
+        ),
+      ),
+      child: Row(
+        children: [
+          // Thumbnail Image
+          Container(
+            width: 40,
+            height: 40,
+            decoration: BoxDecoration(
+              borderRadius: BorderRadius.circular(8),
+              color: const Color(0xFF383241),
+            ),
+            clipBehavior: Clip.antiAlias,
+            child: Image.asset(
+              'assets/images/monarch_directive.png',
+              fit: BoxFit.cover,
+              errorBuilder: (context, error, stackTrace) => const Center(
+                child: Icon(
+                  Icons.auto_awesome,
+                  color: Color(0xFFB026FF),
+                  size: 20,
+                ),
+              ),
+            ),
+          ),
+
+          const SizedBox(width: 10),
+
+          // Texts
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  'MONARCH DIRECTIVE',
+                  style: GoogleFonts.spaceGrotesk(
+                    fontSize: 9.5,
+                    fontWeight: FontWeight.w700,
+                    letterSpacing: 1.1,
+                    color: const Color(0xFFE5B5FF),
+                  ),
+                ),
+                const SizedBox(height: 1),
+                Text(
+                  '"You have been chosen as a System Player. Do not fall."',
+                  maxLines: 1,
+                  overflow: TextOverflow.ellipsis,
+                  style: GoogleFonts.plusJakartaSans(
+                    fontSize: 10.5,
+                    color: const Color(0xFFD2C1D7),
+                  ),
+                ),
+              ],
+            ),
+          ),
+
+          const SizedBox(width: 6),
+
+          const Icon(
+            Icons.auto_awesome,
+            size: 16,
+            color: Color(0xFF9B8BA1),
+          ),
+        ],
+      ),
+    );
+  }
+
+  /// 5. Footer: Login Link & Security Info
+  Widget _buildFooter() {
+    return Column(
+      children: [
+        // Portal Login Link
+        FittedBox(
+          fit: BoxFit.scaleDown,
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              Text(
+                'Sudah punya akun? ',
+                style: GoogleFonts.plusJakartaSans(
+                  fontSize: 12,
+                  color: const Color(0xFFD2C1D7),
+                ),
+              ),
+              GestureDetector(
+                onTap: () => Navigator.pop(context),
+                child: Row(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    Text(
+                      'Masuk di sini (Portal Login)',
+                      style: GoogleFonts.spaceGrotesk(
+                        fontSize: 12,
+                        fontWeight: FontWeight.w600,
+                        color: const Color(0xFFE6FEFF),
+                        decoration: TextDecoration.underline,
+                        decorationColor: const Color(0xFFE6FEFF),
+                      ),
+                    ),
+                    const SizedBox(width: 2),
+                    const Icon(
+                      Icons.north_east_rounded,
+                      size: 13,
+                      color: Color(0xFFE6FEFF),
+                    ),
+                  ],
+                ),
+              ),
+            ],
+          ),
+        ),
+
+        const SizedBox(height: 8),
+
+        // Security Tag
+        FittedBox(
+          fit: BoxFit.scaleDown,
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              Text(
+                'GATE SECURE // RSA-4096',
+                style: GoogleFonts.spaceGrotesk(
+                  fontSize: 9,
+                  letterSpacing: 1.2,
+                  color: const Color(0xFF9B8BA1),
+                ),
+              ),
+              const SizedBox(width: 6),
+              Container(
+                width: 4,
+                height: 4,
+                decoration: const BoxDecoration(
+                  shape: BoxShape.circle,
+                  color: Color(0xFF9B8BA1),
+                ),
+              ),
+              const SizedBox(width: 6),
+              Text(
+                'VER 4.12.0',
+                style: GoogleFonts.spaceGrotesk(
+                  fontSize: 9,
+                  letterSpacing: 1.2,
+                  color: const Color(0xFF9B8BA1),
+                ),
+              ),
+            ],
+          ),
+        ),
+      ],
     );
   }
 }
