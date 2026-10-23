@@ -5,6 +5,7 @@ import 'package:intl/intl.dart';
 import '../../services/hive_service.dart';
 import '../../services/notif_service.dart';
 import '../../services/supabase_service.dart';
+import '../features/appearance_quest_screen.dart';
 
 class TabHome extends StatefulWidget {
   const TabHome({super.key});
@@ -779,7 +780,7 @@ class _TabHomeState extends State<TabHome> {
 
   /// 4. Search Bar & Category Chips
   Widget _buildSearchAndFilters() {
-    final categories = ['ALL', 'WORKOUT', 'CARDIO', 'STUDY', 'MANA'];
+    final categories = ['ALL', 'WORKOUT', 'CARDIO', 'STUDY', 'APPEARANCE', 'MANA'];
 
     return Column(
       children: [
@@ -915,7 +916,7 @@ class _TabHomeState extends State<TabHome> {
             borderRadius: BorderRadius.circular(6),
           ),
           child: Text(
-            '$completedCount / 3 DONE',
+            '$completedCount / 4 DONE',
             style: GoogleFonts.spaceGrotesk(
               fontSize: 10,
               fontWeight: FontWeight.w700,
@@ -932,7 +933,7 @@ class _TabHomeState extends State<TabHome> {
   Widget _buildQuestList() {
     final searchQuery = _searchController.text.trim().toLowerCase();
 
-    // Data 3 Daily Quests
+    // Data Daily Quests (termasuk Protokol Penampilan Hunter)
     final quests = [
       {
         'id': 'pushup',
@@ -965,6 +966,21 @@ class _TabHomeState extends State<TabHome> {
         'isActionCyan': true,
       },
       {
+        'id': 'appearance',
+        'title': 'Protokol Penampilan Hunter',
+        'category': 'APPEARANCE',
+        'desc': '5 Tahap Skincare & Grooming Esensial Hunter',
+        'exp': 30,
+        'gold': 20,
+        'icon': Icons.face_retouching_natural_rounded,
+        'iconColor': const Color(0xFF00F4FE),
+        'iconBg': const Color(0xFF0A2730),
+        'btnText': 'CHECKLIST',
+        'btnColor': const Color(0xFF00F4FE),
+        'btnTextColor': Colors.black,
+        'isActionCyan': true,
+      },
+      {
         'id': 'mana_focus',
         'title': 'Mana Knowledge Focus',
         'category': 'STUDY',
@@ -980,6 +996,39 @@ class _TabHomeState extends State<TabHome> {
         'isActionCyan': false,
       },
     ];
+
+    Future<void> handleQuestAction(Map<String, dynamic> q) async {
+      final String qId = q['id'] as String;
+      final bool isDone = _completedQuests.contains(qId);
+      if (isDone) {
+        completeQuest(
+          q['exp'] as int,
+          q['gold'] as int,
+          qId,
+          q['title'] as String,
+        );
+        return;
+      }
+
+      if (qId == 'appearance') {
+        final result = await Navigator.push<bool>(
+          context,
+          MaterialPageRoute(
+            builder: (context) => const AppearanceQuestScreen(),
+          ),
+        );
+        if (result == true) {
+          completeQuest(30, 20, qId, q['title'] as String);
+        }
+      } else {
+        completeQuest(
+          q['exp'] as int,
+          q['gold'] as int,
+          qId,
+          q['title'] as String,
+        );
+      }
+    }
 
     // Filter berdasarkan Kategori & Pencarian
     final filteredQuests = quests.where((q) {
@@ -999,183 +1048,185 @@ class _TabHomeState extends State<TabHome> {
 
         return Padding(
           padding: const EdgeInsets.only(bottom: 8.0),
-          child: Container(
-            decoration: BoxDecoration(
-              color: const Color(0xFF1F1927),
+          child: Material(
+            color: Colors.transparent,
+            child: InkWell(
               borderRadius: BorderRadius.circular(12),
-              border: Border.all(
-                color: isDone ? const Color(0xFF00F4FE).withValues(alpha: 0.5) : const Color(0xFF383241),
-                width: 1.0,
-              ),
-              boxShadow: [
-                BoxShadow(
-                  color: Colors.black.withValues(alpha: 0.35),
-                  blurRadius: 10,
-                  offset: const Offset(0, 3),
-                ),
-              ],
-            ),
-            padding: const EdgeInsets.all(12),
-            child: Row(
-              children: [
-                // Icon Kategori di Kiri
-                Container(
-                  width: 44,
-                  height: 44,
-                  decoration: BoxDecoration(
-                    color: q['iconBg'] as Color,
-                    borderRadius: BorderRadius.circular(10),
+              onTap: () => handleQuestAction(q),
+              child: Container(
+                decoration: BoxDecoration(
+                  color: const Color(0xFF1F1927),
+                  borderRadius: BorderRadius.circular(12),
+                  border: Border.all(
+                    color: isDone ? const Color(0xFF00F4FE).withValues(alpha: 0.5) : const Color(0xFF383241),
+                    width: 1.0,
                   ),
-                  child: Icon(
-                    q['icon'] as IconData,
-                    color: q['iconColor'] as Color,
-                    size: 22,
-                  ),
+                  boxShadow: [
+                    BoxShadow(
+                      color: Colors.black.withValues(alpha: 0.35),
+                      blurRadius: 10,
+                      offset: const Offset(0, 3),
+                    ),
+                  ],
                 ),
-
-                const SizedBox(width: 10),
-
-                // Judul & Info di Tengah
-                Expanded(
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Text(
-                        q['title'] as String,
-                        maxLines: 1,
-                        overflow: TextOverflow.ellipsis,
-                        style: GoogleFonts.sora(
-                          fontSize: 13.5,
-                          fontWeight: FontWeight.w700,
-                          color: const Color(0xFFE9DEF2),
-                        ),
+                padding: const EdgeInsets.all(12),
+                child: Row(
+                  children: [
+                    // Icon Kategori di Kiri
+                    Container(
+                      width: 44,
+                      height: 44,
+                      decoration: BoxDecoration(
+                        color: q['iconBg'] as Color,
+                        borderRadius: BorderRadius.circular(10),
                       ),
-                      const SizedBox(height: 3),
-                      Row(
+                      child: Icon(
+                        q['icon'] as IconData,
+                        color: q['iconColor'] as Color,
+                        size: 22,
+                      ),
+                    ),
+
+                    const SizedBox(width: 10),
+
+                    // Judul & Info di Tengah
+                    Expanded(
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
-                          Container(
-                            padding: const EdgeInsets.symmetric(horizontal: 5, vertical: 1.5),
-                            decoration: BoxDecoration(
-                              color: const Color(0xFF2D164D),
-                              borderRadius: BorderRadius.circular(4),
-                            ),
-                            child: Text(
-                              q['category'] as String,
-                              style: GoogleFonts.spaceGrotesk(
-                                fontSize: 8.5,
-                                fontWeight: FontWeight.w700,
-                                color: const Color(0xFFE5B5FF),
-                              ),
+                          Text(
+                            q['title'] as String,
+                            maxLines: 1,
+                            overflow: TextOverflow.ellipsis,
+                            style: GoogleFonts.sora(
+                              fontSize: 13.5,
+                              fontWeight: FontWeight.w700,
+                              color: const Color(0xFFE9DEF2),
                             ),
                           ),
-                          const SizedBox(width: 6),
-                          Expanded(
-                            child: Text(
-                              q['desc'] as String,
-                              maxLines: 1,
-                              overflow: TextOverflow.ellipsis,
-                              style: GoogleFonts.plusJakartaSans(
-                                fontSize: 10,
-                                color: const Color(0xFF9B8BA1),
+                          const SizedBox(height: 3),
+                          Row(
+                            children: [
+                              Container(
+                                padding: const EdgeInsets.symmetric(horizontal: 5, vertical: 1.5),
+                                decoration: BoxDecoration(
+                                  color: const Color(0xFF2D164D),
+                                  borderRadius: BorderRadius.circular(4),
+                                ),
+                                child: Text(
+                                  q['category'] as String,
+                                  style: GoogleFonts.spaceGrotesk(
+                                    fontSize: 8.5,
+                                    fontWeight: FontWeight.w700,
+                                    color: const Color(0xFFE5B5FF),
+                                  ),
+                                ),
                               ),
-                            ),
+                              const SizedBox(width: 6),
+                              Expanded(
+                                child: Text(
+                                  q['desc'] as String,
+                                  maxLines: 1,
+                                  overflow: TextOverflow.ellipsis,
+                                  style: GoogleFonts.plusJakartaSans(
+                                    fontSize: 10,
+                                    color: const Color(0xFF9B8BA1),
+                                  ),
+                                ),
+                              ),
+                            ],
                           ),
                         ],
                       ),
-                    ],
-                  ),
-                ),
-
-                const SizedBox(width: 8),
-
-                // Reward & Tombol Eksekusi di Kanan
-                Column(
-                  crossAxisAlignment: CrossAxisAlignment.end,
-                  children: [
-                    Row(
-                      mainAxisSize: MainAxisSize.min,
-                      children: [
-                        Text(
-                          '+${q['exp']} EXP',
-                          style: GoogleFonts.spaceGrotesk(
-                            fontSize: 9.5,
-                            fontWeight: FontWeight.w700,
-                            color: Colors.white,
-                          ),
-                        ),
-                        const SizedBox(width: 4),
-                        Text(
-                          '+${q['gold']} Gold',
-                          style: GoogleFonts.spaceGrotesk(
-                            fontSize: 9.5,
-                            fontWeight: FontWeight.w700,
-                            color: const Color(0xFF00F4FE),
-                          ),
-                        ),
-                      ],
                     ),
-                    const SizedBox(height: 5),
-                    InkWell(
-                      borderRadius: BorderRadius.circular(8),
-                      onTap: () => completeQuest(
-                        q['exp'] as int,
-                        q['gold'] as int,
-                        qId,
-                        q['title'] as String,
-                      ),
-                      child: Container(
-                        padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
-                        decoration: BoxDecoration(
-                          color: isDone
-                              ? const Color(0xFF2D2736)
-                              : (q['btnColor'] as Color == Colors.transparent
-                                  ? const Color(0xFF231B33)
-                                  : q['btnColor'] as Color),
-                          borderRadius: BorderRadius.circular(8),
-                          border: Border.all(
-                            color: isDone
-                                ? const Color(0xFF00F4FE)
-                                : (q['btnColor'] as Color == Colors.transparent
-                                    ? const Color(0xFFDCB8FC).withValues(alpha: 0.5)
-                                    : Colors.transparent),
-                          ),
-                          boxShadow: isDone
-                              ? null
-                              : [
-                                  BoxShadow(
-                                    color: (q['btnColor'] as Color == Colors.transparent
-                                            ? const Color(0xFFB026FF)
-                                            : q['btnColor'] as Color)
-                                        .withValues(alpha: 0.3),
-                                    blurRadius: 8,
-                                  ),
-                                ],
-                        ),
-                        child: Row(
+
+                    const SizedBox(width: 8),
+
+                    // Reward & Tombol Eksekusi di Kanan
+                    Column(
+                      crossAxisAlignment: CrossAxisAlignment.end,
+                      children: [
+                        Row(
                           mainAxisSize: MainAxisSize.min,
                           children: [
-                            Icon(
-                              isDone ? Icons.check_circle_rounded : (q['isActionCyan'] == true ? Icons.navigation_rounded : Icons.bolt_rounded),
-                              size: 13,
-                              color: isDone ? const Color(0xFF00F4FE) : q['btnTextColor'] as Color,
-                            ),
-                            const SizedBox(width: 3),
                             Text(
-                              isDone ? 'DONE' : q['btnText'] as String,
+                              '+${q['exp']} EXP',
                               style: GoogleFonts.spaceGrotesk(
                                 fontSize: 9.5,
-                                fontWeight: FontWeight.w800,
-                                letterSpacing: 0.4,
-                                color: isDone ? const Color(0xFF00F4FE) : q['btnTextColor'] as Color,
+                                fontWeight: FontWeight.w700,
+                                color: Colors.white,
+                              ),
+                            ),
+                            const SizedBox(width: 4),
+                            Text(
+                              '+${q['gold']} Gold',
+                              style: GoogleFonts.spaceGrotesk(
+                                fontSize: 9.5,
+                                fontWeight: FontWeight.w700,
+                                color: const Color(0xFF00F4FE),
                               ),
                             ),
                           ],
                         ),
-                      ),
+                        const SizedBox(height: 5),
+                        InkWell(
+                          borderRadius: BorderRadius.circular(8),
+                          onTap: () => handleQuestAction(q),
+                          child: Container(
+                            padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
+                            decoration: BoxDecoration(
+                              color: isDone
+                                  ? const Color(0xFF2D2736)
+                                  : (q['btnColor'] as Color == Colors.transparent
+                                      ? const Color(0xFF231B33)
+                                      : q['btnColor'] as Color),
+                              borderRadius: BorderRadius.circular(8),
+                              border: Border.all(
+                                color: isDone
+                                    ? const Color(0xFF00F4FE)
+                                    : (q['btnColor'] as Color == Colors.transparent
+                                        ? const Color(0xFFDCB8FC).withValues(alpha: 0.5)
+                                        : Colors.transparent),
+                              ),
+                              boxShadow: isDone
+                                  ? null
+                                  : [
+                                      BoxShadow(
+                                        color: (q['btnColor'] as Color == Colors.transparent
+                                                ? const Color(0xFFB026FF)
+                                                : q['btnColor'] as Color)
+                                            .withValues(alpha: 0.3),
+                                        blurRadius: 8,
+                                      ),
+                                    ],
+                            ),
+                            child: Row(
+                              mainAxisSize: MainAxisSize.min,
+                              children: [
+                                Icon(
+                                  isDone ? Icons.check_circle_rounded : (q['isActionCyan'] == true ? Icons.navigation_rounded : Icons.bolt_rounded),
+                                  size: 13,
+                                  color: isDone ? const Color(0xFF00F4FE) : q['btnTextColor'] as Color,
+                                ),
+                                const SizedBox(width: 3),
+                                Text(
+                                  isDone ? 'DONE' : q['btnText'] as String,
+                                  style: GoogleFonts.spaceGrotesk(
+                                    fontSize: 9.5,
+                                    fontWeight: FontWeight.w800,
+                                    letterSpacing: 0.4,
+                                    color: isDone ? const Color(0xFF00F4FE) : q['btnTextColor'] as Color,
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ),
+                        ),
+                      ],
                     ),
                   ],
                 ),
-              ],
+              ),
             ),
           ),
         );

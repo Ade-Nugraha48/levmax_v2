@@ -28,12 +28,12 @@ class _TabProfileState extends State<TabProfile> {
                     shape: BoxShape.circle,
                     color: const Color(0xFF120D24),
                     border: Border.all(
-                      color: AppColors.textLavender.withOpacity(0.6),
+                      color: AppColors.textLavender.withValues(alpha: 0.6),
                       width: 1.5,
                     ),
                     boxShadow: [
                       BoxShadow(
-                        color: AppColors.textLavender.withOpacity(0.25),
+                        color: AppColors.textLavender.withValues(alpha: 0.25),
                         blurRadius: 20,
                         spreadRadius: 2,
                       ),
