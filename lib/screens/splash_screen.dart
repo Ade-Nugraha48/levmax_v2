@@ -124,36 +124,39 @@ class _SplashScreenState extends State<SplashScreen>
           ),
         ],
       ),
-      child: Row(
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          // Titik Cyan Glowing
-          Container(
-            width: 8,
-            height: 8,
-            decoration: const BoxDecoration(
-              shape: BoxShape.circle,
-              color: Color(0xFF00F0FF),
-              boxShadow: [
-                BoxShadow(
-                  color: Color(0xFF00F0FF),
-                  blurRadius: 8,
-                  spreadRadius: 2,
-                ),
-              ],
+      child: FittedBox(
+        fit: BoxFit.scaleDown,
+        child: Row(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            // Titik Cyan Glowing
+            Container(
+              width: 8,
+              height: 8,
+              decoration: const BoxDecoration(
+                shape: BoxShape.circle,
+                color: Color(0xFF00F0FF),
+                boxShadow: [
+                  BoxShadow(
+                    color: Color(0xFF00F0FF),
+                    blurRadius: 8,
+                    spreadRadius: 2,
+                  ),
+                ],
+              ),
             ),
-          ),
-          const SizedBox(width: 8),
-          Text(
-            'SYSTEM VAULT PROTOCOL  •  NODE-ALPHA',
-            style: GoogleFonts.orbitron(
-              fontSize: 9.5,
-              fontWeight: FontWeight.w700,
-              letterSpacing: 1.8,
-              color: const Color(0xFFCBD5E1),
+            const SizedBox(width: 8),
+            Text(
+              'SYSTEM VAULT PROTOCOL  •  NODE-ALPHA',
+              style: GoogleFonts.orbitron(
+                fontSize: 9.0,
+                fontWeight: FontWeight.w700,
+                letterSpacing: 1.2,
+                color: const Color(0xFFCBD5E1),
+              ),
             ),
-          ),
-        ],
+          ],
+        ),
       ),
     );
   }
@@ -220,39 +223,42 @@ class _SplashScreenState extends State<SplashScreen>
         const SizedBox(height: 7),
 
         // Garis Aksen Tipis Gradient Kiri-Kanan
-        Row(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            Container(
-              width: 36,
-              height: 1,
-              decoration: const BoxDecoration(
-                gradient: LinearGradient(
-                  colors: [Colors.transparent, Color(0xFFB026FF)],
+        FittedBox(
+          fit: BoxFit.scaleDown,
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              Container(
+                width: 36,
+                height: 1,
+                decoration: const BoxDecoration(
+                  gradient: LinearGradient(
+                    colors: [Colors.transparent, Color(0xFFB026FF)],
+                  ),
                 ),
               ),
-            ),
-            const SizedBox(width: 8),
-            Text(
-              'SYSTEM SYNC IN PROGRESS',
-              style: GoogleFonts.orbitron(
-                fontSize: 8.5,
-                fontWeight: FontWeight.w600,
-                letterSpacing: 2.2,
-                color: const Color(0xFFD8B4F8),
-              ),
-            ),
-            const SizedBox(width: 8),
-            Container(
-              width: 36,
-              height: 1,
-              decoration: const BoxDecoration(
-                gradient: LinearGradient(
-                  colors: [Color(0xFFB026FF), Colors.transparent],
+              const SizedBox(width: 8),
+              Text(
+                'SYSTEM SYNC IN PROGRESS',
+                style: GoogleFonts.orbitron(
+                  fontSize: 8.5,
+                  fontWeight: FontWeight.w600,
+                  letterSpacing: 2.0,
+                  color: const Color(0xFFD8B4F8),
                 ),
               ),
-            ),
-          ],
+              const SizedBox(width: 8),
+              Container(
+                width: 36,
+                height: 1,
+                decoration: const BoxDecoration(
+                  gradient: LinearGradient(
+                    colors: [Color(0xFFB026FF), Colors.transparent],
+                  ),
+                ),
+              ),
+            ],
+          ),
         ),
 
         const SizedBox(height: 28),
