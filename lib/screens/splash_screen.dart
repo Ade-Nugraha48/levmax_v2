@@ -1,5 +1,6 @@
 import 'dart:math' as math;
 import 'package:flutter/material.dart';
+import 'package:google_fonts/google_fonts.dart';
 import 'auth/login_screen.dart';
 
 /// Halaman Pertama: Awakening Splash Screen bertema Solo Leveling
@@ -143,14 +144,13 @@ class _SplashScreenState extends State<SplashScreen>
             ),
           ),
           const SizedBox(width: 8),
-          const Text(
+          Text(
             'SYSTEM VAULT PROTOCOL  •  NODE-ALPHA',
-            style: TextStyle(
-              fontFamily: 'monospace',
+            style: GoogleFonts.orbitron(
               fontSize: 9.5,
               fontWeight: FontWeight.w700,
               letterSpacing: 1.8,
-              color: Color(0xFFCBD5E1),
+              color: const Color(0xFFCBD5E1),
             ),
           ),
         ],
@@ -163,23 +163,30 @@ class _SplashScreenState extends State<SplashScreen>
     return Column(
       mainAxisSize: MainAxisSize.min,
       children: [
-        // Emblem Solo Leveling dengan Shadow Ungu Menyala (#B026FF)
-        Container(
-          constraints: const BoxConstraints(maxWidth: 290, maxHeight: 155),
-          decoration: BoxDecoration(
-            boxShadow: [
-              BoxShadow(
-                color: const Color(0xFFB026FF).withValues(alpha: 0.4),
-                blurRadius: 45,
-                spreadRadius: 8,
+        // Emblem Solo Leveling dengan Ambient Glow Ungu Menyala (#B026FF)
+        Stack(
+          alignment: Alignment.center,
+          children: [
+            // Ethereal diffuse purple backlight glow (sesuai logo-shadow di Stitch)
+            Container(
+              width: 290,
+              height: 145,
+              decoration: BoxDecoration(
+                shape: BoxShape.circle,
+                gradient: RadialGradient(
+                  colors: [
+                    const Color(0xFFB026FF).withValues(alpha: 0.40),
+                    const Color(0xFF6D19A8).withValues(alpha: 0.18),
+                    Colors.transparent,
+                  ],
+                  stops: const [0.0, 0.55, 1.0],
+                ),
               ),
-            ],
-          ),
-          child: Image.network(
-            'https://lh3.googleusercontent.com/aida-public/AB6AXuDMXgjosUaovw7DlKRkHq3xmY-ojH0vjen7RFj8ca9Z_1t1g3lpIU4VcowbrLDbAVgRf-waX2dZRNWc-Kjgz0KdR59zAPdvRu-XQn0G6uuoNfKwjk_sPNKHf5qRuhV-CAfoIX-pQnnh51rdCHELNUz671bN6pt8CJNnsStzteUuGBwOdaSz8QuNNs2JybGwzhqzC3_A09H_wRAytF2YMqtmAsAbDvEHG4kxYwgtqWw_Qvv74SnzDqElVDQstsyDNkGy7A',
-            fit: BoxFit.contain,
-            errorBuilder: (context, error, stackTrace) => Image.asset(
+            ),
+            Image.asset(
               'assets/images/solo_leveling_logo.png',
+              width: 275,
+              height: 140,
               fit: BoxFit.contain,
               errorBuilder: (context, error, stackTrace) => const Icon(
                 Icons.shield_rounded,
@@ -187,22 +194,21 @@ class _SplashScreenState extends State<SplashScreen>
                 color: Color(0xFFB026FF),
               ),
             ),
-          ),
+          ],
         ),
 
-        const SizedBox(height: 18),
+        const SizedBox(height: 14),
 
         // Teks Judul Hero
-        const Text(
+        Text(
           'LEVMAX  ◈  THE HUNTER AWAKENING',
           textAlign: TextAlign.center,
-          style: TextStyle(
-            fontFamily: 'monospace',
-            fontSize: 12.5,
-            fontWeight: FontWeight.w800,
-            letterSpacing: 2.6,
-            color: Color(0xFFF3EFF5),
-            shadows: [
+          style: GoogleFonts.orbitron(
+            fontSize: 12.0,
+            fontWeight: FontWeight.w700,
+            letterSpacing: 2.8,
+            color: const Color(0xFFF3EFF5),
+            shadows: const [
               Shadow(
                 color: Color(0xFFB026FF),
                 blurRadius: 16,
@@ -227,14 +233,13 @@ class _SplashScreenState extends State<SplashScreen>
               ),
             ),
             const SizedBox(width: 8),
-            const Text(
+            Text(
               'SYSTEM SYNC IN PROGRESS',
-              style: TextStyle(
-                fontFamily: 'monospace',
+              style: GoogleFonts.orbitron(
                 fontSize: 8.5,
                 fontWeight: FontWeight.w600,
                 letterSpacing: 2.2,
-                color: Color(0xFFD8B4F8),
+                color: const Color(0xFFD8B4F8),
               ),
             ),
             const SizedBox(width: 8),
@@ -250,34 +255,33 @@ class _SplashScreenState extends State<SplashScreen>
           ],
         ),
 
-        const SizedBox(height: 32),
+        const SizedBox(height: 28),
 
         // 4. Mana Reactor Loader (3 Cincin Konsentris + Pulsing Diamond)
         _buildManaReactorLoader(),
 
-        const SizedBox(height: 28),
+        const SizedBox(height: 26),
 
         // Teks Status Telemetri
-        const Text(
+        Text(
           'Establishing connection to the System...',
           textAlign: TextAlign.center,
-          style: TextStyle(
-            fontFamily: 'Sora',
-            fontSize: 13.5,
+          style: GoogleFonts.rajdhani(
+            fontSize: 15.0,
             fontWeight: FontWeight.w600,
             letterSpacing: 0.6,
-            color: Color(0xFFD8B4F8),
+            color: const Color(0xFFD8B4F8),
           ),
         ),
-        const SizedBox(height: 5),
-        const Text(
+        const SizedBox(height: 4),
+        Text(
           'Verifying cryptographic credentials (SHA-256) & local Hive registry...',
           textAlign: TextAlign.center,
-          style: TextStyle(
-            fontFamily: 'Sora',
-            fontSize: 10.5,
+          style: GoogleFonts.rajdhani(
+            fontSize: 12.0,
+            fontWeight: FontWeight.w500,
             letterSpacing: 0.4,
-            color: Color(0xFF8B829E),
+            color: const Color(0xFF8B829E),
           ),
         ),
       ],
@@ -489,14 +493,13 @@ class _SplashScreenState extends State<SplashScreen>
                 ),
                 const SizedBox(width: 8),
                 RichText(
-                  text: const TextSpan(
-                    style: TextStyle(
-                      fontFamily: 'monospace',
+                  text: TextSpan(
+                    style: GoogleFonts.orbitron(
                       fontSize: 9.5,
                       letterSpacing: 1.1,
-                      color: Color(0xFFCBD5E1),
+                      color: const Color(0xFFCBD5E1),
                     ),
-                    children: [
+                    children: const [
                       TextSpan(text: 'SUPABASE RPC: '),
                       TextSpan(
                         text: 'CONNECTING',
@@ -527,16 +530,15 @@ class _SplashScreenState extends State<SplashScreen>
         const SizedBox(height: 8),
 
         // Version & Mobile Architecture Core Tag
-        const FittedBox(
+        FittedBox(
           fit: BoxFit.scaleDown,
           child: Text(
             'V1.0.0  •  MOBILE ARCHITECTURE CORE',
-            style: TextStyle(
-              fontFamily: 'monospace',
+            style: GoogleFonts.orbitron(
               fontSize: 9.0,
               fontWeight: FontWeight.w600,
               letterSpacing: 2.0,
-              color: Color(0xFF6E6485),
+              color: const Color(0xFF6E6485),
             ),
           ),
         ),
