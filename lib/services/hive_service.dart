@@ -90,4 +90,16 @@ class HiveService {
     }
     return '0000000000000000000000000000000000000000000000000000000000000000';
   }
+
+  /// Menyimpan path gambar avatar custom AI ke Hive
+  static Future<void> saveAIAvatar(String path) async {
+    final box = sessionBox;
+    await box.put('ai_avatar_path', path);
+  }
+
+  /// Mengambil path gambar avatar custom AI dari Hive jika ada
+  static String? getAIAvatar() {
+    final box = sessionBox;
+    return box.get('ai_avatar_path') as String?;
+  }
 }
