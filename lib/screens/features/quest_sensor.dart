@@ -24,7 +24,7 @@ class _QuestSensorScreenState extends State<QuestSensorScreen> {
   int _shakeCount = 0;
   static const int _targetShakes = 50;
   DateTime _lastShakeTime = DateTime.now();
-  double _currentGForce = 1.82;
+  double _currentGForce = 1.0;
   bool _isCompleted = false;
 
   // 3. Timer Countdown 03:00 (180 detik)
@@ -87,12 +87,79 @@ class _QuestSensorScreenState extends State<QuestSensorScreen> {
     return '${minutes.toString().padLeft(2, '0')}:${seconds.toString().padLeft(2, '0')} REMAINING';
   }
 
+  /// Sinkronisasi Persentase: Dimulai dari 0% saat awal, meningkat dinamis hingga 100% saat target selesai
+  int get _syncPercent {
+    final double pct = (_shakeCount / _targetShakes) * 100.0;
+    return pct.clamp(0.0, 100.0).toInt();
+  }
+
+  String get _syncPercentLabel => '$_syncPercent%';
+
+  Color get _syncColor {
+    if (_syncPercent >= 100) {
+      return const Color(0xFF00F4FE);
+    } else if (_syncPercent > 0) {
+      return const Color(0xFFE9DEF2);
+    }
+    return const Color(0xFF9B8BA1);
+  }
+
+  /// Rules Intensitas Dinamis:
+  /// - 'LENGKAP': Target 50 shakes tercapai (sinkronisasi 100%)
+  /// - 'STANDBY': Kondisi awal (0 shakes) belum ada guncangan aktif
+  /// - 'MENURUN': Hunter berhenti bergerak / idle lebih dari 2.5 detik di tengah quest
+  /// - 'MAKSIMAL': Akselerasi guncangan tinggi (G-Force >= 2.4 G)
+  /// - 'OPTIMAL': Ritme akselerasi mantap dan stabil (1.45 G s/d 2.4 G)
+  /// - 'RENDAH': Guncangan perlahan di bawah ambang optimal (< 1.45 G)
+  String get _intensityLabel {
+    if (_isCompleted || _shakeCount >= _targetShakes) {
+      return 'LENGKAP';
+    }
+    if (_shakeCount == 0 && _currentGForce <= 1.25) {
+      return 'STANDBY';
+    }
+    final int millisSinceLastShake = DateTime.now().difference(_lastShakeTime).inMilliseconds;
+    if (_shakeCount > 0 && millisSinceLastShake > 2500) {
+      return 'MENURUN';
+    }
+    if (_currentGForce >= 2.4) {
+      return 'MAKSIMAL';
+    } else if (_currentGForce >= 1.45) {
+      return 'OPTIMAL';
+    } else {
+      return 'RENDAH';
+    }
+  }
+
+  Color get _intensityColor {
+    switch (_intensityLabel) {
+      case 'MAKSIMAL':
+        return const Color(0xFFB026FF); // Ungu neon Solo Leveling
+      case 'OPTIMAL':
+      case 'LENGKAP':
+        return const Color(0xFF00F4FE); // Cyan neon Hunter System
+      case 'RENDAH':
+        return const Color(0xFFD8B4F8); // Ungu muda
+      case 'MENURUN':
+        return const Color(0xFFFF7A85); // Merah warning
+      case 'STANDBY':
+      default:
+        return const Color(0xFF9B8BA1); // Abu-abu standby
+    }
+  }
+
   /// Menambah jumlah shake dan memvalidasi jika target >= 50 tercapai
   void _registerShake() {
     if (_isCompleted) return;
 
     setState(() {
       _shakeCount++;
+      _lastShakeTime = DateTime.now();
+      // Simulasi peningkatan G-force jika dipicu interaktif melalui tap di simulator
+      if (_currentGForce <= 1.25) {
+        _currentGForce = 1.65 + Random().nextDouble() * 0.8;
+      }
+
       if (_shakeCount >= _targetShakes) {
         _shakeCount = _targetShakes;
         _handleProtocolComplete();
@@ -146,7 +213,7 @@ class _QuestSensorScreenState extends State<QuestSensorScreen> {
             const SizedBox(width: 8),
             Expanded(
               child: Text(
-                'Protocol Complete! +20 EXP & +15 Gold Ditambahkan!',
+                'Protocol Complete! Sinkronisasi 100% (+20 EXP & +15 Gold)',
                 style: GoogleFonts.spaceGrotesk(
                   fontWeight: FontWeight.w700,
                   color: Colors.white,
@@ -159,6 +226,10 @@ class _QuestSensorScreenState extends State<QuestSensorScreen> {
         duration: const Duration(seconds: 2),
       ),
     );
+
+    // Beri jeda 800ms agar hunter melihat status 100% dan LENGKAP sebelum kembali
+    await Future.delayed(const Duration(milliseconds: 800));
+    if (!mounted) return;
 
     // 3. Kembali ke halaman utama dengan nilai kembalian true
     Navigator.pop(context, true);
@@ -920,7 +991,7 @@ class _QuestSensorScreenState extends State<QuestSensorScreen> {
   Widget _buildRealtimeStatsStrip() {
     return Row(
       children: [
-        // Kotak INTENSITAS: OPTIMAL
+        // Kotak INTENSITAS: Dinamis (STANDBY / RENDAH / OPTIMAL / MAKSIMAL / MENURUN / LENGKAP)
         Expanded(
           child: Container(
             padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
@@ -928,7 +999,11 @@ class _QuestSensorScreenState extends State<QuestSensorScreen> {
               color: const Color(0xFF1F1927),
               borderRadius: BorderRadius.circular(10),
               border: Border.all(
-                color: const Color(0xFF383241),
+                color: _intensityLabel == 'MAKSIMAL'
+                    ? const Color(0xFFB026FF).withValues(alpha: 0.6)
+                    : _intensityLabel == 'LENGKAP'
+                        ? const Color(0xFF00F4FE).withValues(alpha: 0.6)
+                        : const Color(0xFF383241),
                 width: 1.0,
               ),
             ),
@@ -941,11 +1016,11 @@ class _QuestSensorScreenState extends State<QuestSensorScreen> {
                     color: const Color(0xFF2D164D),
                     borderRadius: BorderRadius.circular(8),
                   ),
-                  child: const Center(
+                  child: Center(
                     child: Icon(
                       Icons.speed_rounded,
                       size: 18,
-                      color: Color(0xFFE5B5FF),
+                      color: _intensityColor,
                     ),
                   ),
                 ),
@@ -964,11 +1039,11 @@ class _QuestSensorScreenState extends State<QuestSensorScreen> {
                       ),
                       const SizedBox(height: 1),
                       Text(
-                        'OPTIMAL',
+                        _intensityLabel,
                         style: GoogleFonts.sora(
                           fontSize: 12,
                           fontWeight: FontWeight.w800,
-                          color: const Color(0xFFE9DEF2),
+                          color: _intensityColor,
                         ),
                       ),
                     ],
@@ -981,7 +1056,7 @@ class _QuestSensorScreenState extends State<QuestSensorScreen> {
 
         const SizedBox(width: 10),
 
-        // Kotak SINKRONISASI: 98.4%
+        // Kotak SINKRONISASI: Dinamis (0% s/d 100%)
         Expanded(
           child: Container(
             padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
@@ -989,7 +1064,9 @@ class _QuestSensorScreenState extends State<QuestSensorScreen> {
               color: const Color(0xFF1F1927),
               borderRadius: BorderRadius.circular(10),
               border: Border.all(
-                color: const Color(0xFF383241),
+                color: _syncPercent >= 100
+                    ? const Color(0xFF00F4FE).withValues(alpha: 0.6)
+                    : const Color(0xFF383241),
                 width: 1.0,
               ),
             ),
@@ -1002,11 +1079,11 @@ class _QuestSensorScreenState extends State<QuestSensorScreen> {
                     color: const Color(0xFF0A2730),
                     borderRadius: BorderRadius.circular(8),
                   ),
-                  child: const Center(
+                  child: Center(
                     child: Icon(
                       Icons.show_chart_rounded,
                       size: 18,
-                      color: Color(0xFF00F4FE),
+                      color: _syncColor,
                     ),
                   ),
                 ),
@@ -1025,11 +1102,11 @@ class _QuestSensorScreenState extends State<QuestSensorScreen> {
                       ),
                       const SizedBox(height: 1),
                       Text(
-                        '98.4%',
+                        _syncPercentLabel,
                         style: GoogleFonts.sora(
                           fontSize: 12,
                           fontWeight: FontWeight.w800,
-                          color: const Color(0xFFE9DEF2),
+                          color: _syncColor,
                         ),
                       ),
                     ],
