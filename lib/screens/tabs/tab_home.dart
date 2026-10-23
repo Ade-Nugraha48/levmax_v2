@@ -2,10 +2,8 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import '../../services/hive_service.dart';
-import '../../services/supabase_service.dart';
 import '../../utils/constants.dart';
 
-/// Tab 1: Dashboard Hunter, HUD Status, Daftar Quest Harian, dan Server Time Real-time
 class TabHome extends StatefulWidget {
   const TabHome({super.key});
 
@@ -14,24 +12,23 @@ class TabHome extends StatefulWidget {
 }
 
 class _TabHomeState extends State<TabHome> {
-  // Variabel State Hunter (Diambil dari HiveSession & disiapkan untuk sinkronisasi Supabase)
+  // Statis dummy data sesuai instruksi
   String _hunterName = 'Sung Jin-Woo';
-  String _rank = 'F';
+  String _rank = 'Rank F';
   int _currentExp = 0;
   final int _maxExp = 100;
   int _currentHp = 3;
   final int _maxHp = 3;
   int _gold = 0;
-  String? _userId;
 
-  // Real-time Server Clock 4 Zona (WIB, WITA, WIT, London GMT)
+  // Real-time Server Clock
   Timer? _serverClockTimer;
-  String _wibTime = '--:--:--';
-  String _witaTime = '--:--:--';
-  String _witTime = '--:--:--';
-  String _gmtTime = '--:--:--';
+  String _wibTime = '14:30';
+  String _witaTime = '15:30';
+  String _witTime = '16:30';
+  String _gmtTime = '07:30';
 
-  // Filter Kategori & Pencarian Quest
+  // Filter Kategori Dummy
   String _selectedCategory = 'All Quests';
   final TextEditingController _searchController = TextEditingController();
 
@@ -39,41 +36,39 @@ class _TabHomeState extends State<TabHome> {
   void initState() {
     super.initState();
     _loadUserSession();
-    _initServerClock();
-    _fetchUserDataFromSupabase();
+    _startServerClock();
   }
 
-  /// Memuat data username dan statistik Hunter dari Hive sessionBox
   void _loadUserSession() {
     final session = HiveService.getSession();
     final savedUsername = session['username']?.toString();
     if (savedUsername != null && savedUsername.isNotEmpty) {
       _hunterName = savedUsername;
     }
-    _rank = session['rank']?.toString() ?? 'F';
+    final savedRank = session['rank']?.toString();
+    if (savedRank != null && savedRank.isNotEmpty) {
+      _rank = savedRank.toUpperCase().startsWith('RANK') ? savedRank : 'Rank $savedRank';
+    }
     _currentExp = (session['exp'] as int?) ?? 0;
     _gold = (session['gold'] as int?) ?? 0;
     _currentHp = (session['hp'] as int?) ?? 3;
-    _userId = session['userId']?.toString();
   }
 
-  /// Menginisialisasi timer detik untuk jam server 4 zona
-  void _initServerClock() {
-    _updateServerTimes();
+  void _startServerClock() {
+    _updateClock();
     _serverClockTimer = Timer.periodic(const Duration(seconds: 1), (timer) {
-      _updateServerTimes();
+      _updateClock();
     });
   }
 
-  /// Mengonversi waktu sistem saat ini ke UTC, lalu mengkalkulasi UTC+7, UTC+8, UTC+9, dan UTC+0
-  void _updateServerTimes() {
+  void _updateClock() {
     final nowUtc = DateTime.now().toUtc();
     final wib = nowUtc.add(const Duration(hours: 7));
     final wita = nowUtc.add(const Duration(hours: 8));
     final wit = nowUtc.add(const Duration(hours: 9));
     final gmt = nowUtc;
 
-    final formatter = DateFormat('HH:mm:ss');
+    final formatter = DateFormat('HH:mm');
     if (mounted) {
       setState(() {
         _wibTime = formatter.format(wib);
@@ -84,43 +79,8 @@ class _TabHomeState extends State<TabHome> {
     }
   }
 
-  /// Disiapkan untuk fetch data statistik Hunter terbaru dari database Supabase
-  Future<void> _fetchUserDataFromSupabase() async {
-    if (_userId == null) return;
-    try {
-      final data = await SupabaseService.client
-          .from('users')
-          .select('username, rank, exp, gold, hp')
-          .eq('id', _userId!)
-          .maybeSingle();
-
-      if (data != null && mounted) {
-        setState(() {
-          if (data['username'] != null) _hunterName = data['username'].toString();
-          if (data['rank'] != null) _rank = data['rank'].toString();
-          if (data['exp'] != null) _currentExp = (data['exp'] as num).toInt();
-          if (data['gold'] != null) _gold = (data['gold'] as num).toInt();
-          if (data['hp'] != null) _currentHp = (data['hp'] as num).toInt();
-        });
-
-        // Sinkronkan ke session box lokal
-        await HiveService.saveSession(
-          userId: _userId!,
-          username: _hunterName,
-          rank: _rank,
-          exp: _currentExp,
-          gold: _gold,
-          hp: _currentHp,
-        );
-      }
-    } catch (e) {
-      debugPrint('TabHome: Note fetch Supabase -> $e');
-    }
-  }
-
   @override
   void dispose() {
-    // Membatalkan timer real-time clock untuk mencegah memory leak
     _serverClockTimer?.cancel();
     _searchController.dispose();
     super.dispose();
@@ -323,10 +283,10 @@ class _TabHomeState extends State<TabHome> {
 
               const SizedBox(height: 10),
 
-              // Sample Quest Cards preview
+              // Sample Quest Cards preview (Statis untuk layout visual)
               _buildQuestCard(
                 title: 'Push Up Protocol',
-                req: '20 Repetisi Terverifikasi Sensor Proximity',
+                req: '20 Repetisi Terverifikasi',
                 expReward: '+10 EXP',
                 goldReward: '+5 Gold',
                 tag: 'WORKOUT',
@@ -364,10 +324,7 @@ class _TabHomeState extends State<TabHome> {
 
   /// 1. Awakened HUD Header
   Widget _buildAwakenedHudHeader() {
-    final double expProgress = _maxExp > 0 ? (_currentExp / _maxExp).clamp(0.0, 1.0) : 0.0;
-    final String rankLabel = _rank.toUpperCase().startsWith('RANK')
-        ? _rank.toUpperCase()
-        : 'Rank ${_rank.toUpperCase()}';
+    final double expProgress = _currentExp / _maxExp;
 
     return Container(
       padding: const EdgeInsets.all(14),
@@ -449,17 +406,14 @@ class _TabHomeState extends State<TabHome> {
                   children: [
                     Row(
                       children: [
-                        Flexible(
-                          child: Text(
-                            _hunterName,
-                            overflow: TextOverflow.ellipsis,
-                            style: const TextStyle(
-                              fontFamily: 'Sora',
-                              fontSize: 14.5,
-                              fontWeight: FontWeight.w900,
-                              letterSpacing: 0.6,
-                              color: Color(0xFFF3EFF5),
-                            ),
+                        Text(
+                          _hunterName,
+                          style: const TextStyle(
+                            fontFamily: 'Sora',
+                            fontSize: 14.5,
+                            fontWeight: FontWeight.w900,
+                            letterSpacing: 0.6,
+                            color: Color(0xFFF3EFF5),
                           ),
                         ),
                         const SizedBox(width: 6),
@@ -513,7 +467,7 @@ class _TabHomeState extends State<TabHome> {
                     ),
                     const SizedBox(width: 4),
                     Text(
-                      rankLabel,
+                      _rank,
                       style: const TextStyle(
                         fontFamily: 'Sora',
                         fontSize: 11,
@@ -630,7 +584,7 @@ class _TabHomeState extends State<TabHome> {
                     ),
                   ),
                   Text(
-                    '$_currentExp / $_maxExp EXP (${(expProgress * 100).toInt()}%)',
+                    '$_currentExp / $_maxExp EXP (0%)',
                     style: const TextStyle(
                       fontFamily: 'Sora',
                       fontSize: 8.5,
@@ -696,60 +650,47 @@ class _TabHomeState extends State<TabHome> {
           width: 0.9,
         ),
       ),
-      child: FittedBox(
-        fit: BoxFit.scaleDown,
-        child: Row(
-          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-          children: [
-            const Row(
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                Icon(
-                  Icons.schedule_rounded,
-                  size: 13,
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+        children: [
+          const Row(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Icon(
+                Icons.schedule_rounded,
+                size: 13,
+                color: AppColors.manaCyan,
+              ),
+              SizedBox(width: 4),
+              Text(
+                'SERVER:',
+                style: TextStyle(
+                  fontFamily: 'Sora',
+                  fontSize: 8.5,
+                  fontWeight: FontWeight.w800,
+                  letterSpacing: 0.6,
                   color: AppColors.manaCyan,
                 ),
-                SizedBox(width: 4),
-                Text(
-                  'SERVER:',
-                  style: TextStyle(
-                    fontFamily: 'Sora',
-                    fontSize: 8.5,
-                    fontWeight: FontWeight.w800,
-                    letterSpacing: 0.6,
-                    color: AppColors.manaCyan,
-                  ),
-                ),
-              ],
-            ),
-            const SizedBox(width: 8),
-            _buildZoneTime(label: 'WIB', time: _wibTime, isPrimary: true),
-            const Padding(
-              padding: EdgeInsets.symmetric(horizontal: 6),
-              child: Text(
-                '•',
-                style: TextStyle(color: Color(0xFF3B2D5C), fontSize: 10),
               ),
-            ),
-            _buildZoneTime(label: 'WITA', time: _witaTime, isPrimary: false),
-            const Padding(
-              padding: EdgeInsets.symmetric(horizontal: 6),
-              child: Text(
-                '•',
-                style: TextStyle(color: Color(0xFF3B2D5C), fontSize: 10),
-              ),
-            ),
-            _buildZoneTime(label: 'WIT', time: _witTime, isPrimary: false),
-            const Padding(
-              padding: EdgeInsets.symmetric(horizontal: 6),
-              child: Text(
-                '•',
-                style: TextStyle(color: Color(0xFF3B2D5C), fontSize: 10),
-              ),
-            ),
-            _buildZoneTime(label: 'GMT', time: _gmtTime, isPrimary: false),
-          ],
-        ),
+            ],
+          ),
+          _buildZoneTime(label: 'WIB', time: _wibTime, isPrimary: true),
+          const Text(
+            '•',
+            style: TextStyle(color: Color(0xFF3B2D5C), fontSize: 10),
+          ),
+          _buildZoneTime(label: 'WITA', time: _witaTime, isPrimary: false),
+          const Text(
+            '•',
+            style: TextStyle(color: Color(0xFF3B2D5C), fontSize: 10),
+          ),
+          _buildZoneTime(label: 'WIT', time: _witTime, isPrimary: false),
+          const Text(
+            '•',
+            style: TextStyle(color: Color(0xFF3B2D5C), fontSize: 10),
+          ),
+          _buildZoneTime(label: 'GMT', time: _gmtTime, isPrimary: false),
+        ],
       ),
     );
   }
