@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:google_fonts/google_fonts.dart';
 import '../utils/constants.dart';
 import 'tabs/tab_home.dart';
 
@@ -23,25 +24,25 @@ class _MainNavigationState extends State<MainNavigation> {
       const _PlaceholderTab(
         title: 'DUNGEON RADAR (LBS)',
         subtitle: 'Pencarian Gate & Titik Hadiah Kampus via GPS',
-        icon: Icons.radar_rounded,
+        icon: Icons.explore_outlined,
         accentColor: AppColors.manaCyan,
       ),
       const _PlaceholderTab(
         title: 'MANA BALANCER (MINI GAME)',
         subtitle: 'Latihan Fokus Mana dengan Sensor Gyroscope',
-        icon: Icons.sports_esports_rounded,
+        icon: Icons.screen_rotation_outlined,
         accentColor: AppColors.neonViolet,
       ),
       const _PlaceholderTab(
         title: 'HUNTER SHOP & LEDGER',
         subtitle: 'Toko Item Title, Kurs Mata Uang & Blockchain Hive',
-        icon: Icons.token_rounded,
+        icon: Icons.token_outlined,
         accentColor: AppColors.goldAccent,
       ),
       const _PlaceholderTab(
         title: 'HUNTER PROFILE & DOSEN FEEDBACK',
         subtitle: 'Statistik Akun, Kesan Pesan Matkul, & Sesi Logout',
-        icon: Icons.person_pin_rounded,
+        icon: Icons.shield_outlined,
         accentColor: AppColors.textLavender,
       ),
     ];
@@ -50,14 +51,14 @@ class _MainNavigationState extends State<MainNavigation> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: const Color(0xFF0B0713), // Deep Abyss Black
+      backgroundColor: const Color(0xFF16111E), // Deep Abyss Surface
       body: IndexedStack(
         index: _currentIndex,
         children: _tabs,
       ),
       bottomNavigationBar: Container(
         decoration: BoxDecoration(
-          color: const Color(0xFF0F0A1C), // Midnight Abyss Bar
+          color: const Color(0xFF110C19), // Midnight Abyss Bar (#110C19)
           border: const Border(
             top: BorderSide(
               color: Color(0xFF2C1E4E),
@@ -66,43 +67,48 @@ class _MainNavigationState extends State<MainNavigation> {
           ),
           boxShadow: [
             BoxShadow(
-              color: Colors.black.withOpacity(0.6),
-              blurRadius: 16,
-              offset: const Offset(0, -4),
+              color: Colors.black.withValues(alpha: 0.6),
+              blurRadius: 20,
+              offset: const Offset(0, -6),
             ),
           ],
         ),
         child: SafeArea(
           top: false,
           child: Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 4),
+            padding: const EdgeInsets.symmetric(horizontal: 4, vertical: 6),
             child: Row(
               mainAxisAlignment: MainAxisAlignment.spaceAround,
               children: [
                 _buildNavItem(
                   index: 0,
-                  label: 'Home',
-                  icon: Icons.dashboard_customize_rounded,
+                  label: 'QUESTS',
+                  icon: Icons.space_dashboard_outlined,
+                  activeIcon: Icons.space_dashboard_rounded,
                 ),
                 _buildNavItem(
                   index: 1,
-                  label: 'Radar LBS',
-                  icon: Icons.explore_rounded,
+                  label: 'DUNGEON',
+                  icon: Icons.explore_outlined,
+                  activeIcon: Icons.explore_rounded,
                 ),
                 _buildNavItem(
                   index: 2,
-                  label: 'Mana Game',
-                  icon: Icons.videogame_asset_rounded,
+                  label: 'MANA',
+                  icon: Icons.screen_rotation_outlined,
+                  activeIcon: Icons.screen_rotation_rounded,
                 ),
                 _buildNavItem(
                   index: 3,
-                  label: 'Shop',
-                  icon: Icons.shopping_bag_outlined,
+                  label: 'EXCHANGE',
+                  icon: Icons.token_outlined,
+                  activeIcon: Icons.token_rounded,
                 ),
                 _buildNavItem(
                   index: 4,
-                  label: 'Profile',
-                  icon: Icons.shield_moon_rounded,
+                  label: 'STATUS',
+                  icon: Icons.shield_outlined,
+                  activeIcon: Icons.shield_rounded,
                 ),
               ],
             ),
@@ -116,6 +122,7 @@ class _MainNavigationState extends State<MainNavigation> {
     required int index,
     required String label,
     required IconData icon,
+    required IconData activeIcon,
   }) {
     final bool isSelected = _currentIndex == index;
 
@@ -131,57 +138,56 @@ class _MainNavigationState extends State<MainNavigation> {
       child: AnimatedContainer(
         duration: const Duration(milliseconds: 200),
         curve: Curves.easeInOut,
-        padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
-        decoration: BoxDecoration(
-          color: isSelected ? const Color(0xFF1E1338) : Colors.transparent,
-          borderRadius: BorderRadius.circular(12),
-          border: isSelected
-              ? Border.all(
-                  color: const Color(0xFF8A2BE2).withOpacity(0.5),
-                  width: 1.0,
-                )
-              : null,
-          boxShadow: isSelected
-              ? [
-                  BoxShadow(
-                    color: const Color(0xFFB026FF).withOpacity(0.25),
-                    blurRadius: 12,
-                    spreadRadius: 1,
-                  ),
-                ]
-              : null,
-        ),
+        padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
         child: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
-            Container(
-              decoration: isSelected
-                  ? BoxDecoration(
+            // Icon dengan Glow Neon Ungu (#B026FF) jika aktif
+            Stack(
+              alignment: Alignment.center,
+              children: [
+                if (isSelected)
+                  Container(
+                    width: 28,
+                    height: 28,
+                    decoration: BoxDecoration(
                       shape: BoxShape.circle,
                       boxShadow: [
                         BoxShadow(
-                          color: const Color(0xFFB026FF).withOpacity(0.6),
-                          blurRadius: 10,
-                          spreadRadius: 1,
+                          color: const Color(0xFFB026FF).withValues(alpha: 0.65),
+                          blurRadius: 14,
+                          spreadRadius: 2,
                         ),
                       ],
-                    )
-                  : null,
-              child: Icon(
-                icon,
-                size: 22,
-                color: isSelected ? const Color(0xFFB026FF) : const Color(0xFF6E6485),
-              ),
+                    ),
+                  ),
+                Icon(
+                  isSelected ? activeIcon : icon,
+                  size: 22,
+                  color: isSelected
+                      ? const Color(0xFFE5B5FF)
+                      : const Color(0xFF6E6485),
+                ),
+              ],
             ),
-            const SizedBox(height: 3),
+            const SizedBox(height: 4),
             Text(
               label,
-              style: TextStyle(
-                fontFamily: 'Sora',
+              style: GoogleFonts.spaceGrotesk(
                 fontSize: 9.5,
-                fontWeight: isSelected ? FontWeight.w800 : FontWeight.w500,
-                letterSpacing: 0.2,
-                color: isSelected ? const Color(0xFFF3EFF5) : const Color(0xFF6E6485),
+                fontWeight: isSelected ? FontWeight.w700 : FontWeight.w500,
+                letterSpacing: 0.8,
+                color: isSelected
+                    ? const Color(0xFFE5B5FF)
+                    : const Color(0xFF6E6485),
+                shadows: isSelected
+                    ? [
+                        Shadow(
+                          color: const Color(0xFFB026FF).withValues(alpha: 0.8),
+                          blurRadius: 8,
+                        ),
+                      ]
+                    : null,
               ),
             ),
           ],
@@ -221,12 +227,12 @@ class _PlaceholderTab extends StatelessWidget {
                   shape: BoxShape.circle,
                   color: const Color(0xFF120D24),
                   border: Border.all(
-                    color: accentColor.withOpacity(0.6),
+                    color: accentColor.withValues(alpha: 0.6),
                     width: 1.5,
                   ),
                   boxShadow: [
                     BoxShadow(
-                      color: accentColor.withOpacity(0.25),
+                      color: accentColor.withValues(alpha: 0.25),
                       blurRadius: 20,
                       spreadRadius: 2,
                     ),
@@ -248,14 +254,13 @@ class _PlaceholderTab extends StatelessWidget {
                   borderRadius: BorderRadius.circular(12),
                   border: Border.all(color: const Color(0xFF2C1E4E)),
                 ),
-                child: const Text(
+                child: Text(
                   'SYSTEM PROTOCOL • STANDBY',
-                  style: TextStyle(
-                    fontFamily: 'Sora',
+                  style: GoogleFonts.spaceGrotesk(
                     fontSize: 9,
                     fontWeight: FontWeight.w700,
                     letterSpacing: 1.2,
-                    color: Color(0xFFD8B4F8),
+                    color: const Color(0xFFD8B4F8),
                   ),
                 ),
               ),
@@ -263,22 +268,20 @@ class _PlaceholderTab extends StatelessWidget {
               Text(
                 title,
                 textAlign: TextAlign.center,
-                style: const TextStyle(
-                  fontFamily: 'Sora',
+                style: GoogleFonts.sora(
                   fontSize: 16,
                   fontWeight: FontWeight.w800,
                   letterSpacing: 1.0,
-                  color: Color(0xFFF3EFF5),
+                  color: const Color(0xFFF3EFF5),
                 ),
               ),
               const SizedBox(height: 6),
               Text(
                 subtitle,
                 textAlign: TextAlign.center,
-                style: const TextStyle(
-                  fontFamily: 'Sora',
+                style: GoogleFonts.plusJakartaSans(
                   fontSize: 11.5,
-                  color: Color(0xFF8B829E),
+                  color: const Color(0xFF8B829E),
                 ),
               ),
             ],
