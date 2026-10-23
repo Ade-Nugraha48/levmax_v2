@@ -1,0 +1,200 @@
+<!DOCTYPE html>
+
+<html class="h-full" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover" name="viewport"/>
+<title>LevMax - Awakening Splash</title>
+<!-- Tailwind CSS CDN with forms & container queries -->
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<!-- Google Fonts: Orbitron & Rajdhani for System UI / Cyber-Hunter aesthetic -->
+<link href="https://fonts.googleapis.com" rel="preconnect"/>
+<link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/>
+<link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@600;700;800&amp;family=Orbitron:wght@500;700;900&amp;family=Rajdhani:wght@400;500;600;700&amp;display=swap" rel="stylesheet"/>
+<!-- Tailwind Configuration -->
+<script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            abyss: {
+              DEFAULT: '#08050E',
+              dark: '#05030A',
+              light: '#0F091A',
+            },
+            mana: {
+              DEFAULT: '#B026FF',
+              glow: '#C05CFF',
+              dim: '#6D19A8',
+              cyan: '#00F0FF',
+            },
+            lavender: {
+              soft: '#D8B4F8',
+              muted: '#8B829E',
+              dark: '#2C1E4E',
+            }
+          },
+          fontFamily: {
+            system: ['Rajdhani', 'sans-serif'],
+            display: ['Cinzel', 'serif'],
+            mono: ['Orbitron', 'monospace'],
+          }
+        }
+      }
+    }
+  </script>
+<!-- BEGIN: Custom Keyframe & Glow Styling -->
+<style data-purpose="mana-animations">
+    @keyframes pulse-subtle {
+      0%, 100% { opacity: 0.95; transform: scale(1); }
+      50% { opacity: 0.65; transform: scale(0.995); }
+    }
+
+    @keyframes spin-slow {
+      0% { transform: rotate(0deg); }
+      100% { transform: rotate(360deg); }
+    }
+
+    @keyframes spin-reverse {
+      0% { transform: rotate(360deg); }
+      100% { transform: rotate(0deg); }
+    }
+
+    @keyframes mana-breath {
+      0%, 100% {
+        box-shadow: 0 0 25px rgba(176, 38, 255, 0.35), inset 0 0 15px rgba(176, 38, 255, 0.2);
+        border-color: rgba(176, 38, 255, 0.6);
+      }
+      50% {
+        box-shadow: 0 0 45px rgba(176, 38, 255, 0.65), inset 0 0 25px rgba(176, 38, 255, 0.4);
+        border-color: rgba(192, 92, 255, 0.9);
+      }
+    }
+
+    @keyframes text-flicker {
+      0%, 100% { opacity: 0.9; }
+      50% { opacity: 0.45; }
+    }
+
+    .animate-spin-slow {
+      animation: spin-slow 9s linear infinite;
+    }
+
+    .animate-spin-reverse {
+      animation: spin-reverse 6s linear infinite;
+    }
+
+    .animate-mana-ring {
+      animation: mana-breath 3.2s ease-in-out infinite;
+    }
+
+    .animate-text-pulse {
+      animation: text-flicker 2.4s ease-in-out infinite;
+    }
+
+    .logo-shadow {
+      filter: drop-shadow(0 0 28px rgba(176, 38, 255, 0.55)) drop-shadow(0 0 60px rgba(110, 25, 175, 0.3));
+    }
+  </style>
+<style data-purpose="background-layers">
+    /* Subtle background grid & noise effect mimicking Solo Leveling Hunter system UI */
+    .system-grid {
+      background-image: 
+        radial-gradient(ellipse at 50% 40%, rgba(77, 24, 128, 0.25) 0%, rgba(8, 5, 14, 0.95) 75%),
+        linear-gradient(rgba(176, 38, 255, 0.03) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(176, 38, 255, 0.03) 1px, transparent 1px);
+      background-size: 100% 100%, 32px 32px, 32px 32px;
+    }
+  </style>
+<!-- END: Custom Keyframe & Glow Styling -->
+</head>
+<body class="bg-abyss text-slate-100 font-system h-full select-none overflow-x-hidden antialiased flex flex-col justify-between system-grid">
+<!-- BEGIN: Ambient Atmosphere Lights -->
+<div class="pointer-events-none fixed inset-0 overflow-hidden z-0">
+<!-- Center Mana Core Glow -->
+<div class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-80 h-80 bg-mana-dim/20 rounded-full blur-[100px] pointer-events-none"></div>
+<!-- Top-left subtle ambient sheen -->
+<div class="absolute top-0 left-1/4 w-56 h-56 bg-mana/10 rounded-full blur-[90px] pointer-events-none"></div>
+</div>
+<!-- END: Ambient Atmosphere Lights -->
+<!-- BEGIN: Main Viewport Container -->
+<div class="relative z-10 flex flex-col justify-between min-h-screen px-5 pt-8 pb-6 max-w-md mx-auto w-full">
+<!-- BEGIN: TopHeaderSection -->
+<header class="w-full flex flex-col items-center pt-2" data-purpose="system-classification">
+<!-- iOS Dynamic Notch / Status clearance padding -->
+<div class="w-full flex justify-center mb-1">
+<div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-abyss-light/80 border border-lavender-dark/80 backdrop-blur-md shadow-lg shadow-black/60">
+<!-- Glowing Cyan Status Beacon -->
+<span class="relative flex h-2 w-2">
+<span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-mana-cyan opacity-75"></span>
+<span class="relative inline-flex rounded-full h-2 w-2 bg-mana-cyan shadow-[0_0_8px_#00F0FF]"></span>
+</span>
+<p class="font-mono text-[9px] tracking-[0.22em] uppercase font-bold text-slate-300">
+            SYSTEM VAULT PROTOCOL <span class="text-mana-cyan mx-0.5">•</span> NODE-ALPHA
+          </p>
+</div>
+</div>
+</header>
+<!-- END: TopHeaderSection -->
+<!-- BEGIN: CenterHeroSection -->
+<main class="w-full flex flex-col items-center justify-center my-auto py-4" data-purpose="hero-awakening">
+<!-- Logo Container with Ethereal Shadow -->
+<div class="relative w-full max-w-[280px] sm:max-w-[310px] flex items-center justify-center mb-2 px-2" data-purpose="solo-leveling-emblem">
+<img alt="Solo Leveling Crest" class="w-full h-auto object-contain logo-shadow transform transition-transform duration-700 hover:scale-105" src="https://lh3.googleusercontent.com/aida-public/AB6AXuDMXgjosUaovw7DlKRkHq3xmY-ojH0vjen7RFj8ca9Z_1t1g3lpIU4VcowbrLDbAVgRf-waX2dZRNWc-Kjgz0KdR59zAPdvRu-XQn0G6uuoNfKwjk_sPNKHf5qRuhV-CAfoIX-pQnnh51rdCHELNUz671bN6pt8CJNnsStzteUuGBwOdaSz8QuNNs2JybGwzhqzC3_A09H_wRAytF2YMqtmAsAbDvEHG4kxYwgtqWw_Qvv74SnzDqElVDQstsyDNkGy7A"/>
+</div>
+<!-- Hunter Awakening Typography -->
+<div class="text-center mb-8 px-2" data-purpose="system-title-label">
+<h1 class="font-mono text-[11px] sm:text-xs tracking-[0.38em] text-[#F3EFF5] font-semibold uppercase leading-tight drop-shadow-[0_2px_12px_rgba(255,255,255,0.25)]">
+          LEVMAX <span class="text-mana-glow opacity-80">◈</span> THE HUNTER AWAKENING
+        </h1>
+<div class="flex items-center justify-center gap-2 mt-2 opacity-60">
+<span class="h-[1px] w-8 bg-gradient-to-r from-transparent via-mana to-transparent"></span>
+<span class="text-[8px] font-mono tracking-widest text-lavender-soft uppercase">System Sync in Progress</span>
+<span class="h-[1px] w-8 bg-gradient-to-r from-transparent via-mana to-transparent"></span>
+</div>
+</div>
+<!-- Awakening Dual-Ring Circular Loader -->
+<div class="relative w-28 h-28 sm:w-32 sm:h-32 flex items-center justify-center my-2" data-purpose="mana-reactor-loader">
+<!-- Outermost Rotating Orbit Arc -->
+<div class="absolute inset-0 rounded-full border border-dashed border-mana/40 animate-spin-slow"></div>
+<!-- Mid Segmented Reverse Gear Arc -->
+<div class="absolute inset-2 rounded-full border-t-2 border-r-2 border-mana-glow border-b-transparent border-l-transparent animate-spin-reverse opacity-80"></div>
+<!-- Inner Breathing Core Ring -->
+<div class="absolute inset-5 rounded-full border border-mana bg-abyss-light/60 backdrop-blur-sm animate-mana-ring flex items-center justify-center">
+<!-- Monolithic Rune Icon / Core Pulse Beacon -->
+<div class="w-3.5 h-3.5 rotate-45 border border-mana-cyan bg-mana-dim/50 shadow-[0_0_12px_#B026FF]"></div>
+</div>
+<!-- Fine Particle Dots Simulated Orbit -->
+<div class="absolute -top-1 left-1/2 -translate-x-1/2 w-1.5 h-1.5 rounded-full bg-mana-cyan shadow-[0_0_8px_#00F0FF]"></div>
+<div class="absolute -bottom-1 left-1/2 -translate-x-1/2 w-1 h-1 rounded-full bg-mana-glow shadow-[0_0_6px_#B026FF]"></div>
+</div>
+<!-- Awakening Status Feedback -->
+<div class="flex flex-col items-center text-center mt-7 space-y-1.5 max-w-xs px-2" data-purpose="telemetry-log">
+<p class="font-system font-medium text-sm sm:text-base tracking-wide text-lavender-soft animate-text-pulse">
+          Establishing connection to the System...
+        </p>
+<p class="font-system font-normal text-[11px] leading-relaxed text-lavender-muted tracking-wide">
+          Verifying cryptographic credentials (SHA-256) &amp; local Hive registry...
+        </p>
+</div>
+</main>
+<!-- END: CenterHeroSection -->
+<!-- BEGIN: BottomStatusAnchor -->
+<footer class="w-full flex flex-col items-center space-y-2.5 pb-2" data-purpose="system-footer-metadata">
+<!-- Telemetry Hardware Pill -->
+<div class="w-full flex items-center justify-center">
+<div class="px-3.5 py-1.5 rounded-md bg-[#0D0818]/90 border border-lavender-dark/90 flex items-center gap-2 shadow-inner">
+<span class="inline-block w-1.5 h-1.5 rounded-full bg-mana animate-pulse shadow-[0_0_6px_#B026FF]"></span>
+<span class="font-mono text-[9px] tracking-wider text-slate-300 uppercase">
+            SUPABASE RPC: <span class="text-mana-cyan font-bold">CONNECTING</span> <span class="text-lavender-muted/60 mx-1">|</span> BIOMETRIC SENSOR: <span class="text-emerald-400 font-semibold">ARMED</span>
+</span>
+</div>
+</div>
+<!-- Build Version Tag & Architecture -->
+<p class="font-mono text-[10px] tracking-widest uppercase text-lavender-muted/70">
+        v1.0.0 <span class="text-mana/50 mx-1">•</span> Mobile Architecture Core
+      </p>
+</footer>
+<!-- END: BottomStatusAnchor -->
+</div>
+<!-- END: Main Viewport Container -->
+</body></html>

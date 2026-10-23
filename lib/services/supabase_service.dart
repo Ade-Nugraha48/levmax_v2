@@ -10,16 +10,30 @@ class SupabaseService {
   static Future<Map<String, dynamic>?> register({
     required String username,
     required String passwordHash,
+    int hp = 3,
   }) async {
     try {
-      final response = await client.from('users').insert({
-        'username': username,
-        'password_hash': passwordHash,
-        'exp': 0,
-        'gold': 0,
-        'rank': 'F',
-      }).select().single();
-      return response;
+      try {
+        final response = await client.from('users').insert({
+          'username': username,
+          'password_hash': passwordHash,
+          'exp': 0,
+          'gold': 0,
+          'rank': 'F',
+          'hp': hp,
+        }).select().single();
+        return response;
+      } catch (_) {
+        // Fallback jika kolom hp belum ada di skema SQL remote
+        final response = await client.from('users').insert({
+          'username': username,
+          'password_hash': passwordHash,
+          'exp': 0,
+          'gold': 0,
+          'rank': 'F',
+        }).select().single();
+        return response;
+      }
     } catch (e) {
       return null;
     }

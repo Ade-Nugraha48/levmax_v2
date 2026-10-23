@@ -10,6 +10,22 @@ class AppColors {
   static const Color indigoGlow = Color(0xFF160F2C); // Indigo Glow Ambient Base
   static const Color manaBlue = Color(0xFF38BDF8); // Cyan Mana Glow
 
+  // Stitch Solo Leveling Tokens
+  static const Color abyssBlack = Color(0xFF08050E);
+  static const Color abyssSurface = Color(0xFF0D0818);
+  static const Color cardDark = Color(0xFF120D24);
+  static const Color cardElevated = Color(0xFF191230);
+  static const Color cardGlowBorder = Color(0xFF2C1E4E);
+  static const Color borderHighlight = Color(0xFF8A2BE2);
+  static const Color electricPurple = Color(0xFF8A2BE2);
+  static const Color manaCyan = Color(0xFF00E5FF);
+  static const Color goldAccent = Color(0xFFFFD166);
+  static const Color healthRed = Color(0xFFFF4D6D);
+  static const Color expBarFill = Color(0xFF9D4EDD);
+  static const Color textBrightSilver = Color(0xFFF3EFF5);
+  static const Color textLavender = Color(0xFFD8B4F8);
+  static const Color textDarkHint = Color(0xFF5D5373);
+
   // Dark Void Backgrounds & Surfaces
   static const Color background = Color(0xFF0B0713); // Black Deep Void
   static const Color surface = Color(0xFF160F2C); // Indigo Glow Surface
