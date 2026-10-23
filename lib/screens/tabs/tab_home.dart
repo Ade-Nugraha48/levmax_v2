@@ -6,6 +6,7 @@ import '../../services/hive_service.dart';
 import '../../services/notif_service.dart';
 import '../../services/supabase_service.dart';
 import '../features/appearance_quest_screen.dart';
+import '../features/chat_ai_screen.dart';
 import '../features/quest_sensor.dart';
 import '../features/workout_hub_screen.dart';
 
@@ -1447,17 +1448,10 @@ class _TabHomeState extends State<TabHome> {
           size: 22,
         ),
         onPressed: () {
-          ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(
-              content: Text(
-                'HUNTER AI: "Terus tingkatkan stats kekuatanmu, Hunter!"',
-                style: GoogleFonts.spaceGrotesk(
-                  fontSize: 12,
-                  fontWeight: FontWeight.w700,
-                ),
-              ),
-              backgroundColor: const Color(0xFF7B2CBF),
-              duration: const Duration(seconds: 2),
+          Navigator.push(
+            context,
+            MaterialPageRoute(
+              builder: (context) => const ChatAiScreen(),
             ),
           );
         },
