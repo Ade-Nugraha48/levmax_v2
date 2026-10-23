@@ -205,108 +205,68 @@ class _TabHomeState extends State<TabHome> {
     );
   }
 
-  /// 1. Header: Solo Leveling Logo & System Awakening Banner
+  /// 1. Header: System Awakening Banner
   Widget _buildHeaderSection() {
-    return Column(
-      children: [
-        // Logo Solo Leveling di Tengah Atas dengan Ambient Purple Glow
-        Stack(
-          alignment: Alignment.center,
+    return Container(
+      margin: const EdgeInsets.only(top: 2.0),
+      padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6.5),
+      decoration: BoxDecoration(
+        color: const Color(0xFF140D28),
+        borderRadius: BorderRadius.circular(24),
+        border: Border.all(
+          color: const Color(0xFF2C1E4E),
+          width: 1.0,
+        ),
+      ),
+      child: FittedBox(
+        fit: BoxFit.scaleDown,
+        child: Row(
+          mainAxisSize: MainAxisSize.min,
           children: [
+            // Glowing Cyan Dot
             Container(
-              width: 140,
-              height: 48,
-              decoration: BoxDecoration(
+              width: 7,
+              height: 7,
+              decoration: const BoxDecoration(
                 shape: BoxShape.circle,
-                gradient: RadialGradient(
-                  colors: [
-                    const Color(0xFFB026FF).withValues(alpha: 0.35),
-                    Colors.transparent,
-                  ],
-                ),
+                color: Color(0xFF00F4FE),
+                boxShadow: [
+                  BoxShadow(
+                    color: Color(0xFF00F4FE),
+                    blurRadius: 8,
+                    spreadRadius: 2,
+                  ),
+                ],
               ),
             ),
-            Image.asset(
-              'assets/images/solo_leveling_logo.png',
-              height: 42,
-              fit: BoxFit.contain,
-              errorBuilder: (context, error, stackTrace) => Text(
-                'SOLO LEVELING',
-                style: GoogleFonts.orbitron(
-                  fontSize: 16,
-                  fontWeight: FontWeight.w900,
-                  letterSpacing: 2.0,
-                  color: const Color(0xFFE5B5FF),
+            const SizedBox(width: 8),
+            RichText(
+              text: TextSpan(
+                style: GoogleFonts.spaceGrotesk(
+                  fontSize: 9.5,
+                  letterSpacing: 0.8,
                 ),
+                children: const [
+                  TextSpan(
+                    text: 'SYSTEM AWAKENING: ',
+                    style: TextStyle(
+                      color: Color(0xFF00F4FE),
+                      fontWeight: FontWeight.w700,
+                    ),
+                  ),
+                  TextSpan(
+                    text: 'COMPLETE MIN. 3 DAILY QUESTS TO AVOID PENALTY',
+                    style: TextStyle(
+                      color: Color(0xFFE9DEF2),
+                      fontWeight: FontWeight.w500,
+                    ),
+                  ),
+                ],
               ),
             ),
           ],
         ),
-
-        const SizedBox(height: 8),
-
-        // Banner Pill "SYSTEM AWAKENING: COMPLETE MIN. 3 DAILY QUESTS..."
-        Container(
-          padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6.5),
-          decoration: BoxDecoration(
-            color: const Color(0xFF140D28),
-            borderRadius: BorderRadius.circular(24),
-            border: Border.all(
-              color: const Color(0xFF2C1E4E),
-              width: 1.0,
-            ),
-          ),
-          child: FittedBox(
-            fit: BoxFit.scaleDown,
-            child: Row(
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                // Glowing Cyan Dot
-                Container(
-                  width: 7,
-                  height: 7,
-                  decoration: const BoxDecoration(
-                    shape: BoxShape.circle,
-                    color: Color(0xFF00F4FE),
-                    boxShadow: [
-                      BoxShadow(
-                        color: Color(0xFF00F4FE),
-                        blurRadius: 8,
-                        spreadRadius: 2,
-                      ),
-                    ],
-                  ),
-                ),
-                const SizedBox(width: 8),
-                RichText(
-                  text: TextSpan(
-                    style: GoogleFonts.spaceGrotesk(
-                      fontSize: 9.5,
-                      letterSpacing: 0.8,
-                    ),
-                    children: const [
-                      TextSpan(
-                        text: 'SYSTEM AWAKENING: ',
-                        style: TextStyle(
-                          color: Color(0xFF00F4FE),
-                          fontWeight: FontWeight.w700,
-                        ),
-                      ),
-                      TextSpan(
-                        text: 'COMPLETE MIN. 3 DAILY QUESTS TO AVOID PENALTY',
-                        style: TextStyle(
-                          color: Color(0xFFE9DEF2),
-                          fontWeight: FontWeight.w500,
-                        ),
-                      ),
-                    ],
-                  ),
-                ),
-              ],
-            ),
-          ),
-        ),
-      ],
+      ),
     );
   }
 
