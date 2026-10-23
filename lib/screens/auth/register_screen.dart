@@ -111,12 +111,18 @@ class _RegisterScreenState extends State<RegisterScreen> {
     return Scaffold(
       backgroundColor: const Color(0xFF0B0713), // Deep Abyss Black
       body: SafeArea(
-        // Non-scrollable viewport constrained with Spacer to fit 720p & 1080p without overflow
-        child: Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 24.0, vertical: 16.0),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.stretch,
-            children: [
+        child: LayoutBuilder(
+          builder: (context, constraints) {
+            return SingleChildScrollView(
+              physics: const BouncingScrollPhysics(),
+              child: ConstrainedBox(
+                constraints: BoxConstraints(minHeight: constraints.maxHeight),
+                child: Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 24.0, vertical: 16.0),
+                  child: Column(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    crossAxisAlignment: CrossAxisAlignment.stretch,
+                    children: [
               // Top Bar with Back Button
               Row(
                 children: [
@@ -151,7 +157,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
                 ],
               ),
 
-              const Spacer(flex: 1),
+              const SizedBox(height: 16),
 
               // Header Titles
               Center(
@@ -209,7 +215,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
                 ),
               ),
 
-              const Spacer(flex: 1),
+              const SizedBox(height: 16),
 
               // Registration Form Card
               Container(
@@ -477,7 +483,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
                 ),
               ),
 
-              const Spacer(flex: 1),
+              const SizedBox(height: 16),
 
               // Back to Login link
               Row(
@@ -508,8 +514,12 @@ class _RegisterScreenState extends State<RegisterScreen> {
                 ],
               ),
               const SizedBox(height: 6),
-            ],
-          ),
+                    ],
+                  ),
+                ),
+              ),
+            );
+          },
         ),
       ),
     );

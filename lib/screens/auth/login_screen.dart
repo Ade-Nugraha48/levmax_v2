@@ -171,11 +171,18 @@ class _LoginScreenState extends State<LoginScreen> {
     return Scaffold(
       backgroundColor: const Color(0xFF0B0713), // Deep Abyss Black
       body: SafeArea(
-        child: Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 22.0, vertical: 12.0),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.stretch,
-            children: [
+        child: LayoutBuilder(
+          builder: (context, constraints) {
+            return SingleChildScrollView(
+              physics: const BouncingScrollPhysics(),
+              child: ConstrainedBox(
+                constraints: BoxConstraints(minHeight: constraints.maxHeight),
+                child: Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 22.0, vertical: 12.0),
+                  child: Column(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    crossAxisAlignment: CrossAxisAlignment.stretch,
+                    children: [
               // Top System Protocol Badge
               Align(
                 alignment: Alignment.center,
@@ -223,7 +230,7 @@ class _LoginScreenState extends State<LoginScreen> {
                 ),
               ),
 
-              const Spacer(flex: 1),
+              const SizedBox(height: 14),
 
               // Solo Leveling Authentic Logo & Branding Header
               Center(
@@ -256,7 +263,7 @@ class _LoginScreenState extends State<LoginScreen> {
                 ),
               ),
 
-              const Spacer(flex: 1),
+              const SizedBox(height: 14),
 
               // Form Inputs Container
               Container(
@@ -480,7 +487,7 @@ class _LoginScreenState extends State<LoginScreen> {
                 ),
               ),
 
-              const Spacer(flex: 1),
+              const SizedBox(height: 14),
 
               // Dual Biometric Authentication Options: Fingerprint & Face Scan
               Column(
@@ -593,7 +600,7 @@ class _LoginScreenState extends State<LoginScreen> {
                 ],
               ),
 
-              const Spacer(flex: 1),
+              const SizedBox(height: 14),
 
               // Bottom Navigation to Register
               Row(
@@ -631,8 +638,12 @@ class _LoginScreenState extends State<LoginScreen> {
                 ],
               ),
               const SizedBox(height: 4),
-            ],
-          ),
+                    ],
+                  ),
+                ),
+              ),
+            );
+          },
         ),
       ),
     );
