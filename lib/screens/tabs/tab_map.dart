@@ -11,7 +11,7 @@ import '../../widgets/avatar_image.dart';
 
 /// TabMap: Tab 2 - Dungeon Radar LBS (Map UI)
 /// Desain bertema Solo Leveling Monarch System dengan integrasi FlutterMap,
-/// CartoDB Dark Matter, dan real-time GPS tracking via Geolocator.
+/// OpenStreetMap Dark Mode Tile Layer, dan real-time GPS tracking via Geolocator.
 class TabMap extends StatefulWidget {
   const TabMap({super.key});
 
@@ -293,7 +293,7 @@ class _TabMapState extends State<TabMap> with SingleTickerProviderStateMixin {
             Expanded(
               child: Stack(
                 children: [
-                  // Layer A: FlutterMap dengan CartoDB Dark Matter
+                  // Layer A: FlutterMap dengan OpenStreetMap Dark Cyberpunk Mode
                   FlutterMap(
                     mapController: _mapController,
                     options: MapOptions(
@@ -303,10 +303,11 @@ class _TabMapState extends State<TabMap> with SingleTickerProviderStateMixin {
                       maxZoom: 19.0,
                     ),
                     children: [
-                      // CartoDB Dark Matter Tile Layer
+                      // OpenStreetMap Dark Theme Tile Layer (Tanpa API Key, Bebas Watermark)
                       TileLayer(
-                        urlTemplate: 'https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}.png',
-                        subdomains: const ['a', 'b', 'c', 'd'],
+                        urlTemplate: 'https://tile.openstreetmap.org/{z}/{x}/{y}.png',
+                        userAgentPackageName: 'com.example.levmax_v2',
+                        tileBuilder: darkModeTileBuilder,
                       ),
 
                       // Dotted Line antara Hunter dan Dungeon Gate
