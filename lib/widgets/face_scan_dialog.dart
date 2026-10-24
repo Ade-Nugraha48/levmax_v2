@@ -104,22 +104,28 @@ class _FaceScanDialogState extends State<FaceScanDialog>
     });
 
     try {
-      // 1. Minta izin akses kamera secara eksplisit ke OS ponsel
-      var status = await Permission.camera.status;
-      if (!status.isGranted) {
-        status = await Permission.camera.request();
-      }
+      // 1. Coba minta izin akses kamera via permission_handler (jika sudah ter-compile di APK)
+      try {
+        var status = await Permission.camera.status;
+        if (!status.isGranted) {
+          status = await Permission.camera.request();
+        }
 
-      if (!status.isGranted) {
-        if (!mounted) return;
-        setState(() {
-          _visualState = _ScannerVisualState.error;
-          _isPermissionPermanentlyDenied = status.isPermanentlyDenied;
-          _errorMessage = status.isPermanentlyDenied
-              ? 'Izin kamera ditolak permanen di ponsel. Buka Pengaturan Aplikasi untuk mengaktifkan izin kamera.'
-              : 'Izin kamera diperlukan untuk menggunakan fitur biometrik Face Scan.';
-        });
-        return;
+        if (!status.isGranted) {
+          if (!mounted) return;
+          setState(() {
+            _visualState = _ScannerVisualState.error;
+            _isPermissionPermanentlyDenied = status.isPermanentlyDenied;
+            _errorMessage = status.isPermanentlyDenied
+                ? 'Izin kamera ditolak permanen di ponsel. Buka Pengaturan Aplikasi untuk mengaktifkan izin kamera.'
+                : 'Izin kamera diperlukan untuk menggunakan fitur biometrik Face Scan.';
+          });
+          return;
+        }
+      } catch (permError) {
+        // Jika native plugin permission_handler belum ter-compile (saat user Hot Reload),
+        // lanjutkan ke CameraController karena camera package memiliki penanganan izin bawaan.
+        debugPrint('[FaceScanDialog] PermissionHandler fallback to camera native: $permError');
       }
 
       if (!mounted) return;
@@ -356,6 +362,17 @@ class _FaceScanDialogState extends State<FaceScanDialog>
     }
   }
 
+  double get _cameraScale {
+    final controller = _cameraController;
+    if (controller == null || !controller.value.isInitialized) {
+      return 1.0;
+    }
+    const double containerAspect = 220.0 / 260.0;
+    var scale = containerAspect * controller.value.aspectRatio;
+    if (scale < 1.0) scale = 1.0 / scale;
+    return scale;
+  }
+
   @override
   Widget build(BuildContext context) {
     final Color currentAccent = _accentColor;
@@ -465,14 +482,12 @@ class _FaceScanDialogState extends State<FaceScanDialog>
                       color: const Color(0xFF0A0612),
                       child: (_cameraController != null &&
                               _cameraController!.value.isInitialized)
-                          ? FittedBox(
-                              fit: BoxFit.cover,
-                              clipBehavior: Clip.hardEdge,
-                              child: SizedBox(
-                                width: 220,
-                                height: 220 *
-                                    _cameraController!.value.aspectRatio,
-                                child: CameraPreview(_cameraController!),
+                          ? ClipRect(
+                              child: Transform.scale(
+                                scale: _cameraScale,
+                                child: Center(
+                                  child: CameraPreview(_cameraController!),
+                                ),
                               ),
                             )
                           : Center(
