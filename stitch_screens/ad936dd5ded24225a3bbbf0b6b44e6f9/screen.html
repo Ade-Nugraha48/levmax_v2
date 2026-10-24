@@ -1,0 +1,232 @@
+<!DOCTYPE html>
+
+<html class="dark" lang="en"><head><meta charset="utf-8"/><meta content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover" name="viewport"/><meta content="mobile_tab" name="shell-type"/><link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200" rel="stylesheet"/><link href="https://fonts.googleapis.com" rel="preconnect"/><link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/><link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600&amp;family=Sora:wght@600;700&amp;family=Space+Grotesk:wght@500;600;700&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/><style>@layer base{html,body{width:100vw;margin:0;padding:0;background-color:#16111e;color:#e9def2;}body{overscroll-behavior:none;}.pb-safe{padding-bottom:env(safe-area-inset-bottom,0px);}.pt-safe{padding-top:env(safe-area-inset-top,0px);}main>:first-child{margin-top:0!important;}main>:last-child{margin-bottom:0!important;}}::-webkit-scrollbar{display:none;}</style><script src="https://cdn.tailwindcss.com"></script><script id="tailwind-config">tailwind.config = { darkMode: "class", theme: { extend: { colors: { "primary-fixed": "#f4d9ff", "on-secondary-fixed": "#002021", "surface-bright": "#3d3646", "surface-container-low": "#1f1927", "on-primary-fixed": "#30004b", "on-tertiary-fixed": "#290a45", "on-background": "#e9def2", "background": "#16111e", "error-container": "#93000a", "on-secondary-container": "#006c71", "surface-tint": "#e5b5ff", "tertiary": "#dcb8fc", "tertiary-fixed-dim": "#dcb8fc", "on-error-container": "#ffdad6", "secondary-fixed": "#63f7ff", "error": "#ffb4ab", "primary-fixed-dim": "#e5b5ff", "on-secondary": "#003739", "secondary": "#e6feff", "inverse-on-surface": "#342e3d", "on-tertiary-fixed-variant": "#573974", "secondary-fixed-dim": "#00dce5", "on-secondary-fixed-variant": "#004f53", "on-primary-fixed-variant": "#7000a8", "tertiary-fixed": "#f0dbff", "outline": "#9b8ba1", "on-primary-container": "#fffdff", "surface-dim": "#16111e", "inverse-surface": "#e9def2", "surface-variant": "#383241", "outline-variant": "#4f4255", "primary-container": "#b026ff", "on-tertiary": "#3f225b", "on-surface": "#e9def2", "inverse-primary": "#9200db", "tertiary-container": "#8868a6", "on-tertiary-container": "#fffdff", "on-primary": "#4e0078", "surface-container-lowest": "#110c19", "surface-container-highest": "#383241", "on-surface-variant": "#d2c1d7", "surface-container-high": "#2d2736", "surface-container": "#231d2b", "on-error": "#690005", "primary": "#e5b5ff", "secondary-container": "#00f4fe", "surface": "#16111e" }, borderRadius: { "DEFAULT": "0.125rem", "lg": "0.25rem", "xl": "0.5rem", "full": "0.75rem" }, spacing: { "space-xs": "0.25rem", "gutter-tablet": "1.25rem", "space-md": "1rem", "space-xl": "2.25rem", "margin-tablet": "1.5rem", "gutter-desktop": "1.5rem", "space-sm": "0.5rem", "space-lg": "1.5rem", "margin-desktop": "2.5rem", "margin": "1rem", "gutter": "1rem" }, fontFamily: { "body-sm": ["Plus Jakarta Sans"], "body-lg": ["Plus Jakarta Sans"], "headline-md": ["Sora"], "label-sm": ["Space Grotesk"], "label-lg": ["Space Grotesk"], "title-md": ["Plus Jakarta Sans"], "headline-sm": ["Sora"], "display-lg-mobile": ["Sora"], "headline-lg": ["Sora"], "label-md": ["Space Grotesk"], "display-lg": ["Sora"], "body-md": ["Plus Jakarta Sans"] }, fontSize: { "body-sm": ["12px", { "lineHeight": "18px", "fontWeight": "400" }], "body-lg": ["16px", { "lineHeight": "26px", "fontWeight": "400" }], "headline-md": ["24px", { "lineHeight": "32px", "letterSpacing": "-0.01em", "fontWeight": "600" }], "label-sm": ["10px", { "lineHeight": "14px", "letterSpacing": "0.1em", "fontWeight": "500" }], "label-lg": ["13px", { "lineHeight": "18px", "letterSpacing": "0.06em", "fontWeight": "600" }], "title-md": ["16px", { "lineHeight": "24px", "fontWeight": "600" }], "headline-sm": ["20px", { "lineHeight": "28px", "fontWeight": "600" }], "display-lg-mobile": ["34px", { "lineHeight": "42px", "letterSpacing": "-0.02em", "fontWeight": "700" }], "headline-lg": ["32px", { "lineHeight": "40px", "letterSpacing": "-0.02em", "fontWeight": "600" }], "label-md": ["11px", { "lineHeight": "16px", "letterSpacing": "0.08em", "fontWeight": "600" }], "display-lg": ["48px", { "lineHeight": "56px", "letterSpacing": "-0.03em", "fontWeight": "700" }], "body-md": ["14px", { "lineHeight": "22px", "fontWeight": "400" }] } } } };</script><style>
+    body {
+      min-height: max(884px, 100dvh);
+    }
+  </style>
+  </head><body class="bg-surface font-body-md text-body-md text-on-surface flex flex-col min-h-screen"><header class="fixed top-0 w-full z-50 pt-safe bg-surface-container-lowest/80 backdrop-blur-xl"><div class="h-16 px-margin flex items-center justify-between"><div class="flex items-center gap-space-sm"><div class="flex items-center justify-center h-8 px-space-xs rounded bg-surface-container-high"><span class="font-label-sm text-label-sm text-secondary-container tracking-wider">RANK: S</span></div><div class="flex flex-col"><div class="flex items-center gap-space-xs"><span class="font-label-sm text-label-sm text-primary uppercase">SYSTEM</span><span class="w-1 h-1 rounded-full bg-secondary-container"></span></div><h1 class="font-headline-sm text-title-md text-on-surface leading-none truncate max-w-[140px]">Hunter Status</h1></div></div><div class="flex items-center gap-space-sm"><div class="flex items-center gap-space-xs px-space-sm py-1 rounded bg-surface-container-low"><span class="material-symbols-outlined text-secondary text-[16px]">bolt</span><span class="font-label-md text-label-md text-secondary font-semibold">100%</span></div><div class="relative flex items-center justify-center p-0.5 rounded-full bg-surface-container-high"><img alt="Profile" class="w-8 h-8 rounded-full object-cover" src="https://lh3.googleusercontent.com/aida/AEtjO1WfdtlmayhhsRKQRGd88aET89gLk4-0m0EW4Rj7BxQom2XS56Xs3ysjCObUqhHG33GgeLCEODtmqn7giCoXomzZpm2VcR-hrED6w6fAy2Ekv0cfptzaLt1EccrCAfkjHWUkbehPQ_BQAdDzxm_AobqTIFJrrrGa96CwxdUfdMT3VxIAuZn9OytfD4CnQkdSgr1m3xU7zl9qpDzqXmRurs3V8EweCfUpvPYROc16yVp66psVH087TV-2_f7wGxpnnpEyTmWSk5494w"/></div></div></div></header><main class="flex flex-col relative w-full pt-16 pb-24 bg-surface min-h-screen"><div class="flex flex-col w-full px-margin space-y-space-md">
+<!-- Ambient Shadow Monarch Energy Backdrop (Soft Atmospheric Glows) -->
+<div class="fixed inset-0 pointer-events-none overflow-hidden z-0">
+<div class="absolute top-16 left-1/2 -translate-x-1/2 w-80 h-80 bg-primary-container/10 rounded-full blur-[100px]"></div>
+<div class="absolute bottom-24 right-0 w-64 h-64 bg-secondary-container/10 rounded-full blur-[90px]"></div>
+</div>
+<!-- Top System Badge Rail -->
+<div class="relative z-10 flex items-center justify-between w-full pt-space-xs">
+<div class="flex items-center gap-space-xs px-space-sm py-1 rounded-full bg-surface-container-high/90 shadow-sm">
+<span class="w-2 h-2 rounded-full bg-secondary-container animate-ping"></span>
+<span class="font-label-sm text-label-sm text-secondary-container uppercase tracking-widest font-semibold">HUNTER PROFILE // SYSTEM IDENTITY</span>
+</div>
+<div class="flex items-center gap-space-xs px-space-sm py-1 rounded bg-surface-container shadow-sm">
+<span class="material-symbols-outlined text-[14px] text-primary">fingerprint</span>
+<span class="font-label-sm text-label-sm text-primary tracking-wider font-semibold">AUTH: BIOMETRIC</span>
+</div>
+</div>
+<!-- Hero Profile Awakening Card -->
+<div class="relative z-10 w-full rounded-xl bg-surface-container-low p-space-md shadow-xl overflow-hidden">
+<!-- Top Cyber Accent Line -->
+<div class="absolute top-0 inset-x-0 h-[2px] bg-gradient-to-r from-transparent via-primary-container to-secondary-container"></div>
+<div class="absolute -right-12 -top-12 w-36 h-36 bg-primary-container/20 rounded-full blur-2xl pointer-events-none"></div>
+<div class="flex flex-col items-center text-center">
+<!-- Majestic Concentric Avatar Unit -->
+<div class="relative flex items-center justify-center w-28 h-28 my-space-xs">
+<!-- Concentric Radial Energy Ring -->
+<div class="absolute inset-0 rounded-full bg-gradient-to-tr from-primary-container via-secondary-container to-primary-fixed opacity-70 blur-md animate-pulse"></div>
+<div class="absolute inset-1 rounded-full bg-surface-container-lowest"></div>
+<div class="absolute inset-2 rounded-full bg-gradient-to-br from-secondary-container/40 via-primary-container/30 to-transparent"></div>
+<!-- Central Sigil Shield -->
+<div class="relative z-10 flex items-center justify-center w-20 h-20 rounded-full bg-surface-container-high shadow-lg">
+<span class="material-symbols-outlined text-[42px] text-secondary-container drop-shadow-[0_0_12px_rgba(0,244,254,0.8)]" style="font-variation-settings: 'FILL' 1;">shield_moon</span>
+<span class="material-symbols-outlined absolute text-[20px] text-primary-fixed drop-shadow-[0_0_8px_rgba(176,38,255,0.9)] -top-1 right-2">auto_awesome</span>
+</div>
+</div>
+<!-- Hunter Details -->
+<div class="mt-space-sm flex items-center justify-center gap-space-xs">
+<h2 class="font-headline-sm text-headline-sm text-on-surface font-bold tracking-tight">Sung Jin-Woo</h2>
+<span class="material-symbols-outlined text-[18px] text-secondary-container drop-shadow-[0_0_6px_rgba(0,244,254,0.8)]" style="font-variation-settings: 'FILL' 1;">verified</span>
+</div>
+<!-- Title Monarch Subtitle -->
+<p class="font-label-lg text-label-lg text-primary tracking-widest font-semibold uppercase mt-0.5">TITLE: SHADOW MONARCH</p>
+<!-- HP & Vitals Cluster -->
+<div class="mt-space-sm flex items-center gap-space-md px-space-md py-1.5 rounded-full bg-surface-container-lowest shadow-sm">
+<div class="flex items-center gap-1.5">
+<span class="font-label-sm text-label-sm text-on-surface-variant uppercase font-semibold">HP: 3/3</span>
+<div class="flex items-center gap-1 text-error">
+<span class="material-symbols-outlined text-[16px] drop-shadow-[0_0_6px_rgba(255,180,171,0.8)]" style="font-variation-settings: 'FILL' 1;">favorite</span>
+<span class="material-symbols-outlined text-[16px] drop-shadow-[0_0_6px_rgba(255,180,171,0.8)]" style="font-variation-settings: 'FILL' 1;">favorite</span>
+<span class="material-symbols-outlined text-[16px] drop-shadow-[0_0_6px_rgba(255,180,171,0.8)]" style="font-variation-settings: 'FILL' 1;">favorite</span>
+</div>
+</div>
+<div class="w-px h-3 bg-outline-variant"></div>
+<div class="flex items-center gap-1">
+<span class="font-label-sm text-label-sm text-secondary-container uppercase font-semibold">STATE:</span>
+<span class="font-label-sm text-label-sm text-secondary font-bold tracking-wider">AWAKENED</span>
+</div>
+</div>
+<!-- Prominent Awakened Rank Badge -->
+<div class="mt-space-md w-full flex items-center justify-between p-space-sm rounded-lg bg-surface-container-high shadow-md">
+<div class="flex items-center gap-space-sm">
+<div class="flex items-center justify-center w-10 h-10 rounded bg-primary-container/20">
+<span class="material-symbols-outlined text-[24px] text-primary-fixed drop-shadow-[0_0_8px_rgba(176,38,255,0.7)]" style="font-variation-settings: 'FILL' 1;">military_tech</span>
+</div>
+<div class="text-left">
+<p class="font-label-sm text-label-sm text-primary uppercase font-semibold">CLASSIFICATION</p>
+<p class="font-headline-sm text-headline-sm text-on-surface font-extrabold leading-none">RANK: S</p>
+</div>
+</div>
+<div class="flex flex-col items-end">
+<span class="px-space-xs py-0.5 rounded bg-surface-container-lowest font-label-sm text-label-sm text-secondary-container uppercase tracking-wider font-semibold">WORLD TIER 0</span>
+<span class="font-label-sm text-label-sm text-on-surface-variant mt-1">NATIONAL LEVEL</span>
+</div>
+</div>
+<!-- EXP Level Progression Bar -->
+<div class="w-full mt-space-md flex flex-col gap-1.5 text-left">
+<div class="flex items-center justify-between">
+<span class="font-label-sm text-label-sm text-on-surface-variant uppercase tracking-wider font-semibold">EXPERIENCE LEVEL PROGRESSION</span>
+<span class="font-label-md text-label-md text-secondary-container font-bold tracking-wider">2850 / 3000 EXP (95%)</span>
+</div>
+<!-- Progress Bar Track -->
+<div class="w-full h-3 rounded-full bg-surface-container-lowest overflow-hidden p-0.5 shadow-inner">
+<div class="h-full rounded-full bg-gradient-to-r from-primary-container via-primary-fixed-dim to-secondary-container relative" style="width: 95%;">
+<div class="absolute right-0 top-0 bottom-0 w-2 bg-secondary rounded-full shadow-[0_0_8px_rgba(0,244,254,1)] animate-pulse"></div>
+</div>
+</div>
+</div>
+</div>
+</div>
+<!-- Hunter Statistics Dual Grid -->
+<div class="relative z-10 grid grid-cols-2 gap-space-md w-full">
+<!-- Total Gold Card -->
+<div class="flex flex-col justify-between p-space-md rounded-xl bg-surface-container-low shadow-lg relative overflow-hidden">
+<div class="absolute -right-6 -bottom-6 w-20 h-20 bg-primary-fixed-variant/20 rounded-full blur-xl pointer-events-none"></div>
+<div class="flex items-center justify-between">
+<span class="font-label-sm text-label-sm text-primary uppercase tracking-wider font-semibold">TOTAL GOLD</span>
+<div class="flex items-center justify-center w-7 h-7 rounded-full bg-surface-container">
+<span class="material-symbols-outlined text-[18px] text-primary" style="font-variation-settings: 'FILL' 1;">monetization_on</span>
+</div>
+</div>
+<div class="mt-space-md">
+<div class="px-space-sm py-1.5 rounded bg-surface-container-lowest inline-block shadow-sm">
+<span class="font-headline-sm text-headline-sm text-primary font-bold tracking-tight">650 G</span>
+</div>
+<p class="font-body-sm text-body-sm text-on-surface-variant mt-1.5">Treasury Vault</p>
+</div>
+</div>
+<!-- Quests Completed Card -->
+<div class="flex flex-col justify-between p-space-md rounded-xl bg-surface-container-low shadow-lg relative overflow-hidden">
+<div class="absolute -right-6 -bottom-6 w-20 h-20 bg-secondary-container/10 rounded-full blur-xl pointer-events-none"></div>
+<div class="flex items-center justify-between">
+<span class="font-label-sm text-label-sm text-secondary-container uppercase tracking-wider font-semibold">QUESTS DONE</span>
+<div class="flex items-center justify-center w-7 h-7 rounded-full bg-surface-container">
+<span class="material-symbols-outlined text-[18px] text-secondary-container" style="font-variation-settings: 'FILL' 1;">task_alt</span>
+</div>
+</div>
+<div class="mt-space-md">
+<div class="px-space-sm py-1.5 rounded bg-surface-container-lowest inline-block shadow-sm">
+<span class="font-headline-sm text-headline-sm text-secondary-container font-bold tracking-tight">42 SELESAI</span>
+</div>
+<p class="font-body-sm text-body-sm text-on-surface-variant mt-1.5">Dungeon Clears</p>
+</div>
+</div>
+</div>
+<!-- Academic Feedback Form Card (Supabase Integration Module) -->
+<div class="relative z-10 w-full rounded-xl bg-surface-container-low p-space-md shadow-xl overflow-hidden">
+<div class="flex items-start gap-space-sm mb-space-sm">
+<div class="flex items-center justify-center w-9 h-9 rounded bg-surface-container-high shrink-0 mt-0.5">
+<span class="material-symbols-outlined text-[20px] text-primary-container" style="font-variation-settings: 'FILL' 1;">rate_review</span>
+</div>
+<div class="flex flex-col">
+<h3 class="font-title-md text-title-md text-on-surface font-semibold leading-snug">
+          Evaluasi Mata Kuliah Pemrograman Aplikasi Mobile
+        </h3>
+<p class="font-body-sm text-body-sm text-on-surface-variant mt-1 leading-relaxed">
+          Kirimkan kesan, pesan, dan saran akademik langsung ke basis data Supabase pengampu.
+        </p>
+</div>
+</div>
+<!-- Feedback Interaction Form -->
+<form class="mt-space-md flex flex-col space-y-space-md" id="feedback-form" onsubmit="event.preventDefault(); window.submitFeedback();">
+<div class="relative flex flex-col">
+<label class="sr-only" for="feedback-input">Kesan dan Pesan Akademik</label>
+<textarea class="w-full p-space-md rounded-lg bg-surface-container-lowest text-on-surface placeholder:text-outline font-body-md text-body-md shadow-inner focus:outline-none focus:ring-0 focus:shadow-[0_0_12px_rgba(176,38,255,0.4)] transition-all resize-none" id="feedback-input" placeholder="Tuliskan kesan perkuliahan, tantangan Flutter, serta saran pengembangan aplikasi LevMax ke depan..." rows="4"></textarea>
+<!-- Char count status -->
+<div class="flex justify-between items-center px-1 pt-1.5">
+<span class="font-label-sm text-label-sm text-secondary-container flex items-center gap-1 opacity-0 transition-opacity" id="sync-status">
+<span class="material-symbols-outlined text-[12px]">cloud_done</span> DISINKRONKAN DENGAN SUPABASE
+          </span>
+<span class="font-label-sm text-label-sm text-outline ml-auto" id="char-counter">0 / 500</span>
+</div>
+</div>
+<!-- Action Button: Send Feedback -->
+<button class="w-full flex items-center justify-center gap-space-sm py-space-sm px-space-md rounded-lg bg-gradient-to-r from-primary-container to-inverse-primary text-on-primary-container font-label-lg text-label-lg uppercase tracking-wider font-semibold shadow-[0_0_18px_rgba(176,38,255,0.45)] active:scale-[0.98] transition-transform cursor-pointer" id="submit-btn" type="submit">
+<span class="material-symbols-outlined text-[18px]">send</span>
+<span>KIRIM PESAN &amp; KESAN</span>
+</button>
+</form>
+</div>
+<!-- System Critical Abort / Logout Action -->
+<div class="relative z-10 w-full pt-space-xs">
+<button class="w-full flex items-center justify-center gap-space-sm py-space-sm px-space-md rounded-lg bg-error-container/20 text-error font-label-lg text-label-lg uppercase tracking-widest font-semibold shadow-[0_0_16px_rgba(147,0,10,0.3)] active:bg-error-container/40 transition-colors cursor-pointer" id="logout-btn" onclick="window.triggerSystemLogout()" type="button">
+<span class="material-symbols-outlined text-[18px] text-error">power_settings_new</span>
+<span>SYSTEM LOGOUT</span>
+</button>
+<p class="text-center font-label-sm text-label-sm text-outline mt-space-xs uppercase tracking-widest">
+      TERMINAL SESSION: 0x7E3 // MONARCH ARCHIVE
+    </p>
+</div>
+</div>
+<script>
+  (function() {
+    const feedbackInput = document.getElementById('feedback-input');
+    const charCounter = document.getElementById('char-counter');
+    const syncStatus = document.getElementById('sync-status');
+    const submitBtn = document.getElementById('submit-btn');
+
+    if (feedbackInput && charCounter) {
+      feedbackInput.addEventListener('input', function() {
+        const len = this.value.length;
+        charCounter.textContent = len + ' / 500';
+        if (len > 500) {
+          charCounter.classList.add('text-error');
+        } else {
+          charCounter.classList.remove('text-error');
+        }
+      });
+    }
+
+    window.submitFeedback = function() {
+      if (!feedbackInput || !feedbackInput.value.trim()) return;
+      
+      const originalText = submitBtn.innerHTML;
+      submitBtn.disabled = true;
+      submitBtn.innerHTML = '<span class="material-symbols-outlined text-[18px] animate-spin">refresh</span><span>TRANSMITTING...</span>';
+
+      setTimeout(function() {
+        submitBtn.disabled = false;
+        submitBtn.innerHTML = '<span class="material-symbols-outlined text-[18px]">check_circle</span><span>TERKIRIM KE SUPABASE</span>';
+        if (syncStatus) {
+          syncStatus.classList.remove('opacity-0');
+        }
+        feedbackInput.value = '';
+        if (charCounter) charCounter.textContent = '0 / 500';
+
+        setTimeout(function() {
+          submitBtn.innerHTML = originalText;
+          if (syncStatus) {
+            syncStatus.classList.add('opacity-0');
+          }
+        }, 3000);
+      }, 900);
+    };
+
+    window.triggerSystemLogout = function() {
+      const logoutBtn = document.getElementById('logout-btn');
+      if (!logoutBtn) return;
+      logoutBtn.innerHTML = '<span class="material-symbols-outlined text-[18px] animate-pulse">sync_lock</span><span>SEVERING SYSTEM LINK...</span>';
+      setTimeout(function() {
+        logoutBtn.innerHTML = '<span class="material-symbols-outlined text-[18px]">lock_reset</span><span>TERMINAL OFFLINE</span>';
+      }, 800);
+    };
+  })();
+</script></main><nav class="fixed bottom-0 w-full z-50 pb-safe bg-surface-container-lowest/90 backdrop-blur-xl" data-active-classes="text-primary"><div class="flex justify-around items-center h-20 px-space-xs"><a class="flex flex-col items-center justify-center gap-1 w-16 h-14 text-outline hover:text-on-surface transition-colors" data-path="quests" href="#"><span class="material-symbols-outlined text-[24px]">task_alt</span><span class="font-label-sm text-label-sm uppercase tracking-wide">Quests</span></a><a class="flex flex-col items-center justify-center gap-1 w-16 h-14 text-outline hover:text-on-surface transition-colors" data-path="dungeon-radar" href="#"><span class="material-symbols-outlined text-[24px]">radar</span><span class="font-label-sm text-label-sm uppercase tracking-wide">Dungeon</span></a><a class="flex flex-col items-center justify-center gap-1 w-16 h-14 text-outline hover:text-on-surface transition-colors" data-path="mana-game" href="#"><span class="material-symbols-outlined text-[24px]">swords</span><span class="font-label-sm text-label-sm uppercase tracking-wide">Mana</span></a><a class="flex flex-col items-center justify-center gap-1 w-16 h-14 text-outline hover:text-on-surface transition-colors" data-path="exchange-shop" href="#"><span class="material-symbols-outlined text-[24px]">storefront</span><span class="font-label-sm text-label-sm uppercase tracking-wide">Exchange</span></a><a aria-current="page" class="flex flex-col items-center justify-center gap-1 w-16 h-14 transition-colors text-primary" data-path="hunter-status" href="#"><span class="material-symbols-outlined text-[24px]">person</span><span class="font-label-sm text-label-sm uppercase tracking-wide">Status</span></a></div></nav></body></html>
