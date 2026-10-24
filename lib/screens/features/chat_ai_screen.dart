@@ -5,6 +5,7 @@ import 'package:google_fonts/google_fonts.dart';
 import 'package:image_picker/image_picker.dart';
 import '../../services/gemini_service.dart';
 import '../../services/hive_service.dart';
+import '../../widgets/avatar_image.dart';
 
 /// ChatAiScreen
 /// Layar percakapan System Guide (AI Chat) bergaya Solo Leveling Monarch System.
@@ -696,30 +697,18 @@ class _ChatAiScreenState extends State<ChatAiScreen> {
                     ),
                   ],
                 ),
-                child: avatarUrl != null && avatarUrl.isNotEmpty
-                    ? ClipRRect(
-                        borderRadius: BorderRadius.circular(10),
-                        child: Image.network(
-                          avatarUrl,
-                          width: 40,
-                          height: 40,
-                          fit: BoxFit.cover,
-                          errorBuilder: (context, error, stackTrace) => const Center(
-                            child: Icon(
-                              Icons.person_rounded,
-                              color: Colors.white,
-                              size: 22,
-                            ),
-                          ),
-                        ),
-                      )
-                    : const Center(
-                        child: Icon(
-                          Icons.person_rounded,
-                          color: Colors.white,
-                          size: 22,
-                        ),
-                      ),
+                child: HunterAvatar(
+                  avatarUrl: avatarUrl,
+                  size: 40,
+                  borderRadius: BorderRadius.circular(10),
+                  fallback: const Center(
+                    child: Icon(
+                      Icons.person_rounded,
+                      color: Colors.white,
+                      size: 22,
+                    ),
+                  ),
+                ),
               );
             },
           ),

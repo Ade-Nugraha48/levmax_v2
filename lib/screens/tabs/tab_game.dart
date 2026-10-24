@@ -6,6 +6,7 @@ import 'package:intl/intl.dart';
 import 'package:sensors_plus/sensors_plus.dart';
 import '../../services/hive_service.dart';
 import '../../services/supabase_service.dart';
+import '../../widgets/avatar_image.dart';
 
 /// Tab 3: Mini Game Mana Core Stabilization (Sensor Gyroscope)
 /// Layout UI diadopsi 1:1 dari Stitch LevMax Solo Leveling Monarch System.
@@ -704,21 +705,13 @@ class _TabGameState extends State<TabGame> with SingleTickerProviderStateMixin {
                         ),
                       ],
                     ),
-                    child: avatarUrl != null && avatarUrl.isNotEmpty
-                        ? ClipOval(
-                            child: Image.network(
-                              avatarUrl,
-                              width: 34,
-                              height: 34,
-                              fit: BoxFit.cover,
-                              errorBuilder: (context, error, stackTrace) => const Center(
-                                child: Icon(Icons.person, color: Colors.white, size: 20),
-                              ),
-                            ),
-                          )
-                        : const Center(
-                            child: Icon(Icons.person_rounded, color: Colors.white, size: 20),
-                          ),
+                    child: HunterAvatar(
+                      avatarUrl: avatarUrl,
+                      size: 34,
+                      fallback: const Center(
+                        child: Icon(Icons.person, color: Colors.white, size: 20),
+                      ),
+                    ),
                   );
                 },
               ),

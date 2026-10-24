@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:image_picker/image_picker.dart';
 import '../../services/hash_service.dart';
+import '../../services/hive_service.dart';
 import '../../services/supabase_service.dart';
 import '../../utils/constants.dart';
 
@@ -113,6 +114,10 @@ class _RegisterScreenState extends State<RegisterScreen> {
           final avatarUrl = await SupabaseService.uploadAvatar(_selectedAvatar!, userId);
           if (avatarUrl != null) {
             await SupabaseService.updateAvatarUrl(userId: userId, avatarUrl: avatarUrl);
+            await HiveService.saveAvatarUrl(avatarUrl);
+          } else {
+            // Simpan foto lokal ke Hive jika upload Supabase terkendala RLS
+            await HiveService.saveAvatarUrl(_selectedAvatar!.path);
           }
         }
 

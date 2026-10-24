@@ -1,4 +1,5 @@
 import 'dart:io';
+import 'package:flutter/foundation.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
 /// Service penanganan koneksi remote database Supabase (Tabel users & feedbacks).
@@ -10,15 +11,36 @@ class SupabaseService {
   /// Mengunggah foto profil Hunter ke storage bucket 'Avatar'
   static Future<String?> uploadAvatar(File imageFile, String userId) async {
     try {
+      final bytes = await imageFile.readAsBytes();
       final path = '$userId/profile.jpg';
-      await client.storage.from('Avatar').upload(
-        path,
-        imageFile,
-        fileOptions: const FileOptions(upsert: true),
-      );
-      final publicUrl = client.storage.from('Avatar').getPublicUrl(path);
-      return publicUrl;
+      String targetBucket = 'Avatar';
+
+      try {
+        await client.storage.from('Avatar').uploadBinary(
+          path,
+          bytes,
+          fileOptions: const FileOptions(
+            upsert: true,
+            contentType: 'image/jpeg',
+          ),
+        );
+      } catch (e) {
+        debugPrint('Upload ke bucket "Avatar" gagal: $e. Mencoba bucket lowercase "avatar"...');
+        targetBucket = 'avatar';
+        await client.storage.from('avatar').uploadBinary(
+          path,
+          bytes,
+          fileOptions: const FileOptions(
+            upsert: true,
+            contentType: 'image/jpeg',
+          ),
+        );
+      }
+
+      final publicUrl = client.storage.from(targetBucket).getPublicUrl(path);
+      return '$publicUrl?t=${DateTime.now().millisecondsSinceEpoch}';
     } catch (e) {
+      debugPrint('Upload avatar gagal: $e');
       return null;
     }
   }
@@ -32,6 +54,7 @@ class SupabaseService {
       await client.from('users').update({'avatar_url': avatarUrl}).eq('id', userId);
       return true;
     } catch (e) {
+      debugPrint('Gagal update avatar_url ke tabel users: $e');
       return false;
     }
   }
@@ -57,13 +80,16 @@ class SupabaseService {
       try {
         final response = await client.from('users').insert(data).select().single();
         return response;
-      } catch (_) {
-        // Fallback jika kolom hp belum ada di skema SQL remote
+      } catch (insertError) {
+        debugPrint('Insert user gagal: $insertError. Menjalankan fallback...');
+        // Fallback jika kolom hp atau avatar_url belum ada di skema SQL remote
         data.remove('hp');
+        data.remove('avatar_url');
         final response = await client.from('users').insert(data).select().single();
         return response;
       }
     } catch (e) {
+      debugPrint('Register gagal: $e');
       return null;
     }
   }

@@ -2,6 +2,7 @@ import 'dart:math';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import '../../services/hive_service.dart';
+import '../../widgets/avatar_image.dart';
 
 /// Model Checklist Standar Akurasi Biomekanik Hunter
 class FormCheckpoint {
@@ -562,29 +563,17 @@ class _WorkoutHubScreenState extends State<WorkoutHubScreen>
                     ),
                   ],
                 ),
-                child: avatarUrl != null && avatarUrl.isNotEmpty
-                    ? ClipOval(
-                        child: Image.network(
-                          avatarUrl,
-                          width: 34,
-                          height: 34,
-                          fit: BoxFit.cover,
-                          errorBuilder: (context, error, stackTrace) => const Center(
-                            child: Icon(
-                              Icons.person_rounded,
-                              size: 20,
-                              color: Color(0xFF4E0078),
-                            ),
-                          ),
-                        ),
-                      )
-                    : const Center(
-                        child: Icon(
-                          Icons.person_rounded,
-                          size: 20,
-                          color: Color(0xFF4E0078),
-                        ),
-                      ),
+                child: HunterAvatar(
+                  avatarUrl: avatarUrl,
+                  size: 34,
+                  fallback: const Center(
+                    child: Icon(
+                      Icons.person_rounded,
+                      size: 20,
+                      color: Color(0xFF4E0078),
+                    ),
+                  ),
+                ),
               );
             },
           ),

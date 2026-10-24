@@ -4,6 +4,7 @@ import 'package:google_fonts/google_fonts.dart';
 import 'package:image_picker/image_picker.dart';
 import '../../services/hive_service.dart';
 import '../../services/supabase_service.dart';
+import '../../widgets/avatar_image.dart';
 import '../auth/login_screen.dart';
 
 /// Tab 5: Hunter Profile, Academic Feedback & Session Logout (TabProfile)
@@ -260,24 +261,31 @@ class _TabProfileState extends State<TabProfile> {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
             content: Text(
-              'Avatar berhasil diperbarui!',
+              'Avatar berhasil diunggah ke Supabase Storage & diperbarui!',
               style: GoogleFonts.spaceGrotesk(color: Colors.white, fontWeight: FontWeight.bold),
             ),
             backgroundColor: const Color(0xFF00F4FE),
           ),
         );
       } else {
+        // Fallback: Terapkan file foto secara lokal ke Hive jika Supabase Storage terhalang RLS Policy
+        final localPath = picked.path;
+        await HiveService.saveAvatarUrl(localPath);
+
         if (!mounted) return;
         setState(() {
+          _avatarUrl = localPath;
           _isUploadingAvatar = false;
         });
+
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
             content: Text(
-              'Gagal mengunggah avatar. Periksa koneksi internet Anda.',
-              style: GoogleFonts.spaceGrotesk(color: Colors.white, fontWeight: FontWeight.bold),
+              'Upload Supabase ditolak RLS. Foto berhasil diterapkan secara lokal! Harap aktifkan RLS policy bucket "Avatar".',
+              style: GoogleFonts.spaceGrotesk(color: Colors.white, fontWeight: FontWeight.w700),
             ),
-            backgroundColor: const Color(0xFF93000A),
+            backgroundColor: const Color(0xFFB026FF),
+            duration: const Duration(seconds: 4),
           ),
         );
       }
@@ -452,21 +460,13 @@ class _TabProfileState extends State<TabProfile> {
                   ),
                 ],
               ),
-              child: _avatarUrl != null && _avatarUrl!.isNotEmpty
-                  ? ClipOval(
-                      child: Image.network(
-                        _avatarUrl!,
-                        width: 32,
-                        height: 32,
-                        fit: BoxFit.cover,
-                        errorBuilder: (context, error, stackTrace) => const Center(
-                          child: Icon(Icons.person, size: 18, color: Colors.white),
-                        ),
-                      ),
-                    )
-                  : const Center(
-                      child: Icon(Icons.person, size: 18, color: Colors.white),
-                    ),
+              child: HunterAvatar(
+                avatarUrl: _avatarUrl,
+                size: 32,
+                fallback: const Center(
+                  child: Icon(Icons.person, size: 18, color: Colors.white),
+                ),
+              ),
             ),
           ],
         ),
@@ -632,30 +632,18 @@ class _TabProfileState extends State<TabProfile> {
                                           ),
                                         ),
                                       )
-                                    : (_avatarUrl != null && _avatarUrl!.isNotEmpty)
-                                        ? ClipRRect(
-                                            borderRadius: BorderRadius.circular(15),
-                                            child: Image.network(
-                                              _avatarUrl!,
-                                              width: 58,
-                                              height: 58,
-                                              fit: BoxFit.cover,
-                                              errorBuilder: (context, error, stackTrace) => const Center(
-                                                child: Icon(
-                                                  Icons.person,
-                                                  size: 34,
-                                                  color: Color(0xFF00F4FE),
-                                                ),
-                                              ),
-                                            ),
-                                          )
-                                        : const Center(
-                                            child: Icon(
-                                              Icons.shield_moon_rounded,
-                                              size: 34,
-                                              color: Color(0xFF00F4FE),
-                                            ),
+                                    : HunterAvatar(
+                                        avatarUrl: _avatarUrl,
+                                        size: 58,
+                                        borderRadius: BorderRadius.circular(15),
+                                        fallback: const Center(
+                                          child: Icon(
+                                            Icons.shield_moon_rounded,
+                                            size: 34,
+                                            color: Color(0xFF00F4FE),
                                           ),
+                                        ),
+                                      ),
                               ),
                             ),
                           ),

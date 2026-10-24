@@ -5,6 +5,7 @@ import 'package:google_fonts/google_fonts.dart';
 import 'package:sensors_plus/sensors_plus.dart';
 import '../../services/hive_service.dart';
 import '../../services/supabase_service.dart';
+import '../../widgets/avatar_image.dart';
 
 /// QuestSensorScreen
 /// Layar Cardio Shake Protocol berbasis sensor Accelerometer murni.
@@ -486,29 +487,17 @@ class _QuestSensorScreenState extends State<QuestSensorScreen> {
                         ),
                       ],
                     ),
-                    child: avatarUrl != null && avatarUrl.isNotEmpty
-                        ? ClipOval(
-                            child: Image.network(
-                              avatarUrl,
-                              width: 34,
-                              height: 34,
-                              fit: BoxFit.cover,
-                              errorBuilder: (context, error, stackTrace) => const Center(
-                                child: Icon(
-                                  Icons.person_rounded,
-                                  size: 20,
-                                  color: Color(0xFF1A1228),
-                                ),
-                              ),
-                            ),
-                          )
-                        : const Center(
-                            child: Icon(
-                              Icons.person_rounded,
-                              size: 20,
-                              color: Color(0xFF1A1228),
-                            ),
-                          ),
+                    child: HunterAvatar(
+                      avatarUrl: avatarUrl,
+                      size: 34,
+                      fallback: const Center(
+                        child: Icon(
+                          Icons.person_rounded,
+                          size: 20,
+                          color: Color(0xFF1A1228),
+                        ),
+                      ),
+                    ),
                   );
                 },
               ),

@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import '../../services/hive_service.dart';
+import '../../widgets/avatar_image.dart';
 
 /// AppearanceQuestScreen
 /// Layar Protokol Penampilan (Solo Leveling HUD Aesthetic)
@@ -347,29 +348,17 @@ class _AppearanceQuestScreenState extends State<AppearanceQuestScreen> {
                         ),
                       ],
                     ),
-                    child: avatarUrl != null && avatarUrl.isNotEmpty
-                        ? ClipOval(
-                            child: Image.network(
-                              avatarUrl,
-                              width: 34,
-                              height: 34,
-                              fit: BoxFit.cover,
-                              errorBuilder: (context, error, stackTrace) => const Center(
-                                child: Icon(
-                                  Icons.person_rounded,
-                                  size: 20,
-                                  color: Color(0xFF1A1228),
-                                ),
-                              ),
-                            ),
-                          )
-                        : const Center(
-                            child: Icon(
-                              Icons.person_rounded,
-                              size: 20,
-                              color: Color(0xFF1A1228),
-                            ),
-                          ),
+                    child: HunterAvatar(
+                      avatarUrl: avatarUrl,
+                      size: 34,
+                      fallback: const Center(
+                        child: Icon(
+                          Icons.person_rounded,
+                          size: 20,
+                          color: Color(0xFF1A1228),
+                        ),
+                      ),
+                    ),
                   );
                 },
               ),

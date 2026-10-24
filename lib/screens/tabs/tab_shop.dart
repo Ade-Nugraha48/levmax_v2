@@ -4,6 +4,7 @@ import 'package:intl/intl.dart';
 import '../../services/hash_service.dart';
 import '../../services/hive_service.dart';
 import '../../services/supabase_service.dart';
+import '../../widgets/avatar_image.dart';
 
 /// Tab 4: Hunter Exchange & Blockchain Store (TabShop)
 /// Desain bertema Solo Leveling Monarch System mengadopsi 1:1 Stitch UI
@@ -671,21 +672,13 @@ class _TabShopState extends State<TabShop> {
                       ),
                     ],
                   ),
-                  child: avatarUrl != null && avatarUrl.isNotEmpty
-                      ? ClipOval(
-                          child: Image.network(
-                            avatarUrl,
-                            width: 32,
-                            height: 32,
-                            fit: BoxFit.cover,
-                            errorBuilder: (context, error, stackTrace) => const Center(
-                              child: Icon(Icons.person, size: 18, color: Colors.white),
-                            ),
-                          ),
-                        )
-                      : const Center(
-                          child: Icon(Icons.person_rounded, size: 18, color: Colors.white),
-                        ),
+                  child: HunterAvatar(
+                    avatarUrl: avatarUrl,
+                    size: 32,
+                    fallback: const Center(
+                      child: Icon(Icons.person, size: 18, color: Colors.white),
+                    ),
+                  ),
                 );
               },
             ),

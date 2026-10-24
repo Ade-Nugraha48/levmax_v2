@@ -10,6 +10,7 @@ import '../features/chat_ai_screen.dart';
 import '../features/quest_sensor.dart';
 import '../features/study_focus_screen.dart';
 import '../features/workout_hub_screen.dart';
+import '../../widgets/avatar_image.dart';
 
 class TabHome extends StatefulWidget {
   const TabHome({super.key});
@@ -419,30 +420,18 @@ class _TabHomeState extends State<TabHome> {
                         ),
                       ],
                     ),
-                    child: _avatarUrl != null && _avatarUrl!.isNotEmpty
-                        ? ClipRRect(
-                            borderRadius: BorderRadius.circular(12),
-                            child: Image.network(
-                              _avatarUrl!,
-                              width: 50,
-                              height: 50,
-                              fit: BoxFit.cover,
-                              errorBuilder: (context, error, stackTrace) => const Center(
-                                child: Icon(
-                                  Icons.person_rounded,
-                                  size: 28,
-                                  color: Color(0xFFE5B5FF),
-                                ),
-                              ),
-                            ),
-                          )
-                        : const Center(
-                            child: Icon(
-                              Icons.person_rounded,
-                              size: 28,
-                              color: Color(0xFFE5B5FF),
-                            ),
-                          ),
+                    child: HunterAvatar(
+                      avatarUrl: _avatarUrl,
+                      size: 50,
+                      borderRadius: BorderRadius.circular(12),
+                      fallback: const Center(
+                        child: Icon(
+                          Icons.person_rounded,
+                          size: 28,
+                          color: Color(0xFFE5B5FF),
+                        ),
+                      ),
+                    ),
                   ),
                   Positioned(
                     bottom: -3,
