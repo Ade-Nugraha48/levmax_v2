@@ -127,7 +127,7 @@ class _WorkoutHubScreenState extends State<WorkoutHubScreen>
       musclesSub: 'LATS/BICEPS',
       burnKcal: 55,
       expReward: 15,
-      goldReward: 8,
+      goldReward: 10,
       checkpoints: [
         FormCheckpoint(
           title: 'Full Dead Hang',
@@ -202,8 +202,8 @@ class _WorkoutHubScreenState extends State<WorkoutHubScreen>
       muscles: 'Quads/Glutes',
       musclesSub: 'LEGS/CORE',
       burnKcal: 60,
-      expReward: 15,
-      goldReward: 10,
+      expReward: 10,
+      goldReward: 5,
       checkpoints: [
         FormCheckpoint(
           title: 'Hip Crease Below Knee',
@@ -275,6 +275,7 @@ class _WorkoutHubScreenState extends State<WorkoutHubScreen>
   }
 
   /// Mengganti latihan aktif dan mereset nilai repetisi & set ke kosongan
+  // ignore: unused_element
   void _selectExercise(String key) {
     if (_activeExercise == key) return;
     setState(() {
@@ -576,35 +577,20 @@ class _WorkoutHubScreenState extends State<WorkoutHubScreen>
     return Row(
       mainAxisAlignment: MainAxisAlignment.spaceBetween,
       children: [
-        Row(
-          children: [
-            Container(
-              width: 7,
-              height: 7,
-              decoration: const BoxDecoration(
-                shape: BoxShape.circle,
-                color: Color(0xFF00F4FE),
-                boxShadow: [
-                  BoxShadow(
-                    color: Color(0xFF00F4FE),
-                    blurRadius: 6,
-                    spreadRadius: 1,
-                  ),
-                ],
-              ),
+        Expanded(
+          child: Text(
+            'QUEST LOG // PROTOCOL: DAILY QUEST',
+            maxLines: 2,
+            overflow: TextOverflow.ellipsis,
+            style: GoogleFonts.spaceGrotesk(
+              fontSize: 9.5,
+              fontWeight: FontWeight.w600,
+              letterSpacing: 0.8,
+              color: const Color(0xFFCBD5E1).withValues(alpha: 0.75),
             ),
-            const SizedBox(width: 6),
-            Text(
-              'QUEST LOG // PROTOCOL: DAILY QUEST',
-              style: GoogleFonts.spaceGrotesk(
-                fontSize: 9.5,
-                fontWeight: FontWeight.w700,
-                letterSpacing: 1.0,
-                color: const Color(0xFF00F4FE),
-              ),
-            ),
-          ],
+          ),
         ),
+        const SizedBox(width: 8),
 
         // Rank Badge
         Container(
@@ -648,88 +634,9 @@ class _WorkoutHubScreenState extends State<WorkoutHubScreen>
     );
   }
 
-  /// 3. Tab Selector 4 Latihan (Push Up, Pull Up, Sit Up, Squat)
+  /// 3. Tab Selector (Extracted to separate quest items on main list)
   Widget _buildProtocolTabsRow() {
-    final tabs = [
-      {'key': 'pushup', 'label': 'PUSH UP', 'reps': '20 Reps', 'icon': Icons.fitness_center_rounded},
-      {'key': 'pullup', 'label': 'PULL UP', 'reps': '10 Reps', 'icon': Icons.vertical_align_top_rounded},
-      {'key': 'situp', 'label': 'SIT UP', 'reps': '20 Reps', 'icon': Icons.self_improvement_rounded},
-      {'key': 'squat', 'label': 'SQUAT', 'reps': '30 Reps', 'icon': Icons.directions_run_rounded},
-    ];
-
-    return Container(
-      padding: const EdgeInsets.all(4),
-      decoration: BoxDecoration(
-        color: const Color(0xFF110C19),
-        borderRadius: BorderRadius.circular(12),
-        border: Border.all(
-          color: const Color(0xFF2C1E4E),
-          width: 1.0,
-        ),
-      ),
-      child: Row(
-        children: tabs.map((tab) {
-          final isSelected = _activeExercise == tab['key'];
-          return Expanded(
-            child: GestureDetector(
-              onTap: () => _selectExercise(tab['key'] as String),
-              child: AnimatedContainer(
-                duration: const Duration(milliseconds: 200),
-                padding: const EdgeInsets.symmetric(vertical: 8),
-                decoration: BoxDecoration(
-                  color: isSelected ? const Color(0xFFB026FF) : Colors.transparent,
-                  borderRadius: BorderRadius.circular(8),
-                  border: isSelected
-                      ? Border.all(
-                          color: const Color(0xFFE5B5FF).withValues(alpha: 0.5),
-                          width: 1.0,
-                        )
-                      : null,
-                  boxShadow: isSelected
-                      ? [
-                          BoxShadow(
-                            color: const Color(0xFFB026FF).withValues(alpha: 0.45),
-                            blurRadius: 10,
-                          ),
-                        ]
-                      : null,
-                ),
-                child: Column(
-                  mainAxisSize: MainAxisSize.min,
-                  children: [
-                    Icon(
-                      tab['icon'] as IconData,
-                      size: 18,
-                      color: isSelected ? Colors.white : const Color(0xFF9B8BA1),
-                    ),
-                    const SizedBox(height: 2),
-                    Text(
-                      tab['label'] as String,
-                      style: GoogleFonts.spaceGrotesk(
-                        fontSize: 10,
-                        fontWeight: FontWeight.w800,
-                        letterSpacing: 0.5,
-                        color: isSelected ? Colors.white : const Color(0xFF9B8BA1),
-                      ),
-                    ),
-                    Text(
-                      tab['reps'] as String,
-                      style: GoogleFonts.spaceGrotesk(
-                        fontSize: 8.5,
-                        fontWeight: FontWeight.w600,
-                        color: isSelected
-                            ? const Color(0xFFF4D9FF)
-                            : const Color(0xFF5D5373),
-                      ),
-                    ),
-                  ],
-                ),
-              ),
-            ),
-          );
-        }).toList(),
-      ),
-    );
+    return const SizedBox.shrink();
   }
 
   /// 4. Animated Biomechanical Visualizer Box
@@ -804,34 +711,41 @@ class _WorkoutHubScreenState extends State<WorkoutHubScreen>
                 Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
-                    Row(
-                      children: [
-                        Container(
-                          width: 5,
-                          height: 5,
-                          decoration: const BoxDecoration(
-                            shape: BoxShape.circle,
-                            color: Color(0xFF00E5FF),
-                            boxShadow: [
-                              BoxShadow(
-                                color: Color(0xFF00E5FF),
-                                blurRadius: 4,
+                    Expanded(
+                      child: Row(
+                        children: [
+                          Container(
+                            width: 5,
+                            height: 5,
+                            decoration: const BoxDecoration(
+                              shape: BoxShape.circle,
+                              color: Color(0xFF00E5FF),
+                              boxShadow: [
+                                BoxShadow(
+                                  color: Color(0xFF00E5FF),
+                                  blurRadius: 4,
+                                ),
+                              ],
+                            ),
+                          ),
+                          const SizedBox(width: 5),
+                          Expanded(
+                            child: Text(
+                              protocol.tag,
+                              maxLines: 1,
+                              overflow: TextOverflow.ellipsis,
+                              style: GoogleFonts.spaceGrotesk(
+                                fontSize: 9.5,
+                                fontWeight: FontWeight.w700,
+                                letterSpacing: 0.6,
+                                color: const Color(0xFF00E5FF),
                               ),
-                            ],
+                            ),
                           ),
-                        ),
-                        const SizedBox(width: 5),
-                        Text(
-                          protocol.tag,
-                          style: GoogleFonts.spaceGrotesk(
-                            fontSize: 9.5,
-                            fontWeight: FontWeight.w700,
-                            letterSpacing: 0.6,
-                            color: const Color(0xFF00E5FF),
-                          ),
-                        ),
-                      ],
+                        ],
+                      ),
                     ),
+                    const SizedBox(width: 6),
                     Container(
                       padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 2.5),
                       decoration: BoxDecoration(

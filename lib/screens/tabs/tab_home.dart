@@ -920,7 +920,7 @@ class _TabHomeState extends State<TabHome> {
             borderRadius: BorderRadius.circular(6),
           ),
           child: Text(
-            '$completedCount / 4 DONE',
+            '$completedCount / ${_dailyQuestsData.length} DONE',
             style: GoogleFonts.spaceGrotesk(
               fontSize: 10,
               fontWeight: FontWeight.w700,
@@ -933,73 +933,119 @@ class _TabHomeState extends State<TabHome> {
     );
   }
 
+  // Data Daily Quests (4 independent Workout quests + Cardio, Appearance, Study)
+  static final List<Map<String, dynamic>> _dailyQuestsData = [
+    {
+      'id': 'pushup',
+      'title': 'Push Up (20 Reps)',
+      'category': 'WORKOUT',
+      'desc': '20 Repetisi Terverifikasi Sensor Push-Up fisik',
+      'exp': 10,
+      'gold': 5,
+      'icon': Icons.fitness_center_rounded,
+      'iconColor': const Color(0xFFE5B5FF),
+      'iconBg': const Color(0xFF2D164D),
+      'btnText': 'EXECUTE',
+      'btnColor': const Color(0xFFB026FF),
+      'btnTextColor': Colors.white,
+      'isActionCyan': false,
+    },
+    {
+      'id': 'situp',
+      'title': 'Sit Up (20 Reps)',
+      'category': 'WORKOUT',
+      'desc': '20 Repetisi Penguatan Otot Inti & Abdominal',
+      'exp': 10,
+      'gold': 5,
+      'icon': Icons.fitness_center_rounded,
+      'iconColor': const Color(0xFFE5B5FF),
+      'iconBg': const Color(0xFF2D164D),
+      'btnText': 'EXECUTE',
+      'btnColor': const Color(0xFFB026FF),
+      'btnTextColor': Colors.white,
+      'isActionCyan': false,
+    },
+    {
+      'id': 'pullup',
+      'title': 'Pull Up (10 Reps)',
+      'category': 'WORKOUT',
+      'desc': '10 Repetisi Kekuatan Otot Punggung & Sayap Hunter',
+      'exp': 15,
+      'gold': 10,
+      'icon': Icons.fitness_center_rounded,
+      'iconColor': const Color(0xFFE5B5FF),
+      'iconBg': const Color(0xFF2D164D),
+      'btnText': 'EXECUTE',
+      'btnColor': const Color(0xFFB026FF),
+      'btnTextColor': Colors.white,
+      'isActionCyan': false,
+    },
+    {
+      'id': 'squat',
+      'title': 'Squat (30 Reps)',
+      'category': 'WORKOUT',
+      'desc': '30 Repetisi Ketahanan Kaki & Mobilitas Bawah',
+      'exp': 10,
+      'gold': 5,
+      'icon': Icons.fitness_center_rounded,
+      'iconColor': const Color(0xFFE5B5FF),
+      'iconBg': const Color(0xFF2D164D),
+      'btnText': 'EXECUTE',
+      'btnColor': const Color(0xFFB026FF),
+      'btnTextColor': Colors.white,
+      'isActionCyan': false,
+    },
+    {
+      'id': 'cardio',
+      'title': 'Cardio Distance Run',
+      'category': 'CARDIO',
+      'desc': 'Target 2.0 KM via GPS Tracking radar hunter',
+      'exp': 20,
+      'gold': 15,
+      'icon': Icons.directions_run_rounded,
+      'iconColor': const Color(0xFF00F4FE),
+      'iconBg': const Color(0xFF0A2730),
+      'btnText': 'START RUN',
+      'btnColor': const Color(0xFF00F4FE),
+      'btnTextColor': Colors.black,
+      'isActionCyan': true,
+    },
+    {
+      'id': 'appearance',
+      'title': 'Protokol Penampilan Hunter',
+      'category': 'APPEARANCE',
+      'desc': '5 Tahap Skincare & Grooming Esensial Hunter',
+      'exp': 30,
+      'gold': 20,
+      'icon': Icons.face_retouching_natural_rounded,
+      'iconColor': const Color(0xFF00F4FE),
+      'iconBg': const Color(0xFF0A2730),
+      'btnText': 'CHECKLIST',
+      'btnColor': const Color(0xFF00F4FE),
+      'btnTextColor': Colors.black,
+      'isActionCyan': true,
+    },
+    {
+      'id': 'mana_focus',
+      'title': 'Mana Knowledge Focus',
+      'category': 'STUDY',
+      'desc': 'Fokus Belajar / Baca Materi 30 Menit tenang',
+      'exp': 15,
+      'gold': 10,
+      'icon': Icons.menu_book_rounded,
+      'iconColor': const Color(0xFFDCB8FC),
+      'iconBg': const Color(0xFF231B33),
+      'btnText': 'FOCUS',
+      'btnColor': Colors.transparent,
+      'btnTextColor': const Color(0xFFDCB8FC),
+      'isActionCyan': false,
+    },
+  ];
+
   /// 6. Quest Cards Stream
   Widget _buildQuestList() {
     final searchQuery = _searchController.text.trim().toLowerCase();
-
-    // Data Daily Quests (termasuk Protokol Penampilan Hunter)
-    final quests = [
-      {
-        'id': 'pushup',
-        'title': 'Push Up Protocol',
-        'category': 'WORKOUT',
-        'desc': '20 Repetisi Terverifikasi Sensor Push-Up fisik',
-        'exp': 10,
-        'gold': 5,
-        'icon': Icons.fitness_center_rounded,
-        'iconColor': const Color(0xFFE5B5FF),
-        'iconBg': const Color(0xFF2D164D),
-        'btnText': 'EXECUTE',
-        'btnColor': const Color(0xFFB026FF),
-        'btnTextColor': Colors.white,
-        'isActionCyan': false,
-      },
-      {
-        'id': 'cardio',
-        'title': 'Cardio Distance Run',
-        'category': 'CARDIO',
-        'desc': 'Target 2.0 KM via GPS Tracking radar hunter',
-        'exp': 20,
-        'gold': 15,
-        'icon': Icons.directions_run_rounded,
-        'iconColor': const Color(0xFF00F4FE),
-        'iconBg': const Color(0xFF0A2730),
-        'btnText': 'START RUN',
-        'btnColor': const Color(0xFF00F4FE),
-        'btnTextColor': Colors.black,
-        'isActionCyan': true,
-      },
-      {
-        'id': 'appearance',
-        'title': 'Protokol Penampilan Hunter',
-        'category': 'APPEARANCE',
-        'desc': '5 Tahap Skincare & Grooming Esensial Hunter',
-        'exp': 30,
-        'gold': 20,
-        'icon': Icons.face_retouching_natural_rounded,
-        'iconColor': const Color(0xFF00F4FE),
-        'iconBg': const Color(0xFF0A2730),
-        'btnText': 'CHECKLIST',
-        'btnColor': const Color(0xFF00F4FE),
-        'btnTextColor': Colors.black,
-        'isActionCyan': true,
-      },
-      {
-        'id': 'mana_focus',
-        'title': 'Mana Knowledge Focus',
-        'category': 'STUDY',
-        'desc': 'Fokus Belajar / Baca Materi 30 Menit tenang',
-        'exp': 15,
-        'gold': 10,
-        'icon': Icons.menu_book_rounded,
-        'iconColor': const Color(0xFFDCB8FC),
-        'iconBg': const Color(0xFF231B33),
-        'btnText': 'FOCUS',
-        'btnColor': Colors.transparent,
-        'btnTextColor': const Color(0xFFDCB8FC),
-        'isActionCyan': false,
-      },
-    ];
+    final quests = _dailyQuestsData;
 
     Future<void> handleQuestAction(Map<String, dynamic> q) async {
       final String qId = q['id'] as String;
@@ -1014,11 +1060,19 @@ class _TabHomeState extends State<TabHome> {
         return;
       }
 
-      if (qId == 'pushup') {
-        final result = await Navigator.push<Map<String, dynamic>>(
-          context,
-          MaterialPageRoute(
-            builder: (context) => const WorkoutHubScreen(),
+      if (q['category'] == 'WORKOUT') {
+        final result = await showModalBottomSheet<Map<String, dynamic>>(
+          context: context,
+          isScrollControlled: true,
+          useSafeArea: true,
+          backgroundColor: const Color(0xFF08050E),
+          shape: const RoundedRectangleBorder(
+            borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
+          ),
+          clipBehavior: Clip.antiAlias,
+          builder: (context) => FractionallySizedBox(
+            heightFactor: 0.95,
+            child: WorkoutHubScreen(initialExercise: qId),
           ),
         );
         if (result != null) {
@@ -1029,6 +1083,7 @@ class _TabHomeState extends State<TabHome> {
             q['title'] as String,
           );
         }
+        return;
       } else if (qId == 'appearance') {
         final result = await Navigator.push<bool>(
           context,
