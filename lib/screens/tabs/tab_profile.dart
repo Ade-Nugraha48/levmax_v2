@@ -8,6 +8,7 @@ import '../../services/hive_service.dart';
 import '../../services/supabase_service.dart';
 import '../../widgets/avatar_adjust_dialog.dart';
 import '../../widgets/avatar_image.dart';
+import '../../widgets/face_scan_dialog.dart';
 import '../auth/login_screen.dart';
 
 /// Tab 5: Hunter Profile, Academic Feedback & Session Logout (TabProfile)
@@ -1252,32 +1253,12 @@ class _TabProfileState extends State<TabProfile> {
     }
 
     try {
-      final bool canAuthenticateWithBiometrics = await _localAuth.canCheckBiometrics;
-      final bool canAuthenticate = canAuthenticateWithBiometrics || await _localAuth.isDeviceSupported();
-
-      if (!canAuthenticate) {
-        if (mounted) {
-          ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(
-              content: Text(
-                'Perangkat tidak mendukung atau belum mengonfigurasi sensor biometrik wajah.',
-                style: GoogleFonts.spaceGrotesk(color: Colors.white, fontWeight: FontWeight.w600),
-              ),
-              backgroundColor: const Color(0xFF93000A),
-            ),
-          );
-        }
-        setState(() => _isFaceScanEnabled = false);
-        return;
-      }
-
-      final bool authenticated = await _localAuth.authenticate(
-        localizedReason: 'Pindai wajah untuk mengaktifkan otorisasi Face Scan Neural Access',
-      );
+      // Membuka kamera depan untuk memindai wajah pengguna
+      final bool faceVerified = await FaceScanDialog.performFaceScan(context);
 
       if (!mounted) return;
 
-      if (authenticated) {
+      if (faceVerified) {
         String? password = HiveService.getActivePassword() ??
             HiveService.getBiometricCredentials()?['password'];
 

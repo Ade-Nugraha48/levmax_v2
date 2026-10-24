@@ -7,6 +7,7 @@ import '../../services/supabase_service.dart';
 import '../../utils/constants.dart';
 import '../main_navigation.dart';
 import 'register_screen.dart';
+import '../../widgets/face_scan_dialog.dart';
 
 class LoginScreen extends StatefulWidget {
   const LoginScreen({super.key});
@@ -73,7 +74,20 @@ class _LoginScreenState extends State<LoginScreen> {
       return;
     }
 
-    // c. JIKA true: Panggil local_auth
+    // c. JIKA tipe adalah Face Scan: Buka kamera depan
+    if (type == 'facescan') {
+      final bool faceVerified = await FaceScanDialog.performFaceScan(context);
+      if (!mounted) return;
+
+      if (faceVerified) {
+        final username = credentials['username']!;
+        final password = credentials['password']!;
+        await _performBiometricLogin(username: username, password: password);
+      }
+      return;
+    }
+
+    // Untuk Fingerprint: Gunakan sensor biometrik local_auth
     try {
       final bool canAuthenticateWithBiometrics = await _localAuth.canCheckBiometrics;
       final bool canAuthenticate = canAuthenticateWithBiometrics || await _localAuth.isDeviceSupported();
@@ -82,7 +96,7 @@ class _LoginScreenState extends State<LoginScreen> {
         if (mounted) {
           ScaffoldMessenger.of(context).showSnackBar(
             const SnackBar(
-              content: Text('Sensor biometrik tidak tersedia atau tidak didukung pada perangkat ini.'),
+              content: Text('Sensor biometrik sidik jari tidak tersedia atau tidak didukung pada perangkat ini.'),
               backgroundColor: AppColors.hpRed,
             ),
           );
@@ -90,12 +104,8 @@ class _LoginScreenState extends State<LoginScreen> {
         return;
       }
 
-      final String localizedReason = type == 'facescan'
-          ? 'Pindai wajah untuk otorisasi akses cepat ke Hunter System'
-          : 'Pindai sidik jari untuk otorisasi akses cepat ke Hunter System';
-
       final bool didAuthenticate = await _localAuth.authenticate(
-        localizedReason: localizedReason,
+        localizedReason: 'Pindai sidik jari untuk otorisasi akses cepat ke Hunter System',
       );
 
       if (!mounted) return;
