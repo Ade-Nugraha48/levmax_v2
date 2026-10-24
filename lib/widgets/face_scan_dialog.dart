@@ -63,7 +63,7 @@ class FaceScanDialog extends StatefulWidget {
 }
 
 class _FaceScanDialogState extends State<FaceScanDialog>
-    with WidgetsBindingObserver, SingleTickerProviderStateMixin {
+    with SingleTickerProviderStateMixin {
   CameraController? _cameraController;
   _ScannerVisualState _visualState = _ScannerVisualState.initializing;
 
@@ -79,7 +79,6 @@ class _FaceScanDialogState extends State<FaceScanDialog>
   @override
   void initState() {
     super.initState();
-    WidgetsBinding.instance.addObserver(this);
 
     // Animasi pergerakan laser pemindai naik-turun
     _laserController = AnimationController(
@@ -92,20 +91,6 @@ class _FaceScanDialogState extends State<FaceScanDialog>
     );
 
     _initCamera();
-  }
-
-  @override
-  void didChangeAppLifecycleState(AppLifecycleState state) {
-    final CameraController? cameraController = _cameraController;
-    if (cameraController == null || !cameraController.value.isInitialized) {
-      return;
-    }
-
-    if (state == AppLifecycleState.inactive) {
-      cameraController.dispose();
-    } else if (state == AppLifecycleState.resumed) {
-      _initCamera();
-    }
   }
 
   Future<void> _initCamera() async {
@@ -135,8 +120,11 @@ class _FaceScanDialogState extends State<FaceScanDialog>
         frontCamera,
         ResolutionPreset.medium,
         enableAudio: false,
-        imageFormatGroup: ImageFormatGroup.jpeg,
       );
+
+      controller.addListener(() {
+        if (mounted) setState(() {});
+      });
 
       await controller.initialize();
 
@@ -153,7 +141,7 @@ class _FaceScanDialogState extends State<FaceScanDialog>
             : 'MEMINDAI WAJAH SECARA REAL-TIME...';
       });
 
-      // Jadwalkan pemindaian otomatis setelah user stabil menatap kamera (1.4 detik)
+      // Jadwalkan pemindaian otomatis setelah user stabil menatap kamera (2.2 detik)
       _scheduleAutoScan();
     } catch (e) {
       debugPrint('[FaceScanDialog] Gagal inisialisasi kamera: $e');
@@ -168,7 +156,7 @@ class _FaceScanDialogState extends State<FaceScanDialog>
 
   void _scheduleAutoScan() {
     _autoScanTimer?.cancel();
-    _autoScanTimer = Timer(const Duration(milliseconds: 1400), () {
+    _autoScanTimer = Timer(const Duration(milliseconds: 2200), () {
       if (mounted &&
           _visualState == _ScannerVisualState.scanning &&
           !_isProcessing) {
@@ -313,7 +301,6 @@ class _FaceScanDialogState extends State<FaceScanDialog>
 
   @override
   void dispose() {
-    WidgetsBinding.instance.removeObserver(this);
     _autoScanTimer?.cancel();
     _laserController.dispose();
     _cameraController?.dispose();
@@ -443,21 +430,16 @@ class _FaceScanDialogState extends State<FaceScanDialog>
                       width: 220,
                       height: 260,
                       color: const Color(0xFF0A0612),
-                      child: _cameraController != null &&
-                              _cameraController!.value.isInitialized
-                          ? OverflowBox(
-                              alignment: Alignment.center,
-                              child: FittedBox(
-                                fit: BoxFit.cover,
-                                child: SizedBox(
-                                  width: _cameraController!
-                                          .value.previewSize?.height ??
-                                      220,
-                                  height: _cameraController!
-                                          .value.previewSize?.width ??
-                                      260,
-                                  child: CameraPreview(_cameraController!),
-                                ),
+                      child: (_cameraController != null &&
+                              _cameraController!.value.isInitialized)
+                          ? FittedBox(
+                              fit: BoxFit.cover,
+                              clipBehavior: Clip.hardEdge,
+                              child: SizedBox(
+                                width: 220,
+                                height: 220 *
+                                    _cameraController!.value.aspectRatio,
+                                child: CameraPreview(_cameraController!),
                               ),
                             )
                           : Center(
