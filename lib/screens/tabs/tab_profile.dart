@@ -76,8 +76,8 @@ class _TabProfileState extends State<TabProfile> {
       _gold = (session['gold'] as int?) ?? 650;
       _exp = (session['exp'] as int?) ?? 2850;
       _avatarUrl = session['avatar_url']?.toString();
-      _equippedTitle = HiveService.getEquippedTitle();
-      _ownedTitles = HiveService.getOwnedTitles();
+      _equippedTitle = HiveService.getEquippedTitle(_userId);
+      _ownedTitles = HiveService.getOwnedTitles(_userId);
     });
   }
 
@@ -408,10 +408,8 @@ class _TabProfileState extends State<TabProfile> {
     _gold = (session['gold'] as int?) ?? _gold;
     _exp = (session['exp'] as int?) ?? _exp;
     _avatarUrl = session['avatar_url']?.toString() ?? _avatarUrl;
-    _equippedTitle = session['equipped_title']?.toString() ?? HiveService.getEquippedTitle();
-    _ownedTitles = (session['owned_titles'] is List)
-        ? (session['owned_titles'] as List).map((e) => e.toString()).toList()
-        : HiveService.getOwnedTitles();
+    _equippedTitle = HiveService.getEquippedTitle(_userId);
+    _ownedTitles = HiveService.getOwnedTitles(_userId);
 
     final double expProgress = (_exp / _maxExp).clamp(0.0, 1.0);
 
@@ -815,14 +813,20 @@ class _TabProfileState extends State<TabProfile> {
                             color: Color(0xFF00F4FE),
                           ),
                           const SizedBox(width: 4),
-                          Text(
-                            'TITLE: ${_equippedTitle.toUpperCase()}',
-                            style: GoogleFonts.spaceGrotesk(
-                              fontSize: 10,
-                              fontWeight: FontWeight.w700,
-                              letterSpacing: 1.0,
-                              color: const Color(0xFFE5B5FF),
-                            ),
+                          ValueListenableBuilder<Box>(
+                            valueListenable: Hive.box('sessionBox').listenable(keys: ['${_userId}_equipped_title']),
+                            builder: (context, box, _) {
+                              final currentTitle = box.get('${_userId}_equipped_title')?.toString() ?? _equippedTitle;
+                              return Text(
+                                'TITLE: ${currentTitle.toUpperCase()}',
+                                style: GoogleFonts.spaceGrotesk(
+                                  fontSize: 10,
+                                  fontWeight: FontWeight.w700,
+                                  letterSpacing: 1.0,
+                                  color: const Color(0xFFE5B5FF),
+                                ),
+                              );
+                            },
                           ),
                         ],
                       ),
@@ -1583,7 +1587,7 @@ class _TabProfileState extends State<TabProfile> {
 
   /// Modal Bottom Sheet untuk menampilkan Koleksi Title (Inventory) & Logika Equip Title
   void _showTitleInventoryModal() {
-    _ownedTitles = HiveService.getOwnedTitles();
+    _ownedTitles = HiveService.getOwnedTitles(_userId);
     final ownedTitles = _ownedTitles;
 
     showModalBottomSheet(
@@ -1593,7 +1597,7 @@ class _TabProfileState extends State<TabProfile> {
       builder: (modalContext) {
         return StatefulBuilder(
           builder: (bottomSheetContext, setModalState) {
-            final currentEquipped = HiveService.getEquippedTitle();
+            final currentEquipped = HiveService.getEquippedTitle(_userId);
 
             return Container(
               constraints: BoxConstraints(
@@ -1744,8 +1748,8 @@ class _TabProfileState extends State<TabProfile> {
 
                         return InkWell(
                           onTap: () async {
-                            // Perbarui key equipped_title di Hive sessionBox
-                            await HiveService.setEquippedTitle(title);
+                            // Perbarui key equipped_title di Hive sessionBox per-user
+                            await HiveService.setEquippedTitle(title, _userId);
                             setModalState(() {});
                             setState(() {
                               _equippedTitle = title;

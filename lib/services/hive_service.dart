@@ -34,32 +34,36 @@ class HiveService {
     if (gold != null) await box.put('gold', gold);
     if (hp != null) await box.put('hp', hp);
     if (avatarUrl != null) await box.put('avatar_url', avatarUrl);
+    final ownedKey = '${userId}_owned_titles';
+    final equippedKey = '${userId}_equipped_title';
+
     if (ownedTitles != null) {
-      await box.put('owned_titles', ownedTitles);
-    } else if (box.get('owned_titles') == null) {
-      await box.put('owned_titles', ['Hunter']);
+      await box.put(ownedKey, ownedTitles);
+    } else if (box.get(ownedKey) == null) {
+      await box.put(ownedKey, ['Hunter']);
     }
     if (equippedTitle != null) {
-      await box.put('equipped_title', equippedTitle);
-    } else if (box.get('equipped_title') == null) {
-      await box.put('equipped_title', 'Hunter');
+      await box.put(equippedKey, equippedTitle);
+    } else if (box.get(equippedKey) == null) {
+      await box.put(equippedKey, 'Hunter');
     }
   }
 
   /// Mengambil data sesi pengguna yang tersimpan saat ini
   static Map<String, dynamic> getSession() {
     final box = sessionBox;
+    final userId = box.get('userId')?.toString() ?? 'anonymous';
     return {
       'isLoggedIn': box.get('isLoggedIn', defaultValue: false) as bool,
-      'userId': box.get('userId')?.toString(),
+      'userId': userId,
       'username': box.get('username')?.toString(),
       'rank': box.get('rank', defaultValue: 'F')?.toString() ?? 'F',
       'exp': (box.get('exp', defaultValue: 0) as num).toInt(),
       'gold': (box.get('gold', defaultValue: 0) as num).toInt(),
       'hp': (box.get('hp', defaultValue: 3) as num).toInt(),
       'avatar_url': box.get('avatar_url')?.toString(),
-      'owned_titles': getOwnedTitles(),
-      'equipped_title': getEquippedTitle(),
+      'owned_titles': getOwnedTitles(userId),
+      'equipped_title': getEquippedTitle(userId),
     };
   }
 
@@ -69,9 +73,20 @@ class HiveService {
     await box.put('avatar_url', url);
   }
 
-  /// Menghapus sesi Hunter (Logout)
+  /// Menghapus sesi Hunter (Logout) tanpa menghapus data inventory kepemilikan akun
   static Future<void> clearSession() async {
-    await sessionBox.clear();
+    final box = sessionBox;
+    await box.delete('isLoggedIn');
+    await box.delete('userId');
+    await box.delete('username');
+    await box.delete('rank');
+    await box.delete('exp');
+    await box.delete('gold');
+    await box.delete('hp');
+    await box.delete('avatar_url');
+    await box.delete('last_login_date');
+    await box.delete('completed_quests_today_count');
+    // JANGAN panggil box.clear() agar data user-specific (${userId}_owned_titles) tetap tersimpan aman
   }
 
   /// Menyimpan transaksi item/title ke ledger blockchain lokal
@@ -267,49 +282,58 @@ class HiveService {
     return 0;
   }
 
-  /// Mengambil daftar title yang dimiliki oleh pengguna
-  static List<String> getOwnedTitles() {
+  /// Mengambil daftar title yang dimiliki oleh pengguna tertentu secara terisolasi
+  static List<String> getOwnedTitles([String? userId]) {
     final box = sessionBox;
-    final raw = box.get('owned_titles');
+    final uid = (userId != null && userId.isNotEmpty)
+        ? userId
+        : (box.get('userId')?.toString() ?? 'anonymous');
+    final key = '${uid}_owned_titles';
+    final raw = box.get(key);
     List<String> titles = [];
     if (raw is List) {
       titles = raw.map((e) => e.toString()).toList();
     }
-    // Jika masih kosong (inisialisasi awal), isi dengan title default
+    // Jika masih kosong (inisialisasi awal akun ini), isi dengan title default ['Hunter'] secara terisolasi
     if (titles.isEmpty) {
       titles = ['Hunter'];
-      // Masukkan juga jika ada title yang tercatat di blockchainBox
-      final logs = getBlockchainLogs();
-      for (final log in logs) {
-        if (log['item'] != null) {
-          final item = log['item'].toString();
-          if (!titles.contains(item)) titles.add(item);
-        }
-      }
-      box.put('owned_titles', titles);
+      box.put(key, titles);
     }
     return titles;
   }
 
-  /// Menambahkan title baru ke daftar kepemilikan
-  static Future<void> addOwnedTitle(String title) async {
-    final titles = getOwnedTitles();
+  /// Menambahkan title baru ke daftar kepemilikan user tertentu
+  static Future<void> addOwnedTitle(String title, [String? userId]) async {
+    final box = sessionBox;
+    final uid = (userId != null && userId.isNotEmpty)
+        ? userId
+        : (box.get('userId')?.toString() ?? 'anonymous');
+    final titles = getOwnedTitles(uid);
     if (!titles.contains(title)) {
       titles.add(title);
-      await sessionBox.put('owned_titles', titles);
+      await box.put('${uid}_owned_titles', titles);
     }
   }
 
-  /// Mengambil title yang sedang aktif/dipasang (equipped)
-  static String getEquippedTitle() {
+  /// Mengambil title yang sedang aktif/dipasang (equipped) untuk user tertentu
+  static String getEquippedTitle([String? userId]) {
     final box = sessionBox;
-    final title = box.get('equipped_title')?.toString();
+    final uid = (userId != null && userId.isNotEmpty)
+        ? userId
+        : (box.get('userId')?.toString() ?? 'anonymous');
+    final key = '${uid}_equipped_title';
+    final title = box.get(key)?.toString();
     if (title != null && title.isNotEmpty) return title;
     return 'Hunter';
   }
 
-  /// Menyimpan title yang sedang aktif/dipasang (equipped)
-  static Future<void> setEquippedTitle(String title) async {
-    await sessionBox.put('equipped_title', title);
+  /// Menyimpan title yang sedang aktif/dipasang (equipped) untuk user tertentu
+  static Future<void> setEquippedTitle(String title, [String? userId]) async {
+    final box = sessionBox;
+    final uid = (userId != null && userId.isNotEmpty)
+        ? userId
+        : (box.get('userId')?.toString() ?? 'anonymous');
+    final key = '${uid}_equipped_title';
+    await box.put(key, title);
   }
 }

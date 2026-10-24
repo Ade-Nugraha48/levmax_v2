@@ -29,13 +29,13 @@ class _TabShopState extends State<TabShop> {
   // Daftar Title yang sudah dimiliki
   final Set<String> _ownedTitles = {};
 
-  // Daftar 10 Exclusive Titles untuk pengujian fitur Inventory & Equip
+  // Daftar 10 Exclusive Titles berjenjang (Progression & Economy Balanced)
   final List<Map<String, dynamic>> _shopTitles = [
     {
       'title': 'Wolf Slayer',
       'subtitle': 'TITLE: RAZOR FANG DESTROYER',
       'rarity': 'COMMON',
-      'price': 1,
+      'price': 200,
       'perk': '+8% Agility in Dungeon Radar',
       'icon': Icons.pets_rounded,
       'rarityColor': const Color(0xFF00DCE5),
@@ -45,7 +45,7 @@ class _TabShopState extends State<TabShop> {
       'title': 'Demon Slayer',
       'subtitle': 'TITLE: PURGATORY CLEANSER',
       'rarity': 'RARE',
-      'price': 2,
+      'price': 400,
       'perk': '+10% Critical Strike on Bosses',
       'icon': Icons.local_fire_department_rounded,
       'rarityColor': const Color(0xFFFF5722),
@@ -55,7 +55,7 @@ class _TabShopState extends State<TabShop> {
       'title': 'False Dog',
       'subtitle': 'TITLE: DECEPTIVE SHADOW',
       'rarity': 'COMMON',
-      'price': 1,
+      'price': 100,
       'perk': '+5% Evasion Rate in Combat',
       'icon': Icons.visibility_off_rounded,
       'rarityColor': const Color(0xFF8E8CD8),
@@ -65,7 +65,7 @@ class _TabShopState extends State<TabShop> {
       'title': 'Shadow Lord',
       'subtitle': 'TITLE: COMMANDER OF DARKNESS',
       'rarity': 'EPIC',
-      'price': 3,
+      'price': 1200,
       'perk': '+12% Shadow Extraction Velocity',
       'icon': Icons.nights_stay_rounded,
       'rarityColor': const Color(0xFF9C27B0),
@@ -75,7 +75,7 @@ class _TabShopState extends State<TabShop> {
       'title': 'Dragon Slayer',
       'subtitle': 'TITLE: KAMISH BANE',
       'rarity': 'LEGENDARY',
-      'price': 4,
+      'price': 800,
       'perk': '+20% Fire Damage Resistance',
       'icon': Icons.whatshot_rounded,
       'rarityColor': const Color(0xFFFF9800),
@@ -85,7 +85,7 @@ class _TabShopState extends State<TabShop> {
       'title': 'National Hunter',
       'subtitle': 'TITLE: SPECIAL AUTHORITY CLASS',
       'rarity': 'LEGENDARY',
-      'price': 4,
+      'price': 2000,
       'perk': '+18% Telekinesis & Rulers Might',
       'icon': Icons.public_rounded,
       'rarityColor': const Color(0xFFFFD700),
@@ -95,7 +95,7 @@ class _TabShopState extends State<TabShop> {
       'title': 'Weakest Hunter',
       'subtitle': 'TITLE: SURVIVOR OF DOUBLE DUNGEON',
       'rarity': 'COMMON',
-      'price': 1,
+      'price': 50,
       'perk': '+5% HP Recovery Under Extreme Danger',
       'icon': Icons.health_and_safety_rounded,
       'rarityColor': const Color(0xFF4CAF50),
@@ -105,7 +105,7 @@ class _TabShopState extends State<TabShop> {
       'title': 'Shadow Monarch',
       'subtitle': 'TITLE: THE LORD OF SHADOWS',
       'rarity': 'MYTHIC',
-      'price': 5,
+      'price': 2500,
       'perk': '+15% Mana Resonance & Dark Aura',
       'icon': Icons.shield_moon_rounded,
       'rarityColor': const Color(0xFFB026FF),
@@ -115,7 +115,7 @@ class _TabShopState extends State<TabShop> {
       'title': 'S-Rank Hunter',
       'subtitle': 'TITLE: UNMEASURABLE MANA LEVEL',
       'rarity': 'MYTHIC',
-      'price': 5,
+      'price': 1500,
       'perk': '+25% Overall Status Enhancement',
       'icon': Icons.military_tech_rounded,
       'rarityColor': const Color(0xFF00F4FE),
@@ -125,7 +125,7 @@ class _TabShopState extends State<TabShop> {
       'title': 'Monarch King',
       'subtitle': 'TITLE: ABSOLUTE RULER OF REALMS',
       'rarity': 'ANCIENT',
-      'price': 5,
+      'price': 3000,
       'perk': '+30% Sovereignty & Monarch Domain',
       'icon': Icons.workspace_premium_rounded,
       'rarityColor': const Color(0xFFFF2A6D),
@@ -141,7 +141,6 @@ class _TabShopState extends State<TabShop> {
 
   void _loadSessionAndLedger() {
     final session = HiveService.getSession();
-    final logs = HiveService.getBlockchainLogs();
 
     setState(() {
       _userId = session['userId']?.toString() ?? 'anonymous';
@@ -151,13 +150,8 @@ class _TabShopState extends State<TabShop> {
       _exp = (session['exp'] as int?) ?? 150;
       _hp = (session['hp'] as int?) ?? 3;
 
-      // Masukkan item dari transaksi blockchain ke daftar milik user
-      for (final log in logs) {
-        if (log['item'] != null) {
-          _ownedTitles.add(log['item'].toString());
-        }
-      }
-      _ownedTitles.addAll(HiveService.getOwnedTitles());
+      _ownedTitles.clear();
+      _ownedTitles.addAll(HiveService.getOwnedTitles(_userId));
     });
   }
 
@@ -253,7 +247,8 @@ class _TabShopState extends State<TabShop> {
     });
 
     await Hive.box('sessionBox').put('gold', newGold);
-    await HiveService.addOwnedTitle(itemName);
+    await HiveService.addOwnedTitle(itemName, _userId);
+    await Hive.box('sessionBox').put('${_userId}_owned_titles', _ownedTitles.toList());
 
     await HiveService.saveSession(
       userId: _userId,
@@ -609,6 +604,8 @@ class _TabShopState extends State<TabShop> {
     _exp = (session['exp'] as int?) ?? _exp;
     _rank = session['rank']?.toString() ?? _rank;
     _hp = (session['hp'] as int?) ?? _hp;
+    _ownedTitles.clear();
+    _ownedTitles.addAll(HiveService.getOwnedTitles(_userId));
 
     return Scaffold(
       backgroundColor: const Color(0xFF16111E),
