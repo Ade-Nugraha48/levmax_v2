@@ -13,23 +13,74 @@ class SplashScreen extends StatefulWidget {
 }
 
 class _SplashScreenState extends State<SplashScreen>
-    with SingleTickerProviderStateMixin {
+    with TickerProviderStateMixin {
   late final AnimationController _controller;
+  late final AnimationController _progressController;
+  late final Animation<double> _progressAnimation;
+
+  String _currentStatusTitle = 'INITIALIZING HUNTER SYSTEM CORE...';
+  String _currentStatusSubtitle = 'Connecting to Solo Leveling Node-Alpha & Shadow Gateway...';
+  String _rpcStatus = 'CONNECTING';
+  Color _rpcColor = const Color(0xFF00F0FF);
+
   @override
   void initState() {
     super.initState();
-    // Inisialisasi controller animasi putaran cincin Mana Reactor
+    // 1. Controller animasi putaran cincin Mana Reactor (berulang)
     _controller = AnimationController(
       vsync: this,
       duration: const Duration(seconds: 9),
     )..repeat();
 
+    // 2. Controller progress bar sinkronisasi sistem tepat 5 detik
+    _progressController = AnimationController(
+      vsync: this,
+      duration: const Duration(seconds: 5),
+    );
+    _progressAnimation = CurvedAnimation(
+      parent: _progressController,
+      curve: Curves.easeInOut,
+    );
+
     _handleInitializationAndRouting();
   }
 
-  /// Menunggu durasi animasi splash lalu langsung navigasi ke layar Login tanpa pop-up biometrik otomatis
+  /// Menjalankan sekuens awakening selama 5 detik penuh sebelum navigasi ke LoginScreen
   Future<void> _handleInitializationAndRouting() async {
-    await Future.delayed(const Duration(milliseconds: 2400));
+    _progressController.forward();
+
+    // Tahap 1: 0 - 1.3 detik
+    await Future.delayed(const Duration(milliseconds: 1300));
+    if (!mounted) return;
+    setState(() {
+      _currentStatusTitle = 'VERIFYING CRYPTOGRAPHIC VAULT...';
+      _currentStatusSubtitle = 'Securing Hive database & local session tokens...';
+      _rpcStatus = 'AUTHENTICATED';
+      _rpcColor = const Color(0xFF00FF9D);
+    });
+
+    // Tahap 2: 1.3 - 2.7 detik
+    await Future.delayed(const Duration(milliseconds: 1400));
+    if (!mounted) return;
+    setState(() {
+      _currentStatusTitle = 'CALIBRATING AWAKENING SENSORS...';
+      _currentStatusSubtitle = 'Biometric face matrix & mana stabilizers ready...';
+      _rpcStatus = 'SYNCHRONIZED';
+      _rpcColor = const Color(0xFF00F0FF);
+    });
+
+    // Tahap 3: 2.7 - 4.1 detik
+    await Future.delayed(const Duration(milliseconds: 1400));
+    if (!mounted) return;
+    setState(() {
+      _currentStatusTitle = 'SYSTEM AWAKENING COMPLETED';
+      _currentStatusSubtitle = 'Welcome back, Shadow Monarch Hunter.';
+      _rpcStatus = 'READY';
+      _rpcColor = const Color(0xFFB026FF);
+    });
+
+    // Tahap 4: 4.1 - 5.0 detik (Total 5000 ms = 5 detik)
+    await Future.delayed(const Duration(milliseconds: 900));
     if (!mounted) return;
 
     _navigateToLogin();
@@ -45,6 +96,7 @@ class _SplashScreenState extends State<SplashScreen>
   @override
   void dispose() {
     _controller.dispose();
+    _progressController.dispose();
     super.dispose();
   }
 
@@ -261,36 +313,110 @@ class _SplashScreenState extends State<SplashScreen>
           ),
         ),
 
-        const SizedBox(height: 28),
+        const SizedBox(height: 24),
 
         // 4. Mana Reactor Loader (3 Cincin Konsentris + Pulsing Diamond)
         _buildManaReactorLoader(),
 
-        const SizedBox(height: 26),
+        const SizedBox(height: 20),
 
-        // Teks Status Telemetri
-        Text(
-          'Establishing connection to the System...',
-          textAlign: TextAlign.center,
-          style: GoogleFonts.rajdhani(
-            fontSize: 15.0,
-            fontWeight: FontWeight.w600,
-            letterSpacing: 0.6,
-            color: const Color(0xFFD8B4F8),
+        // 5. Cyber Awakening Progress Bar (Sinkronisasi 5 Detik Penuh)
+        _buildProgressBar(),
+
+        const SizedBox(height: 16),
+
+        // Teks Status Telemetri Dinamis
+        AnimatedSwitcher(
+          duration: const Duration(milliseconds: 300),
+          child: Text(
+            _currentStatusTitle,
+            key: ValueKey<String>(_currentStatusTitle),
+            textAlign: TextAlign.center,
+            style: GoogleFonts.rajdhani(
+              fontSize: 14.5,
+              fontWeight: FontWeight.w700,
+              letterSpacing: 0.8,
+              color: const Color(0xFFD8B4F8),
+            ),
           ),
         ),
         const SizedBox(height: 4),
-        Text(
-          'Verifying cryptographic credentials (SHA-256) & local Hive registry...',
-          textAlign: TextAlign.center,
-          style: GoogleFonts.rajdhani(
-            fontSize: 12.0,
-            fontWeight: FontWeight.w500,
-            letterSpacing: 0.4,
-            color: const Color(0xFF8B829E),
+        AnimatedSwitcher(
+          duration: const Duration(milliseconds: 300),
+          child: Text(
+            _currentStatusSubtitle,
+            key: ValueKey<String>(_currentStatusSubtitle),
+            textAlign: TextAlign.center,
+            style: GoogleFonts.rajdhani(
+              fontSize: 11.5,
+              fontWeight: FontWeight.w500,
+              letterSpacing: 0.4,
+              color: const Color(0xFF8B829E),
+            ),
           ),
         ),
       ],
+    );
+  }
+
+  /// Progress Bar 5 Detik Bertema Cyber Solo Leveling
+  Widget _buildProgressBar() {
+    return AnimatedBuilder(
+      animation: _progressAnimation,
+      builder: (context, child) {
+        final double val = _progressAnimation.value.clamp(0.0, 1.0);
+        return Column(
+          children: [
+            Container(
+              width: 220,
+              height: 4.5,
+              decoration: BoxDecoration(
+                color: const Color(0xFF140D24),
+                borderRadius: BorderRadius.circular(3),
+                border: Border.all(
+                  color: const Color(0xFF2C1E4E),
+                  width: 0.8,
+                ),
+              ),
+              child: Stack(
+                children: [
+                  FractionallySizedBox(
+                    widthFactor: val,
+                    child: Container(
+                      decoration: BoxDecoration(
+                        gradient: const LinearGradient(
+                          colors: [
+                            Color(0xFFB026FF),
+                            Color(0xFF00F0FF),
+                          ],
+                        ),
+                        borderRadius: BorderRadius.circular(3),
+                        boxShadow: const [
+                          BoxShadow(
+                            color: Color(0xFF00F0FF),
+                            blurRadius: 6,
+                            spreadRadius: 1,
+                          ),
+                        ],
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+            ),
+            const SizedBox(height: 6),
+            Text(
+              '${(val * 100).toInt()}%  ◈  AWAKENING SYNC',
+              style: GoogleFonts.orbitron(
+                fontSize: 8.5,
+                fontWeight: FontWeight.w700,
+                letterSpacing: 1.6,
+                color: const Color(0xFF00F0FF),
+              ),
+            ),
+          ],
+        );
+      },
     );
   }
 
@@ -505,16 +631,16 @@ class _SplashScreenState extends State<SplashScreen>
                       letterSpacing: 1.1,
                       color: const Color(0xFFCBD5E1),
                     ),
-                    children: const [
-                      TextSpan(text: 'SUPABASE RPC: '),
+                    children: [
+                      const TextSpan(text: 'SUPABASE RPC: '),
                       TextSpan(
-                        text: 'CONNECTING',
+                        text: _rpcStatus,
                         style: TextStyle(
-                          color: Color(0xFF00F0FF),
+                          color: _rpcColor,
                           fontWeight: FontWeight.bold,
                         ),
                       ),
-                      TextSpan(
+                      const TextSpan(
                         text: '  |  BIOMETRIC SENSOR: ',
                         style: TextStyle(color: Color(0xFF8B829E)),
                       ),
