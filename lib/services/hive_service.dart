@@ -102,4 +102,16 @@ class HiveService {
     final box = sessionBox;
     return box.get('ai_avatar_path') as String?;
   }
+
+  /// Menyimpan tanggal terakhir klaim reward mini game (Format: yyyy-MM-dd waktu server WIB)
+  static Future<void> saveGameRewardDate(String serverDate) async {
+    final box = sessionBox;
+    await box.put('lastGameRewardDate', serverDate);
+  }
+
+  /// Mengambil tanggal terakhir klaim reward mini game dari Hive
+  static String? getGameRewardDate() {
+    final box = sessionBox;
+    return box.get('lastGameRewardDate')?.toString();
+  }
 }

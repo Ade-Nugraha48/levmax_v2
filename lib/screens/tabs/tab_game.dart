@@ -72,6 +72,22 @@ class _TabGameState extends State<TabGame> with SingleTickerProviderStateMixin {
       _currentExp = (session['exp'] as int?) ?? 150;
       _gold = (session['gold'] as int?) ?? 250;
     });
+    _checkDailyRewardStatus();
+  }
+
+  /// Sinkronisasi status reward harian berdasarkan tanggal waktu server WIB (UTC+7)
+  void _checkDailyRewardStatus() {
+    final nowUtc = DateTime.now().toUtc();
+    final wib = nowUtc.add(const Duration(hours: 7));
+    final currentServerDate = DateFormat('yyyy-MM-dd').format(wib);
+    final lastRewardDate = HiveService.getGameRewardDate();
+
+    final bool claimedToday = (lastRewardDate == currentServerDate);
+    if (hasPlayedToday != claimedToday && mounted) {
+      setState(() {
+        hasPlayedToday = claimedToday;
+      });
+    }
   }
 
   void _initServerClock() {
@@ -93,6 +109,9 @@ class _TabGameState extends State<TabGame> with SingleTickerProviderStateMixin {
       _witTime = timeFormat.format(wit);
       _gmtTime = timeFormat.format(nowUtc);
     });
+
+    // Periksa status refresh harian otomatis setiap pergantian detik (reset pada 00:00 WIB)
+    _checkDailyRewardStatus();
   }
 
   /// 2. Integrasi Gyroscope dengan Throttling (~30ms) agar hemat baterai & aman di perangkat low-end (Oppo A5)
@@ -220,9 +239,16 @@ class _TabGameState extends State<TabGame> with SingleTickerProviderStateMixin {
   }
 
   /// Penanganan Kemenangan: Berhasil bertahan 30 detik tanpa keluar target zone
-  void _handleGameVictory() {
+  Future<void> _handleGameVictory() async {
     _survivalTimer?.cancel();
     _survivalTimer = null;
+
+    final nowUtc = DateTime.now().toUtc();
+    final wib = nowUtc.add(const Duration(hours: 7));
+    final currentServerDate = DateFormat('yyyy-MM-dd').format(wib);
+
+    // Kunci reward harian berdasarkan tanggal server WIB (refresh 00:00 WIB)
+    await HiveService.saveGameRewardDate(currentServerDate);
 
     setState(() {
       hasPlayedToday = true;
@@ -306,7 +332,7 @@ class _TabGameState extends State<TabGame> with SingleTickerProviderStateMixin {
               ),
               const SizedBox(height: 8),
               Text(
-                'Inti Mana berhasil distabilkan selama 30 detik penuh dalam mode Hardcore Survival! Sinergi sihir Hunter telah pulih sempurna.',
+                'Inti Mana berhasil distabilkan selama 30 detik penuh dalam mode Hardcore Survival! Reward +50 Gold telah diklaim (Batas 1x sehari, reset otomatis pukul 00:00 WIB).',
                 textAlign: TextAlign.center,
                 style: GoogleFonts.plusJakartaSans(
                   fontSize: 12.5,
@@ -500,6 +526,13 @@ class _TabGameState extends State<TabGame> with SingleTickerProviderStateMixin {
     _gold = (session['gold'] as int?) ?? _gold;
     _currentExp = (session['exp'] as int?) ?? _currentExp;
     _rank = session['rank']?.toString() ?? _rank;
+
+    // Sinkronisasi status reward harian dengan tanggal server WIB (refresh 00:00 WIB)
+    final nowUtc = DateTime.now().toUtc();
+    final wib = nowUtc.add(const Duration(hours: 7));
+    final currentServerDate = DateFormat('yyyy-MM-dd').format(wib);
+    final lastRewardDate = HiveService.getGameRewardDate();
+    hasPlayedToday = (lastRewardDate == currentServerDate);
 
     final double progress = isPlaying
         ? ((30 - timeRemaining) / 30.0).clamp(0.0, 1.0)
@@ -993,127 +1026,6 @@ class _TabGameState extends State<TabGame> with SingleTickerProviderStateMixin {
                 height: ballSize,
                 child: _buildManaCoreOrb(),
               ),
-
-              // 5. Start / Retry Protocol Cyber Overlay (Hanya muncul jika !isPlaying && !hasPlayedToday)
-              if (!isPlaying && !hasPlayedToday)
-                Positioned.fill(
-                  child: Container(
-                    decoration: BoxDecoration(
-                      borderRadius: BorderRadius.circular(24),
-                      color: const Color(0xFF140D24).withValues(alpha: 0.85),
-                    ),
-                    child: Center(
-                      child: Column(
-                        mainAxisSize: MainAxisSize.min,
-                        children: [
-                          Container(
-                            padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 5),
-                            decoration: BoxDecoration(
-                              color: isGameOver
-                                  ? const Color(0xFF93000A).withValues(alpha: 0.4)
-                                  : const Color(0xFFB026FF).withValues(alpha: 0.3),
-                              borderRadius: BorderRadius.circular(20),
-                              border: Border.all(
-                                color: isGameOver ? const Color(0xFFFF4D4D) : const Color(0xFF00F4FE),
-                                width: 1.0,
-                              ),
-                            ),
-                            child: Text(
-                              isGameOver ? 'PROTOCOL FAILED' : 'HARDCORE SURVIVAL (30s)',
-                              style: GoogleFonts.spaceGrotesk(
-                                fontSize: 9.5,
-                                fontWeight: FontWeight.w800,
-                                letterSpacing: 1.2,
-                                color: isGameOver ? const Color(0xFFFF4D4D) : const Color(0xFF00F4FE),
-                              ),
-                            ),
-                          ),
-                          const SizedBox(height: 14),
-                          InkWell(
-                            onTap: _startProtocol,
-                            borderRadius: BorderRadius.circular(16),
-                            child: Container(
-                              padding: const EdgeInsets.symmetric(horizontal: 22, vertical: 12),
-                              decoration: BoxDecoration(
-                                gradient: LinearGradient(
-                                  colors: isGameOver
-                                      ? [const Color(0xFFB3261E), const Color(0xFFFF5449)]
-                                      : [const Color(0xFF7B2CBF), const Color(0xFF00F4FE)],
-                                ),
-                                borderRadius: BorderRadius.circular(16),
-                                boxShadow: [
-                                  BoxShadow(
-                                    color: (isGameOver ? const Color(0xFFFF5449) : const Color(0xFF00F4FE))
-                                        .withValues(alpha: 0.6),
-                                    blurRadius: 18,
-                                    spreadRadius: 1,
-                                  ),
-                                ],
-                              ),
-                              child: Row(
-                                mainAxisSize: MainAxisSize.min,
-                                children: [
-                                  Icon(
-                                    isGameOver ? Icons.refresh_rounded : Icons.play_arrow_rounded,
-                                    color: isGameOver ? Colors.white : Colors.black,
-                                    size: 20,
-                                  ),
-                                  const SizedBox(width: 8),
-                                  Text(
-                                    isGameOver ? 'RETRY PROTOCOL' : 'START PROTOCOL',
-                                    style: GoogleFonts.spaceGrotesk(
-                                      fontSize: 12.5,
-                                      fontWeight: FontWeight.w900,
-                                      letterSpacing: 1.2,
-                                      color: isGameOver ? Colors.white : Colors.black,
-                                    ),
-                                  ),
-                                ],
-                              ),
-                            ),
-                          ),
-                        ],
-                      ),
-                    ),
-                  ),
-                ),
-
-              // 6. Completed Protocol Overlay jika sudah selesai hari ini
-              if (hasPlayedToday)
-                Positioned.fill(
-                  child: Container(
-                    decoration: BoxDecoration(
-                      borderRadius: BorderRadius.circular(24),
-                      color: const Color(0xFF140D24).withValues(alpha: 0.8),
-                    ),
-                    child: Center(
-                      child: Column(
-                        mainAxisSize: MainAxisSize.min,
-                        children: [
-                          const Icon(Icons.verified_rounded, color: Color(0xFF00F4FE), size: 40),
-                          const SizedBox(height: 10),
-                          Text(
-                            'CORE STABILIZED',
-                            style: GoogleFonts.spaceGrotesk(
-                              fontSize: 14,
-                              fontWeight: FontWeight.w900,
-                              letterSpacing: 1.2,
-                              color: const Color(0xFF00F4FE),
-                            ),
-                          ),
-                          const SizedBox(height: 4),
-                          Text(
-                            'Protokol 30 detik selesai hari ini',
-                            style: GoogleFonts.plusJakartaSans(
-                              fontSize: 11,
-                              color: const Color(0xFFD2C1D7),
-                            ),
-                          ),
-                        ],
-                      ),
-                    ),
-                  ),
-                ),
             ],
           ),
         ),
@@ -1472,7 +1384,7 @@ class _TabGameState extends State<TabGame> with SingleTickerProviderStateMixin {
                     ),
                   ),
                   Text(
-                    'Batas Klaim: 1x / Hari (Selesai stabilisasi)',
+                    'Batas Klaim: 1x / Hari (Reset 00:00 WIB)',
                     style: GoogleFonts.plusJakartaSans(
                       fontSize: 9.5,
                       color: const Color(0xFFD8B478),
@@ -1508,24 +1420,38 @@ class _TabGameState extends State<TabGame> with SingleTickerProviderStateMixin {
     if (hasPlayedToday) {
       return Container(
         width: double.infinity,
-        height: 48,
+        padding: const EdgeInsets.symmetric(vertical: 10, horizontal: 16),
         decoration: BoxDecoration(
           borderRadius: BorderRadius.circular(12),
           color: const Color(0xFF1E1728),
           border: Border.all(color: const Color(0xFF00F4FE).withValues(alpha: 0.4)),
         ),
-        child: Row(
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            const Icon(Icons.verified_rounded, color: Color(0xFF00F4FE), size: 20),
-            const SizedBox(width: 8),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                const Icon(Icons.verified_rounded, color: Color(0xFF00F4FE), size: 18),
+                const SizedBox(width: 8),
+                Text(
+                  'REWARD HARIAN SUDAH DIKLAIM',
+                  style: GoogleFonts.spaceGrotesk(
+                    fontSize: 12,
+                    fontWeight: FontWeight.w800,
+                    letterSpacing: 1.0,
+                    color: const Color(0xFF00F4FE),
+                  ),
+                ),
+              ],
+            ),
+            const SizedBox(height: 3),
             Text(
-              'PROTOKOL HARI INI TELAH SELESAI',
-              style: GoogleFonts.spaceGrotesk(
-                fontSize: 12,
-                fontWeight: FontWeight.w800,
-                letterSpacing: 1.0,
-                color: const Color(0xFF00F4FE),
+              'Batas 1x sehari • Reset otomatis pukul 00:00 WIB (Waktu Server)',
+              style: GoogleFonts.plusJakartaSans(
+                fontSize: 10,
+                color: const Color(0xFF9B8BA1),
               ),
             ),
           ],
