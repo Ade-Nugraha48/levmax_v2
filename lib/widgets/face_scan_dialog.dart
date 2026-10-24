@@ -3,7 +3,6 @@ import 'package:camera/camera.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:google_fonts/google_fonts.dart';
-import 'package:permission_handler/permission_handler.dart';
 import 'package:levmax_v2/services/face_recognition_service.dart';
 import 'package:levmax_v2/services/hive_service.dart';
 
@@ -72,11 +71,10 @@ class _FaceScanDialogState extends State<FaceScanDialog>
   late Animation<double> _laserAnimation;
 
   Timer? _autoScanTimer;
-  String _statusText = 'MEMULAI SENSOR OPTIK DEPAN...';
+  String _statusText = 'MENGHUBUNGKAN SENSOR OPTIK DEPAN...';
   String _errorMessage = '';
   double? _lastScore;
   bool _isProcessing = false;
-  bool _isPermissionPermanentlyDenied = false;
 
   @override
   void initState() {
@@ -98,42 +96,11 @@ class _FaceScanDialogState extends State<FaceScanDialog>
   Future<void> _initCamera() async {
     setState(() {
       _visualState = _ScannerVisualState.initializing;
-      _statusText = 'MEMERIKSA IZIN AKSES KAMERA...';
+      _statusText = 'MENGHUBUNGKAN SENSOR OPTIK DEPAN...';
       _errorMessage = '';
-      _isPermissionPermanentlyDenied = false;
     });
 
     try {
-      // 1. Coba minta izin akses kamera via permission_handler (jika sudah ter-compile di APK)
-      try {
-        var status = await Permission.camera.status;
-        if (!status.isGranted) {
-          status = await Permission.camera.request();
-        }
-
-        if (!status.isGranted) {
-          if (!mounted) return;
-          setState(() {
-            _visualState = _ScannerVisualState.error;
-            _isPermissionPermanentlyDenied = status.isPermanentlyDenied;
-            _errorMessage = status.isPermanentlyDenied
-                ? 'Izin kamera ditolak permanen di ponsel. Buka Pengaturan Aplikasi untuk mengaktifkan izin kamera.'
-                : 'Izin kamera diperlukan untuk menggunakan fitur biometrik Face Scan.';
-          });
-          return;
-        }
-      } catch (permError) {
-        // Jika native plugin permission_handler belum ter-compile (saat user Hot Reload),
-        // lanjutkan ke CameraController karena camera package memiliki penanganan izin bawaan.
-        debugPrint('[FaceScanDialog] PermissionHandler fallback to camera native: $permError');
-      }
-
-      if (!mounted) return;
-
-      setState(() {
-        _statusText = 'MENGHUBUNGKAN SENSOR OPTIK DEPAN...';
-      });
-
       final cameras = await availableCameras();
       if (cameras.isEmpty) {
         if (!mounted) return;
@@ -180,9 +147,15 @@ class _FaceScanDialogState extends State<FaceScanDialog>
     } catch (e) {
       debugPrint('[FaceScanDialog] Gagal inisialisasi kamera: $e');
       if (mounted) {
+        final errStr = e.toString();
+        final isPluginUnregistered = errStr.contains('channel-error') ||
+            errStr.contains('ProcessCameraProvider') ||
+            errStr.contains('MissingPluginException');
         setState(() {
           _visualState = _ScannerVisualState.error;
-          _errorMessage = 'Gagal mengakses kamera: $e';
+          _errorMessage = isPluginUnregistered
+              ? 'Plugin kamera baru memerlukan restart aplikasi penuh: silakan Stop aplikasi dan jalankan ulang "flutter run".'
+              : 'Gagal mengakses kamera: $e';
         });
       }
     }
@@ -755,18 +728,11 @@ class _FaceScanDialogState extends State<FaceScanDialog>
                           borderRadius: BorderRadius.circular(10),
                         ),
                       ),
-                      onPressed: _isPermissionPermanentlyDenied
-                          ? () async {
-                              await openAppSettings();
-                              if (mounted) _retryScan();
-                            }
-                          : _retryScan,
+                      onPressed: _retryScan,
                       child: Text(
-                        _isPermissionPermanentlyDenied
-                            ? 'BUKA PENGATURAN'
-                            : (_visualState == _ScannerVisualState.error
-                                ? 'COBA LAGI'
-                                : 'PINDAI ULANG'),
+                        _visualState == _ScannerVisualState.error
+                            ? 'COBA LAGI'
+                            : 'PINDAI ULANG',
                         style: GoogleFonts.spaceGrotesk(
                           fontSize: 10,
                           fontWeight: FontWeight.w800,
