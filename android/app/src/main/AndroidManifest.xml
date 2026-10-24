@@ -17,7 +17,7 @@
     <uses-feature android:name="android.hardware.camera.front" android:required="false"/>
 
     <application
-        android:label="levmax_v2"
+        android:label="LevMax"
         android:name="${applicationName}"
         android:icon="@mipmap/ic_launcher">
         <activity
