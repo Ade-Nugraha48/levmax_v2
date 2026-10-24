@@ -1,6 +1,7 @@
 import 'dart:io';
 import 'package:flutter/foundation.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
+import 's3_storage_service.dart';
 
 /// Service penanganan koneksi remote database Supabase (Tabel users & feedbacks).
 /// Sesuai aturan arsitektur: tidak mengandung kode UI dan mengembalikan tipe data standar / Future.
@@ -13,8 +14,21 @@ class SupabaseService {
     try {
       final bytes = await imageFile.readAsBytes();
       final path = '$userId/profile.jpg';
-      String targetBucket = 'Avatar';
 
+      // 1. Prioritas Utama: Gunakan S3 Storage API langsung dengan Access Key yang telah divalidasi
+      final s3Url = await S3StorageService.uploadFile(
+        path: path,
+        bytes: bytes,
+        contentType: 'image/jpeg',
+      );
+      if (s3Url != null) {
+        debugPrint('Upload avatar berhasil via S3 API: $s3Url');
+        return s3Url;
+      }
+
+      // 2. Fallback: Coba upload REST API via client Supabase
+      debugPrint('S3 upload tidak menghasilkan URL, mencoba REST API fallback...');
+      String targetBucket = 'Avatar';
       try {
         await client.storage.from('Avatar').uploadBinary(
           path,
