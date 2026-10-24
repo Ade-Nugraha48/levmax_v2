@@ -17,6 +17,7 @@ class HiveService {
   static Future<void> saveSession({
     required String userId,
     required String username,
+    String? password,
     String? rank,
     int? exp,
     int? gold,
@@ -27,6 +28,7 @@ class HiveService {
     await box.put('isLoggedIn', true);
     await box.put('userId', userId);
     await box.put('username', username);
+    if (password != null) await box.put('active_password', password);
     if (rank != null) await box.put('rank', rank);
     if (exp != null) await box.put('exp', exp);
     if (gold != null) await box.put('gold', gold);
@@ -46,7 +48,13 @@ class HiveService {
       'gold': (box.get('gold', defaultValue: 0) as num).toInt(),
       'hp': (box.get('hp', defaultValue: 3) as num).toInt(),
       'avatar_url': box.get('avatar_url')?.toString(),
+      'active_password': box.get('active_password')?.toString(),
     };
+  }
+
+  /// Mengambil password aktif sesi saat ini
+  static String? getActivePassword() {
+    return sessionBox.get('active_password')?.toString();
   }
 
   /// Menyimpan atau memperbarui avatarUrl ke sesi lokal
@@ -56,8 +64,80 @@ class HiveService {
   }
 
   /// Menghapus sesi Hunter (Logout)
-  static Future<void> clearSession() async {
-    await sessionBox.clear();
+  static Future<void> clearSession({bool clearBiometrics = false}) async {
+    final box = sessionBox;
+    await box.put('isLoggedIn', false);
+    await box.delete('userId');
+    await box.delete('username');
+    await box.delete('rank');
+    await box.delete('exp');
+    await box.delete('gold');
+    await box.delete('hp');
+    await box.delete('avatar_url');
+    await box.delete('active_password');
+    if (clearBiometrics) {
+      await clearBiometricCredentials();
+    }
+  }
+
+  /// Menyimpan kredensial biometrik pengguna untuk login otomatis
+  static Future<void> saveBiometricCredentials({
+    required String username,
+    required String password,
+    bool fingerprint = true,
+    bool faceScan = true,
+  }) async {
+    final box = sessionBox;
+    await box.put('isBiometricEnabled', true);
+    await box.put('isFingerprintEnabled', fingerprint);
+    await box.put('isFaceScanEnabled', faceScan);
+    await box.put('bio_username', username);
+    await box.put('bio_password', password);
+  }
+
+  /// Mengambil kredensial biometrik yang tersimpan
+  static Map<String, String>? getBiometricCredentials() {
+    final box = sessionBox;
+    final username = box.get('bio_username')?.toString();
+    final password = box.get('bio_password')?.toString();
+    if (username == null || password == null || username.isEmpty || password.isEmpty) {
+      return null;
+    }
+    return {
+      'username': username,
+      'password': password,
+    };
+  }
+
+  /// Memeriksa apakah otentikasi biometrik aktif secara global
+  static bool isBiometricEnabled() {
+    final box = sessionBox;
+    final enabled = box.get('isBiometricEnabled', defaultValue: false) as bool;
+    return enabled && getBiometricCredentials() != null;
+  }
+
+  /// Memeriksa apakah sensor fingerprint diaktifkan
+  static bool isFingerprintEnabled() {
+    final box = sessionBox;
+    final fp = box.get('isFingerprintEnabled', defaultValue: false) as bool;
+    return fp && isBiometricEnabled();
+  }
+
+  /// Memeriksa apakah sensor face scan diaktifkan
+  static bool isFaceScanEnabled() {
+    final box = sessionBox;
+    final fs = box.get('isFaceScanEnabled', defaultValue: false) as bool;
+    return fs && isBiometricEnabled();
+  }
+
+  /// Menghapus kredensial biometrik (dipanggil saat dinonaktifkan atau logout)
+  static Future<void> clearBiometricCredentials() async {
+    final box = sessionBox;
+    await box.put('isBiometricEnabled', false);
+    await box.put('isFingerprintEnabled', false);
+    await box.put('isFaceScanEnabled', false);
+    await box.delete('bio_username');
+    await box.delete('bio_password');
   }
 
   /// Menyimpan transaksi item/title ke ledger blockchain lokal

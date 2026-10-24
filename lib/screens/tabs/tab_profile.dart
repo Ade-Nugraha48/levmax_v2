@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:intl/intl.dart';
+import 'package:local_auth/local_auth.dart';
 import '../../services/hive_service.dart';
 import '../../services/supabase_service.dart';
 import '../../widgets/avatar_adjust_dialog.dart';
@@ -38,6 +39,11 @@ class _TabProfileState extends State<TabProfile> {
     return 100;
   }
   final int _hp = 3;
+
+  // Biometric Security Protocol State
+  final LocalAuthentication _localAuth = LocalAuthentication();
+  bool _isFingerprintEnabled = false;
+  bool _isFaceScanEnabled = false;
 
   // Remote data state: Quests Done & Feedback
   int _questsCompletedCount = 0;
@@ -87,6 +93,8 @@ class _TabProfileState extends State<TabProfile> {
       _submittedFeedback = cachedFeedback['message'];
       _feedbackCreatedAt = cachedFeedback['created_at'];
     }
+    _isFingerprintEnabled = HiveService.isFingerprintEnabled();
+    _isFaceScanEnabled = HiveService.isFaceScanEnabled();
   }
 
   Future<void> _loadRemoteData() async {
@@ -435,12 +443,17 @@ class _TabProfileState extends State<TabProfile> {
 
               const SizedBox(height: 14),
 
-              // 5. Academic Feedback Form Card
+              // 5. Security Protocol (Biometric Settings)
+              _buildSecurityProtocolSection(),
+
+              const SizedBox(height: 14),
+
+              // 6. Academic Feedback Form Card
               _buildFeedbackCard(),
 
               const SizedBox(height: 16),
 
-              // 6. System Logout Button
+              // 7. System Logout Button
               _buildLogoutButton(),
             ],
           ),
@@ -1106,6 +1119,568 @@ class _TabProfileState extends State<TabProfile> {
           ),
         ),
       ],
+    );
+  }
+
+  /// Handler untuk mengaktifkan / menonaktifkan Fingerprint Login
+  Future<void> _handleToggleFingerprint(bool value) async {
+    if (!value) {
+      setState(() => _isFingerprintEnabled = false);
+      if (!_isFaceScanEnabled) {
+        await HiveService.clearBiometricCredentials();
+      } else {
+        final password = HiveService.getActivePassword() ??
+            HiveService.getBiometricCredentials()?['password'] ??
+            '';
+        await HiveService.saveBiometricCredentials(
+          username: _username,
+          password: password,
+          fingerprint: false,
+          faceScan: true,
+        );
+      }
+      return;
+    }
+
+    try {
+      final bool canAuthenticateWithBiometrics = await _localAuth.canCheckBiometrics;
+      final bool canAuthenticate = canAuthenticateWithBiometrics || await _localAuth.isDeviceSupported();
+
+      if (!canAuthenticate) {
+        if (mounted) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(
+              content: Text(
+                'Perangkat tidak mendukung atau belum mengonfigurasi sensor biometrik sidik jari.',
+                style: GoogleFonts.spaceGrotesk(color: Colors.white, fontWeight: FontWeight.w600),
+              ),
+              backgroundColor: const Color(0xFF93000A),
+            ),
+          );
+        }
+        setState(() => _isFingerprintEnabled = false);
+        return;
+      }
+
+      final bool authenticated = await _localAuth.authenticate(
+        localizedReason: 'Pindai sidik jari untuk mengaktifkan otorisasi Fingerprint Fast Access',
+      );
+
+      if (!mounted) return;
+
+      if (authenticated) {
+        String? password = HiveService.getActivePassword() ??
+            HiveService.getBiometricCredentials()?['password'];
+
+        if (password == null || password.isEmpty) {
+          password = await _showPasswordConfirmationDialog();
+          if (password == null || password.isEmpty) {
+            setState(() => _isFingerprintEnabled = false);
+            return;
+          }
+        }
+
+        await HiveService.saveBiometricCredentials(
+          username: _username,
+          password: password,
+          fingerprint: true,
+          faceScan: _isFaceScanEnabled,
+        );
+
+        if (!mounted) return;
+
+        setState(() {
+          _isFingerprintEnabled = true;
+        });
+
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Row(
+              children: [
+                const Icon(Icons.fingerprint_rounded, color: Colors.black, size: 20),
+                const SizedBox(width: 8),
+                Expanded(
+                  child: Text(
+                    'Biometric Protocol Synced! Fingerprint login aktif.',
+                    style: GoogleFonts.spaceGrotesk(
+                      color: Colors.black,
+                      fontWeight: FontWeight.w800,
+                    ),
+                  ),
+                ),
+              ],
+            ),
+            backgroundColor: const Color(0xFF00F4FE),
+            duration: const Duration(seconds: 3),
+          ),
+        );
+      } else {
+        setState(() => _isFingerprintEnabled = false);
+      }
+    } catch (e) {
+      debugPrint('[ToggleFingerprint] Error: $e');
+      if (mounted) {
+        setState(() => _isFingerprintEnabled = false);
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text('Verifikasi biometrik gagal: $e'),
+            backgroundColor: const Color(0xFF93000A),
+          ),
+        );
+      }
+    }
+  }
+
+  /// Handler untuk mengaktifkan / menonaktifkan Face Scan Login
+  Future<void> _handleToggleFaceScan(bool value) async {
+    if (!value) {
+      setState(() => _isFaceScanEnabled = false);
+      if (!_isFingerprintEnabled) {
+        await HiveService.clearBiometricCredentials();
+      } else {
+        final password = HiveService.getActivePassword() ??
+            HiveService.getBiometricCredentials()?['password'] ??
+            '';
+        await HiveService.saveBiometricCredentials(
+          username: _username,
+          password: password,
+          fingerprint: true,
+          faceScan: false,
+        );
+      }
+      return;
+    }
+
+    try {
+      final bool canAuthenticateWithBiometrics = await _localAuth.canCheckBiometrics;
+      final bool canAuthenticate = canAuthenticateWithBiometrics || await _localAuth.isDeviceSupported();
+
+      if (!canAuthenticate) {
+        if (mounted) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(
+              content: Text(
+                'Perangkat tidak mendukung atau belum mengonfigurasi sensor biometrik wajah.',
+                style: GoogleFonts.spaceGrotesk(color: Colors.white, fontWeight: FontWeight.w600),
+              ),
+              backgroundColor: const Color(0xFF93000A),
+            ),
+          );
+        }
+        setState(() => _isFaceScanEnabled = false);
+        return;
+      }
+
+      final bool authenticated = await _localAuth.authenticate(
+        localizedReason: 'Pindai wajah untuk mengaktifkan otorisasi Face Scan Neural Access',
+      );
+
+      if (!mounted) return;
+
+      if (authenticated) {
+        String? password = HiveService.getActivePassword() ??
+            HiveService.getBiometricCredentials()?['password'];
+
+        if (password == null || password.isEmpty) {
+          password = await _showPasswordConfirmationDialog();
+          if (password == null || password.isEmpty) {
+            setState(() => _isFaceScanEnabled = false);
+            return;
+          }
+        }
+
+        await HiveService.saveBiometricCredentials(
+          username: _username,
+          password: password,
+          fingerprint: _isFingerprintEnabled,
+          faceScan: true,
+        );
+
+        if (!mounted) return;
+
+        setState(() {
+          _isFaceScanEnabled = true;
+        });
+
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Row(
+              children: [
+                const Icon(Icons.verified_rounded, color: Colors.black, size: 20),
+                const SizedBox(width: 8),
+                Expanded(
+                  child: Text(
+                    'Biometric Protocol Synced! Face Scan login aktif.',
+                    style: GoogleFonts.spaceGrotesk(
+                      color: Colors.black,
+                      fontWeight: FontWeight.w800,
+                    ),
+                  ),
+                ),
+              ],
+            ),
+            backgroundColor: const Color(0xFF00F4FE),
+            duration: const Duration(seconds: 3),
+          ),
+        );
+      } else {
+        setState(() => _isFaceScanEnabled = false);
+      }
+    } catch (e) {
+      debugPrint('[ToggleFaceScan] Error: $e');
+      if (mounted) {
+        setState(() => _isFaceScanEnabled = false);
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text('Verifikasi biometrik gagal: $e'),
+            backgroundColor: const Color(0xFF93000A),
+          ),
+        );
+      }
+    }
+  }
+
+  /// Dialog input passcode jika belum tersimpan di sesi
+  Future<String?> _showPasswordConfirmationDialog() async {
+    final controller = TextEditingController();
+    bool isObscure = true;
+    return showDialog<String>(
+      context: context,
+      builder: (ctx) => StatefulBuilder(
+        builder: (ctx, setDialogState) => AlertDialog(
+          backgroundColor: const Color(0xFF140D24),
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(16),
+            side: const BorderSide(color: Color(0xFFB026FF), width: 1.0),
+          ),
+          title: Row(
+            children: [
+              const Icon(Icons.security_rounded, color: Color(0xFF00F4FE), size: 20),
+              const SizedBox(width: 8),
+              Text(
+                'SECURITY CONFIRMATION',
+                style: GoogleFonts.spaceGrotesk(
+                  color: const Color(0xFF00F4FE),
+                  fontWeight: FontWeight.w800,
+                  fontSize: 14,
+                ),
+              ),
+            ],
+          ),
+          content: Column(
+            mainAxisSize: MainAxisSize.min,
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text(
+                'Masukkan Passcode (Cipher) akun Anda untuk menautkan biometrik:',
+                style: GoogleFonts.plusJakartaSans(color: const Color(0xFFD2C1D7), fontSize: 12),
+              ),
+              const SizedBox(height: 12),
+              Container(
+                decoration: BoxDecoration(
+                  color: const Color(0xFF1F1927),
+                  borderRadius: BorderRadius.circular(10),
+                  border: Border.all(color: const Color(0xFF383241)),
+                ),
+                child: TextField(
+                  controller: controller,
+                  obscureText: isObscure,
+                  style: GoogleFonts.plusJakartaSans(color: Colors.white, fontSize: 13),
+                  decoration: InputDecoration(
+                    hintText: 'Passcode (Cipher)',
+                    hintStyle: GoogleFonts.plusJakartaSans(color: const Color(0xFF9B8BA1), fontSize: 12),
+                    contentPadding: const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
+                    border: InputBorder.none,
+                    suffixIcon: IconButton(
+                      icon: Icon(
+                        isObscure ? Icons.visibility_outlined : Icons.visibility_off_outlined,
+                        color: const Color(0xFF9B8BA1),
+                        size: 18,
+                      ),
+                      onPressed: () => setDialogState(() => isObscure = !isObscure),
+                    ),
+                  ),
+                ),
+              ),
+            ],
+          ),
+          actions: [
+            TextButton(
+              onPressed: () => Navigator.pop(ctx, null),
+              child: Text(
+                'BATAL',
+                style: GoogleFonts.spaceGrotesk(color: Colors.grey, fontWeight: FontWeight.bold),
+              ),
+            ),
+            ElevatedButton(
+              style: ElevatedButton.styleFrom(
+                backgroundColor: const Color(0xFFB026FF),
+                foregroundColor: Colors.white,
+                shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
+              ),
+              onPressed: () => Navigator.pop(ctx, controller.text),
+              child: Text(
+                'KONFIRMASI',
+                style: GoogleFonts.spaceGrotesk(fontWeight: FontWeight.bold),
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  /// Section UI: SECURITY PROTOCOL (Biometric Access Settings)
+  Widget _buildSecurityProtocolSection() {
+    return Container(
+      width: double.infinity,
+      padding: const EdgeInsets.all(14),
+      decoration: BoxDecoration(
+        color: const Color(0xFF1F1927),
+        borderRadius: BorderRadius.circular(16),
+        border: Border.all(color: const Color(0xFF2C1E4E), width: 0.8),
+        boxShadow: [
+          BoxShadow(
+            color: const Color(0xFFB026FF).withValues(alpha: 0.08),
+            blurRadius: 16,
+            offset: const Offset(0, 4),
+          ),
+        ],
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          // Header Bar
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              Row(
+                children: [
+                  Container(
+                    width: 28,
+                    height: 28,
+                    decoration: BoxDecoration(
+                      color: const Color(0xFF2D2736),
+                      borderRadius: BorderRadius.circular(7),
+                      border: Border.all(color: const Color(0xFFB026FF).withValues(alpha: 0.3)),
+                    ),
+                    child: const Icon(
+                      Icons.shield_outlined,
+                      size: 16,
+                      color: Color(0xFF00F4FE),
+                    ),
+                  ),
+                  const SizedBox(width: 8),
+                  Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        'SECURITY PROTOCOL',
+                        style: GoogleFonts.spaceGrotesk(
+                          fontSize: 11,
+                          fontWeight: FontWeight.w800,
+                          letterSpacing: 1.0,
+                          color: const Color(0xFFE9DEF2),
+                        ),
+                      ),
+                      Text(
+                        'FAST BIOMETRIC GATE ACCESS',
+                        style: GoogleFonts.spaceGrotesk(
+                          fontSize: 8,
+                          fontWeight: FontWeight.w600,
+                          letterSpacing: 0.8,
+                          color: const Color(0xFF9B8BA1),
+                        ),
+                      ),
+                    ],
+                  ),
+                ],
+              ),
+              Container(
+                padding: const EdgeInsets.symmetric(horizontal: 7, vertical: 3),
+                decoration: BoxDecoration(
+                  color: const Color(0xFF120D24),
+                  borderRadius: BorderRadius.circular(6),
+                  border: Border.all(
+                    color: (_isFingerprintEnabled || _isFaceScanEnabled)
+                        ? const Color(0xFF00F4FE).withValues(alpha: 0.5)
+                        : const Color(0xFF383241),
+                  ),
+                ),
+                child: Row(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    Container(
+                      width: 5,
+                      height: 5,
+                      decoration: BoxDecoration(
+                        shape: BoxShape.circle,
+                        color: (_isFingerprintEnabled || _isFaceScanEnabled)
+                            ? const Color(0xFF00F4FE)
+                            : const Color(0xFF6E6078),
+                      ),
+                    ),
+                    const SizedBox(width: 5),
+                    Text(
+                      (_isFingerprintEnabled || _isFaceScanEnabled) ? 'ACTIVE' : 'STANDBY',
+                      style: GoogleFonts.spaceGrotesk(
+                        fontSize: 8,
+                        fontWeight: FontWeight.w800,
+                        letterSpacing: 0.8,
+                        color: (_isFingerprintEnabled || _isFaceScanEnabled)
+                            ? const Color(0xFF00F4FE)
+                            : const Color(0xFF9B8BA1),
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            ],
+          ),
+
+          const SizedBox(height: 12),
+
+          // Row 1: Enable Fingerprint Login
+          Container(
+            padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
+            decoration: BoxDecoration(
+              color: const Color(0xFF120D24),
+              borderRadius: BorderRadius.circular(12),
+              border: Border.all(
+                color: _isFingerprintEnabled
+                    ? const Color(0xFFB026FF).withValues(alpha: 0.45)
+                    : const Color(0xFF2C1E4E),
+                width: 0.9,
+              ),
+            ),
+            child: Row(
+              children: [
+                Container(
+                  width: 36,
+                  height: 36,
+                  decoration: BoxDecoration(
+                    color: const Color(0xFF1F1638),
+                    borderRadius: BorderRadius.circular(9),
+                    border: Border.all(color: const Color(0xFFB026FF).withValues(alpha: 0.35)),
+                  ),
+                  child: const Icon(Icons.fingerprint_rounded, size: 20, color: Color(0xFFE5B5FF)),
+                ),
+                const SizedBox(width: 10),
+                Expanded(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      Text(
+                        'Enable Fingerprint Login',
+                        style: GoogleFonts.spaceGrotesk(
+                          fontSize: 12,
+                          fontWeight: FontWeight.w700,
+                          color: const Color(0xFFE9DEF2),
+                        ),
+                      ),
+                      const SizedBox(height: 2),
+                      Text(
+                        'Mana Resonance Fingerprint Access',
+                        style: GoogleFonts.plusJakartaSans(
+                          fontSize: 9.5,
+                          color: const Color(0xFF9B8BA1),
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+                SizedBox(
+                  height: 28,
+                  width: 42,
+                  child: FittedBox(
+                    fit: BoxFit.contain,
+                    child: Switch(
+                      value: _isFingerprintEnabled,
+                      onChanged: _handleToggleFingerprint,
+                      activeThumbColor: Colors.white,
+                      activeTrackColor: const Color(0xFFB026FF),
+                      inactiveThumbColor: const Color(0xFF9B8BA1),
+                      inactiveTrackColor: const Color(0xFF383241),
+                    ),
+                  ),
+                ),
+              ],
+            ),
+          ),
+
+          const SizedBox(height: 8),
+
+          // Row 2: Enable Face Scan Login
+          Container(
+            padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
+            decoration: BoxDecoration(
+              color: const Color(0xFF120D24),
+              borderRadius: BorderRadius.circular(12),
+              border: Border.all(
+                color: _isFaceScanEnabled
+                    ? const Color(0xFF00F4FE).withValues(alpha: 0.45)
+                    : const Color(0xFF2C1E4E),
+                width: 0.9,
+              ),
+            ),
+            child: Row(
+              children: [
+                Container(
+                  width: 36,
+                  height: 36,
+                  decoration: BoxDecoration(
+                    color: const Color(0xFF0A2730),
+                    borderRadius: BorderRadius.circular(9),
+                    border: Border.all(color: const Color(0xFF00F4FE).withValues(alpha: 0.35)),
+                  ),
+                  child: const Icon(Icons.document_scanner_outlined, size: 20, color: Color(0xFF00F4FE)),
+                ),
+                const SizedBox(width: 10),
+                Expanded(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      Text(
+                        'Enable Face Scan Login',
+                        style: GoogleFonts.spaceGrotesk(
+                          fontSize: 12,
+                          fontWeight: FontWeight.w700,
+                          color: const Color(0xFFE9DEF2),
+                        ),
+                      ),
+                      const SizedBox(height: 2),
+                      Text(
+                        'Neural Recognition Face Scanner',
+                        style: GoogleFonts.plusJakartaSans(
+                          fontSize: 9.5,
+                          color: const Color(0xFF9B8BA1),
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+                SizedBox(
+                  height: 28,
+                  width: 42,
+                  child: FittedBox(
+                    fit: BoxFit.contain,
+                    child: Switch(
+                      value: _isFaceScanEnabled,
+                      onChanged: _handleToggleFaceScan,
+                      activeThumbColor: Colors.white,
+                      activeTrackColor: const Color(0xFF00F4FE),
+                      inactiveThumbColor: const Color(0xFF9B8BA1),
+                      inactiveTrackColor: const Color(0xFF383241),
+                    ),
+                  ),
+                ),
+              ],
+            ),
+          ),
+        ],
+      ),
     );
   }
 
