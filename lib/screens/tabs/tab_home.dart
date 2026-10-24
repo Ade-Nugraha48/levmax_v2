@@ -2,6 +2,7 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:intl/intl.dart';
+import 'package:hive/hive.dart';
 import '../../services/hive_service.dart';
 import '../../services/notif_service.dart';
 import '../../services/supabase_service.dart';
@@ -396,7 +397,14 @@ class _TabHomeState extends State<TabHome> {
 
     checkRankUp(_currentExp);
 
-    // 1. Simpan ke sesi lokal Hive
+    // 1. Simpan langsung ke Hive sessionBox agar real-time listener (Shop & Profile) langsung terpicu
+    final sessionBox = Hive.box('sessionBox');
+    sessionBox.put('gold', _gold);
+    final int currentTotal = (sessionBox.get('total_quests_done', defaultValue: sessionBox.get('quests_done_count', defaultValue: 0)) as num).toInt();
+    sessionBox.put('total_quests_done', currentTotal + 1);
+    sessionBox.put('quests_done_count', currentTotal + 1);
+
+    // 2. Simpan ke sesi lokal Hive
     final userId = session['userId']?.toString() ?? 'anonymous';
     final username = session['username']?.toString() ?? _hunterName;
     HiveService.saveSession(
@@ -431,8 +439,6 @@ class _TabHomeState extends State<TabHome> {
         userId: userId,
         questId: qId,
       );
-      final currentCount = HiveService.getQuestsCount() ?? 0;
-      HiveService.saveQuestsCount(currentCount + 1);
     }
 
     ScaffoldMessenger.of(context).showSnackBar(

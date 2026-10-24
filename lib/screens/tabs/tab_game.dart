@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:intl/intl.dart';
 import 'package:sensors_plus/sensors_plus.dart';
+import 'package:hive/hive.dart';
 import '../../services/hive_service.dart';
 import '../../services/supabase_service.dart';
 import '../../widgets/avatar_image.dart';
@@ -251,28 +252,34 @@ class _TabGameState extends State<TabGame> with SingleTickerProviderStateMixin {
     // Kunci reward harian berdasarkan tanggal server WIB (refresh 00:00 WIB)
     await HiveService.saveGameRewardDate(currentServerDate);
 
+    final session = HiveService.getSession();
+    final currentGold = (session['gold'] as int?) ?? _gold;
+    final updatedGold = currentGold + 50;
+
     setState(() {
       hasPlayedToday = true;
       isPlaying = false;
       isGameOver = false;
       timeRemaining = 0;
       _isInCenter = true;
-      _gold += 50;
+      _gold = updatedGold;
     });
 
+    // Simpan reward ke Hive sessionBox agar real-time binding (Shop) langsung terpicu
+    await Hive.box('sessionBox').put('gold', updatedGold);
+
     // Simpan reward ke Hive & Supabase
-    final session = HiveService.getSession();
     final userId = session['userId']?.toString() ?? 'anonymous';
     final username = session['username']?.toString() ?? _hunterName;
     final rank = session['rank']?.toString() ?? _rank;
     final currentHp = session['hp'] as int? ?? 3;
 
-    HiveService.saveSession(
+    await HiveService.saveSession(
       userId: userId,
       username: username,
       rank: rank,
       exp: _currentExp,
-      gold: _gold,
+      gold: updatedGold,
       hp: currentHp,
     );
 

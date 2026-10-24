@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:intl/intl.dart';
+import 'package:hive_flutter/hive_flutter.dart';
 import '../../services/hash_service.dart';
 import '../../services/hive_service.dart';
 import '../../services/supabase_service.dart';
@@ -26,7 +27,111 @@ class _TabShopState extends State<TabShop> {
   int _hp = 3;
 
   // Daftar Title yang sudah dimiliki
-  final Set<String> _ownedTitles = {'Wolf Slayer'};
+  final Set<String> _ownedTitles = {};
+
+  // Daftar 10 Exclusive Titles untuk pengujian fitur Inventory & Equip
+  final List<Map<String, dynamic>> _shopTitles = [
+    {
+      'title': 'Wolf Slayer',
+      'subtitle': 'TITLE: RAZOR FANG DESTROYER',
+      'rarity': 'COMMON',
+      'price': 1,
+      'perk': '+8% Agility in Dungeon Radar',
+      'icon': Icons.pets_rounded,
+      'rarityColor': const Color(0xFF00DCE5),
+      'accentColor': const Color(0xFF63F7FF),
+    },
+    {
+      'title': 'Demon Slayer',
+      'subtitle': 'TITLE: PURGATORY CLEANSER',
+      'rarity': 'RARE',
+      'price': 2,
+      'perk': '+10% Critical Strike on Bosses',
+      'icon': Icons.local_fire_department_rounded,
+      'rarityColor': const Color(0xFFFF5722),
+      'accentColor': const Color(0xFFFF8A65),
+    },
+    {
+      'title': 'False Dog',
+      'subtitle': 'TITLE: DECEPTIVE SHADOW',
+      'rarity': 'COMMON',
+      'price': 1,
+      'perk': '+5% Evasion Rate in Combat',
+      'icon': Icons.visibility_off_rounded,
+      'rarityColor': const Color(0xFF8E8CD8),
+      'accentColor': const Color(0xFFB39DDB),
+    },
+    {
+      'title': 'Shadow Lord',
+      'subtitle': 'TITLE: COMMANDER OF DARKNESS',
+      'rarity': 'EPIC',
+      'price': 3,
+      'perk': '+12% Shadow Extraction Velocity',
+      'icon': Icons.nights_stay_rounded,
+      'rarityColor': const Color(0xFF9C27B0),
+      'accentColor': const Color(0xFFCE93D8),
+    },
+    {
+      'title': 'Dragon Slayer',
+      'subtitle': 'TITLE: KAMISH BANE',
+      'rarity': 'LEGENDARY',
+      'price': 4,
+      'perk': '+20% Fire Damage Resistance',
+      'icon': Icons.whatshot_rounded,
+      'rarityColor': const Color(0xFFFF9800),
+      'accentColor': const Color(0xFFFFCC80),
+    },
+    {
+      'title': 'National Hunter',
+      'subtitle': 'TITLE: SPECIAL AUTHORITY CLASS',
+      'rarity': 'LEGENDARY',
+      'price': 4,
+      'perk': '+18% Telekinesis & Rulers Might',
+      'icon': Icons.public_rounded,
+      'rarityColor': const Color(0xFFFFD700),
+      'accentColor': const Color(0xFFFFF59D),
+    },
+    {
+      'title': 'Weakest Hunter',
+      'subtitle': 'TITLE: SURVIVOR OF DOUBLE DUNGEON',
+      'rarity': 'COMMON',
+      'price': 1,
+      'perk': '+5% HP Recovery Under Extreme Danger',
+      'icon': Icons.health_and_safety_rounded,
+      'rarityColor': const Color(0xFF4CAF50),
+      'accentColor': const Color(0xFFA5D6A7),
+    },
+    {
+      'title': 'Shadow Monarch',
+      'subtitle': 'TITLE: THE LORD OF SHADOWS',
+      'rarity': 'MYTHIC',
+      'price': 5,
+      'perk': '+15% Mana Resonance & Dark Aura',
+      'icon': Icons.shield_moon_rounded,
+      'rarityColor': const Color(0xFFB026FF),
+      'accentColor': const Color(0xFF00F4FE),
+    },
+    {
+      'title': 'S-Rank Hunter',
+      'subtitle': 'TITLE: UNMEASURABLE MANA LEVEL',
+      'rarity': 'MYTHIC',
+      'price': 5,
+      'perk': '+25% Overall Status Enhancement',
+      'icon': Icons.military_tech_rounded,
+      'rarityColor': const Color(0xFF00F4FE),
+      'accentColor': const Color(0xFF80DEEA),
+    },
+    {
+      'title': 'Monarch King',
+      'subtitle': 'TITLE: ABSOLUTE RULER OF REALMS',
+      'rarity': 'ANCIENT',
+      'price': 5,
+      'perk': '+30% Sovereignty & Monarch Domain',
+      'icon': Icons.workspace_premium_rounded,
+      'rarityColor': const Color(0xFFFF2A6D),
+      'accentColor': const Color(0xFFFF80AB),
+    },
+  ];
 
   @override
   void initState() {
@@ -52,6 +157,7 @@ class _TabShopState extends State<TabShop> {
           _ownedTitles.add(log['item'].toString());
         }
       }
+      _ownedTitles.addAll(HiveService.getOwnedTitles());
     });
   }
 
@@ -146,6 +252,9 @@ class _TabShopState extends State<TabShop> {
       _ownedTitles.add(itemName);
     });
 
+    await Hive.box('sessionBox').put('gold', newGold);
+    await HiveService.addOwnedTitle(itemName);
+
     await HiveService.saveSession(
       userId: _userId,
       username: _username,
@@ -153,6 +262,7 @@ class _TabShopState extends State<TabShop> {
       exp: currentExp,
       gold: newGold,
       hp: currentHp,
+      ownedTitles: _ownedTitles.toList(),
     );
 
     // Sinkronisasi ke Supabase jika bukan anonymous
@@ -534,44 +644,25 @@ class _TabShopState extends State<TabShop> {
 
               const SizedBox(height: 12),
 
-              // Title 1: Shadow Monarch (300 Gold - Mythic)
-              _buildTitleCard(
-                title: 'Shadow Monarch',
-                subtitle: 'TITLE: THE LORD OF SHADOWS',
-                rarity: 'MYTHIC',
-                price: 300,
-                perk: '+15% Mana Resonance & Dark Aura',
-                icon: Icons.shield_moon_rounded,
-                rarityColor: const Color(0xFFB026FF),
-                accentColor: const Color(0xFF00F4FE),
-              ),
-
-              const SizedBox(height: 14),
-
-              // Title 2: Wolf Slayer (150 Gold - Rare)
-              _buildTitleCard(
-                title: 'Wolf Slayer',
-                subtitle: 'TITLE: RAZOR FANG DESTROYER',
-                rarity: 'RARE',
-                price: 150,
-                perk: '+8% Agility in Dungeon Radar',
-                icon: Icons.pets_rounded,
-                rarityColor: const Color(0xFF00DCE5),
-                accentColor: const Color(0xFF63F7FF),
-              ),
-
-              const SizedBox(height: 14),
-
-              // Title 3: Sovereign Commander (500 Gold - Ancient)
-              _buildTitleCard(
-                title: 'Sovereign Commander',
-                subtitle: 'TITLE: SUPREME GUILD LEADER',
-                rarity: 'ANCIENT',
-                price: 500,
-                perk: '+25% EXP Multiplier from Daily Quests',
-                icon: Icons.workspace_premium_rounded,
-                rarityColor: const Color(0xFFFFD166),
-                accentColor: const Color(0xFFE5B5FF),
+              // 10 Exclusive Titles List
+              ListView.separated(
+                shrinkWrap: true,
+                physics: const NeverScrollableScrollPhysics(),
+                itemCount: _shopTitles.length,
+                separatorBuilder: (context, index) => const SizedBox(height: 14),
+                itemBuilder: (context, index) {
+                  final item = _shopTitles[index];
+                  return _buildTitleCard(
+                    title: item['title'] as String,
+                    subtitle: item['subtitle'] as String,
+                    rarity: item['rarity'] as String,
+                    price: item['price'] as int,
+                    perk: item['perk'] as String,
+                    icon: item['icon'] as IconData,
+                    rarityColor: item['rarityColor'] as Color,
+                    accentColor: item['accentColor'] as Color,
+                  );
+                },
               ),
 
               const SizedBox(height: 16),
@@ -764,14 +855,20 @@ class _TabShopState extends State<TabShop> {
             children: [
               const Icon(Icons.monetization_on_rounded, size: 14, color: Color(0xFFFFD166)),
               const SizedBox(width: 4),
-              Text(
-                '$_gold GOLD',
-                style: GoogleFonts.spaceGrotesk(
-                  fontSize: 11,
-                  fontWeight: FontWeight.w800,
-                  color: const Color(0xFFFFD166),
-                  letterSpacing: 0.6,
-                ),
+              ValueListenableBuilder<Box>(
+                valueListenable: Hive.box('sessionBox').listenable(keys: ['gold']),
+                builder: (context, box, _) {
+                  final int currentGold = (box.get('gold', defaultValue: _gold) as num).toInt();
+                  return Text(
+                    '$currentGold GOLD',
+                    style: GoogleFonts.spaceGrotesk(
+                      fontSize: 11,
+                      fontWeight: FontWeight.w800,
+                      color: const Color(0xFFFFD166),
+                      letterSpacing: 0.6,
+                    ),
+                  );
+                },
               ),
             ],
           ),
@@ -1028,7 +1125,7 @@ class _TabShopState extends State<TabShop> {
           ],
         ),
         Text(
-          '3 AVAILABLE',
+          '10 AVAILABLE',
           style: GoogleFonts.spaceGrotesk(
             fontSize: 9,
             fontWeight: FontWeight.w800,
@@ -1079,43 +1176,52 @@ class _TabShopState extends State<TabShop> {
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Row(
-                children: [
-                  Container(
-                    width: 44,
-                    height: 44,
-                    decoration: BoxDecoration(
-                      color: const Color(0xFF2D2736),
-                      borderRadius: BorderRadius.circular(10),
-                      border: Border.all(color: rarityColor.withValues(alpha: 0.4)),
+              Expanded(
+                child: Row(
+                  children: [
+                    Container(
+                      width: 44,
+                      height: 44,
+                      decoration: BoxDecoration(
+                        color: const Color(0xFF2D2736),
+                        borderRadius: BorderRadius.circular(10),
+                        border: Border.all(color: rarityColor.withValues(alpha: 0.4)),
+                      ),
+                      child: Icon(icon, size: 24, color: rarityColor),
                     ),
-                    child: Icon(icon, size: 24, color: rarityColor),
-                  ),
-                  const SizedBox(width: 10),
-                  Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Text(
-                        subtitle,
-                        style: GoogleFonts.spaceGrotesk(
-                          fontSize: 8.5,
-                          fontWeight: FontWeight.w700,
-                          letterSpacing: 0.8,
-                          color: rarityColor,
-                        ),
+                    const SizedBox(width: 10),
+                    Expanded(
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text(
+                            subtitle,
+                            style: GoogleFonts.spaceGrotesk(
+                              fontSize: 8.5,
+                              fontWeight: FontWeight.w700,
+                              letterSpacing: 0.8,
+                              color: rarityColor,
+                            ),
+                            maxLines: 1,
+                            overflow: TextOverflow.ellipsis,
+                          ),
+                          Text(
+                            title,
+                            style: GoogleFonts.sora(
+                              fontSize: 14,
+                              fontWeight: FontWeight.w700,
+                              color: const Color(0xFFE9DEF2),
+                            ),
+                            maxLines: 1,
+                            overflow: TextOverflow.ellipsis,
+                          ),
+                        ],
                       ),
-                      Text(
-                        title,
-                        style: GoogleFonts.sora(
-                          fontSize: 14,
-                          fontWeight: FontWeight.w700,
-                          color: const Color(0xFFE9DEF2),
-                        ),
-                      ),
-                    ],
-                  ),
-                ],
+                    ),
+                  ],
+                ),
               ),
+              const SizedBox(width: 8),
               Column(
                 crossAxisAlignment: CrossAxisAlignment.end,
                 children: [

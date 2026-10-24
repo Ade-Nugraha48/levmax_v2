@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:intl/intl.dart';
+import 'package:hive_flutter/hive_flutter.dart';
 import '../../services/hive_service.dart';
 import '../../services/supabase_service.dart';
 import '../../widgets/avatar_adjust_dialog.dart';
@@ -28,6 +29,8 @@ class _TabProfileState extends State<TabProfile> {
   int _exp = 2850;
   String? _avatarUrl;
   bool _isUploadingAvatar = false;
+  String _equippedTitle = 'Hunter';
+  List<String> _ownedTitles = ['Hunter'];
   int get _maxExp {
     if (_exp >= 2500) return 3000;
     if (_exp >= 1500) return 2500;
@@ -73,6 +76,8 @@ class _TabProfileState extends State<TabProfile> {
       _gold = (session['gold'] as int?) ?? 650;
       _exp = (session['exp'] as int?) ?? 2850;
       _avatarUrl = session['avatar_url']?.toString();
+      _equippedTitle = HiveService.getEquippedTitle();
+      _ownedTitles = HiveService.getOwnedTitles();
     });
   }
 
@@ -403,6 +408,10 @@ class _TabProfileState extends State<TabProfile> {
     _gold = (session['gold'] as int?) ?? _gold;
     _exp = (session['exp'] as int?) ?? _exp;
     _avatarUrl = session['avatar_url']?.toString() ?? _avatarUrl;
+    _equippedTitle = session['equipped_title']?.toString() ?? HiveService.getEquippedTitle();
+    _ownedTitles = (session['owned_titles'] is List)
+        ? (session['owned_titles'] as List).map((e) => e.toString()).toList()
+        : HiveService.getOwnedTitles();
 
     final double expProgress = (_exp / _maxExp).clamp(0.0, 1.0);
 
@@ -778,17 +787,87 @@ class _TabProfileState extends State<TabProfile> {
                   ],
                 ),
 
-                const SizedBox(height: 2),
+                const SizedBox(height: 6),
 
-                // Title
-                Text(
-                  'TITLE: SHADOW MONARCH',
-                  style: GoogleFonts.spaceGrotesk(
-                    fontSize: 10,
-                    fontWeight: FontWeight.w700,
-                    letterSpacing: 1.2,
-                    color: const Color(0xFFE5B5FF),
-                  ),
+                // Active Equipped Title & Change Title Action Button
+                Wrap(
+                  alignment: WrapAlignment.center,
+                  crossAxisAlignment: WrapCrossAlignment.center,
+                  spacing: 8,
+                  runSpacing: 6,
+                  children: [
+                    Container(
+                      padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
+                      decoration: BoxDecoration(
+                        color: const Color(0xFF2C1E4E).withValues(alpha: 0.6),
+                        borderRadius: BorderRadius.circular(12),
+                        border: Border.all(
+                          color: const Color(0xFFB026FF).withValues(alpha: 0.5),
+                          width: 1,
+                        ),
+                      ),
+                      child: Row(
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          const Icon(
+                            Icons.military_tech_rounded,
+                            size: 13,
+                            color: Color(0xFF00F4FE),
+                          ),
+                          const SizedBox(width: 4),
+                          Text(
+                            'TITLE: ${_equippedTitle.toUpperCase()}',
+                            style: GoogleFonts.spaceGrotesk(
+                              fontSize: 10,
+                              fontWeight: FontWeight.w700,
+                              letterSpacing: 1.0,
+                              color: const Color(0xFFE5B5FF),
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                    GestureDetector(
+                      onTap: _showTitleInventoryModal,
+                      child: Container(
+                        padding: const EdgeInsets.symmetric(horizontal: 9, vertical: 4),
+                        decoration: BoxDecoration(
+                          color: const Color(0xFF140D24),
+                          borderRadius: BorderRadius.circular(12),
+                          border: Border.all(
+                            color: const Color(0xFF00F4FE),
+                            width: 1.2,
+                          ),
+                          boxShadow: [
+                            BoxShadow(
+                              color: const Color(0xFF00F4FE).withValues(alpha: 0.25),
+                              blurRadius: 8,
+                            ),
+                          ],
+                        ),
+                        child: Row(
+                          mainAxisSize: MainAxisSize.min,
+                          children: [
+                            const Icon(
+                              Icons.swap_horiz_rounded,
+                              size: 13,
+                              color: Color(0xFF00F4FE),
+                            ),
+                            const SizedBox(width: 4),
+                            Text(
+                              'Ganti Title',
+                              style: GoogleFonts.spaceGrotesk(
+                                fontSize: 9.5,
+                                fontWeight: FontWeight.w800,
+                                color: const Color(0xFF00F4FE),
+                                letterSpacing: 0.6,
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                    ),
+                  ],
                 ),
 
                 const SizedBox(height: 10),
@@ -1018,13 +1097,19 @@ class _TabProfileState extends State<TabProfile> {
                     color: const Color(0xFF110C19),
                     borderRadius: BorderRadius.circular(6),
                   ),
-                  child: Text(
-                    '$_gold G',
-                    style: GoogleFonts.spaceGrotesk(
-                      fontSize: 16,
-                      fontWeight: FontWeight.w900,
-                      color: const Color(0xFFFFD166),
-                    ),
+                  child: ValueListenableBuilder<Box>(
+                    valueListenable: Hive.box('sessionBox').listenable(keys: ['gold']),
+                    builder: (context, box, _) {
+                      final int currentGold = (box.get('gold', defaultValue: _gold) as num).toInt();
+                      return Text(
+                        '$currentGold G',
+                        style: GoogleFonts.spaceGrotesk(
+                          fontSize: 16,
+                          fontWeight: FontWeight.w900,
+                          color: const Color(0xFFFFD166),
+                        ),
+                      );
+                    },
                   ),
                 ),
                 const SizedBox(height: 4),
@@ -1075,23 +1160,30 @@ class _TabProfileState extends State<TabProfile> {
                     color: const Color(0xFF110C19),
                     borderRadius: BorderRadius.circular(6),
                   ),
-                  child: _isLoadingQuests
-                      ? const SizedBox(
+                  child: ValueListenableBuilder<Box>(
+                    valueListenable: Hive.box('sessionBox').listenable(keys: ['total_quests_done']),
+                    builder: (context, box, _) {
+                      if (_isLoadingQuests && !box.containsKey('total_quests_done') && !box.containsKey('quests_done_count')) {
+                        return const SizedBox(
                           width: 14,
                           height: 14,
                           child: CircularProgressIndicator(
                             strokeWidth: 2,
                             color: Color(0xFF00F4FE),
                           ),
-                        )
-                      : Text(
-                          '$_questsCompletedCount SELESAI',
-                          style: GoogleFonts.spaceGrotesk(
-                            fontSize: 14,
-                            fontWeight: FontWeight.w900,
-                            color: const Color(0xFF00F4FE),
-                          ),
+                        );
+                      }
+                      final int totalDone = (box.get('total_quests_done', defaultValue: box.get('quests_done_count', defaultValue: _questsCompletedCount)) as num).toInt();
+                      return Text(
+                        '$totalDone SELESAI',
+                        style: GoogleFonts.spaceGrotesk(
+                          fontSize: 14,
+                          fontWeight: FontWeight.w900,
+                          color: const Color(0xFF00F4FE),
                         ),
+                      );
+                    },
+                  ),
                 ),
                 const SizedBox(height: 4),
                 Text(
@@ -1486,6 +1578,345 @@ class _TabProfileState extends State<TabProfile> {
           ),
         ),
       ],
+    );
+  }
+
+  /// Modal Bottom Sheet untuk menampilkan Koleksi Title (Inventory) & Logika Equip Title
+  void _showTitleInventoryModal() {
+    _ownedTitles = HiveService.getOwnedTitles();
+    final ownedTitles = _ownedTitles;
+
+    showModalBottomSheet(
+      context: context,
+      isScrollControlled: true,
+      backgroundColor: Colors.transparent,
+      builder: (modalContext) {
+        return StatefulBuilder(
+          builder: (bottomSheetContext, setModalState) {
+            final currentEquipped = HiveService.getEquippedTitle();
+
+            return Container(
+              constraints: BoxConstraints(
+                maxHeight: MediaQuery.of(bottomSheetContext).size.height * 0.75,
+              ),
+              decoration: BoxDecoration(
+                color: const Color(0xFF140D24),
+                borderRadius: const BorderRadius.only(
+                  topLeft: Radius.circular(24),
+                  topRight: Radius.circular(24),
+                ),
+                border: Border.all(
+                  color: const Color(0xFF00F4FE).withValues(alpha: 0.6),
+                  width: 1.2,
+                ),
+                boxShadow: [
+                  BoxShadow(
+                    color: Colors.black.withValues(alpha: 0.8),
+                    blurRadius: 32,
+                    offset: const Offset(0, -8),
+                  ),
+                  BoxShadow(
+                    color: const Color(0xFF00F4FE).withValues(alpha: 0.2),
+                    blurRadius: 24,
+                  ),
+                ],
+              ),
+              padding: const EdgeInsets.fromLTRB(20, 12, 20, 24),
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  // Drag Handle
+                  Center(
+                    child: Container(
+                      width: 42,
+                      height: 4,
+                      decoration: BoxDecoration(
+                        color: const Color(0xFF383241),
+                        borderRadius: BorderRadius.circular(2),
+                      ),
+                    ),
+                  ),
+                  const SizedBox(height: 16),
+
+                  // Header Row
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      Row(
+                        children: [
+                          Container(
+                            padding: const EdgeInsets.all(7),
+                            decoration: BoxDecoration(
+                              color: const Color(0xFF00F4FE).withValues(alpha: 0.15),
+                              borderRadius: BorderRadius.circular(10),
+                              border: Border.all(
+                                color: const Color(0xFF00F4FE).withValues(alpha: 0.5),
+                              ),
+                            ),
+                            child: const Icon(
+                              Icons.military_tech_rounded,
+                              size: 20,
+                              color: Color(0xFF00F4FE),
+                            ),
+                          ),
+                          const SizedBox(width: 10),
+                          Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Text(
+                                'TITLE INVENTORY',
+                                style: GoogleFonts.sora(
+                                  fontSize: 15,
+                                  fontWeight: FontWeight.w800,
+                                  color: const Color(0xFFE9DEF2),
+                                  letterSpacing: -0.2,
+                                ),
+                              ),
+                              Text(
+                                '${ownedTitles.length} Gelar Kehormatan Tersimpan',
+                                style: GoogleFonts.spaceGrotesk(
+                                  fontSize: 10.5,
+                                  fontWeight: FontWeight.w600,
+                                  color: const Color(0xFF9B8BA1),
+                                ),
+                              ),
+                            ],
+                          ),
+                        ],
+                      ),
+                      IconButton(
+                        onPressed: () => Navigator.pop(bottomSheetContext),
+                        icon: const Icon(Icons.close_rounded, color: Color(0xFF9B8BA1), size: 22),
+                        padding: EdgeInsets.zero,
+                        constraints: const BoxConstraints(),
+                      ),
+                    ],
+                  ),
+
+                  const SizedBox(height: 14),
+
+                  // Instruction Badge
+                  Container(
+                    width: double.infinity,
+                    padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+                    decoration: BoxDecoration(
+                      color: const Color(0xFF1E1433),
+                      borderRadius: BorderRadius.circular(8),
+                      border: Border.all(
+                        color: const Color(0xFFB026FF).withValues(alpha: 0.3),
+                      ),
+                    ),
+                    child: Row(
+                      children: [
+                        const Icon(
+                          Icons.info_outline_rounded,
+                          size: 15,
+                          color: Color(0xFF00F4FE),
+                        ),
+                        const SizedBox(width: 8),
+                        Expanded(
+                          child: Text(
+                            'Sentuh title di bawah untuk memasang dan mengaktifkan gelar pada profil.',
+                            style: GoogleFonts.spaceGrotesk(
+                              fontSize: 10,
+                              color: const Color(0xFFE5B5FF),
+                              fontWeight: FontWeight.w600,
+                            ),
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+
+                  const SizedBox(height: 16),
+
+                  // Title List
+                  Flexible(
+                    child: ListView.separated(
+                      shrinkWrap: true,
+                      physics: const BouncingScrollPhysics(),
+                      itemCount: ownedTitles.length,
+                      separatorBuilder: (ctx, i) => const SizedBox(height: 10),
+                      itemBuilder: (context, index) {
+                        final title = ownedTitles[index];
+                        final isEquipped = title.trim().toLowerCase() == currentEquipped.trim().toLowerCase();
+
+                        return InkWell(
+                          onTap: () async {
+                            // Perbarui key equipped_title di Hive sessionBox
+                            await HiveService.setEquippedTitle(title);
+                            setModalState(() {});
+                            setState(() {
+                              _equippedTitle = title;
+                            });
+
+                            if (!bottomSheetContext.mounted) return;
+                            Navigator.pop(bottomSheetContext);
+
+                            if (!mounted) return;
+                            ScaffoldMessenger.of(context).showSnackBar(
+                              SnackBar(
+                                content: Row(
+                                  children: [
+                                    const Icon(
+                                      Icons.check_circle_rounded,
+                                      color: Color(0xFF00F4FE),
+                                      size: 20,
+                                    ),
+                                    const SizedBox(width: 8),
+                                    Expanded(
+                                      child: Text(
+                                        'Title aktif berhasil diubah ke "$title"!',
+                                        style: GoogleFonts.spaceGrotesk(
+                                          color: Colors.white,
+                                          fontWeight: FontWeight.w700,
+                                        ),
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                                backgroundColor: const Color(0xFF231D2B),
+                                duration: const Duration(seconds: 2),
+                              ),
+                            );
+                          },
+                          borderRadius: BorderRadius.circular(12),
+                          child: AnimatedContainer(
+                            duration: const Duration(milliseconds: 200),
+                            padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 12),
+                            decoration: BoxDecoration(
+                              color: isEquipped
+                                  ? const Color(0xFF1E1433)
+                                  : const Color(0xFF1F1927),
+                              borderRadius: BorderRadius.circular(12),
+                              border: Border.all(
+                                color: isEquipped
+                                    ? const Color(0xFF00F4FE)
+                                    : const Color(0xFF383241),
+                                width: isEquipped ? 1.6 : 1.0,
+                              ),
+                              boxShadow: isEquipped
+                                  ? [
+                                      BoxShadow(
+                                        color: const Color(0xFF00F4FE).withValues(alpha: 0.25),
+                                        blurRadius: 10,
+                                      ),
+                                    ]
+                                  : null,
+                            ),
+                            child: Row(
+                              children: [
+                                Container(
+                                  width: 38,
+                                  height: 38,
+                                  decoration: BoxDecoration(
+                                    color: isEquipped
+                                        ? const Color(0xFF00F4FE).withValues(alpha: 0.15)
+                                        : const Color(0xFF2D2736),
+                                    shape: BoxShape.circle,
+                                    border: Border.all(
+                                      color: isEquipped
+                                          ? const Color(0xFF00F4FE)
+                                          : const Color(0xFF4A3E59),
+                                    ),
+                                  ),
+                                  child: Icon(
+                                    isEquipped
+                                        ? Icons.military_tech_rounded
+                                        : Icons.shield_outlined,
+                                    size: 20,
+                                    color: isEquipped
+                                        ? const Color(0xFF00F4FE)
+                                        : const Color(0xFF9B8BA1),
+                                  ),
+                                ),
+                                const SizedBox(width: 12),
+                                Expanded(
+                                  child: Column(
+                                    crossAxisAlignment: CrossAxisAlignment.start,
+                                    children: [
+                                      Text(
+                                        title,
+                                        style: GoogleFonts.sora(
+                                          fontSize: 13.5,
+                                          fontWeight: FontWeight.w700,
+                                          color: isEquipped
+                                              ? const Color(0xFF00F4FE)
+                                              : const Color(0xFFE9DEF2),
+                                        ),
+                                      ),
+                                      const SizedBox(height: 2),
+                                      Text(
+                                        isEquipped
+                                            ? 'TERPASANG (EQUIPPED)'
+                                            : 'KLIK UNTUK MEMASANG',
+                                        style: GoogleFonts.spaceGrotesk(
+                                          fontSize: 9.5,
+                                          fontWeight: FontWeight.w700,
+                                          letterSpacing: 0.6,
+                                          color: isEquipped
+                                              ? const Color(0xFF00F4FE)
+                                              : const Color(0xFF9B8BA1),
+                                        ),
+                                      ),
+                                    ],
+                                  ),
+                                ),
+                                Container(
+                                  padding: const EdgeInsets.symmetric(
+                                    horizontal: 10,
+                                    vertical: 5,
+                                  ),
+                                  decoration: BoxDecoration(
+                                    color: isEquipped
+                                        ? const Color(0xFF00F4FE)
+                                        : const Color(0xFF2D2736),
+                                    borderRadius: BorderRadius.circular(8),
+                                    border: Border.all(
+                                      color: isEquipped
+                                          ? const Color(0xFF00F4FE)
+                                          : const Color(0xFF383241),
+                                    ),
+                                  ),
+                                  child: Row(
+                                    mainAxisSize: MainAxisSize.min,
+                                    children: [
+                                      if (isEquipped) ...[
+                                        const Icon(
+                                          Icons.check_rounded,
+                                          size: 13,
+                                          color: Colors.black,
+                                        ),
+                                        const SizedBox(width: 4),
+                                      ],
+                                      Text(
+                                        isEquipped ? 'EQUIPPED' : 'EQUIP',
+                                        style: GoogleFonts.spaceGrotesk(
+                                          fontSize: 9.5,
+                                          fontWeight: FontWeight.w800,
+                                          letterSpacing: 0.5,
+                                          color: isEquipped
+                                              ? Colors.black
+                                              : const Color(0xFFE5B5FF),
+                                        ),
+                                      ),
+                                    ],
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ),
+                        );
+                      },
+                    ),
+                  ),
+                ],
+              ),
+            );
+          },
+        );
+      },
     );
   }
 }

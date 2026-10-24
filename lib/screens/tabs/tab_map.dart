@@ -5,6 +5,7 @@ import 'package:geolocator/geolocator.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:intl/intl.dart';
 import 'package:latlong2/latlong.dart';
+import 'package:hive/hive.dart';
 import '../../services/hive_service.dart';
 import '../../services/supabase_service.dart';
 import '../../widgets/avatar_image.dart';
@@ -338,15 +339,21 @@ class _TabMapState extends State<TabMap> with SingleTickerProviderStateMixin {
 
     final newRank = _calculateRank(_currentExp + 50);
 
+    final session = HiveService.getSession();
+    final currentGold = (session['gold'] as int?) ?? _gold;
+    final updatedGold = currentGold + 100;
+
     setState(() {
       hasClaimed = true;
       _currentExp += 50;
-      _gold += 100;
+      _gold = updatedGold;
       _rank = newRank;
     });
 
+    // Simpan hasil raid ke Hive sessionBox agar real-time listener (Shop) langsung terpicu
+    Hive.box('sessionBox').put('gold', updatedGold);
+
     // Simpan hasil raid ke Hive & Supabase
-    final session = HiveService.getSession();
     final userId = session['userId']?.toString() ?? 'anonymous';
     final username = session['username']?.toString() ?? _hunterName;
 
@@ -355,7 +362,7 @@ class _TabMapState extends State<TabMap> with SingleTickerProviderStateMixin {
       username: username,
       rank: newRank,
       exp: _currentExp,
-      gold: _gold,
+      gold: updatedGold,
       hp: _currentHp,
     );
 

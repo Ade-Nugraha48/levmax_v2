@@ -22,6 +22,8 @@ class HiveService {
     int? gold,
     int? hp,
     String? avatarUrl,
+    List<String>? ownedTitles,
+    String? equippedTitle,
   }) async {
     final box = sessionBox;
     await box.put('isLoggedIn', true);
@@ -32,6 +34,16 @@ class HiveService {
     if (gold != null) await box.put('gold', gold);
     if (hp != null) await box.put('hp', hp);
     if (avatarUrl != null) await box.put('avatar_url', avatarUrl);
+    if (ownedTitles != null) {
+      await box.put('owned_titles', ownedTitles);
+    } else if (box.get('owned_titles') == null) {
+      await box.put('owned_titles', ['Hunter']);
+    }
+    if (equippedTitle != null) {
+      await box.put('equipped_title', equippedTitle);
+    } else if (box.get('equipped_title') == null) {
+      await box.put('equipped_title', 'Hunter');
+    }
   }
 
   /// Mengambil data sesi pengguna yang tersimpan saat ini
@@ -46,6 +58,8 @@ class HiveService {
       'gold': (box.get('gold', defaultValue: 0) as num).toInt(),
       'hp': (box.get('hp', defaultValue: 3) as num).toInt(),
       'avatar_url': box.get('avatar_url')?.toString(),
+      'owned_titles': getOwnedTitles(),
+      'equipped_title': getEquippedTitle(),
     };
   }
 
@@ -216,12 +230,13 @@ class HiveService {
   static Future<void> saveQuestsCount(int count) async {
     final box = sessionBox;
     await box.put('quests_done_count', count);
+    await box.put('total_quests_done', count);
   }
 
   /// Mengambil jumlah quest yang telah diselesaikan dari Hive
   static int? getQuestsCount() {
     final box = sessionBox;
-    final val = box.get('quests_done_count');
+    final val = box.get('total_quests_done') ?? box.get('quests_done_count');
     if (val is num) return val.toInt();
     return null;
   }
@@ -250,5 +265,51 @@ class HiveService {
     final val = box.get('completed_quests_today_count');
     if (val is num) return val.toInt();
     return 0;
+  }
+
+  /// Mengambil daftar title yang dimiliki oleh pengguna
+  static List<String> getOwnedTitles() {
+    final box = sessionBox;
+    final raw = box.get('owned_titles');
+    List<String> titles = [];
+    if (raw is List) {
+      titles = raw.map((e) => e.toString()).toList();
+    }
+    // Jika masih kosong (inisialisasi awal), isi dengan title default
+    if (titles.isEmpty) {
+      titles = ['Hunter'];
+      // Masukkan juga jika ada title yang tercatat di blockchainBox
+      final logs = getBlockchainLogs();
+      for (final log in logs) {
+        if (log['item'] != null) {
+          final item = log['item'].toString();
+          if (!titles.contains(item)) titles.add(item);
+        }
+      }
+      box.put('owned_titles', titles);
+    }
+    return titles;
+  }
+
+  /// Menambahkan title baru ke daftar kepemilikan
+  static Future<void> addOwnedTitle(String title) async {
+    final titles = getOwnedTitles();
+    if (!titles.contains(title)) {
+      titles.add(title);
+      await sessionBox.put('owned_titles', titles);
+    }
+  }
+
+  /// Mengambil title yang sedang aktif/dipasang (equipped)
+  static String getEquippedTitle() {
+    final box = sessionBox;
+    final title = box.get('equipped_title')?.toString();
+    if (title != null && title.isNotEmpty) return title;
+    return 'Hunter';
+  }
+
+  /// Menyimpan title yang sedang aktif/dipasang (equipped)
+  static Future<void> setEquippedTitle(String title) async {
+    await sessionBox.put('equipped_title', title);
   }
 }
