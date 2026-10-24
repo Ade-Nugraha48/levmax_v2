@@ -488,22 +488,39 @@ class _TabMapState extends State<TabMap> with SingleTickerProviderStateMixin {
               ),
 
               // Avatar Circle
-              Container(
-                width: 34,
-                height: 34,
-                decoration: BoxDecoration(
-                  shape: BoxShape.circle,
-                  color: const Color(0xFFB026FF),
-                  boxShadow: [
-                    BoxShadow(
-                      color: const Color(0xFFB026FF).withValues(alpha: 0.45),
-                      blurRadius: 10,
+              Builder(
+                builder: (context) {
+                  final avatarUrl = HiveService.getSession()['avatar_url']?.toString();
+                  return Container(
+                    width: 34,
+                    height: 34,
+                    decoration: BoxDecoration(
+                      shape: BoxShape.circle,
+                      color: const Color(0xFFB026FF),
+                      boxShadow: [
+                        BoxShadow(
+                          color: const Color(0xFFB026FF).withValues(alpha: 0.45),
+                          blurRadius: 10,
+                        ),
+                      ],
                     ),
-                  ],
-                ),
-                child: const Center(
-                  child: Icon(Icons.person_rounded, color: Colors.white, size: 20),
-                ),
+                    child: avatarUrl != null && avatarUrl.isNotEmpty
+                        ? ClipOval(
+                            child: Image.network(
+                              avatarUrl,
+                              width: 34,
+                              height: 34,
+                              fit: BoxFit.cover,
+                              errorBuilder: (context, error, stackTrace) => const Center(
+                                child: Icon(Icons.person, color: Colors.white, size: 20),
+                              ),
+                            ),
+                          )
+                        : const Center(
+                            child: Icon(Icons.person_rounded, color: Colors.white, size: 20),
+                          ),
+                  );
+                },
               ),
             ],
           ),

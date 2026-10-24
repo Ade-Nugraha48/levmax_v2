@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
+import '../../services/hive_service.dart';
 
 /// AppearanceQuestScreen
 /// Layar Protokol Penampilan (Solo Leveling HUD Aesthetic)
@@ -330,26 +331,47 @@ class _AppearanceQuestScreenState extends State<AppearanceQuestScreen> {
               const SizedBox(width: 8),
 
               // Avatar Profil bundar ungu muda
-              Container(
-                width: 34,
-                height: 34,
-                decoration: BoxDecoration(
-                  shape: BoxShape.circle,
-                  color: const Color(0xFFD8B4F8),
-                  boxShadow: [
-                    BoxShadow(
-                      color: const Color(0xFFB026FF).withValues(alpha: 0.4),
-                      blurRadius: 8,
+              Builder(
+                builder: (context) {
+                  final avatarUrl = HiveService.getSession()['avatar_url']?.toString();
+                  return Container(
+                    width: 34,
+                    height: 34,
+                    decoration: BoxDecoration(
+                      shape: BoxShape.circle,
+                      color: const Color(0xFFD8B4F8),
+                      boxShadow: [
+                        BoxShadow(
+                          color: const Color(0xFFB026FF).withValues(alpha: 0.4),
+                          blurRadius: 8,
+                        ),
+                      ],
                     ),
-                  ],
-                ),
-                child: const Center(
-                  child: Icon(
-                    Icons.person_rounded,
-                    size: 20,
-                    color: Color(0xFF1A1228),
-                  ),
-                ),
+                    child: avatarUrl != null && avatarUrl.isNotEmpty
+                        ? ClipOval(
+                            child: Image.network(
+                              avatarUrl,
+                              width: 34,
+                              height: 34,
+                              fit: BoxFit.cover,
+                              errorBuilder: (context, error, stackTrace) => const Center(
+                                child: Icon(
+                                  Icons.person_rounded,
+                                  size: 20,
+                                  color: Color(0xFF1A1228),
+                                ),
+                              ),
+                            ),
+                          )
+                        : const Center(
+                            child: Icon(
+                              Icons.person_rounded,
+                              size: 20,
+                              color: Color(0xFF1A1228),
+                            ),
+                          ),
+                  );
+                },
               ),
             ],
           ),

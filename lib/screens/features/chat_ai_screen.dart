@@ -680,26 +680,48 @@ class _ChatAiScreenState extends State<ChatAiScreen> {
           const SizedBox(width: 10),
 
           // Avatar User Kotak Ungu 40x40
-          Container(
-            width: 40,
-            height: 40,
-            decoration: BoxDecoration(
-              color: const Color(0xFFB026FF),
-              borderRadius: BorderRadius.circular(10),
-              boxShadow: [
-                BoxShadow(
-                  color: const Color(0xFFB026FF).withValues(alpha: 0.4),
-                  blurRadius: 10,
+          Builder(
+            builder: (context) {
+              final avatarUrl = HiveService.getSession()['avatar_url']?.toString();
+              return Container(
+                width: 40,
+                height: 40,
+                decoration: BoxDecoration(
+                  color: const Color(0xFFB026FF),
+                  borderRadius: BorderRadius.circular(10),
+                  boxShadow: [
+                    BoxShadow(
+                      color: const Color(0xFFB026FF).withValues(alpha: 0.4),
+                      blurRadius: 10,
+                    ),
+                  ],
                 ),
-              ],
-            ),
-            child: const Center(
-              child: Icon(
-                Icons.person_rounded,
-                color: Colors.white,
-                size: 22,
-              ),
-            ),
+                child: avatarUrl != null && avatarUrl.isNotEmpty
+                    ? ClipRRect(
+                        borderRadius: BorderRadius.circular(10),
+                        child: Image.network(
+                          avatarUrl,
+                          width: 40,
+                          height: 40,
+                          fit: BoxFit.cover,
+                          errorBuilder: (context, error, stackTrace) => const Center(
+                            child: Icon(
+                              Icons.person_rounded,
+                              color: Colors.white,
+                              size: 22,
+                            ),
+                          ),
+                        ),
+                      )
+                    : const Center(
+                        child: Icon(
+                          Icons.person_rounded,
+                          color: Colors.white,
+                          size: 22,
+                        ),
+                      ),
+              );
+            },
           ),
         ],
       ),

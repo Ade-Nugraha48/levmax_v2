@@ -26,6 +26,7 @@ class _TabHomeState extends State<TabHome> {
   int _currentHp = 3;
   final int _maxHp = 3;
   int _gold = 0;
+  String? _avatarUrl;
 
   // Real-time Server Clock
   Timer? _serverClockTimer;
@@ -70,6 +71,7 @@ class _TabHomeState extends State<TabHome> {
     if (loadedHp != null) {
       _currentHp = loadedHp;
     }
+    _avatarUrl = session['avatar_url']?.toString();
   }
 
   void _startServerClock() {
@@ -233,6 +235,9 @@ class _TabHomeState extends State<TabHome> {
 
   @override
   Widget build(BuildContext context) {
+    final session = HiveService.getSession();
+    _avatarUrl = session['avatar_url']?.toString() ?? _avatarUrl;
+
     return Scaffold(
       backgroundColor: const Color(0xFF16111E), // Deep Abyss Surface
       body: SafeArea(
@@ -414,13 +419,30 @@ class _TabHomeState extends State<TabHome> {
                         ),
                       ],
                     ),
-                    child: const Center(
-                      child: Icon(
-                        Icons.person_rounded,
-                        size: 28,
-                        color: Color(0xFFE5B5FF),
-                      ),
-                    ),
+                    child: _avatarUrl != null && _avatarUrl!.isNotEmpty
+                        ? ClipRRect(
+                            borderRadius: BorderRadius.circular(12),
+                            child: Image.network(
+                              _avatarUrl!,
+                              width: 50,
+                              height: 50,
+                              fit: BoxFit.cover,
+                              errorBuilder: (context, error, stackTrace) => const Center(
+                                child: Icon(
+                                  Icons.person_rounded,
+                                  size: 28,
+                                  color: Color(0xFFE5B5FF),
+                                ),
+                              ),
+                            ),
+                          )
+                        : const Center(
+                            child: Icon(
+                              Icons.person_rounded,
+                              size: 28,
+                              color: Color(0xFFE5B5FF),
+                            ),
+                          ),
                   ),
                   Positioned(
                     bottom: -3,

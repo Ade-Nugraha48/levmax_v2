@@ -18,6 +18,7 @@ class HiveService {
     int? exp,
     int? gold,
     int? hp,
+    String? avatarUrl,
   }) async {
     final box = sessionBox;
     await box.put('isLoggedIn', true);
@@ -27,6 +28,7 @@ class HiveService {
     if (exp != null) await box.put('exp', exp);
     if (gold != null) await box.put('gold', gold);
     if (hp != null) await box.put('hp', hp);
+    if (avatarUrl != null) await box.put('avatar_url', avatarUrl);
   }
 
   /// Mengambil data sesi pengguna yang tersimpan saat ini
@@ -40,7 +42,14 @@ class HiveService {
       'exp': (box.get('exp', defaultValue: 0) as num).toInt(),
       'gold': (box.get('gold', defaultValue: 0) as num).toInt(),
       'hp': (box.get('hp', defaultValue: 3) as num).toInt(),
+      'avatar_url': box.get('avatar_url')?.toString(),
     };
+  }
+
+  /// Menyimpan atau memperbarui avatarUrl ke sesi lokal
+  static Future<void> saveAvatarUrl(String url) async {
+    final box = sessionBox;
+    await box.put('avatar_url', url);
   }
 
   /// Menghapus sesi Hunter (Logout)

@@ -655,22 +655,39 @@ class _TabShopState extends State<TabShop> {
               ),
             ),
             const SizedBox(width: 8),
-            Container(
-              width: 32,
-              height: 32,
-              decoration: BoxDecoration(
-                shape: BoxShape.circle,
-                color: const Color(0xFFB026FF),
-                boxShadow: [
-                  BoxShadow(
-                    color: const Color(0xFFB026FF).withValues(alpha: 0.5),
-                    blurRadius: 10,
+            Builder(
+              builder: (context) {
+                final avatarUrl = HiveService.getSession()['avatar_url']?.toString();
+                return Container(
+                  width: 32,
+                  height: 32,
+                  decoration: BoxDecoration(
+                    shape: BoxShape.circle,
+                    color: const Color(0xFFB026FF),
+                    boxShadow: [
+                      BoxShadow(
+                        color: const Color(0xFFB026FF).withValues(alpha: 0.5),
+                        blurRadius: 10,
+                      ),
+                    ],
                   ),
-                ],
-              ),
-              child: const Center(
-                child: Icon(Icons.person_rounded, size: 18, color: Colors.white),
-              ),
+                  child: avatarUrl != null && avatarUrl.isNotEmpty
+                      ? ClipOval(
+                          child: Image.network(
+                            avatarUrl,
+                            width: 32,
+                            height: 32,
+                            fit: BoxFit.cover,
+                            errorBuilder: (context, error, stackTrace) => const Center(
+                              child: Icon(Icons.person, size: 18, color: Colors.white),
+                            ),
+                          ),
+                        )
+                      : const Center(
+                          child: Icon(Icons.person_rounded, size: 18, color: Colors.white),
+                        ),
+                );
+              },
             ),
           ],
         ),

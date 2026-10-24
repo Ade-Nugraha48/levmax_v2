@@ -1,5 +1,7 @@
+import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:image_picker/image_picker.dart';
 import '../../services/hive_service.dart';
 import '../../services/supabase_service.dart';
 import '../auth/login_screen.dart';
@@ -21,6 +23,8 @@ class _TabProfileState extends State<TabProfile> {
   String _rank = 'RANK S';
   int _gold = 650;
   int _exp = 2850;
+  String? _avatarUrl;
+  bool _isUploadingAvatar = false;
   int get _maxExp {
     if (_exp >= 2500) return 3000;
     if (_exp >= 1500) return 2500;
@@ -57,6 +61,7 @@ class _TabProfileState extends State<TabProfile> {
       _rank = session['rank']?.toString() ?? 'RANK S';
       _gold = (session['gold'] as int?) ?? 650;
       _exp = (session['exp'] as int?) ?? 2850;
+      _avatarUrl = session['avatar_url']?.toString();
     });
   }
 
@@ -218,6 +223,81 @@ class _TabProfileState extends State<TabProfile> {
     );
   }
 
+  /// 3. Upload & Update Avatar ke Supabase Storage & Hive
+  Future<void> _pickAndUploadAvatar() async {
+    try {
+      final picker = ImagePicker();
+      final picked = await picker.pickImage(
+        source: ImageSource.gallery,
+        maxWidth: 800,
+        maxHeight: 800,
+        imageQuality: 85,
+      );
+      if (picked == null) return;
+
+      setState(() {
+        _isUploadingAvatar = true;
+      });
+
+      final imageFile = File(picked.path);
+      final newUrl = await SupabaseService.uploadAvatar(imageFile, _userId);
+
+      if (newUrl != null) {
+        if (_userId != 'anonymous') {
+          await SupabaseService.updateAvatarUrl(
+            userId: _userId,
+            avatarUrl: newUrl,
+          );
+        }
+        await HiveService.saveAvatarUrl(newUrl);
+
+        if (!mounted) return;
+        setState(() {
+          _avatarUrl = newUrl;
+          _isUploadingAvatar = false;
+        });
+
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text(
+              'Avatar berhasil diperbarui!',
+              style: GoogleFonts.spaceGrotesk(color: Colors.white, fontWeight: FontWeight.bold),
+            ),
+            backgroundColor: const Color(0xFF00F4FE),
+          ),
+        );
+      } else {
+        if (!mounted) return;
+        setState(() {
+          _isUploadingAvatar = false;
+        });
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text(
+              'Gagal mengunggah avatar. Periksa koneksi internet Anda.',
+              style: GoogleFonts.spaceGrotesk(color: Colors.white, fontWeight: FontWeight.bold),
+            ),
+            backgroundColor: const Color(0xFF93000A),
+          ),
+        );
+      }
+    } catch (e) {
+      if (!mounted) return;
+      setState(() {
+        _isUploadingAvatar = false;
+      });
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text(
+            'Terjadi kesalahan: $e',
+            style: GoogleFonts.spaceGrotesk(color: Colors.white, fontWeight: FontWeight.bold),
+          ),
+          backgroundColor: const Color(0xFF93000A),
+        ),
+      );
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     // Dynamic sync with current session in Hive
@@ -227,6 +307,7 @@ class _TabProfileState extends State<TabProfile> {
     _rank = session['rank']?.toString() ?? _rank;
     _gold = (session['gold'] as int?) ?? _gold;
     _exp = (session['exp'] as int?) ?? _exp;
+    _avatarUrl = session['avatar_url']?.toString() ?? _avatarUrl;
 
     final double expProgress = (_exp / _maxExp).clamp(0.0, 1.0);
 
@@ -371,9 +452,21 @@ class _TabProfileState extends State<TabProfile> {
                   ),
                 ],
               ),
-              child: const Center(
-                child: Icon(Icons.person_rounded, size: 18, color: Colors.white),
-              ),
+              child: _avatarUrl != null && _avatarUrl!.isNotEmpty
+                  ? ClipOval(
+                      child: Image.network(
+                        _avatarUrl!,
+                        width: 32,
+                        height: 32,
+                        fit: BoxFit.cover,
+                        errorBuilder: (context, error, stackTrace) => const Center(
+                          child: Icon(Icons.person, size: 18, color: Colors.white),
+                        ),
+                      ),
+                    )
+                  : const Center(
+                      child: Icon(Icons.person, size: 18, color: Colors.white),
+                    ),
             ),
           ],
         ),
@@ -485,53 +578,111 @@ class _TabProfileState extends State<TabProfile> {
             child: Column(
               children: [
                 const SizedBox(height: 6),
-                // Concentric Avatar Box with Glowing Shield Sigil
+                // Concentric Avatar Box with Glowing Shield Sigil / Custom Avatar
                 Center(
-                  child: Container(
-                    width: 86,
-                    height: 86,
-                    decoration: BoxDecoration(
-                      shape: BoxShape.circle,
-                      gradient: const LinearGradient(
-                        colors: [Color(0xFFB026FF), Color(0xFF00F4FE)],
-                        begin: Alignment.topLeft,
-                        end: Alignment.bottomRight,
-                      ),
-                      boxShadow: [
-                        BoxShadow(
-                          color: const Color(0xFFB026FF).withValues(alpha: 0.5),
-                          blurRadius: 20,
-                        ),
-                        BoxShadow(
-                          color: const Color(0xFF00F4FE).withValues(alpha: 0.4),
-                          blurRadius: 16,
-                        ),
-                      ],
-                    ),
-                    padding: const EdgeInsets.all(2.5),
-                    child: Container(
-                      decoration: const BoxDecoration(
-                        shape: BoxShape.circle,
-                        color: Color(0xFF140D24),
-                      ),
-                      child: Center(
-                        child: Container(
-                          width: 58,
-                          height: 58,
+                  child: GestureDetector(
+                    onTap: _isUploadingAvatar ? null : _pickAndUploadAvatar,
+                    child: Stack(
+                      clipBehavior: Clip.none,
+                      children: [
+                        Container(
+                          width: 86,
+                          height: 86,
                           decoration: BoxDecoration(
-                            borderRadius: BorderRadius.circular(16),
-                            color: const Color(0xFF2D2736),
-                            border: Border.all(color: const Color(0xFF00F4FE).withValues(alpha: 0.6)),
+                            shape: BoxShape.circle,
+                            gradient: const LinearGradient(
+                              colors: [Color(0xFFB026FF), Color(0xFF00F4FE)],
+                              begin: Alignment.topLeft,
+                              end: Alignment.bottomRight,
+                            ),
+                            boxShadow: [
+                              BoxShadow(
+                                color: const Color(0xFFB026FF).withValues(alpha: 0.5),
+                                blurRadius: 20,
+                              ),
+                              BoxShadow(
+                                color: const Color(0xFF00F4FE).withValues(alpha: 0.4),
+                                blurRadius: 16,
+                              ),
+                            ],
                           ),
-                          child: const Center(
-                            child: Icon(
-                              Icons.shield_moon_rounded,
-                              size: 34,
-                              color: Color(0xFF00F4FE),
+                          padding: const EdgeInsets.all(2.5),
+                          child: Container(
+                            decoration: const BoxDecoration(
+                              shape: BoxShape.circle,
+                              color: Color(0xFF140D24),
+                            ),
+                            child: Center(
+                              child: Container(
+                                width: 58,
+                                height: 58,
+                                decoration: BoxDecoration(
+                                  borderRadius: BorderRadius.circular(16),
+                                  color: const Color(0xFF2D2736),
+                                  border: Border.all(color: const Color(0xFF00F4FE).withValues(alpha: 0.6)),
+                                ),
+                                child: _isUploadingAvatar
+                                    ? const Center(
+                                        child: SizedBox(
+                                          width: 24,
+                                          height: 24,
+                                          child: CircularProgressIndicator(
+                                            strokeWidth: 2.5,
+                                            color: Color(0xFF00F4FE),
+                                          ),
+                                        ),
+                                      )
+                                    : (_avatarUrl != null && _avatarUrl!.isNotEmpty)
+                                        ? ClipRRect(
+                                            borderRadius: BorderRadius.circular(15),
+                                            child: Image.network(
+                                              _avatarUrl!,
+                                              width: 58,
+                                              height: 58,
+                                              fit: BoxFit.cover,
+                                              errorBuilder: (context, error, stackTrace) => const Center(
+                                                child: Icon(
+                                                  Icons.person,
+                                                  size: 34,
+                                                  color: Color(0xFF00F4FE),
+                                                ),
+                                              ),
+                                            ),
+                                          )
+                                        : const Center(
+                                            child: Icon(
+                                              Icons.shield_moon_rounded,
+                                              size: 34,
+                                              color: Color(0xFF00F4FE),
+                                            ),
+                                          ),
+                              ),
                             ),
                           ),
                         ),
-                      ),
+                        Positioned(
+                          bottom: 0,
+                          right: 0,
+                          child: Container(
+                            padding: const EdgeInsets.all(5),
+                            decoration: BoxDecoration(
+                              color: const Color(0xFF00F4FE),
+                              shape: BoxShape.circle,
+                              boxShadow: [
+                                BoxShadow(
+                                  color: const Color(0xFF00F4FE).withValues(alpha: 0.6),
+                                  blurRadius: 8,
+                                ),
+                              ],
+                            ),
+                            child: const Icon(
+                              Icons.edit,
+                              size: 14,
+                              color: Colors.black,
+                            ),
+                          ),
+                        ),
+                      ],
                     ),
                   ),
                 ),
