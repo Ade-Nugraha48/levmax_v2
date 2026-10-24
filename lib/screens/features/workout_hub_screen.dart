@@ -505,79 +505,92 @@ class _WorkoutHubScreenState extends State<WorkoutHubScreen>
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
-          Row(
-            children: [
-              // Back Button
-              GestureDetector(
-                onTap: () => Navigator.pop(context),
-                child: Container(
-                  width: 40,
-                  height: 40,
-                  decoration: BoxDecoration(
-                    color: const Color(0xFF120D24),
-                    borderRadius: BorderRadius.circular(12),
-                    border: Border.all(
-                      color: const Color(0xFF383241),
-                      width: 1.0,
+          Expanded(
+            child: Row(
+              children: [
+                // Back Button
+                GestureDetector(
+                  onTap: () => Navigator.pop(context),
+                  child: Container(
+                    width: 40,
+                    height: 40,
+                    decoration: BoxDecoration(
+                      color: const Color(0xFF120D24),
+                      borderRadius: BorderRadius.circular(12),
+                      border: Border.all(
+                        color: const Color(0xFF383241),
+                        width: 1.0,
+                      ),
                     ),
-                  ),
-                  child: const Center(
-                    child: Icon(
-                      Icons.arrow_back_ios_new_rounded,
-                      color: Color(0xFFE9DEF2),
-                      size: 16,
+                    child: const Center(
+                      child: Icon(
+                        Icons.arrow_back_ios_new_rounded,
+                        color: Color(0xFFE9DEF2),
+                        size: 16,
+                      ),
                     ),
                   ),
                 ),
-              ),
-              const SizedBox(width: 12),
-              Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Row(
-                    mainAxisSize: MainAxisSize.min,
+                const SizedBox(width: 12),
+                Expanded(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      Container(
-                        width: 6,
-                        height: 6,
-                        decoration: const BoxDecoration(
-                          shape: BoxShape.circle,
-                          color: Color(0xFF00E5FF),
-                          boxShadow: [
-                            BoxShadow(
+                      Row(
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          Container(
+                            width: 6,
+                            height: 6,
+                            decoration: const BoxDecoration(
+                              shape: BoxShape.circle,
                               color: Color(0xFF00E5FF),
-                              blurRadius: 6,
-                              spreadRadius: 1,
+                              boxShadow: [
+                                BoxShadow(
+                                  color: Color(0xFF00E5FF),
+                                  blurRadius: 6,
+                                  spreadRadius: 1,
+                                ),
+                              ],
                             ),
-                          ],
-                        ),
+                          ),
+                          const SizedBox(width: 6),
+                          Flexible(
+                            child: Text(
+                              'PROTOCOL: QUEST HUB',
+                              softWrap: true,
+                              maxLines: 1,
+                              overflow: TextOverflow.ellipsis,
+                              style: GoogleFonts.spaceGrotesk(
+                                fontSize: 9.5,
+                                fontWeight: FontWeight.w700,
+                                letterSpacing: 1.2,
+                                color: const Color(0xFF00E5FF),
+                              ),
+                            ),
+                          ),
+                        ],
                       ),
-                      const SizedBox(width: 6),
+                      const SizedBox(height: 1),
                       Text(
-                        'PROTOCOL: QUEST HUB',
-                        style: GoogleFonts.spaceGrotesk(
-                          fontSize: 9.5,
-                          fontWeight: FontWeight.w700,
-                          letterSpacing: 1.2,
-                          color: const Color(0xFF00E5FF),
+                        'Workout Hub & Guide',
+                        softWrap: true,
+                        maxLines: 1,
+                        overflow: TextOverflow.ellipsis,
+                        style: GoogleFonts.sora(
+                          fontSize: 15,
+                          fontWeight: FontWeight.w800,
+                          letterSpacing: -0.2,
+                          color: const Color(0xFFE9DEF2),
                         ),
                       ),
                     ],
                   ),
-                  const SizedBox(height: 1),
-                  Text(
-                    'Workout Hub & Guide',
-                    style: GoogleFonts.sora(
-                      fontSize: 15,
-                      fontWeight: FontWeight.w800,
-                      letterSpacing: -0.2,
-                      color: const Color(0xFFE9DEF2),
-                    ),
-                  ),
-                ],
-              ),
-            ],
+                ),
+              ],
+            ),
           ),
+          const SizedBox(width: 10),
 
           // Avatar Profil Kanan
           Builder(
@@ -775,7 +788,8 @@ class _WorkoutHubScreenState extends State<WorkoutHubScreen>
                           Expanded(
                             child: Text(
                               protocol.tag,
-                              maxLines: 1,
+                              softWrap: true,
+                              maxLines: 2,
                               overflow: TextOverflow.ellipsis,
                               style: GoogleFonts.spaceGrotesk(
                                 fontSize: 9.5,
@@ -855,8 +869,11 @@ class _WorkoutHubScreenState extends State<WorkoutHubScreen>
                 const SizedBox(height: 8),
 
                 // Footer Bar dalam Visualizer: Muscle Activation Tag & Looping Rep
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                Wrap(
+                  spacing: 8,
+                  runSpacing: 6,
+                  alignment: WrapAlignment.spaceBetween,
+                  crossAxisAlignment: WrapCrossAlignment.center,
                   children: [
                     Container(
                       padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
@@ -882,6 +899,7 @@ class _WorkoutHubScreenState extends State<WorkoutHubScreen>
                           const SizedBox(width: 5),
                           Text(
                             protocol.activation,
+                            softWrap: true,
                             style: GoogleFonts.spaceGrotesk(
                               fontSize: 9,
                               fontWeight: FontWeight.w700,
@@ -935,59 +953,62 @@ class _WorkoutHubScreenState extends State<WorkoutHubScreen>
 
   /// 5. 4 Column Protocol Specs Infographic
   Widget _buildProtocolSpecsGrid(WorkoutProtocol protocol) {
-    return Row(
-      children: [
-        // Spec 1: TARGET
-        Expanded(
-          child: _buildSpecCard(
-            icon: Icons.flag_rounded,
-            iconColor: const Color(0xFF00E5FF),
-            label: 'TARGET',
-            value: '${protocol.targetReps} Reps',
-            subValue: '${protocol.sets} SETS',
-            subColor: const Color(0xFF00E5FF),
+    return IntrinsicHeight(
+      child: Row(
+        crossAxisAlignment: CrossAxisAlignment.stretch,
+        children: [
+          // Spec 1: TARGET
+          Expanded(
+            child: _buildSpecCard(
+              icon: Icons.flag_rounded,
+              iconColor: const Color(0xFF00E5FF),
+              label: 'TARGET',
+              value: '${protocol.targetReps} Reps',
+              subValue: '${protocol.sets} SETS',
+              subColor: const Color(0xFF00E5FF),
+            ),
           ),
-        ),
-        const SizedBox(width: 6),
+          const SizedBox(width: 6),
 
-        // Spec 2: MUSCLES
-        Expanded(
-          child: _buildSpecCard(
-            icon: Icons.sports_martial_arts_rounded,
-            iconColor: const Color(0xFFE5B5FF),
-            label: 'MUSCLES',
-            value: protocol.muscles,
-            subValue: protocol.musclesSub,
-            subColor: const Color(0xFFD2C1D7),
+          // Spec 2: MUSCLES
+          Expanded(
+            child: _buildSpecCard(
+              icon: Icons.sports_martial_arts_rounded,
+              iconColor: const Color(0xFFE5B5FF),
+              label: 'MUSCLES',
+              value: protocol.muscles,
+              subValue: protocol.musclesSub,
+              subColor: const Color(0xFFD2C1D7),
+            ),
           ),
-        ),
-        const SizedBox(width: 6),
+          const SizedBox(width: 6),
 
-        // Spec 3: BURN
-        Expanded(
-          child: _buildSpecCard(
-            icon: Icons.local_fire_department_rounded,
-            iconColor: const Color(0xFFFF7A85),
-            label: 'BURN',
-            value: '${protocol.burnKcal} KCAL',
-            subValue: 'MANA COST',
-            subColor: const Color(0xFFFF7A85),
+          // Spec 3: BURN
+          Expanded(
+            child: _buildSpecCard(
+              icon: Icons.local_fire_department_rounded,
+              iconColor: const Color(0xFFFF7A85),
+              label: 'BURN',
+              value: '${protocol.burnKcal} KCAL',
+              subValue: 'MANA COST',
+              subColor: const Color(0xFFFF7A85),
+            ),
           ),
-        ),
-        const SizedBox(width: 6),
+          const SizedBox(width: 6),
 
-        // Spec 4: REWARD
-        Expanded(
-          child: _buildSpecCard(
-            icon: Icons.military_tech_rounded,
-            iconColor: const Color(0xFFFFD166),
-            label: 'REWARD',
-            value: '+${protocol.expReward} EXP',
-            subValue: '+${protocol.goldReward} GOLD',
-            subColor: const Color(0xFFFFD166),
+          // Spec 4: REWARD
+          Expanded(
+            child: _buildSpecCard(
+              icon: Icons.military_tech_rounded,
+              iconColor: const Color(0xFFFFD166),
+              label: 'REWARD',
+              value: '+${protocol.expReward} EXP',
+              subValue: '+${protocol.goldReward} GOLD',
+              subColor: const Color(0xFFFFD166),
+            ),
           ),
-        ),
-      ],
+        ],
+      ),
     );
   }
 
@@ -1000,7 +1021,7 @@ class _WorkoutHubScreenState extends State<WorkoutHubScreen>
     required Color subColor,
   }) {
     return Container(
-      padding: const EdgeInsets.symmetric(vertical: 8, horizontal: 6),
+      padding: const EdgeInsets.symmetric(vertical: 8, horizontal: 4),
       decoration: BoxDecoration(
         color: const Color(0xFF120D24),
         borderRadius: BorderRadius.circular(12),
@@ -1010,10 +1031,10 @@ class _WorkoutHubScreenState extends State<WorkoutHubScreen>
         ),
       ),
       child: Column(
-        mainAxisSize: MainAxisSize.min,
+        mainAxisAlignment: MainAxisAlignment.center,
         children: [
           Icon(icon, size: 16, color: iconColor),
-          const SizedBox(height: 2),
+          const SizedBox(height: 3),
           Text(
             label,
             style: GoogleFonts.spaceGrotesk(
@@ -1023,25 +1044,34 @@ class _WorkoutHubScreenState extends State<WorkoutHubScreen>
               color: const Color(0xFF9B8BA1),
             ),
           ),
-          const SizedBox(height: 1),
-          Text(
-            value,
-            maxLines: 1,
-            overflow: TextOverflow.ellipsis,
-            style: GoogleFonts.sora(
-              fontSize: 11.5,
-              fontWeight: FontWeight.w800,
-              color: Colors.white,
+          const SizedBox(height: 2),
+          FittedBox(
+            fit: BoxFit.scaleDown,
+            alignment: Alignment.center,
+            child: Text(
+              value,
+              maxLines: 1,
+              textAlign: TextAlign.center,
+              style: GoogleFonts.sora(
+                fontSize: 11.0,
+                fontWeight: FontWeight.w800,
+                color: Colors.white,
+              ),
             ),
           ),
-          Text(
-            subValue,
-            maxLines: 1,
-            overflow: TextOverflow.ellipsis,
-            style: GoogleFonts.spaceGrotesk(
-              fontSize: 8.5,
-              fontWeight: FontWeight.w700,
-              color: subColor,
+          const SizedBox(height: 1),
+          FittedBox(
+            fit: BoxFit.scaleDown,
+            alignment: Alignment.center,
+            child: Text(
+              subValue,
+              maxLines: 1,
+              textAlign: TextAlign.center,
+              style: GoogleFonts.spaceGrotesk(
+                fontSize: 8.5,
+                fontWeight: FontWeight.w700,
+                color: subColor,
+              ),
             ),
           ),
         ],
@@ -1142,7 +1172,7 @@ class _WorkoutHubScreenState extends State<WorkoutHubScreen>
               crossAxisCount: 2,
               crossAxisSpacing: 8,
               mainAxisSpacing: 8,
-              childAspectRatio: 1.55,
+              childAspectRatio: 1.22,
             ),
             itemCount: protocol.checkpoints.length,
             itemBuilder: (context, index) {
@@ -1172,7 +1202,8 @@ class _WorkoutHubScreenState extends State<WorkoutHubScreen>
                         children: [
                           Text(
                             cp.title,
-                            maxLines: 1,
+                            softWrap: true,
+                            maxLines: 2,
                             overflow: TextOverflow.ellipsis,
                             style: GoogleFonts.spaceGrotesk(
                               fontSize: 10.5,
@@ -1184,6 +1215,7 @@ class _WorkoutHubScreenState extends State<WorkoutHubScreen>
                           Expanded(
                             child: Text(
                               cp.desc,
+                              softWrap: true,
                               maxLines: 3,
                               overflow: TextOverflow.ellipsis,
                               style: GoogleFonts.plusJakartaSans(
@@ -1254,6 +1286,7 @@ class _WorkoutHubScreenState extends State<WorkoutHubScreen>
               ),
             ),
             child: Row(
+              crossAxisAlignment: CrossAxisAlignment.center,
               children: [
                 const Icon(
                   Icons.cancel_rounded,
@@ -1264,6 +1297,9 @@ class _WorkoutHubScreenState extends State<WorkoutHubScreen>
                 Expanded(
                   child: Text(
                     protocol.mistake,
+                    softWrap: true,
+                    maxLines: 3,
+                    overflow: TextOverflow.ellipsis,
                     style: GoogleFonts.plusJakartaSans(
                       fontSize: 10.5,
                       fontWeight: FontWeight.w500,
@@ -1299,6 +1335,7 @@ class _WorkoutHubScreenState extends State<WorkoutHubScreen>
               ),
             ),
             child: Row(
+              crossAxisAlignment: CrossAxisAlignment.center,
               children: [
                 const Icon(
                   Icons.timer_outlined,
@@ -1309,6 +1346,9 @@ class _WorkoutHubScreenState extends State<WorkoutHubScreen>
                 Expanded(
                   child: Text(
                     protocol.cadence,
+                    softWrap: true,
+                    maxLines: 3,
+                    overflow: TextOverflow.ellipsis,
                     style: GoogleFonts.plusJakartaSans(
                       fontSize: 10.5,
                       fontWeight: FontWeight.w500,

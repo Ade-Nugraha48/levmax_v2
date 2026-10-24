@@ -785,7 +785,8 @@ class _AppearanceQuestScreenState extends State<AppearanceQuestScreen> {
                     // Judul Sub-Quest (Strikethrough jika checked)
                     Text(
                       item['title'] as String,
-                      maxLines: 1,
+                      softWrap: true,
+                      maxLines: 2,
                       overflow: TextOverflow.ellipsis,
                       style: GoogleFonts.sora(
                         fontSize: 13.5,
@@ -803,7 +804,8 @@ class _AppearanceQuestScreenState extends State<AppearanceQuestScreen> {
                     // Deskripsi Sub-Quest (Strikethrough jika checked)
                     Text(
                       item['desc'] as String,
-                      maxLines: 1,
+                      softWrap: true,
+                      maxLines: 2,
                       overflow: TextOverflow.ellipsis,
                       style: GoogleFonts.plusJakartaSans(
                         fontSize: 10,

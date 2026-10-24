@@ -1208,7 +1208,7 @@ class _TabHomeState extends State<TabHome> {
       'id': 'pushup',
       'title': 'Push Up (20 Reps)',
       'category': 'WORKOUT',
-      'desc': '20 Repetisi Terverifikasi Sensor Push-Up fisik',
+      'desc': 'Sensor Push-Up Fisik',
       'exp': 10,
       'gold': 5,
       'icon': Icons.fitness_center_rounded,
@@ -1223,7 +1223,7 @@ class _TabHomeState extends State<TabHome> {
       'id': 'situp',
       'title': 'Sit Up (20 Reps)',
       'category': 'WORKOUT',
-      'desc': '20 Repetisi Penguatan Otot Inti & Abdominal',
+      'desc': 'Penguatan Otot Inti',
       'exp': 10,
       'gold': 5,
       'icon': Icons.fitness_center_rounded,
@@ -1238,7 +1238,7 @@ class _TabHomeState extends State<TabHome> {
       'id': 'pullup',
       'title': 'Pull Up (10 Reps)',
       'category': 'WORKOUT',
-      'desc': '10 Repetisi Kekuatan Otot Punggung & Sayap Hunter',
+      'desc': 'Kekuatan Punggung Hunter',
       'exp': 15,
       'gold': 10,
       'icon': Icons.fitness_center_rounded,
@@ -1253,7 +1253,7 @@ class _TabHomeState extends State<TabHome> {
       'id': 'squat',
       'title': 'Squat (30 Reps)',
       'category': 'WORKOUT',
-      'desc': '30 Repetisi Ketahanan Kaki & Mobilitas Bawah',
+      'desc': 'Ketahanan Otot Kaki',
       'exp': 10,
       'gold': 5,
       'icon': Icons.fitness_center_rounded,
@@ -1268,7 +1268,7 @@ class _TabHomeState extends State<TabHome> {
       'id': 'cardio',
       'title': 'Cardio Distance Run',
       'category': 'CARDIO',
-      'desc': 'Target 2.0 KM via GPS Tracking radar hunter',
+      'desc': 'Target 2.0 KM Radar GPS',
       'exp': 20,
       'gold': 15,
       'icon': Icons.directions_run_rounded,
@@ -1281,9 +1281,9 @@ class _TabHomeState extends State<TabHome> {
     },
     {
       'id': 'appearance',
-      'title': 'Protokol Penampilan Hunter',
+      'title': 'Protokol Penampilan',
       'category': 'APPEARANCE',
-      'desc': '5 Tahap Skincare & Grooming Esensial Hunter',
+      'desc': '5 Tahap Grooming Hunter',
       'exp': 30,
       'gold': 20,
       'icon': Icons.face_retouching_natural_rounded,
@@ -1296,9 +1296,9 @@ class _TabHomeState extends State<TabHome> {
     },
     {
       'id': 'study_focus',
-      'title': 'Fokus 30 Menit / Baca Materi',
+      'title': 'Fokus Belajar (30 M)',
       'category': 'STUDY',
-      'desc': 'Fokus Belajar / Baca Materi 30 Menit tenang',
+      'desc': 'Fokus 30 Menit Tenang',
       'exp': 15,
       'gold': 10,
       'icon': Icons.menu_book_rounded,
@@ -1439,13 +1439,14 @@ class _TabHomeState extends State<TabHome> {
                     ),
                   ],
                 ),
-                padding: const EdgeInsets.all(12),
+                padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 10),
                 child: Row(
+                  crossAxisAlignment: CrossAxisAlignment.center,
                   children: [
-                    // Icon Kategori di Kiri
+                    // Icon Kategori di Kiri (40x40)
                     Container(
-                      width: 44,
-                      height: 44,
+                      width: 40,
+                      height: 40,
                       decoration: BoxDecoration(
                         color: isDone ? const Color(0xFF1A1524) : (q['iconBg'] as Color),
                         borderRadius: BorderRadius.circular(10),
@@ -1453,32 +1454,36 @@ class _TabHomeState extends State<TabHome> {
                       child: Icon(
                         q['icon'] as IconData,
                         color: isDone ? const Color(0xFF6B6178) : (q['iconColor'] as Color),
-                        size: 22,
+                        size: 20,
                       ),
                     ),
 
-                    const SizedBox(width: 10),
+                    const SizedBox(width: 9),
 
-                    // Judul & Info di Tengah
+                    // Judul & Info di Tengah (2 Baris Seragam)
                     Expanded(
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
+                        mainAxisSize: MainAxisSize.min,
                         children: [
                           Text(
                             q['title'] as String,
-                            maxLines: 1,
+                            softWrap: true,
+                            maxLines: 3,
                             overflow: TextOverflow.ellipsis,
                             style: GoogleFonts.sora(
-                              fontSize: 13.5,
+                              fontSize: 12.8,
                               fontWeight: FontWeight.w700,
                               color: isDone ? const Color(0xFF7E728C) : const Color(0xFFE9DEF2),
                             ),
                           ),
-                          const SizedBox(height: 3),
+                          const SizedBox(height: 4),
                           Row(
+                            crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
                               Container(
-                                padding: const EdgeInsets.symmetric(horizontal: 5, vertical: 1.5),
+                                margin: const EdgeInsets.only(top: 1),
+                                padding: const EdgeInsets.symmetric(horizontal: 5, vertical: 2),
                                 decoration: BoxDecoration(
                                   color: isDone ? const Color(0xFF1F1A28) : const Color(0xFF2D164D),
                                   borderRadius: BorderRadius.circular(4),
@@ -1496,10 +1501,12 @@ class _TabHomeState extends State<TabHome> {
                               Expanded(
                                 child: Text(
                                   q['desc'] as String,
-                                  maxLines: 1,
+                                  softWrap: true,
+                                  maxLines: 3,
                                   overflow: TextOverflow.ellipsis,
                                   style: GoogleFonts.plusJakartaSans(
-                                    fontSize: 10,
+                                    fontSize: 9.8,
+                                    fontWeight: FontWeight.w500,
                                     color: isDone ? const Color(0xFF635870) : const Color(0xFF9B8BA1),
                                   ),
                                 ),
@@ -1515,6 +1522,7 @@ class _TabHomeState extends State<TabHome> {
                     // Reward & Tombol Eksekusi di Kanan
                     Column(
                       crossAxisAlignment: CrossAxisAlignment.end,
+                      mainAxisSize: MainAxisSize.min,
                       children: [
                         Row(
                           mainAxisSize: MainAxisSize.min,
@@ -1543,8 +1551,8 @@ class _TabHomeState extends State<TabHome> {
                           borderRadius: BorderRadius.circular(8),
                           onTap: isDone ? null : () => handleQuestAction(q),
                           child: Container(
-                            width: 102,
-                            height: 32,
+                            width: 82,
+                            height: 28,
                             decoration: BoxDecoration(
                               color: isDone
                                   ? const Color(0xFF201B28)
@@ -1582,16 +1590,16 @@ class _TabHomeState extends State<TabHome> {
                                       : (q['isActionCyan'] == true
                                           ? Icons.navigation_rounded
                                           : Icons.bolt_rounded),
-                                  size: 13,
+                                  size: 12,
                                   color: isDone ? const Color(0xFF8B8097) : q['btnTextColor'] as Color,
                                 ),
-                                const SizedBox(width: 4),
+                                const SizedBox(width: 3),
                                 Text(
                                   isDone ? 'COMPLETED' : q['btnText'] as String,
                                   style: GoogleFonts.spaceGrotesk(
-                                    fontSize: 9.5,
+                                    fontSize: 9.0,
                                     fontWeight: FontWeight.w800,
-                                    letterSpacing: 0.4,
+                                    letterSpacing: 0.3,
                                     color: isDone ? const Color(0xFF8B8097) : q['btnTextColor'] as Color,
                                   ),
                                 ),
