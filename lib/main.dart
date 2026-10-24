@@ -31,7 +31,7 @@ Future<void> main() async {
 
   runApp(const LevMaxApp());
 }
-
+//
 /// Root Widget LevMax dengan Tema Solo Leveling Dark-Purple
 class LevMaxApp extends StatelessWidget {
   const LevMaxApp({super.key});
