@@ -10,13 +10,24 @@ import '../../services/supabase_service.dart';
 /// Layar Cardio Shake Protocol berbasis sensor Accelerometer murni.
 /// Mengadopsi visual cyberpunk HUD Solo Leveling 1:1 persis desain Stitch.
 class QuestSensorScreen extends StatefulWidget {
-  const QuestSensorScreen({super.key});
+  final String? currentRank;
+
+  const QuestSensorScreen({
+    super.key,
+    this.currentRank,
+  });
 
   @override
   State<QuestSensorScreen> createState() => _QuestSensorScreenState();
 }
 
 class _QuestSensorScreenState extends State<QuestSensorScreen> {
+  String get _displayRank {
+    final raw = widget.currentRank ?? HiveService.getSession()['rank']?.toString();
+    if (raw == null || raw.trim().isEmpty) return 'F';
+    final clean = raw.replaceAll(RegExp(r'^Rank\s*', caseSensitive: false), '').trim();
+    return clean.isEmpty ? 'F' : clean;
+  }
   // 1. Subscription Accelerometer (Wajib dibatalkan di dispose untuk mencegah memory leak)
   StreamSubscription<AccelerometerEvent>? _accelerometerSubscription;
 
@@ -458,7 +469,7 @@ class _QuestSensorScreenState extends State<QuestSensorScreen> {
                     ),
                     const SizedBox(width: 2),
                     Text(
-                      'RANK: S',
+                      'RANK: $_displayRank',
                       style: GoogleFonts.spaceGrotesk(
                         fontSize: 9.5,
                         fontWeight: FontWeight.w800,

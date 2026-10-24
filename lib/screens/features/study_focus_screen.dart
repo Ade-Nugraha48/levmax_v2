@@ -1,18 +1,30 @@
 import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
+import '../../services/hive_service.dart';
 
 /// StudyFocusScreen
 /// Layar Mana Knowledge Focus (Study Protocol) bertema Solo Leveling Intelligence Protocol.
 /// Menyediakan Timer Pomodoro 30 menit dengan kalkulasi EXP dan Gold reward.
 class StudyFocusScreen extends StatefulWidget {
-  const StudyFocusScreen({super.key});
+  final String? currentRank;
+
+  const StudyFocusScreen({
+    super.key,
+    this.currentRank,
+  });
 
   @override
   State<StudyFocusScreen> createState() => _StudyFocusScreenState();
 }
 
 class _StudyFocusScreenState extends State<StudyFocusScreen> with SingleTickerProviderStateMixin {
+  String get _displayRank {
+    final raw = widget.currentRank ?? HiveService.getSession()['rank']?.toString();
+    if (raw == null || raw.trim().isEmpty) return 'F';
+    final clean = raw.replaceAll(RegExp(r'^Rank\s*', caseSensitive: false), '').trim();
+    return clean.isEmpty ? 'F' : clean;
+  }
   // 1. State Timer
   int remainingSeconds = 1800; // 30 Menit (1800 detik)
   bool isRunning = false;
@@ -310,7 +322,7 @@ class _StudyFocusScreenState extends State<StudyFocusScreen> with SingleTickerPr
                     ],
                   ),
                   child: Text(
-                    'S',
+                    _displayRank,
                     style: GoogleFonts.spaceGrotesk(
                       fontSize: 10,
                       fontWeight: FontWeight.w900,

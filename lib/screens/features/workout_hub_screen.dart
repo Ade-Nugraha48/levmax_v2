@@ -1,6 +1,7 @@
 import 'dart:math';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
+import '../../services/hive_service.dart';
 
 /// Model Checklist Standar Akurasi Biomekanik Hunter
 class FormCheckpoint {
@@ -59,10 +60,12 @@ class WorkoutProtocol {
 /// (Push Up, Pull Up, Sit Up, Squat) berbasis CustomPaint dan state lokal murni.
 class WorkoutHubScreen extends StatefulWidget {
   final String initialExercise;
+  final String? currentRank;
 
   const WorkoutHubScreen({
     super.key,
     this.initialExercise = 'pushup',
+    this.currentRank,
   });
 
   @override
@@ -71,6 +74,13 @@ class WorkoutHubScreen extends StatefulWidget {
 
 class _WorkoutHubScreenState extends State<WorkoutHubScreen>
     with SingleTickerProviderStateMixin {
+  String get _displayRank {
+    final raw = widget.currentRank ?? HiveService.getSession()['rank']?.toString();
+    if (raw == null || raw.trim().isEmpty) return 'F';
+    final clean = raw.replaceAll(RegExp(r'^Rank\s*', caseSensitive: false), '').trim();
+    return clean.isEmpty ? 'F' : clean;
+  }
+
   // 1. Database Protokol Latihan (Translasi Javascript protocolsData dari Stitch HTML)
   static final Map<String, WorkoutProtocol> _protocolsData = {
     'pushup': const WorkoutProtocol(
@@ -642,7 +652,7 @@ class _WorkoutHubScreenState extends State<WorkoutHubScreen>
               ),
               const SizedBox(width: 4),
               Text(
-                'RANK: E AWAKENING',
+                'RANK: $_displayRank',
                 style: GoogleFonts.spaceGrotesk(
                   fontSize: 9,
                   fontWeight: FontWeight.w800,

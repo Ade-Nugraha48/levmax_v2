@@ -1,18 +1,30 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
+import '../../services/hive_service.dart';
 
 /// AppearanceQuestScreen
 /// Layar Protokol Penampilan (Solo Leveling HUD Aesthetic)
 /// Mengimplementasikan 5 Sub-Quest harian dengan validasi state dinamis
 /// serta desain visual 1:1 persis referensi visual Solo Leveling / Stitch.
 class AppearanceQuestScreen extends StatefulWidget {
-  const AppearanceQuestScreen({super.key});
+  final String? currentRank;
+
+  const AppearanceQuestScreen({
+    super.key,
+    this.currentRank,
+  });
 
   @override
   State<AppearanceQuestScreen> createState() => _AppearanceQuestScreenState();
 }
 
 class _AppearanceQuestScreenState extends State<AppearanceQuestScreen> {
+  String get _displayRank {
+    final raw = widget.currentRank ?? HiveService.getSession()['rank']?.toString();
+    if (raw == null || raw.trim().isEmpty) return 'F';
+    final clean = raw.replaceAll(RegExp(r'^Rank\s*', caseSensitive: false), '').trim();
+    return clean.isEmpty ? 'F' : clean;
+  }
   // 5 Variabel boolean state untuk masing-masing fase sub-quest
   bool isPhase1Done = false;
   bool isPhase2Done = false;
@@ -316,7 +328,7 @@ class _AppearanceQuestScreenState extends State<AppearanceQuestScreen> {
                     ),
                     const SizedBox(width: 2),
                     Text(
-                      'RANK: S',
+                      'RANK: $_displayRank',
                       style: GoogleFonts.spaceGrotesk(
                         fontSize: 9.5,
                         fontWeight: FontWeight.w800,

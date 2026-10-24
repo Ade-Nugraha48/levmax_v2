@@ -70,8 +70,8 @@ class QuestModel {
       goldReward: 20,
     ),
     QuestModel(
-      id: 'mana_focus',
-      title: 'Mana Knowledge Focus',
+      id: 'study_focus',
+      title: 'Fokus 30 Menit / Baca Materi',
       category: 'STUDY',
       expReward: 15,
       goldReward: 10,

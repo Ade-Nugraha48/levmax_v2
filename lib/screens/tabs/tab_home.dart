@@ -22,6 +22,10 @@ class _TabHomeState extends State<TabHome> {
   // Statis dummy data awal, akan dimutakhirkan dari HiveService
   String _hunterName = 'hunter_sung';
   String _rank = 'Rank F';
+  String get _currentRankLetter {
+    final clean = _rank.replaceAll(RegExp(r'^Rank\s*', caseSensitive: false), '').trim();
+    return clean.isEmpty ? 'F' : clean;
+  }
   int _currentExp = 25;
   int _currentHp = 3;
   final int _maxHp = 3;
@@ -839,7 +843,7 @@ class _TabHomeState extends State<TabHome> {
 
   /// 4. Search Bar & Category Chips
   Widget _buildSearchAndFilters() {
-    final categories = ['ALL', 'WORKOUT', 'CARDIO', 'STUDY', 'APPEARANCE', 'MANA'];
+    final categories = ['ALL', 'WORKOUT', 'CARDIO', 'STUDY', 'APPEARANCE'];
 
     return Column(
       children: [
@@ -1081,8 +1085,8 @@ class _TabHomeState extends State<TabHome> {
       'isActionCyan': true,
     },
     {
-      'id': 'mana_focus',
-      'title': 'Mana Knowledge Focus',
+      'id': 'study_focus',
+      'title': 'Fokus 30 Menit / Baca Materi',
       'category': 'STUDY',
       'desc': 'Fokus Belajar / Baca Materi 30 Menit tenang',
       'exp': 15,
@@ -1121,7 +1125,10 @@ class _TabHomeState extends State<TabHome> {
           clipBehavior: Clip.antiAlias,
           builder: (context) => FractionallySizedBox(
             heightFactor: 0.95,
-            child: WorkoutHubScreen(initialExercise: qId),
+            child: WorkoutHubScreen(
+              initialExercise: qId,
+              currentRank: _currentRankLetter,
+            ),
           ),
         );
         if (result != null) {
@@ -1137,7 +1144,9 @@ class _TabHomeState extends State<TabHome> {
         final result = await Navigator.push<bool>(
           context,
           MaterialPageRoute(
-            builder: (context) => const AppearanceQuestScreen(),
+            builder: (context) => AppearanceQuestScreen(
+              currentRank: _currentRankLetter,
+            ),
           ),
         );
         if (result == true) {
@@ -1147,17 +1156,21 @@ class _TabHomeState extends State<TabHome> {
         final result = await Navigator.push<bool>(
           context,
           MaterialPageRoute(
-            builder: (context) => const QuestSensorScreen(),
+            builder: (context) => QuestSensorScreen(
+              currentRank: _currentRankLetter,
+            ),
           ),
         );
         if (result == true) {
           completeQuest(20, 15, qId, q['title'] as String);
         }
-      } else if (qId == 'mana_focus') {
+      } else if (qId == 'study_focus' || qId == 'mana_focus') {
         final result = await Navigator.push<Map<String, dynamic>>(
           context,
           MaterialPageRoute(
-            builder: (context) => const StudyFocusScreen(),
+            builder: (context) => StudyFocusScreen(
+              currentRank: _currentRankLetter,
+            ),
           ),
         );
         if (result != null) {
@@ -1181,8 +1194,7 @@ class _TabHomeState extends State<TabHome> {
     // Filter berdasarkan Kategori & Pencarian
     final filteredQuests = quests.where((q) {
       final matchesCategory = _selectedCategory == 'ALL' ||
-          q['category'] == _selectedCategory ||
-          (_selectedCategory == 'MANA' && q['category'] == 'STUDY');
+          q['category'] == _selectedCategory;
       final matchesSearch = searchQuery.isEmpty ||
           (q['title'] as String).toLowerCase().contains(searchQuery) ||
           (q['desc'] as String).toLowerCase().contains(searchQuery);
