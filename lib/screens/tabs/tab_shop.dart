@@ -4,6 +4,7 @@ import 'package:intl/intl.dart';
 import '../../services/hash_service.dart';
 import '../../services/hive_service.dart';
 import '../../services/supabase_service.dart';
+import '../../widgets/avatar_image.dart';
 
 /// Tab 4: Hunter Exchange & Blockchain Store (TabShop)
 /// Desain bertema Solo Leveling Monarch System mengadopsi 1:1 Stitch UI
@@ -83,8 +84,16 @@ class _TabShopState extends State<TabShop> {
       return;
     }
 
-    // 2. Cek apakah Gold user mencukupi
-    if (_gold < price) {
+    // 2. Cek apakah Gold user mencukupi berdasarkan sesi terbaru
+    final session = HiveService.getSession();
+    _userId = session['userId']?.toString() ?? _userId;
+    _username = session['username']?.toString() ?? _username;
+    final int currentGold = (session['gold'] as int?) ?? _gold;
+    final int currentExp = (session['exp'] as int?) ?? _exp;
+    final String currentRank = session['rank']?.toString() ?? _rank;
+    final int currentHp = (session['hp'] as int?) ?? _hp;
+
+    if (currentGold < price) {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
           content: Row(
@@ -93,7 +102,7 @@ class _TabShopState extends State<TabShop> {
               const SizedBox(width: 8),
               Expanded(
                 child: Text(
-                  'Gold tidak mencukupi! Dibutuhkan $price Gold (Milikmu: $_gold G).',
+                  'Gold tidak mencukupi! Dibutuhkan $price Gold (Milikmu: $currentGold G).',
                   style: GoogleFonts.spaceGrotesk(color: Colors.white, fontWeight: FontWeight.w600),
                 ),
               ),
@@ -128,25 +137,29 @@ class _TabShopState extends State<TabShop> {
     );
 
     // 4. Update Gold lokal & sesi Hive
+    final int newGold = currentGold - price;
     setState(() {
-      _gold -= price;
+      _gold = newGold;
+      _exp = currentExp;
+      _rank = currentRank;
+      _hp = currentHp;
       _ownedTitles.add(itemName);
     });
 
     await HiveService.saveSession(
       userId: _userId,
       username: _username,
-      rank: _rank,
-      exp: _exp,
-      gold: _gold,
-      hp: _hp,
+      rank: currentRank,
+      exp: currentExp,
+      gold: newGold,
+      hp: currentHp,
     );
 
     // Sinkronisasi ke Supabase jika bukan anonymous
     if (_userId != 'anonymous') {
       await SupabaseService.updateUserStats(
         userId: _userId,
-        gold: _gold,
+        gold: newGold,
       );
     }
 
@@ -483,7 +496,9 @@ class _TabShopState extends State<TabShop> {
     _userId = session['userId']?.toString() ?? _userId;
     _username = session['username']?.toString() ?? _username;
     _gold = (session['gold'] as int?) ?? _gold;
+    _exp = (session['exp'] as int?) ?? _exp;
     _rank = session['rank']?.toString() ?? _rank;
+    _hp = (session['hp'] as int?) ?? _hp;
 
     return Scaffold(
       backgroundColor: const Color(0xFF16111E),
@@ -655,22 +670,31 @@ class _TabShopState extends State<TabShop> {
               ),
             ),
             const SizedBox(width: 8),
-            Container(
-              width: 32,
-              height: 32,
-              decoration: BoxDecoration(
-                shape: BoxShape.circle,
-                color: const Color(0xFFB026FF),
-                boxShadow: [
-                  BoxShadow(
-                    color: const Color(0xFFB026FF).withValues(alpha: 0.5),
-                    blurRadius: 10,
+            Builder(
+              builder: (context) {
+                final avatarUrl = HiveService.getSession()['avatar_url']?.toString();
+                return Container(
+                  width: 32,
+                  height: 32,
+                  decoration: BoxDecoration(
+                    shape: BoxShape.circle,
+                    color: const Color(0xFFB026FF),
+                    boxShadow: [
+                      BoxShadow(
+                        color: const Color(0xFFB026FF).withValues(alpha: 0.5),
+                        blurRadius: 10,
+                      ),
+                    ],
                   ),
-                ],
-              ),
-              child: const Center(
-                child: Icon(Icons.person_rounded, size: 18, color: Colors.white),
-              ),
+                  child: HunterAvatar(
+                    avatarUrl: avatarUrl,
+                    size: 32,
+                    fallback: const Center(
+                      child: Icon(Icons.person, size: 18, color: Colors.white),
+                    ),
+                  ),
+                );
+              },
             ),
           ],
         ),

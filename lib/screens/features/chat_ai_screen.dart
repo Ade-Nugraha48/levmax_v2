@@ -5,6 +5,7 @@ import 'package:google_fonts/google_fonts.dart';
 import 'package:image_picker/image_picker.dart';
 import '../../services/gemini_service.dart';
 import '../../services/hive_service.dart';
+import '../../widgets/avatar_image.dart';
 
 /// ChatAiScreen
 /// Layar percakapan System Guide (AI Chat) bergaya Solo Leveling Monarch System.
@@ -680,26 +681,36 @@ class _ChatAiScreenState extends State<ChatAiScreen> {
           const SizedBox(width: 10),
 
           // Avatar User Kotak Ungu 40x40
-          Container(
-            width: 40,
-            height: 40,
-            decoration: BoxDecoration(
-              color: const Color(0xFFB026FF),
-              borderRadius: BorderRadius.circular(10),
-              boxShadow: [
-                BoxShadow(
-                  color: const Color(0xFFB026FF).withValues(alpha: 0.4),
-                  blurRadius: 10,
+          Builder(
+            builder: (context) {
+              final avatarUrl = HiveService.getSession()['avatar_url']?.toString();
+              return Container(
+                width: 40,
+                height: 40,
+                decoration: BoxDecoration(
+                  color: const Color(0xFFB026FF),
+                  borderRadius: BorderRadius.circular(10),
+                  boxShadow: [
+                    BoxShadow(
+                      color: const Color(0xFFB026FF).withValues(alpha: 0.4),
+                      blurRadius: 10,
+                    ),
+                  ],
                 ),
-              ],
-            ),
-            child: const Center(
-              child: Icon(
-                Icons.person_rounded,
-                color: Colors.white,
-                size: 22,
-              ),
-            ),
+                child: HunterAvatar(
+                  avatarUrl: avatarUrl,
+                  size: 40,
+                  borderRadius: BorderRadius.circular(10),
+                  fallback: const Center(
+                    child: Icon(
+                      Icons.person_rounded,
+                      color: Colors.white,
+                      size: 22,
+                    ),
+                  ),
+                ),
+              );
+            },
           ),
         ],
       ),

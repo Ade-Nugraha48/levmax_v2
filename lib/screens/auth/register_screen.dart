@@ -1,6 +1,9 @@
+import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:image_picker/image_picker.dart';
 import '../../services/hash_service.dart';
+import '../../services/hive_service.dart';
 import '../../services/supabase_service.dart';
 import '../../utils/constants.dart';
 
@@ -19,6 +22,9 @@ class _RegisterScreenState extends State<RegisterScreen> {
   bool _isConfirmObscure = true;
   bool _isLoading = false;
 
+  // State untuk Foto Profil Kustom
+  File? _selectedAvatar;
+
   // State untuk Toggle Biometrik (UI Visual)
   bool _fingerprintEnroll = true;
   bool _faceScanEnroll = false;
@@ -29,6 +35,25 @@ class _RegisterScreenState extends State<RegisterScreen> {
     _passwordController.dispose();
     _confirmPasswordController.dispose();
     super.dispose();
+  }
+
+  Future<void> _pickAvatar() async {
+    try {
+      final picker = ImagePicker();
+      final picked = await picker.pickImage(
+        source: ImageSource.gallery,
+        maxWidth: 800,
+        maxHeight: 800,
+        imageQuality: 85,
+      );
+      if (picked != null) {
+        setState(() {
+          _selectedAvatar = File(picked.path);
+        });
+      }
+    } catch (e) {
+      debugPrint('[RegisterAvatar] Error: $e');
+    }
   }
 
   Future<void> _handleRegister() async {
@@ -80,10 +105,26 @@ class _RegisterScreenState extends State<RegisterScreen> {
       );
 
       if (!mounted) return;
-      setState(() => _isLoading = false);
 
       if (result != null) {
-        // 3. Notifikasi SnackBar sukses dan kembali ke LoginScreen
+        final userId = result['id'].toString();
+
+        // 3. JIKA user memilih foto: upload ke Supabase bucket 'Avatar' lalu update tabel users
+        if (_selectedAvatar != null) {
+          final avatarUrl = await SupabaseService.uploadAvatar(_selectedAvatar!, userId);
+          if (avatarUrl != null) {
+            await SupabaseService.updateAvatarUrl(userId: userId, avatarUrl: avatarUrl);
+            await HiveService.saveAvatarUrl(avatarUrl);
+          } else {
+            // Simpan foto lokal ke Hive jika upload Supabase terkendala RLS
+            await HiveService.saveAvatarUrl(_selectedAvatar!.path);
+          }
+        }
+
+        if (!mounted) return;
+        setState(() => _isLoading = false);
+
+        // 4. Notifikasi SnackBar sukses dan kembali ke LoginScreen
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
             content: Text('Hunter $username berhasil terdaftar! Silakan login.'),
@@ -92,6 +133,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
         );
         Navigator.pop(context);
       } else {
+        setState(() => _isLoading = false);
         ScaffoldMessenger.of(context).showSnackBar(
           const SnackBar(
             content: Text('Registrasi gagal. Username mungkin sudah digunakan.'),
@@ -261,91 +303,111 @@ class _RegisterScreenState extends State<RegisterScreen> {
   Widget _buildHeader() {
     return Column(
       children: [
-        // Center Hunter Crest Avatar Badge with Glow & Rank Indicator
-        SizedBox(
-          width: 60,
-          height: 60,
-          child: Stack(
-            alignment: Alignment.center,
-            children: [
-              // Glow Backdrop
-              Container(
-                width: 54,
-                height: 54,
-                decoration: BoxDecoration(
-                  shape: BoxShape.circle,
-                  gradient: const RadialGradient(
-                    colors: [
-                      Color(0xFFB026FF),
-                      Color(0xFF00F4FE),
-                      Colors.transparent,
-                    ],
-                    stops: [0.2, 0.7, 1.0],
-                  ),
-                  boxShadow: [
-                    BoxShadow(
-                      color: const Color(0xFFB026FF).withValues(alpha: 0.45),
-                      blurRadius: 16,
-                      spreadRadius: 2,
-                    ),
-                  ],
-                ),
-              ),
-              // Outer Ring
-              Container(
-                width: 52,
-                height: 52,
-                decoration: const BoxDecoration(
-                  shape: BoxShape.circle,
-                  color: Color(0xFF2D2736),
-                ),
-                child: Center(
-                  child: Container(
-                    width: 42,
-                    height: 42,
-                    decoration: const BoxDecoration(
-                      shape: BoxShape.circle,
-                      color: Color(0xFF110C19),
-                    ),
-                    child: const Center(
-                      child: Icon(
-                        Icons.how_to_reg_rounded,
-                        color: Color(0xFFE5B5FF),
-                        size: 24,
-                      ),
-                    ),
-                  ),
-                ),
-              ),
-              // Rank: E Badge at bottom right
-              Positioned(
-                bottom: 0,
-                right: 0,
-                child: Container(
-                  padding: const EdgeInsets.symmetric(horizontal: 5, vertical: 1.5),
+        // Center Hunter Crest Avatar Picker with Purple Border & Camera Badge
+        GestureDetector(
+          onTap: _pickAvatar,
+          child: SizedBox(
+            width: 74,
+            height: 74,
+            child: Stack(
+              alignment: Alignment.center,
+              children: [
+                // Glow Backdrop
+                Container(
+                  width: 68,
+                  height: 68,
                   decoration: BoxDecoration(
-                    color: const Color(0xFFB026FF),
-                    borderRadius: BorderRadius.circular(999),
+                    shape: BoxShape.circle,
+                    gradient: const RadialGradient(
+                      colors: [
+                        Color(0xFFB026FF),
+                        Color(0xFF00F4FE),
+                        Colors.transparent,
+                      ],
+                      stops: [0.2, 0.7, 1.0],
+                    ),
                     boxShadow: [
                       BoxShadow(
-                        color: Colors.black.withValues(alpha: 0.5),
-                        blurRadius: 4,
-                        offset: const Offset(0, 2),
+                        color: const Color(0xFFB026FF).withValues(alpha: 0.45),
+                        blurRadius: 16,
+                        spreadRadius: 2,
                       ),
                     ],
                   ),
-                  child: Text(
-                    'RANK: E',
-                    style: GoogleFonts.spaceGrotesk(
-                      fontSize: 8,
-                      fontWeight: FontWeight.w700,
-                      letterSpacing: 0.4,
+                ),
+                // Outer Ring with Purple Border
+                Container(
+                  width: 64,
+                  height: 64,
+                  decoration: BoxDecoration(
+                    shape: BoxShape.circle,
+                    color: const Color(0xFF2D2736),
+                    border: Border.all(color: const Color(0xFFB026FF), width: 2.0),
+                  ),
+                  child: Center(
+                    child: Container(
+                      width: 52,
+                      height: 52,
+                      decoration: const BoxDecoration(
+                        shape: BoxShape.circle,
+                        color: Color(0xFF110C19),
+                      ),
+                      child: _selectedAvatar != null
+                          ? ClipOval(
+                              child: Image.file(
+                                _selectedAvatar!,
+                                width: 52,
+                                height: 52,
+                                fit: BoxFit.cover,
+                              ),
+                            )
+                          : const Center(
+                              child: Icon(
+                                Icons.add_a_photo_rounded,
+                                color: Color(0xFFE5B5FF),
+                                size: 24,
+                              ),
+                            ),
+                    ),
+                  ),
+                ),
+                // Camera Action Badge at bottom right
+                Positioned(
+                  bottom: 0,
+                  right: 0,
+                  child: Container(
+                    padding: const EdgeInsets.all(4),
+                    decoration: BoxDecoration(
+                      shape: BoxShape.circle,
+                      color: const Color(0xFFB026FF),
+                      border: Border.all(color: const Color(0xFF110C19), width: 1.5),
+                      boxShadow: [
+                        BoxShadow(
+                          color: Colors.black.withValues(alpha: 0.5),
+                          blurRadius: 4,
+                          offset: const Offset(0, 2),
+                        ),
+                      ],
+                    ),
+                    child: const Icon(
+                      Icons.camera_alt_rounded,
+                      size: 11,
                       color: Colors.white,
                     ),
                   ),
                 ),
-              ),
-            ],
+              ],
+            ),
+          ),
+        ),
+        const SizedBox(height: 6),
+        Text(
+          _selectedAvatar != null ? 'FOTO TERPILIH (KETUK UNTUK GANTI)' : 'PILIH FOTO PROFIL (OPSIONAL)',
+          style: GoogleFonts.spaceGrotesk(
+            fontSize: 8.5,
+            fontWeight: FontWeight.w700,
+            letterSpacing: 0.8,
+            color: const Color(0xFFDCB8FC),
           ),
         ),
 

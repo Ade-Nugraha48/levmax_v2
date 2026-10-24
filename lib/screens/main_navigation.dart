@@ -16,6 +16,14 @@ class MainNavigation extends StatefulWidget {
 class _MainNavigationState extends State<MainNavigation> {
   int _currentIndex = 0;
 
+  void _switchTab(int index) {
+    if (mounted) {
+      setState(() {
+        _currentIndex = index;
+      });
+    }
+  }
+
   // 5 Tab Screens disiapkan dengan IndexedStack agar state tidak reload
   late final List<Widget> _tabs;
 
@@ -23,7 +31,9 @@ class _MainNavigationState extends State<MainNavigation> {
   void initState() {
     super.initState();
     _tabs = [
-      const TabHome(),
+      TabHome(
+        onNavigateToDungeon: () => _switchTab(1),
+      ),
       const TabMap(),
       const TabGame(),
       const TabShop(),

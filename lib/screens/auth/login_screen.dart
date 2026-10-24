@@ -115,6 +115,7 @@ class _LoginScreenState extends State<LoginScreen> {
           exp: (user['exp'] as num?)?.toInt() ?? 0,
           gold: (user['gold'] as num?)?.toInt() ?? 0,
           hp: (user['hp'] as num?)?.toInt() ?? 3,
+          avatarUrl: user['avatar_url']?.toString(),
         );
 
         if (!mounted) return;

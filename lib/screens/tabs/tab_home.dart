@@ -9,16 +9,26 @@ import '../features/appearance_quest_screen.dart';
 import '../features/chat_ai_screen.dart';
 import '../features/quest_sensor.dart';
 import '../features/study_focus_screen.dart';
+import 'package:geolocator/geolocator.dart';
+import 'package:latlong2/latlong.dart';
 import '../features/workout_hub_screen.dart';
+import '../../widgets/avatar_image.dart';
 
 class TabHome extends StatefulWidget {
-  const TabHome({super.key});
+  final VoidCallback? onNavigateToDungeon;
+
+  const TabHome({super.key, this.onNavigateToDungeon});
 
   @override
   State<TabHome> createState() => _TabHomeState();
 }
 
 class _TabHomeState extends State<TabHome> {
+  // Gate Dungeon Target & Jarak Real-Time (UPN Veteran Yogyakarta)
+  static const LatLng _dungeonGate = LatLng(-7.7613, 110.4090);
+  double? _gateDistance;
+  StreamSubscription<Position>? _homePositionSubscription;
+
   // Statis dummy data awal, akan dimutakhirkan dari HiveService
   String _hunterName = 'hunter_sung';
   String _rank = 'Rank F';
@@ -30,6 +40,7 @@ class _TabHomeState extends State<TabHome> {
   int _currentHp = 3;
   final int _maxHp = 3;
   int _gold = 0;
+  String? _avatarUrl;
 
   // Real-time Server Clock
   Timer? _serverClockTimer;
@@ -53,6 +64,54 @@ class _TabHomeState extends State<TabHome> {
     _loadLocalQuestStatus();
     _syncQuestsFromSupabase();
     _startServerClock();
+    _initDungeonGateDistance();
+  }
+
+  Future<void> _initDungeonGateDistance() async {
+    try {
+      final lastKnown = await Geolocator.getLastKnownPosition();
+      if (lastKnown != null && mounted) {
+        final d = Geolocator.distanceBetween(
+          lastKnown.latitude,
+          lastKnown.longitude,
+          _dungeonGate.latitude,
+          _dungeonGate.longitude,
+        );
+        setState(() {
+          _gateDistance = d;
+        });
+      }
+
+      final permission = await Geolocator.checkPermission();
+      if (permission == LocationPermission.always || permission == LocationPermission.whileInUse) {
+        _homePositionSubscription = Geolocator.getPositionStream(
+          locationSettings: const LocationSettings(
+            accuracy: LocationAccuracy.medium,
+            distanceFilter: 5,
+          ),
+        ).listen((pos) {
+          if (mounted) {
+            final d = Geolocator.distanceBetween(
+              pos.latitude,
+              pos.longitude,
+              _dungeonGate.latitude,
+              _dungeonGate.longitude,
+            );
+            setState(() {
+              _gateDistance = d;
+            });
+          }
+        });
+      }
+    } catch (_) {}
+  }
+
+  String get _formattedGateDistance {
+    if (_gateDistance == null) return 'Mendeteksi...';
+    if (_gateDistance! >= 1000) {
+      return '${(_gateDistance! / 1000).toStringAsFixed(1)} KM';
+    }
+    return '${_gateDistance!.toStringAsFixed(0)} M';
   }
 
   /// Memuat status quest yang telah diselesaikan hari ini dari Hive questBox (Local Primary)
@@ -110,6 +169,7 @@ class _TabHomeState extends State<TabHome> {
     if (loadedHp != null) {
       _currentHp = loadedHp;
     }
+    _avatarUrl = session['avatar_url']?.toString();
   }
 
   void _startServerClock() {
@@ -227,16 +287,19 @@ class _TabHomeState extends State<TabHome> {
       return;
     }
 
+    final session = HiveService.getSession();
+    final latestGold = (session['gold'] as int?) ?? _gold;
+    final latestExp = (session['exp'] as int?) ?? _currentExp;
+
     setState(() {
       _completedQuests.add(qId);
-      _currentExp += expReward;
-      _gold += goldReward;
+      _currentExp = latestExp + expReward;
+      _gold = latestGold + goldReward;
     });
 
     checkRankUp(_currentExp);
 
     // 1. Simpan ke sesi lokal Hive
-    final session = HiveService.getSession();
     final userId = session['userId']?.toString() ?? 'anonymous';
     final username = session['username']?.toString() ?? _hunterName;
     HiveService.saveSession(
@@ -266,6 +329,12 @@ class _TabHomeState extends State<TabHome> {
         userId: userId,
         questId: qId,
       );
+      SupabaseService.recordQuestCompleted(
+        userId: userId,
+        questId: qId,
+      );
+      final currentCount = HiveService.getQuestsCount() ?? 0;
+      HiveService.saveQuestsCount(currentCount + 1);
     }
 
     ScaffoldMessenger.of(context).showSnackBar(
@@ -285,6 +354,7 @@ class _TabHomeState extends State<TabHome> {
 
   @override
   void dispose() {
+    _homePositionSubscription?.cancel();
     _serverClockTimer?.cancel();
     _searchController.dispose();
     super.dispose();
@@ -292,6 +362,11 @@ class _TabHomeState extends State<TabHome> {
 
   @override
   Widget build(BuildContext context) {
+    final session = HiveService.getSession();
+    _avatarUrl = session['avatar_url']?.toString() ?? _avatarUrl;
+    _gold = (session['gold'] as int?) ?? _gold;
+    _currentExp = (session['exp'] as int?) ?? _currentExp;
+
     return Scaffold(
       backgroundColor: const Color(0xFF16111E), // Deep Abyss Surface
       body: SafeArea(
@@ -473,11 +548,16 @@ class _TabHomeState extends State<TabHome> {
                         ),
                       ],
                     ),
-                    child: const Center(
-                      child: Icon(
-                        Icons.person_rounded,
-                        size: 28,
-                        color: Color(0xFFE5B5FF),
+                    child: HunterAvatar(
+                      avatarUrl: _avatarUrl,
+                      size: 50,
+                      borderRadius: BorderRadius.circular(12),
+                      fallback: const Center(
+                        child: Icon(
+                          Icons.person_rounded,
+                          size: 28,
+                          color: Color(0xFFE5B5FF),
+                        ),
                       ),
                     ),
                   ),
@@ -1403,80 +1483,68 @@ class _TabHomeState extends State<TabHome> {
 
   /// 7. Nearby Gate Detected Callout
   Widget _buildNearbyGateCard() {
-    return Container(
-      padding: const EdgeInsets.all(12),
-      decoration: BoxDecoration(
-        color: const Color(0xFF1F1927),
-        borderRadius: BorderRadius.circular(12),
-        border: Border.all(
-          color: const Color(0xFF383241),
-          width: 1.0,
-        ),
-      ),
-      child: Row(
-        children: [
-          Expanded(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Row(
-                  children: [
-                    const Icon(
-                      Icons.radar_rounded,
-                      size: 14,
-                      color: Color(0xFF00F4FE),
-                    ),
-                    const SizedBox(width: 4),
-                    Text(
-                      'NEARBY GATE DETECTED',
-                      style: GoogleFonts.spaceGrotesk(
-                        fontSize: 9.5,
-                        fontWeight: FontWeight.w700,
-                        letterSpacing: 0.8,
-                        color: const Color(0xFF00F4FE),
-                      ),
-                    ),
-                  ],
-                ),
-                const SizedBox(height: 3),
-                Text(
-                  'Rank E Blue Gate (0.4 KM)',
-                  style: GoogleFonts.sora(
-                    fontSize: 13.5,
-                    fontWeight: FontWeight.w700,
-                    color: const Color(0xFFE9DEF2),
-                  ),
-                ),
-                const SizedBox(height: 2),
-                Text(
-                  'Recommended Level: 1 - 5',
-                  style: GoogleFonts.plusJakartaSans(
-                    fontSize: 10.5,
-                    color: const Color(0xFF9B8BA1),
-                  ),
-                ),
-              ],
-            ),
+    return InkWell(
+      borderRadius: BorderRadius.circular(12),
+      onTap: () {
+        widget.onNavigateToDungeon?.call();
+      },
+      child: Container(
+        padding: const EdgeInsets.all(12),
+        decoration: BoxDecoration(
+          color: const Color(0xFF1F1927),
+          borderRadius: BorderRadius.circular(12),
+          border: Border.all(
+            color: const Color(0xFF383241),
+            width: 1.0,
           ),
-          const SizedBox(width: 8),
-          InkWell(
-            borderRadius: BorderRadius.circular(8),
-            onTap: () {
-              ScaffoldMessenger.of(context).showSnackBar(
-                SnackBar(
-                  content: Text(
-                    'Scouting Rank E Blue Gate (0.4 KM)...',
-                    style: GoogleFonts.spaceGrotesk(
+        ),
+        child: Row(
+          children: [
+            Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Row(
+                    children: [
+                      const Icon(
+                        Icons.radar_rounded,
+                        size: 14,
+                        color: Color(0xFF00F4FE),
+                      ),
+                      const SizedBox(width: 4),
+                      Text(
+                        'NEARBY GATE DETECTED',
+                        style: GoogleFonts.spaceGrotesk(
+                          fontSize: 9.5,
+                          fontWeight: FontWeight.w700,
+                          letterSpacing: 0.8,
+                          color: const Color(0xFF00F4FE),
+                        ),
+                      ),
+                    ],
+                  ),
+                  const SizedBox(height: 3),
+                  Text(
+                    'Rank E Blue Gate ($_formattedGateDistance)',
+                    style: GoogleFonts.sora(
+                      fontSize: 13.5,
                       fontWeight: FontWeight.w700,
-                      color: Colors.black,
+                      color: const Color(0xFFE9DEF2),
                     ),
                   ),
-                  backgroundColor: const Color(0xFF00F4FE),
-                  duration: const Duration(seconds: 2),
-                ),
-              );
-            },
-            child: Container(
+                  const SizedBox(height: 2),
+                  Text(
+                    'Area Kampus Terpadu • +50 EXP, +100 Gold',
+                    style: GoogleFonts.plusJakartaSans(
+                      fontSize: 10.5,
+                      color: const Color(0xFF9B8BA1),
+                    ),
+                  ),
+                ],
+              ),
+            ),
+            const SizedBox(width: 8),
+            Container(
               width: 96,
               height: 32,
               decoration: BoxDecoration(
@@ -1512,8 +1580,8 @@ class _TabHomeState extends State<TabHome> {
                 ],
               ),
             ),
-          ),
-        ],
+          ],
+        ),
       ),
     );
   }

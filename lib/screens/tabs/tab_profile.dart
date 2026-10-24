@@ -1,7 +1,12 @@
+import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:image_picker/image_picker.dart';
+import 'package:intl/intl.dart';
 import '../../services/hive_service.dart';
 import '../../services/supabase_service.dart';
+import '../../widgets/avatar_adjust_dialog.dart';
+import '../../widgets/avatar_image.dart';
 import '../auth/login_screen.dart';
 
 /// Tab 5: Hunter Profile, Academic Feedback & Session Logout (TabProfile)
@@ -21,6 +26,8 @@ class _TabProfileState extends State<TabProfile> {
   String _rank = 'RANK S';
   int _gold = 650;
   int _exp = 2850;
+  String? _avatarUrl;
+  bool _isUploadingAvatar = false;
   int get _maxExp {
     if (_exp >= 2500) return 3000;
     if (_exp >= 1500) return 2500;
@@ -32,6 +39,12 @@ class _TabProfileState extends State<TabProfile> {
   }
   final int _hp = 3;
 
+  // Remote data state: Quests Done & Feedback
+  int _questsCompletedCount = 0;
+  bool _isLoadingQuests = true;
+  String? _submittedFeedback;
+  String? _feedbackCreatedAt;
+
   // Form Feedback Controller
   final TextEditingController _feedbackController = TextEditingController();
   int _charCount = 0;
@@ -42,6 +55,8 @@ class _TabProfileState extends State<TabProfile> {
   void initState() {
     super.initState();
     _loadSession();
+    _loadCachedData();
+    _loadRemoteData();
     _feedbackController.addListener(() {
       setState(() {
         _charCount = _feedbackController.text.length;
@@ -57,7 +72,76 @@ class _TabProfileState extends State<TabProfile> {
       _rank = session['rank']?.toString() ?? 'RANK S';
       _gold = (session['gold'] as int?) ?? 650;
       _exp = (session['exp'] as int?) ?? 2850;
+      _avatarUrl = session['avatar_url']?.toString();
     });
+  }
+
+  void _loadCachedData() {
+    final cachedQuests = HiveService.getQuestsCount();
+    if (cachedQuests != null) {
+      _questsCompletedCount = cachedQuests;
+      _isLoadingQuests = false;
+    }
+    final cachedFeedback = HiveService.getFeedback();
+    if (cachedFeedback != null) {
+      _submittedFeedback = cachedFeedback['message'];
+      _feedbackCreatedAt = cachedFeedback['created_at'];
+    }
+  }
+
+  Future<void> _loadRemoteData() async {
+    if (_userId == 'anonymous') {
+      if (mounted) {
+        setState(() {
+          _isLoadingQuests = false;
+        });
+      }
+      return;
+    }
+
+    // 1. Ambil jumlah quest yang diselesaikan dari tabel 'user_quests'
+    try {
+      final count = await SupabaseService.getCompletedQuestsCount(_userId);
+      await HiveService.saveQuestsCount(count);
+      if (mounted) {
+        setState(() {
+          _questsCompletedCount = count;
+          _isLoadingQuests = false;
+        });
+      }
+    } catch (_) {
+      if (mounted) {
+        setState(() {
+          _isLoadingQuests = false;
+        });
+      }
+    }
+
+    // 2. Ambil kesan & pesan terakhir dari tabel 'feedbacks'
+    try {
+      final feedbackData = await SupabaseService.getLatestFeedback(_userId);
+      if (feedbackData != null && mounted) {
+        final msg = feedbackData['message']?.toString();
+        final createdAt = feedbackData['created_at']?.toString();
+        if (msg != null && msg.isNotEmpty) {
+          await HiveService.saveFeedback(message: msg, createdAt: createdAt);
+          setState(() {
+            _submittedFeedback = msg;
+            _feedbackCreatedAt = createdAt;
+          });
+        }
+      }
+    } catch (_) {}
+  }
+
+  String _formatFeedbackDate(String? isoString) {
+    if (isoString == null || isoString.isEmpty) return 'Baru Saja';
+    try {
+      final dt = DateTime.parse(isoString).toLocal();
+      return '${DateFormat('dd MMM yyyy, HH:mm').format(dt)} WIB';
+    } catch (_) {
+      return 'Baru Saja';
+    }
   }
 
   @override
@@ -66,7 +150,7 @@ class _TabProfileState extends State<TabProfile> {
     super.dispose();
   }
 
-  /// 1. Fungsi Submit Feedback ke Supabase
+  /// 1. Fungsi Submit Feedback ke Supabase & Update State
   Future<void> _submitFeedback() async {
     final text = _feedbackController.text.trim();
     if (text.isEmpty) {
@@ -94,17 +178,22 @@ class _TabProfileState extends State<TabProfile> {
 
     if (!mounted) return;
 
+    final nowIso = DateTime.now().toIso8601String();
+    await HiveService.saveFeedback(message: text, createdAt: nowIso);
+
+    if (!mounted) return;
+
     setState(() {
       _isSubmittingFeedback = false;
+      _submittedFeedback = text;
+      _feedbackCreatedAt = nowIso;
+      _charCount = 0;
+      _feedbackSentSuccess = true;
     });
 
-    if (success) {
-      _feedbackController.clear();
-      setState(() {
-        _charCount = 0;
-        _feedbackSentSuccess = true;
-      });
+    _feedbackController.clear();
 
+    if (success) {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
           content: Row(
@@ -113,7 +202,7 @@ class _TabProfileState extends State<TabProfile> {
               const SizedBox(width: 8),
               Expanded(
                 child: Text(
-                  'Feedback berhasil dikirim ke Supabase!',
+                  'Kesan & pesan berhasil dikirim dan tersimpan di database!',
                   style: GoogleFonts.spaceGrotesk(color: Colors.black, fontWeight: FontWeight.w800),
                 ),
               ),
@@ -133,7 +222,7 @@ class _TabProfileState extends State<TabProfile> {
               const SizedBox(width: 8),
               Expanded(
                 child: Text(
-                  'Feedback berhasil diarsipkan secara lokal & terkirim ke pengampu!',
+                  'Kesan & pesan berhasil diperbarui secara lokal!',
                   style: GoogleFonts.spaceGrotesk(color: Colors.white, fontWeight: FontWeight.w700),
                 ),
               ),
@@ -143,11 +232,6 @@ class _TabProfileState extends State<TabProfile> {
           duration: const Duration(seconds: 3),
         ),
       );
-      _feedbackController.clear();
-      setState(() {
-        _charCount = 0;
-        _feedbackSentSuccess = true;
-      });
     }
   }
 
@@ -218,6 +302,97 @@ class _TabProfileState extends State<TabProfile> {
     );
   }
 
+  /// 3. Upload & Update Avatar ke Supabase Storage & Hive
+  Future<void> _pickAndUploadAvatar() async {
+    try {
+      final picker = ImagePicker();
+      final picked = await picker.pickImage(
+        source: ImageSource.gallery,
+        maxWidth: 1200,
+        maxHeight: 1200,
+        imageQuality: 90,
+      );
+      if (picked == null) return;
+
+      if (!mounted) return;
+
+      // Tampilkan dialog penyesuaian (crop / zoom / pan) sebelum diunggah
+      final File? adjustedFile = await showDialog<File>(
+        context: context,
+        barrierDismissible: false,
+        builder: (ctx) => AvatarAdjustDialog(imageFile: File(picked.path)),
+      );
+      if (adjustedFile == null) return; // Pengguna membatalkan proses penyesuaian
+
+      setState(() {
+        _isUploadingAvatar = true;
+      });
+
+      final newUrl = await SupabaseService.uploadAvatar(adjustedFile, _userId);
+
+      if (newUrl != null) {
+        if (_userId != 'anonymous') {
+          await SupabaseService.updateAvatarUrl(
+            userId: _userId,
+            avatarUrl: newUrl,
+          );
+        }
+        await HiveService.saveAvatarUrl(newUrl);
+
+        if (!mounted) return;
+        setState(() {
+          _avatarUrl = newUrl;
+          _isUploadingAvatar = false;
+        });
+
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text(
+              'Avatar berhasil diunggah ke Supabase Storage & diperbarui!',
+              style: GoogleFonts.spaceGrotesk(color: Colors.white, fontWeight: FontWeight.bold),
+            ),
+            backgroundColor: const Color(0xFF00F4FE),
+          ),
+        );
+      } else {
+        // Fallback: Terapkan file foto secara lokal ke Hive jika Supabase Storage terhalang RLS Policy
+        final localPath = picked.path;
+        await HiveService.saveAvatarUrl(localPath);
+
+        if (!mounted) return;
+        setState(() {
+          _avatarUrl = localPath;
+          _isUploadingAvatar = false;
+        });
+
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text(
+              'Upload Supabase ditolak RLS. Foto berhasil diterapkan secara lokal! Harap aktifkan RLS policy bucket "Avatar".',
+              style: GoogleFonts.spaceGrotesk(color: Colors.white, fontWeight: FontWeight.w700),
+            ),
+            backgroundColor: const Color(0xFFB026FF),
+            duration: const Duration(seconds: 4),
+          ),
+        );
+      }
+    } catch (e) {
+      if (!mounted) return;
+      setState(() {
+        _isUploadingAvatar = false;
+      });
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text(
+            'Terjadi kesalahan: $e',
+            style: GoogleFonts.spaceGrotesk(color: Colors.white, fontWeight: FontWeight.bold),
+          ),
+          backgroundColor: const Color(0xFF93000A),
+        ),
+      );
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     // Dynamic sync with current session in Hive
@@ -227,6 +402,7 @@ class _TabProfileState extends State<TabProfile> {
     _rank = session['rank']?.toString() ?? _rank;
     _gold = (session['gold'] as int?) ?? _gold;
     _exp = (session['exp'] as int?) ?? _exp;
+    _avatarUrl = session['avatar_url']?.toString() ?? _avatarUrl;
 
     final double expProgress = (_exp / _maxExp).clamp(0.0, 1.0);
 
@@ -371,8 +547,12 @@ class _TabProfileState extends State<TabProfile> {
                   ),
                 ],
               ),
-              child: const Center(
-                child: Icon(Icons.person_rounded, size: 18, color: Colors.white),
+              child: HunterAvatar(
+                avatarUrl: _avatarUrl,
+                size: 32,
+                fallback: const Center(
+                  child: Icon(Icons.person, size: 18, color: Colors.white),
+                ),
               ),
             ),
           ],
@@ -485,53 +665,95 @@ class _TabProfileState extends State<TabProfile> {
             child: Column(
               children: [
                 const SizedBox(height: 6),
-                // Concentric Avatar Box with Glowing Shield Sigil
+                // Concentric Avatar Box with Glowing Shield Sigil / Custom Avatar
                 Center(
-                  child: Container(
-                    width: 86,
-                    height: 86,
-                    decoration: BoxDecoration(
-                      shape: BoxShape.circle,
-                      gradient: const LinearGradient(
-                        colors: [Color(0xFFB026FF), Color(0xFF00F4FE)],
-                        begin: Alignment.topLeft,
-                        end: Alignment.bottomRight,
-                      ),
-                      boxShadow: [
-                        BoxShadow(
-                          color: const Color(0xFFB026FF).withValues(alpha: 0.5),
-                          blurRadius: 20,
-                        ),
-                        BoxShadow(
-                          color: const Color(0xFF00F4FE).withValues(alpha: 0.4),
-                          blurRadius: 16,
-                        ),
-                      ],
-                    ),
-                    padding: const EdgeInsets.all(2.5),
-                    child: Container(
-                      decoration: const BoxDecoration(
-                        shape: BoxShape.circle,
-                        color: Color(0xFF140D24),
-                      ),
-                      child: Center(
-                        child: Container(
-                          width: 58,
-                          height: 58,
+                  child: GestureDetector(
+                    onTap: _isUploadingAvatar ? null : _pickAndUploadAvatar,
+                    child: Stack(
+                      clipBehavior: Clip.none,
+                      children: [
+                        // Outer Neon Square Frame
+                        Container(
+                          width: 96,
+                          height: 96,
                           decoration: BoxDecoration(
-                            borderRadius: BorderRadius.circular(16),
-                            color: const Color(0xFF2D2736),
-                            border: Border.all(color: const Color(0xFF00F4FE).withValues(alpha: 0.6)),
+                            borderRadius: BorderRadius.circular(20),
+                            gradient: const LinearGradient(
+                              colors: [Color(0xFFB026FF), Color(0xFF00F4FE)],
+                              begin: Alignment.topLeft,
+                              end: Alignment.bottomRight,
+                            ),
+                            boxShadow: [
+                              BoxShadow(
+                                color: const Color(0xFFB026FF).withValues(alpha: 0.5),
+                                blurRadius: 20,
+                              ),
+                              BoxShadow(
+                                color: const Color(0xFF00F4FE).withValues(alpha: 0.4),
+                                blurRadius: 16,
+                              ),
+                            ],
                           ),
-                          child: const Center(
-                            child: Icon(
-                              Icons.shield_moon_rounded,
-                              size: 34,
-                              color: Color(0xFF00F4FE),
+                          padding: const EdgeInsets.all(2.5),
+                          child: Container(
+                            decoration: BoxDecoration(
+                              borderRadius: BorderRadius.circular(17),
+                              color: const Color(0xFF140D24),
+                            ),
+                            clipBehavior: Clip.antiAlias,
+                            child: _isUploadingAvatar
+                                ? const Center(
+                                    child: SizedBox(
+                                      width: 28,
+                                      height: 28,
+                                      child: CircularProgressIndicator(
+                                        strokeWidth: 2.5,
+                                        color: Color(0xFF00F4FE),
+                                      ),
+                                    ),
+                                  )
+                                : HunterAvatar(
+                                    avatarUrl: _avatarUrl,
+                                    size: 91,
+                                    borderRadius: BorderRadius.circular(17),
+                                    fallback: const Center(
+                                      child: Icon(
+                                        Icons.shield_moon_rounded,
+                                        size: 42,
+                                        color: Color(0xFF00F4FE),
+                                      ),
+                                    ),
+                                  ),
+                          ),
+                        ),
+                        // Edit Pencil Button (Bottom Right)
+                        Positioned(
+                          bottom: -3,
+                          right: -3,
+                          child: Container(
+                            padding: const EdgeInsets.all(5.5),
+                            decoration: BoxDecoration(
+                              color: const Color(0xFF00F4FE),
+                              shape: BoxShape.circle,
+                              border: Border.all(
+                                color: const Color(0xFF1F1927),
+                                width: 2,
+                              ),
+                              boxShadow: [
+                                BoxShadow(
+                                  color: const Color(0xFF00F4FE).withValues(alpha: 0.6),
+                                  blurRadius: 8,
+                                ),
+                              ],
+                            ),
+                            child: const Icon(
+                              Icons.edit_rounded,
+                              size: 13,
+                              color: Colors.black,
                             ),
                           ),
                         ),
-                      ),
+                      ],
                     ),
                   ),
                 ),
@@ -819,7 +1041,7 @@ class _TabProfileState extends State<TabProfile> {
         ),
         const SizedBox(width: 10),
 
-        // Quests Done Card
+        // Quests Done Card - Realtime dari tabel 'user_quests' Supabase
         Expanded(
           child: Container(
             padding: const EdgeInsets.all(12),
@@ -853,18 +1075,27 @@ class _TabProfileState extends State<TabProfile> {
                     color: const Color(0xFF110C19),
                     borderRadius: BorderRadius.circular(6),
                   ),
-                  child: Text(
-                    '42 SELESAI',
-                    style: GoogleFonts.spaceGrotesk(
-                      fontSize: 14,
-                      fontWeight: FontWeight.w900,
-                      color: const Color(0xFF00F4FE),
-                    ),
-                  ),
+                  child: _isLoadingQuests
+                      ? const SizedBox(
+                          width: 14,
+                          height: 14,
+                          child: CircularProgressIndicator(
+                            strokeWidth: 2,
+                            color: Color(0xFF00F4FE),
+                          ),
+                        )
+                      : Text(
+                          '$_questsCompletedCount SELESAI',
+                          style: GoogleFonts.spaceGrotesk(
+                            fontSize: 14,
+                            fontWeight: FontWeight.w900,
+                            color: const Color(0xFF00F4FE),
+                          ),
+                        ),
                 ),
                 const SizedBox(height: 4),
                 Text(
-                  'Dungeon Clears',
+                  'Dungeon & Quests Clears',
                   style: GoogleFonts.plusJakartaSans(
                     fontSize: 9.5,
                     color: const Color(0xFF9B8BA1),
@@ -878,8 +1109,10 @@ class _TabProfileState extends State<TabProfile> {
     );
   }
 
-  /// Academic Feedback Form Card
+  /// Academic Feedback Form & Display Card
   Widget _buildFeedbackCard() {
+    final hasExistingFeedback = _submittedFeedback != null && _submittedFeedback!.trim().isNotEmpty;
+
     return Container(
       width: double.infinity,
       padding: const EdgeInsets.all(14),
@@ -891,6 +1124,150 @@ class _TabProfileState extends State<TabProfile> {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
+          // 1. Tampilan Hasil Kesan & Pesan yang Sudah Dikirim (jika ada)
+          if (hasExistingFeedback) ...[
+            Container(
+              width: double.infinity,
+              padding: const EdgeInsets.all(12),
+              decoration: BoxDecoration(
+                color: const Color(0xFF140D24),
+                borderRadius: BorderRadius.circular(12),
+                border: Border.all(
+                  color: const Color(0xFF00F4FE).withValues(alpha: 0.4),
+                  width: 1.0,
+                ),
+                boxShadow: [
+                  BoxShadow(
+                    color: const Color(0xFF00F4FE).withValues(alpha: 0.1),
+                    blurRadius: 12,
+                  ),
+                ],
+              ),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      Row(
+                        children: [
+                          const Icon(Icons.verified_rounded, size: 16, color: Color(0xFF00F4FE)),
+                          const SizedBox(width: 6),
+                          Text(
+                            'KESAN & PESAN ANDA',
+                            style: GoogleFonts.spaceGrotesk(
+                              fontSize: 10,
+                              fontWeight: FontWeight.w800,
+                              letterSpacing: 0.8,
+                              color: const Color(0xFF00F4FE),
+                            ),
+                          ),
+                        ],
+                      ),
+                      Container(
+                        padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
+                        decoration: BoxDecoration(
+                          color: const Color(0xFF00F4FE).withValues(alpha: 0.15),
+                          borderRadius: BorderRadius.circular(4),
+                          border: Border.all(color: const Color(0xFF00F4FE).withValues(alpha: 0.4)),
+                        ),
+                        child: Text(
+                          'TERVERIFIKASI',
+                          style: GoogleFonts.spaceGrotesk(
+                            fontSize: 7.5,
+                            fontWeight: FontWeight.w800,
+                            letterSpacing: 0.6,
+                            color: const Color(0xFF00F4FE),
+                          ),
+                        ),
+                      ),
+                    ],
+                  ),
+                  const SizedBox(height: 10),
+                  // Isi Pesan Kutipan
+                  Row(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      const Icon(
+                        Icons.format_quote_rounded,
+                        size: 20,
+                        color: Color(0xFFE5B5FF),
+                      ),
+                      const SizedBox(width: 8),
+                      Expanded(
+                        child: Text(
+                          _submittedFeedback!,
+                          style: GoogleFonts.plusJakartaSans(
+                            fontSize: 12,
+                            color: const Color(0xFFE9DEF2),
+                            height: 1.45,
+                            fontStyle: FontStyle.italic,
+                          ),
+                        ),
+                      ),
+                    ],
+                  ),
+                  const SizedBox(height: 10),
+                  // Tanggal & Info Database Row
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      Row(
+                        children: [
+                          const Icon(Icons.storage_rounded, size: 11, color: Color(0xFF9B8BA1)),
+                          const SizedBox(width: 4),
+                          Text(
+                            'Tersimpan di Supabase',
+                            style: GoogleFonts.spaceGrotesk(
+                              fontSize: 8.5,
+                              color: const Color(0xFF9B8BA1),
+                            ),
+                          ),
+                        ],
+                      ),
+                      Row(
+                        children: [
+                          const Icon(Icons.schedule_rounded, size: 11, color: Color(0xFF00F4FE)),
+                          const SizedBox(width: 4),
+                          Text(
+                            _formatFeedbackDate(_feedbackCreatedAt),
+                            style: GoogleFonts.spaceGrotesk(
+                              fontSize: 8.5,
+                              fontWeight: FontWeight.w700,
+                              color: const Color(0xFF00F4FE),
+                            ),
+                          ),
+                        ],
+                      ),
+                    ],
+                  ),
+                ],
+              ),
+            ),
+            const SizedBox(height: 14),
+            // Garis Pembatas Aksen
+            Row(
+              children: [
+                const Expanded(child: Divider(color: Color(0xFF2C1E4E), thickness: 1)),
+                Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 10),
+                  child: Text(
+                    'PERBARUI KESAN & PESAN',
+                    style: GoogleFonts.spaceGrotesk(
+                      fontSize: 8,
+                      fontWeight: FontWeight.w800,
+                      letterSpacing: 1.0,
+                      color: const Color(0xFFE5B5FF),
+                    ),
+                  ),
+                ),
+                const Expanded(child: Divider(color: Color(0xFF2C1E4E), thickness: 1)),
+              ],
+            ),
+            const SizedBox(height: 12),
+          ],
+
+          // 2. Form Input Kesan & Pesan Baru / Update
           Row(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
@@ -901,7 +1278,11 @@ class _TabProfileState extends State<TabProfile> {
                   color: const Color(0xFF2D2736),
                   borderRadius: BorderRadius.circular(8),
                 ),
-                child: const Icon(Icons.rate_review_rounded, size: 18, color: Color(0xFFB026FF)),
+                child: Icon(
+                  hasExistingFeedback ? Icons.edit_note_rounded : Icons.rate_review_rounded,
+                  size: 18,
+                  color: const Color(0xFFB026FF),
+                ),
               ),
               const SizedBox(width: 10),
               Expanded(
@@ -909,7 +1290,9 @@ class _TabProfileState extends State<TabProfile> {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Text(
-                      'Evaluasi Mata Kuliah Pemrograman Aplikasi Mobile',
+                      hasExistingFeedback
+                          ? 'Perbarui Evaluasi Mata Kuliah'
+                          : 'Evaluasi Mata Kuliah Pemrograman Aplikasi Mobile',
                       style: GoogleFonts.sora(
                         fontSize: 12,
                         fontWeight: FontWeight.w700,
@@ -919,7 +1302,9 @@ class _TabProfileState extends State<TabProfile> {
                     ),
                     const SizedBox(height: 2),
                     Text(
-                      'Kirimkan kesan, pesan, dan saran akademik langsung ke basis data Supabase pengampu.',
+                      hasExistingFeedback
+                          ? 'Isi formulir di bawah untuk memperbarui kesan & pesan Anda di basis data Supabase.'
+                          : 'Kirimkan kesan, pesan, dan saran akademik langsung ke basis data Supabase pengampu.',
                       style: GoogleFonts.plusJakartaSans(
                         fontSize: 10,
                         color: const Color(0xFFD2C1D7),
@@ -947,8 +1332,9 @@ class _TabProfileState extends State<TabProfile> {
               maxLength: 500,
               style: GoogleFonts.plusJakartaSans(fontSize: 12, color: const Color(0xFFE9DEF2)),
               decoration: InputDecoration(
-                hintText:
-                    'Tuliskan kesan perkuliahan, tantangan Flutter, serta saran pengembangan aplikasi LevMax ke depan...',
+                hintText: hasExistingFeedback
+                    ? 'Tuliskan pembaruan kesan, pesan, atau saran untuk pengampu di sini...'
+                    : 'Tuliskan kesan perkuliahan, tantangan Flutter, serta saran pengembangan aplikasi LevMax ke depan...',
                 hintStyle: GoogleFonts.plusJakartaSans(fontSize: 11, color: const Color(0xFF9B8BA1)),
                 contentPadding: const EdgeInsets.all(12),
                 border: InputBorder.none,
@@ -993,7 +1379,7 @@ class _TabProfileState extends State<TabProfile> {
 
           const SizedBox(height: 8),
 
-          // Submit Action Button
+          // Submit / Update Action Button
           InkWell(
             borderRadius: BorderRadius.circular(10),
             onTap: _isSubmittingFeedback ? null : _submitFeedback,
@@ -1024,10 +1410,16 @@ class _TabProfileState extends State<TabProfile> {
                           height: 16,
                           child: CircularProgressIndicator(strokeWidth: 2, color: Colors.white),
                         )
-                      : const Icon(Icons.send_rounded, size: 16, color: Colors.white),
+                      : Icon(
+                          hasExistingFeedback ? Icons.published_with_changes_rounded : Icons.send_rounded,
+                          size: 16,
+                          color: Colors.white,
+                        ),
                   const SizedBox(width: 8),
                   Text(
-                    _isSubmittingFeedback ? 'MENGIRIM KE SUPABASE...' : 'KIRIM PESAN & KESAN',
+                    _isSubmittingFeedback
+                        ? 'MENYIMPAN KE SUPABASE...'
+                        : (hasExistingFeedback ? 'PERBARUI PESAN & KESAN' : 'KIRIM PESAN & KESAN'),
                     style: GoogleFonts.spaceGrotesk(
                       fontSize: 11.5,
                       fontWeight: FontWeight.w800,
