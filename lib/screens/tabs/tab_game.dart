@@ -34,12 +34,13 @@ class _TabGameState extends State<TabGame> with SingleTickerProviderStateMixin {
   double _roll = 0.0;
   bool _isSensorActive = false;
 
-  // 3. Logika Game & Timer Kemenangan
-  Timer? _winTimer;
-  int secondsHeld = 0;
+  // 3. Logika Game & Timer Survival Mode (30 Detik Hardcore)
+  Timer? _survivalTimer;
+  bool isPlaying = false;
+  bool isGameOver = false;
+  int timeRemaining = 30; // Hitung mundur 30 detik
   bool hasPlayedToday = false;
-  bool isGameActive = true;
-  bool _isInCenter = false;
+  bool _isInCenter = true;
 
   // 4. Hunter Session Data dari Hive
   String _hunterName = 'HUNTER SUNG';
@@ -95,30 +96,70 @@ class _TabGameState extends State<TabGame> with SingleTickerProviderStateMixin {
   }
 
   /// 2. Integrasi Gyroscope dengan Throttling (~30ms) agar hemat baterai & aman di perangkat low-end (Oppo A5)
+  /// Memulai Survival Protocol 30 Detik
+  void _startProtocol() {
+    if (hasPlayedToday) return;
+
+    _survivalTimer?.cancel();
+    _survivalTimer = null;
+
+    setState(() {
+      ballX = 130.0;
+      ballY = 130.0;
+      timeRemaining = 30;
+      isPlaying = true;
+      isGameOver = false;
+      _isInCenter = true;
+    });
+
+    _survivalTimer = Timer.periodic(const Duration(seconds: 1), (timer) {
+      if (!mounted) {
+        timer.cancel();
+        return;
+      }
+
+      if (timeRemaining > 1) {
+        setState(() {
+          timeRemaining--;
+        });
+      } else {
+        // timeRemaining == 0: Berhasil bertahan 30 detik tanpa keluar target zone!
+        timer.cancel();
+        _survivalTimer = null;
+        _handleGameVictory();
+      }
+    });
+  }
+
+  /// 2. Integrasi Gyroscope dengan Sensitivitas Ekstrem (Hardcore Mode)
   void _initGyroscope() {
     try {
       _gyroSubscription = gyroscopeEventStream().listen(
         (GyroscopeEvent event) {
-          if (!mounted || !isGameActive) return;
+          if (!mounted) return;
 
           _isSensorActive = true;
 
-          // Hitung orientasi derajat (Pitch & Roll)
+          // Hitung orientasi derajat (Pitch & Roll) untuk display HUD
           final double currentPitch = event.x * (180.0 / pi);
           final double currentRoll = event.y * (180.0 / pi);
+          _pitch = currentPitch;
+          _roll = currentRoll;
 
-          // Update posisi bola berdasarkan kecepatan sudut
-          // y = roll (kiri/kanan), x = pitch (depan/belakang)
-          const double sensitivity = 3.5;
+          // Bola hanya bergerak jika game sedang berjalan
+          if (!isPlaying) return;
+
+          // PEROMBAKAN FISIKA SENSOR (Sangat Sensitif & Sulit):
+          // Pengali dilipatgandakan secara drastis (22.0) tanpa damping/friction
+          // Bola terasa sangat licin, liar, dan bereaksi kuat terhadap kemiringan / guncangan sekecil apa pun
+          const double sensitivity = 22.0;
           final double newX = (ballX + event.y * sensitivity).clamp(6.0, arenaSize - ballSize - 6.0);
           final double newY = (ballY + event.x * sensitivity).clamp(6.0, arenaSize - ballSize - 6.0);
 
           ballX = newX;
           ballY = newY;
-          _pitch = currentPitch;
-          _roll = currentRoll;
 
-          // Cek apakah bola berada di dalam Target Zone
+          // Cek apakah bola keluar dari Target Zone
           _checkTargetZone();
 
           // THROTTLING: Batasi pemanggilan setState maksimum ~33 FPS (30ms interval)
@@ -129,7 +170,6 @@ class _TabGameState extends State<TabGame> with SingleTickerProviderStateMixin {
           }
         },
         onError: (err) {
-          // Sensor tidak didukung pada platform atau emulator
           setState(() {
             _isSensorActive = false;
           });
@@ -140,8 +180,10 @@ class _TabGameState extends State<TabGame> with SingleTickerProviderStateMixin {
     }
   }
 
-  /// 3. Logika Deteksi Zona Tengah & Timer Kemenangan
+  /// 3. Logika Deteksi Zona Tengah & Aturan Survival (30 Detik)
   void _checkTargetZone() {
+    if (!isPlaying) return;
+
     // Pusat arena adalah (150, 150)
     final double centerArena = arenaSize / 2; // 150.0
     // Pusat bola adalah (ballX + 20, ballY + 20)
@@ -155,54 +197,39 @@ class _TabGameState extends State<TabGame> with SingleTickerProviderStateMixin {
     final bool inZone = distanceToCenter <= safeZoneThreshold;
 
     if (inZone) {
-      if (!_isInCenter) {
-        _isInCenter = true;
-        _startWinTimer();
-      }
+      _isInCenter = true;
     } else {
-      if (_isInCenter) {
-        _isInCenter = false;
-        _cancelWinTimer();
-      }
+      // BOLA KELUAR DARI ZONA AMAN! PROTOCOL FAILED!
+      _handleGameOver();
     }
   }
 
-  void _startWinTimer() {
-    _winTimer?.cancel();
-    _winTimer = Timer.periodic(const Duration(seconds: 1), (timer) {
-      if (!mounted) {
-        timer.cancel();
-        return;
-      }
+  void _handleGameOver() {
+    if (!isPlaying) return;
 
-      setState(() {
-        secondsHeld++;
-      });
+    _survivalTimer?.cancel();
+    _survivalTimer = null;
 
-      // JIKA secondsHeld >= 5 dan !hasPlayedToday: Kemenangan!
-      if (secondsHeld >= 5 && !hasPlayedToday) {
-        _handleGameVictory();
-      }
+    setState(() {
+      isPlaying = false;
+      isGameOver = true;
+      _isInCenter = false;
     });
+
+    _showFailedDialog();
   }
 
-  void _cancelWinTimer() {
-    _winTimer?.cancel();
-    _winTimer = null;
-    if (secondsHeld < 5) {
-      setState(() {
-        secondsHeld = 0;
-      });
-    }
-  }
-
-  /// Penanganan Kemenangan: Batalkan timer, beri reward +50 Gold, simpan sesi, munculkan dialog
+  /// Penanganan Kemenangan: Berhasil bertahan 30 detik tanpa keluar target zone
   void _handleGameVictory() {
-    _winTimer?.cancel();
-    _winTimer = null;
+    _survivalTimer?.cancel();
+    _survivalTimer = null;
 
     setState(() {
       hasPlayedToday = true;
+      isPlaying = false;
+      isGameOver = false;
+      timeRemaining = 0;
+      _isInCenter = true;
       _gold += 50;
     });
 
@@ -231,7 +258,6 @@ class _TabGameState extends State<TabGame> with SingleTickerProviderStateMixin {
       );
     }
 
-    // Tampilkan Dialog Kemenangan
     _showVictoryDialog();
   }
 
@@ -280,7 +306,7 @@ class _TabGameState extends State<TabGame> with SingleTickerProviderStateMixin {
               ),
               const SizedBox(height: 8),
               Text(
-                'Inti Mana berhasil diseimbangkan di zona aman selama 5.0 detik. Sinergi sihir Hunter telah pulih sempurna!',
+                'Inti Mana berhasil distabilkan selama 30 detik penuh dalam mode Hardcore Survival! Sinergi sihir Hunter telah pulih sempurna.',
                 textAlign: TextAlign.center,
                 style: GoogleFonts.plusJakartaSans(
                   fontSize: 12.5,
@@ -342,11 +368,126 @@ class _TabGameState extends State<TabGame> with SingleTickerProviderStateMixin {
     );
   }
 
+  void _showFailedDialog() {
+    showDialog(
+      context: context,
+      barrierDismissible: false,
+      builder: (ctx) => Dialog(
+        backgroundColor: const Color(0xFF140D24),
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(20),
+          side: const BorderSide(color: Color(0xFFFF4D4D), width: 1.5),
+        ),
+        child: Padding(
+          padding: const EdgeInsets.all(22.0),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Container(
+                width: 60,
+                height: 60,
+                decoration: BoxDecoration(
+                  shape: BoxShape.circle,
+                  color: const Color(0xFFFF4D4D).withValues(alpha: 0.15),
+                  boxShadow: [
+                    BoxShadow(
+                      color: const Color(0xFFFF4D4D).withValues(alpha: 0.5),
+                      blurRadius: 20,
+                    ),
+                  ],
+                ),
+                child: const Center(
+                  child: Icon(Icons.warning_amber_rounded, color: Color(0xFFFF4D4D), size: 36),
+                ),
+              ),
+              const SizedBox(height: 16),
+              Text(
+                'PROTOCOL FAILED!',
+                textAlign: TextAlign.center,
+                style: GoogleFonts.spaceGrotesk(
+                  fontSize: 18,
+                  fontWeight: FontWeight.w900,
+                  letterSpacing: 1.0,
+                  color: const Color(0xFFFF4D4D),
+                ),
+              ),
+              const SizedBox(height: 8),
+              Text(
+                'Inti Mana tidak stabil! Bola keluar dari Target Zone sebelum 30 detik selesai. Jaga kestabilan gyroscope perangkat Anda dan coba lagi.',
+                textAlign: TextAlign.center,
+                style: GoogleFonts.plusJakartaSans(
+                  fontSize: 12.5,
+                  color: const Color(0xFFD2C1D7),
+                  height: 1.4,
+                ),
+              ),
+              const SizedBox(height: 16),
+              Container(
+                padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 8),
+                decoration: BoxDecoration(
+                  color: const Color(0xFF93000A).withValues(alpha: 0.35),
+                  borderRadius: BorderRadius.circular(10),
+                  border: Border.all(color: const Color(0xFFFF4D4D).withValues(alpha: 0.5)),
+                ),
+                child: Text(
+                  'SISA WAKTU: $timeRemaining DETIK',
+                  style: GoogleFonts.spaceGrotesk(
+                    fontSize: 12,
+                    fontWeight: FontWeight.w800,
+                    color: const Color(0xFFFFB4AB),
+                    letterSpacing: 0.8,
+                  ),
+                ),
+              ),
+              const SizedBox(height: 20),
+              SizedBox(
+                width: double.infinity,
+                height: 46,
+                child: ElevatedButton(
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: const Color(0xFFFF4D4D),
+                    foregroundColor: Colors.white,
+                    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+                    elevation: 6,
+                  ),
+                  onPressed: () {
+                    Navigator.of(ctx).pop();
+                    _startProtocol();
+                  },
+                  child: Text(
+                    'COBA LAGI (RETRY PROTOCOL)',
+                    style: GoogleFonts.spaceGrotesk(
+                      fontSize: 12.5,
+                      fontWeight: FontWeight.w800,
+                      letterSpacing: 0.8,
+                    ),
+                  ),
+                ),
+              ),
+              const SizedBox(height: 8),
+              TextButton(
+                onPressed: () => Navigator.of(ctx).pop(),
+                child: Text(
+                  'KEMBALI KE TERMINAL',
+                  style: GoogleFonts.spaceGrotesk(
+                    fontSize: 11,
+                    fontWeight: FontWeight.w700,
+                    color: Colors.grey.shade400,
+                  ),
+                ),
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+
   /// 4. Keamanan Memori: Wajib batalkan stream & timer saat widget ditutup
   @override
   void dispose() {
     _gyroSubscription?.cancel();
-    _winTimer?.cancel();
+    _survivalTimer?.cancel();
     _serverClockTimer?.cancel();
     super.dispose();
   }
@@ -360,7 +501,9 @@ class _TabGameState extends State<TabGame> with SingleTickerProviderStateMixin {
     _currentExp = (session['exp'] as int?) ?? _currentExp;
     _rank = session['rank']?.toString() ?? _rank;
 
-    final double progress = (secondsHeld / 5.0).clamp(0.0, 1.0);
+    final double progress = isPlaying
+        ? ((30 - timeRemaining) / 30.0).clamp(0.0, 1.0)
+        : (hasPlayedToday ? 1.0 : 0.0);
 
     return Scaffold(
       backgroundColor: const Color(0xFF16111E),
@@ -705,15 +848,15 @@ class _TabGameState extends State<TabGame> with SingleTickerProviderStateMixin {
                   text: TextSpan(
                     style: GoogleFonts.plusJakartaSans(fontSize: 11.5, color: const Color(0xFFD2C1D7)),
                     children: [
-                      const TextSpan(text: 'Miringkan perangkat untuk menahan inti mana di zona tengah selama '),
+                      const TextSpan(text: 'Miringkan perangkat untuk bertahan di zona tengah selama '),
                       TextSpan(
-                        text: '5.0 detik',
+                        text: '30 detik',
                         style: GoogleFonts.plusJakartaSans(
                           fontWeight: FontWeight.bold,
                           color: const Color(0xFF63F7FF),
                         ),
                       ),
-                      const TextSpan(text: '.'),
+                      const TextSpan(text: ' tanpa keluar target zone!'),
                     ],
                   ),
                 ),
@@ -731,10 +874,11 @@ class _TabGameState extends State<TabGame> with SingleTickerProviderStateMixin {
       child: GestureDetector(
         // Fallback interaksi sentuh / pan untuk pengujian pada emulator
         onPanUpdate: (details) {
-          if (!isGameActive) return;
+          if (!isPlaying) return;
           setState(() {
-            ballX = (ballX + details.delta.dx).clamp(6.0, arenaSize - ballSize - 6.0);
-            ballY = (ballY + details.delta.dy).clamp(6.0, arenaSize - ballSize - 6.0);
+            const double touchSensitivity = 2.0;
+            ballX = (ballX + details.delta.dx * touchSensitivity).clamp(6.0, arenaSize - ballSize - 6.0);
+            ballY = (ballY + details.delta.dy * touchSensitivity).clamp(6.0, arenaSize - ballSize - 6.0);
             _pitch = ((ballY - 130.0) / 3.0);
             _roll = ((ballX - 130.0) / 3.0);
             _checkTargetZone();
@@ -789,14 +933,22 @@ class _TabGameState extends State<TabGame> with SingleTickerProviderStateMixin {
                 top: 10,
                 right: 12,
                 child: Text(
-                  _isInCenter
-                      ? 'STABLE: ${min(100, 70 + (secondsHeld * 6))}%'
-                      : 'UNSTABLE: DRIFT',
+                  !isPlaying
+                      ? (hasPlayedToday
+                          ? 'STATUS: STABILIZED'
+                          : (isGameOver ? 'FAILED: OUT OF ZONE' : 'SYSTEM: STANDBY'))
+                      : (_isInCenter
+                          ? 'SURVIVING: $timeRemaining s'
+                          : 'CRITICAL: OUT OF ZONE!'),
                   style: GoogleFonts.spaceGrotesk(
                     fontSize: 9,
                     fontWeight: FontWeight.w800,
                     letterSpacing: 1.0,
-                    color: _isInCenter ? const Color(0xFF00DCE5) : const Color(0xFFFFB4AB),
+                    color: !isPlaying
+                        ? (hasPlayedToday
+                            ? const Color(0xFF00DCE5)
+                            : (isGameOver ? const Color(0xFFFF4D4D) : const Color(0xFFF0DBFF)))
+                        : (_isInCenter ? const Color(0xFF00DCE5) : const Color(0xFFFF4D4D)),
                   ),
                 ),
               ),
@@ -815,7 +967,7 @@ class _TabGameState extends State<TabGame> with SingleTickerProviderStateMixin {
                 bottom: 10,
                 right: 12,
                 child: Text(
-                  'BALANCER v2.0',
+                  'HARDCORE v3.0',
                   style: GoogleFonts.spaceGrotesk(
                     fontSize: 9,
                     fontWeight: FontWeight.w700,
@@ -841,6 +993,127 @@ class _TabGameState extends State<TabGame> with SingleTickerProviderStateMixin {
                 height: ballSize,
                 child: _buildManaCoreOrb(),
               ),
+
+              // 5. Start / Retry Protocol Cyber Overlay (Hanya muncul jika !isPlaying && !hasPlayedToday)
+              if (!isPlaying && !hasPlayedToday)
+                Positioned.fill(
+                  child: Container(
+                    decoration: BoxDecoration(
+                      borderRadius: BorderRadius.circular(24),
+                      color: const Color(0xFF140D24).withValues(alpha: 0.85),
+                    ),
+                    child: Center(
+                      child: Column(
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          Container(
+                            padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 5),
+                            decoration: BoxDecoration(
+                              color: isGameOver
+                                  ? const Color(0xFF93000A).withValues(alpha: 0.4)
+                                  : const Color(0xFFB026FF).withValues(alpha: 0.3),
+                              borderRadius: BorderRadius.circular(20),
+                              border: Border.all(
+                                color: isGameOver ? const Color(0xFFFF4D4D) : const Color(0xFF00F4FE),
+                                width: 1.0,
+                              ),
+                            ),
+                            child: Text(
+                              isGameOver ? 'PROTOCOL FAILED' : 'HARDCORE SURVIVAL (30s)',
+                              style: GoogleFonts.spaceGrotesk(
+                                fontSize: 9.5,
+                                fontWeight: FontWeight.w800,
+                                letterSpacing: 1.2,
+                                color: isGameOver ? const Color(0xFFFF4D4D) : const Color(0xFF00F4FE),
+                              ),
+                            ),
+                          ),
+                          const SizedBox(height: 14),
+                          InkWell(
+                            onTap: _startProtocol,
+                            borderRadius: BorderRadius.circular(16),
+                            child: Container(
+                              padding: const EdgeInsets.symmetric(horizontal: 22, vertical: 12),
+                              decoration: BoxDecoration(
+                                gradient: LinearGradient(
+                                  colors: isGameOver
+                                      ? [const Color(0xFFB3261E), const Color(0xFFFF5449)]
+                                      : [const Color(0xFF7B2CBF), const Color(0xFF00F4FE)],
+                                ),
+                                borderRadius: BorderRadius.circular(16),
+                                boxShadow: [
+                                  BoxShadow(
+                                    color: (isGameOver ? const Color(0xFFFF5449) : const Color(0xFF00F4FE))
+                                        .withValues(alpha: 0.6),
+                                    blurRadius: 18,
+                                    spreadRadius: 1,
+                                  ),
+                                ],
+                              ),
+                              child: Row(
+                                mainAxisSize: MainAxisSize.min,
+                                children: [
+                                  Icon(
+                                    isGameOver ? Icons.refresh_rounded : Icons.play_arrow_rounded,
+                                    color: isGameOver ? Colors.white : Colors.black,
+                                    size: 20,
+                                  ),
+                                  const SizedBox(width: 8),
+                                  Text(
+                                    isGameOver ? 'RETRY PROTOCOL' : 'START PROTOCOL',
+                                    style: GoogleFonts.spaceGrotesk(
+                                      fontSize: 12.5,
+                                      fontWeight: FontWeight.w900,
+                                      letterSpacing: 1.2,
+                                      color: isGameOver ? Colors.white : Colors.black,
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                  ),
+                ),
+
+              // 6. Completed Protocol Overlay jika sudah selesai hari ini
+              if (hasPlayedToday)
+                Positioned.fill(
+                  child: Container(
+                    decoration: BoxDecoration(
+                      borderRadius: BorderRadius.circular(24),
+                      color: const Color(0xFF140D24).withValues(alpha: 0.8),
+                    ),
+                    child: Center(
+                      child: Column(
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          const Icon(Icons.verified_rounded, color: Color(0xFF00F4FE), size: 40),
+                          const SizedBox(height: 10),
+                          Text(
+                            'CORE STABILIZED',
+                            style: GoogleFonts.spaceGrotesk(
+                              fontSize: 14,
+                              fontWeight: FontWeight.w900,
+                              letterSpacing: 1.2,
+                              color: const Color(0xFF00F4FE),
+                            ),
+                          ),
+                          const SizedBox(height: 4),
+                          Text(
+                            'Protokol 30 detik selesai hari ini',
+                            style: GoogleFonts.plusJakartaSans(
+                              fontSize: 11,
+                              color: const Color(0xFFD2C1D7),
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                  ),
+                ),
             ],
           ),
         ),
@@ -1022,17 +1295,17 @@ class _TabGameState extends State<TabGame> with SingleTickerProviderStateMixin {
   /// Hold Duration Card
   Widget _buildHoldDurationCard(double progress) {
     String statusText = 'STANDBY';
-    Color statusColor = const Color(0xFF63F7FF);
+    Color statusColor = const Color(0xFF9B8BA1);
 
     if (hasPlayedToday) {
-      statusText = 'LOCKED (STABILIZED)';
+      statusText = 'LOCKED (COMPLETED)';
       statusColor = const Color(0xFF00F4FE);
-    } else if (_isInCenter) {
-      statusText = 'STABILIZING';
+    } else if (isPlaying) {
+      statusText = 'SURVIVING (HARDCORE)';
       statusColor = const Color(0xFF00F4FE);
-    } else if (secondsHeld > 0) {
-      statusText = 'DRIFT DETECTED';
-      statusColor = const Color(0xFFFFB4AB);
+    } else if (isGameOver) {
+      statusText = 'PROTOCOL FAILED';
+      statusColor = const Color(0xFFFF4D4D);
     }
 
     return Container(
@@ -1060,7 +1333,7 @@ class _TabGameState extends State<TabGame> with SingleTickerProviderStateMixin {
                   const Icon(Icons.timer_outlined, size: 16, color: Color(0xFFE5B5FF)),
                   const SizedBox(width: 6),
                   Text(
-                    'HOLD CORE DURATION',
+                    'SURVIVAL PROTOCOL DURATION',
                     style: GoogleFonts.spaceGrotesk(
                       fontSize: 9.5,
                       fontWeight: FontWeight.w700,
@@ -1092,14 +1365,15 @@ class _TabGameState extends State<TabGame> with SingleTickerProviderStateMixin {
                 textBaseline: TextBaseline.alphabetic,
                 children: [
                   Text(
-                    '$secondsHeld.0',
+                    '$timeRemaining',
                     style: GoogleFonts.spaceGrotesk(
                       fontSize: 28,
                       fontWeight: FontWeight.w900,
                       color: const Color(0xFFE9DEF2),
                       shadows: [
                         Shadow(
-                          color: const Color(0xFF00F4FE).withValues(alpha: 0.7),
+                          color: (isGameOver ? const Color(0xFFFF4D4D) : const Color(0xFF00F4FE))
+                              .withValues(alpha: 0.7),
                           blurRadius: 12,
                         ),
                       ],
@@ -1107,7 +1381,7 @@ class _TabGameState extends State<TabGame> with SingleTickerProviderStateMixin {
                   ),
                   const SizedBox(width: 4),
                   Text(
-                    '/ 5.0 Detik',
+                    '/ 30 Detik',
                     style: GoogleFonts.spaceGrotesk(
                       fontSize: 14,
                       fontWeight: FontWeight.w600,
@@ -1123,7 +1397,7 @@ class _TabGameState extends State<TabGame> with SingleTickerProviderStateMixin {
                   borderRadius: BorderRadius.circular(6),
                 ),
                 child: Text(
-                  'SYNC 1.0x',
+                  isPlaying ? 'SENSITIVITY: 22.0x' : 'SYNC 1.0x',
                   style: GoogleFonts.spaceGrotesk(
                     fontSize: 9,
                     fontWeight: FontWeight.w800,
@@ -1140,7 +1414,9 @@ class _TabGameState extends State<TabGame> with SingleTickerProviderStateMixin {
               value: progress,
               minHeight: 8,
               backgroundColor: const Color(0xFF110C19),
-              valueColor: const AlwaysStoppedAnimation<Color>(Color(0xFF00F4FE)),
+              valueColor: AlwaysStoppedAnimation<Color>(
+                isGameOver ? const Color(0xFFFF4D4D) : const Color(0xFF00F4FE),
+              ),
             ),
           ),
         ],
@@ -1227,32 +1503,101 @@ class _TabGameState extends State<TabGame> with SingleTickerProviderStateMixin {
     );
   }
 
-  /// Action / Reset Button
+  /// Action / Start / Reset Button
   Widget _buildActionButton() {
-    return InkWell(
-      borderRadius: BorderRadius.circular(12),
-      onTap: () {
-        setState(() {
-          // Reset posisi bola ke titik tengah
-          ballX = 130.0;
-          ballY = 130.0;
-          secondsHeld = 0;
-          _isInCenter = false;
-        });
-      },
-      child: Container(
+    if (hasPlayedToday) {
+      return Container(
+        width: double.infinity,
+        height: 48,
+        decoration: BoxDecoration(
+          borderRadius: BorderRadius.circular(12),
+          color: const Color(0xFF1E1728),
+          border: Border.all(color: const Color(0xFF00F4FE).withValues(alpha: 0.4)),
+        ),
+        child: Row(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            const Icon(Icons.verified_rounded, color: Color(0xFF00F4FE), size: 20),
+            const SizedBox(width: 8),
+            Text(
+              'PROTOKOL HARI INI TELAH SELESAI',
+              style: GoogleFonts.spaceGrotesk(
+                fontSize: 12,
+                fontWeight: FontWeight.w800,
+                letterSpacing: 1.0,
+                color: const Color(0xFF00F4FE),
+              ),
+            ),
+          ],
+        ),
+      );
+    }
+
+    if (isPlaying) {
+      return Container(
         width: double.infinity,
         height: 48,
         decoration: BoxDecoration(
           borderRadius: BorderRadius.circular(12),
           gradient: const LinearGradient(
-            colors: [Color(0xFF7B2CBF), Color(0xFFB026FF)],
+            colors: [Color(0xFF005F73), Color(0xFF00F4FE)],
             begin: Alignment.centerLeft,
             end: Alignment.centerRight,
           ),
           boxShadow: [
             BoxShadow(
-              color: const Color(0xFFB026FF).withValues(alpha: 0.6),
+              color: const Color(0xFF00F4FE).withValues(alpha: 0.4),
+              blurRadius: 16,
+              offset: const Offset(0, 4),
+            ),
+          ],
+        ),
+        child: Row(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            const SizedBox(
+              width: 16,
+              height: 16,
+              child: CircularProgressIndicator(
+                strokeWidth: 2,
+                valueColor: AlwaysStoppedAnimation<Color>(Colors.black),
+              ),
+            ),
+            const SizedBox(width: 10),
+            Text(
+              'BERTAHAN DI ZONA TENGAH! ($timeRemaining s)',
+              style: GoogleFonts.spaceGrotesk(
+                fontSize: 12,
+                fontWeight: FontWeight.w900,
+                letterSpacing: 1.0,
+                color: Colors.black,
+              ),
+            ),
+          ],
+        ),
+      );
+    }
+
+    // Tombol Start / Retry Protocol
+    return InkWell(
+      borderRadius: BorderRadius.circular(12),
+      onTap: _startProtocol,
+      child: Container(
+        width: double.infinity,
+        height: 48,
+        decoration: BoxDecoration(
+          borderRadius: BorderRadius.circular(12),
+          gradient: LinearGradient(
+            colors: isGameOver
+                ? [const Color(0xFF93000A), const Color(0xFFFF5449)]
+                : [const Color(0xFF7B2CBF), const Color(0xFFB026FF)],
+            begin: Alignment.centerLeft,
+            end: Alignment.centerRight,
+          ),
+          boxShadow: [
+            BoxShadow(
+              color: (isGameOver ? const Color(0xFFFF5449) : const Color(0xFFB026FF))
+                  .withValues(alpha: 0.6),
               blurRadius: 20,
               offset: const Offset(0, 4),
             ),
@@ -1262,15 +1607,15 @@ class _TabGameState extends State<TabGame> with SingleTickerProviderStateMixin {
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
             Icon(
-              hasPlayedToday ? Icons.replay_rounded : Icons.play_arrow_rounded,
+              isGameOver ? Icons.refresh_rounded : Icons.play_arrow_rounded,
               color: Colors.white,
               size: 20,
             ),
             const SizedBox(width: 8),
             Text(
-              hasPlayedToday
-                  ? 'RESET POSISI INTI MANA'
-                  : 'MULAI STABILISASI MANA',
+              isGameOver
+                  ? 'RETRY PROTOCOL (SURVIVAL 30s)'
+                  : 'START PROTOCOL (SURVIVAL 30s)',
               style: GoogleFonts.spaceGrotesk(
                 fontSize: 12,
                 fontWeight: FontWeight.w800,
