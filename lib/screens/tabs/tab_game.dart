@@ -353,6 +353,13 @@ class _TabGameState extends State<TabGame> with SingleTickerProviderStateMixin {
 
   @override
   Widget build(BuildContext context) {
+    // Sinkronkan data sesi Hunter secara dinamis
+    final session = HiveService.getSession();
+    _hunterName = session['username']?.toString() ?? _hunterName;
+    _gold = (session['gold'] as int?) ?? _gold;
+    _currentExp = (session['exp'] as int?) ?? _currentExp;
+    _rank = session['rank']?.toString() ?? _rank;
+
     final double progress = (secondsHeld / 5.0).clamp(0.0, 1.0);
 
     return Scaffold(

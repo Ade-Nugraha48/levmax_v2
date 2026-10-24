@@ -478,6 +478,13 @@ class _TabShopState extends State<TabShop> {
 
   @override
   Widget build(BuildContext context) {
+    // Sinkronkan data sesi Hunter secara dinamis
+    final session = HiveService.getSession();
+    _userId = session['userId']?.toString() ?? _userId;
+    _username = session['username']?.toString() ?? _username;
+    _gold = (session['gold'] as int?) ?? _gold;
+    _rank = session['rank']?.toString() ?? _rank;
+
     return Scaffold(
       backgroundColor: const Color(0xFF16111E),
       body: SafeArea(
