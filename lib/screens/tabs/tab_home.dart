@@ -1587,6 +1587,7 @@ class _TabHomeState extends State<TabHome> {
   }
 
   /// FAB Kiri: Notifikasi Lonceng
+  /// FAB Kiri: Hunter System Notification Terminal (5 Skenario Notifikasi)
   Widget _buildLeftFab() {
     return Container(
       width: 44,
@@ -1611,20 +1612,450 @@ class _TabHomeState extends State<TabHome> {
           color: Color(0xFFE9DEF2),
           size: 20,
         ),
-        onPressed: () async {
-          await NotifService.showQuestReminder();
-          if (!mounted) return;
-          ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(
-              content: Text(
-                'SYSTEM ALERT: Notifikasi pengingat quest dikirim ke status bar HP!',
-                style: GoogleFonts.spaceGrotesk(fontSize: 12),
+        onPressed: () => _openNotificationHubModal(context),
+      ),
+    );
+  }
+
+  /// Membuka Hub Pengaturan & Pengujian 5 Protokol Notifikasi Hunter
+  void _openNotificationHubModal(BuildContext context) {
+    final persona = HiveService.getAIPersona();
+    final String aiName = persona.name;
+
+    showModalBottomSheet(
+      context: context,
+      isScrollControlled: true,
+      backgroundColor: Colors.transparent,
+      useSafeArea: true,
+      elevation: 0,
+      builder: (sheetContext) {
+        return StatefulBuilder(
+          builder: (dialogCtx, setModalState) {
+            final screenHeight = MediaQuery.of(dialogCtx).size.height;
+            return Material(
+              color: Colors.transparent,
+              child: Container(
+                height: screenHeight * 0.88,
+                clipBehavior: Clip.antiAlias,
+                decoration: BoxDecoration(
+                  color: const Color(0xFF110C19),
+                  borderRadius: const BorderRadius.only(
+                    topLeft: Radius.circular(24),
+                    topRight: Radius.circular(24),
+                  ),
+                  border: Border.all(
+                    color: const Color(0xFF00F4FE).withValues(alpha: 0.8),
+                    width: 1.5,
+                  ),
+                  boxShadow: [
+                    BoxShadow(
+                      color: const Color(0xFF00F4FE).withValues(alpha: 0.2),
+                      blurRadius: 20,
+                      offset: const Offset(0, -4),
+                    ),
+                  ],
+                ),
+                child: Column(
+                  children: [
+                    // Drag Handle
+                    Center(
+                      child: Container(
+                        width: 44,
+                        height: 4,
+                        margin: const EdgeInsets.only(top: 12, bottom: 8),
+                        decoration: BoxDecoration(
+                          color: const Color(0xFF383241),
+                          borderRadius: BorderRadius.circular(2),
+                        ),
+                      ),
+                    ),
+
+                    // Header Bar
+                    Padding(
+                      padding: const EdgeInsets.symmetric(horizontal: 18, vertical: 8),
+                      child: Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: [
+                          Row(
+                            children: [
+                              Container(
+                                padding: const EdgeInsets.all(6),
+                                decoration: BoxDecoration(
+                                  color: const Color(0xFF00F4FE).withValues(alpha: 0.15),
+                                  borderRadius: BorderRadius.circular(8),
+                                  border: Border.all(
+                                    color: const Color(0xFF00F4FE).withValues(alpha: 0.4),
+                                  ),
+                                ),
+                                child: const Icon(
+                                  Icons.notifications_active_rounded,
+                                  color: Color(0xFF00F4FE),
+                                  size: 18,
+                                ),
+                              ),
+                              const SizedBox(width: 10),
+                              Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  Text(
+                                    'HUNTER NOTIFICATION HUB',
+                                    style: GoogleFonts.spaceGrotesk(
+                                      fontSize: 12.5,
+                                      fontWeight: FontWeight.w800,
+                                      letterSpacing: 0.8,
+                                      color: const Color(0xFF00F4FE),
+                                    ),
+                                  ),
+                                  Text(
+                                    '5 Protokol Peringatan Sistem Solo Leveling',
+                                    style: GoogleFonts.plusJakartaSans(
+                                      fontSize: 10,
+                                      fontWeight: FontWeight.w500,
+                                      color: const Color(0xFF9B8BA1),
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            ],
+                          ),
+                          IconButton(
+                            icon: const Icon(Icons.close_rounded, color: Color(0xFF9B8BA1), size: 20),
+                            onPressed: () => Navigator.pop(sheetContext),
+                          ),
+                        ],
+                      ),
+                    ),
+
+                    const Divider(color: Color(0xFF2C1E4E), height: 1),
+
+                    // Content Scrollable
+                    Expanded(
+                      child: SingleChildScrollView(
+                        physics: const BouncingScrollPhysics(),
+                        padding: const EdgeInsets.all(16),
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            // Status Banner
+                            Container(
+                              padding: const EdgeInsets.all(12),
+                              decoration: BoxDecoration(
+                                color: const Color(0xFF1F1927),
+                                borderRadius: BorderRadius.circular(12),
+                                border: Border.all(
+                                  color: const Color(0xFF00F4FE).withValues(alpha: 0.3),
+                                  width: 1.0,
+                                ),
+                              ),
+                              child: Row(
+                                children: [
+                                  Container(
+                                    width: 10,
+                                    height: 10,
+                                    decoration: const BoxDecoration(
+                                      shape: BoxShape.circle,
+                                      color: Color(0xFF00F4FE),
+                                      boxShadow: [
+                                        BoxShadow(
+                                          color: Color(0xFF00F4FE),
+                                          blurRadius: 6,
+                                          spreadRadius: 1,
+                                        ),
+                                      ],
+                                    ),
+                                  ),
+                                  const SizedBox(width: 10),
+                                  Expanded(
+                                    child: Column(
+                                      crossAxisAlignment: CrossAxisAlignment.start,
+                                      children: [
+                                        Text(
+                                          'AUTO-SCHEDULER: AKTIF',
+                                          style: GoogleFonts.spaceGrotesk(
+                                            fontSize: 11,
+                                            fontWeight: FontWeight.w800,
+                                            color: const Color(0xFF00F4FE),
+                                            letterSpacing: 0.5,
+                                          ),
+                                        ),
+                                        Text(
+                                          '5 jadwal notifikasi otomatis aktif di latar belakang perangkat ponsel.',
+                                          style: GoogleFonts.plusJakartaSans(
+                                            fontSize: 10,
+                                            color: const Color(0xFFD4C7E3),
+                                          ),
+                                        ),
+                                      ],
+                                    ),
+                                  ),
+                                  const SizedBox(width: 8),
+                                  GestureDetector(
+                                    onTap: () async {
+                                      await NotifService.scheduleAllAutomatedNotifications();
+                                      if (!context.mounted) return;
+                                      ScaffoldMessenger.of(context).showSnackBar(
+                                        SnackBar(
+                                          content: Text(
+                                            '5 Jadwal Notifikasi Berhasil Disinkronkan!',
+                                            style: GoogleFonts.spaceGrotesk(fontWeight: FontWeight.w700),
+                                          ),
+                                          backgroundColor: const Color(0xFF00F4FE),
+                                        ),
+                                      );
+                                    },
+                                    child: Container(
+                                      padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 6),
+                                      decoration: BoxDecoration(
+                                        color: const Color(0xFF00F4FE).withValues(alpha: 0.15),
+                                        borderRadius: BorderRadius.circular(6),
+                                        border: Border.all(
+                                          color: const Color(0xFF00F4FE).withValues(alpha: 0.5),
+                                        ),
+                                      ),
+                                      child: Text(
+                                        'SYNC',
+                                        style: GoogleFonts.spaceGrotesk(
+                                          fontSize: 10,
+                                          fontWeight: FontWeight.w800,
+                                          color: const Color(0xFF00F4FE),
+                                        ),
+                                      ),
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            ),
+
+                            const SizedBox(height: 16),
+
+                            Text(
+                              'PENGUJIAN INSTAN & DAFTAR JADWAL (5 SKENARIO)',
+                              style: GoogleFonts.spaceGrotesk(
+                                fontSize: 10.5,
+                                fontWeight: FontWeight.w800,
+                                letterSpacing: 0.8,
+                                color: const Color(0xFFE5B5FF),
+                              ),
+                            ),
+                            const SizedBox(height: 10),
+
+                            // 1. Reset Quest Harian
+                            _buildNotifCard(
+                              number: '01',
+                              icon: Icons.restart_alt_rounded,
+                              iconColor: const Color(0xFF00F4FE),
+                              title: 'Reset Quest Harian',
+                              schedule: 'Setiap 00:00 (Tengah Malam)',
+                              desc: 'Pemberitahuan saat jam server berganti hari dan seluruh quest & dungeon disegarkan.',
+                              onTest: () async {
+                                await NotifService.showDailyResetNotif();
+                                if (!context.mounted) return;
+                                ScaffoldMessenger.of(context).showSnackBar(
+                                  const SnackBar(
+                                    content: Text('⚡ Notifikasi Reset Quest Harian terkirim ke status bar!'),
+                                    duration: Duration(seconds: 2),
+                                  ),
+                                );
+                              },
+                            ),
+
+                            // 2. Aktivitas Tertunda
+                            _buildNotifCard(
+                              number: '02',
+                              icon: Icons.warning_amber_rounded,
+                              iconColor: const Color(0xFFFFB800),
+                              title: 'Aktivitas Belum Dijalankan',
+                              schedule: 'Setiap 14:00 (Siang Hari)',
+                              desc: 'Peringatan jika Quest Fisik, Dungeon Radar, atau Latihan Mana belum tuntas hari ini.',
+                              onTest: () async {
+                                await NotifService.showUnfinishedActivitiesNotif();
+                                if (!context.mounted) return;
+                                ScaffoldMessenger.of(context).showSnackBar(
+                                  const SnackBar(
+                                    content: Text('⚠️ Notifikasi Aktivitas Tertunda terkirim ke status bar!'),
+                                    duration: Duration(seconds: 2),
+                                  ),
+                                );
+                              },
+                            ),
+
+                            // 3. Quest Belum Dijalankan Tiap 3 Jam
+                            _buildNotifCard(
+                              number: '03',
+                              icon: Icons.timer_rounded,
+                              iconColor: const Color(0xFFFF4081),
+                              title: 'Pengingat Berkala Tiap 3 Jam',
+                              schedule: 'Interval 3 Jam (09:00, 12:00, 15:00, 18:00, 21:00)',
+                              desc: 'Peringatan berulang tiap 3 jam server jika quest masih tertunda untuk mencegah penalti HP.',
+                              onTest: () async {
+                                await NotifService.showPeriodicQuestReminderNotif();
+                                if (!context.mounted) return;
+                                ScaffoldMessenger.of(context).showSnackBar(
+                                  const SnackBar(
+                                    content: Text('⚔️ Notifikasi Siklus 3 Jam terkirim ke status bar!'),
+                                    duration: Duration(seconds: 2),
+                                  ),
+                                );
+                              },
+                            ),
+
+                            // 4. AI Kangen User
+                            _buildNotifCard(
+                              number: '04',
+                              icon: Icons.favorite_rounded,
+                              iconColor: const Color(0xFFB026FF),
+                              title: '[$aiName] Kangen User',
+                              schedule: 'Setiap 19:30 (Malam Hari)',
+                              desc: 'Pesan personal dari AI pendamping Anda ($aiName) untuk kembali berlatih bersama.',
+                              onTest: () async {
+                                await NotifService.showAiMissesUserNotif();
+                                if (!context.mounted) return;
+                                ScaffoldMessenger.of(context).showSnackBar(
+                                  SnackBar(
+                                    content: Text('💬 Notifikasi [$aiName Kangen] terkirim ke status bar!'),
+                                    duration: const Duration(seconds: 2),
+                                  ),
+                                );
+                              },
+                            ),
+
+                            // 5. Hari Ingin Berakhir
+                            _buildNotifCard(
+                              number: '05',
+                              icon: Icons.hourglass_bottom_rounded,
+                              iconColor: const Color(0xFFFF2A6D),
+                              title: 'Hari / Server Ingin Berakhir',
+                              schedule: 'Setiap 23:00 (1 Jam Sebelum 00:00)',
+                              desc: 'Peringatan darurat sebelum pergantian hari untuk menghindari Penalty Quest.',
+                              onTest: () async {
+                                await NotifService.showEndOfDayWarningNotif();
+                                if (!context.mounted) return;
+                                ScaffoldMessenger.of(context).showSnackBar(
+                                  const SnackBar(
+                                    content: Text('🚨 Notifikasi Peringatan Akhir Hari terkirim ke status bar!'),
+                                    duration: Duration(seconds: 2),
+                                  ),
+                                );
+                              },
+                            ),
+
+                            const SizedBox(height: 10),
+                          ],
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
               ),
-              backgroundColor: const Color(0xFF1F1927),
-              duration: const Duration(seconds: 2),
+            );
+          },
+        );
+      },
+    );
+  }
+
+  /// Helper Card untuk masing-masing skenario notifikasi
+  Widget _buildNotifCard({
+    required String number,
+    required IconData icon,
+    required Color iconColor,
+    required String title,
+    required String schedule,
+    required String desc,
+    required VoidCallback onTest,
+  }) {
+    return Container(
+      margin: const EdgeInsets.only(bottom: 12),
+      padding: const EdgeInsets.all(12),
+      decoration: BoxDecoration(
+        color: const Color(0xFF171022),
+        borderRadius: BorderRadius.circular(12),
+        border: Border.all(
+          color: const Color(0xFF2C1E4E),
+          width: 1.0,
+        ),
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Row(
+            children: [
+              Container(
+                padding: const EdgeInsets.all(7),
+                decoration: BoxDecoration(
+                  color: iconColor.withValues(alpha: 0.15),
+                  borderRadius: BorderRadius.circular(8),
+                  border: Border.all(
+                    color: iconColor.withValues(alpha: 0.4),
+                  ),
+                ),
+                child: Icon(icon, color: iconColor, size: 16),
+              ),
+              const SizedBox(width: 10),
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      title,
+                      style: GoogleFonts.spaceGrotesk(
+                        fontSize: 12,
+                        fontWeight: FontWeight.w700,
+                        color: const Color(0xFFE9DEF2),
+                      ),
+                    ),
+                    Text(
+                      schedule,
+                      style: GoogleFonts.spaceGrotesk(
+                        fontSize: 9.5,
+                        fontWeight: FontWeight.w600,
+                        color: iconColor,
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+              const SizedBox(width: 8),
+              GestureDetector(
+                onTap: onTest,
+                child: Container(
+                  padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
+                  decoration: BoxDecoration(
+                    color: iconColor.withValues(alpha: 0.15),
+                    borderRadius: BorderRadius.circular(8),
+                    border: Border.all(
+                      color: iconColor.withValues(alpha: 0.6),
+                    ),
+                  ),
+                  child: Row(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      Icon(Icons.send_rounded, size: 12, color: iconColor),
+                      const SizedBox(width: 4),
+                      Text(
+                        'TES NOTIF',
+                        style: GoogleFonts.spaceGrotesk(
+                          fontSize: 9.5,
+                          fontWeight: FontWeight.w800,
+                          color: iconColor,
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+              ),
+            ],
+          ),
+          const SizedBox(height: 8),
+          Text(
+            desc,
+            style: GoogleFonts.plusJakartaSans(
+              fontSize: 10.5,
+              color: const Color(0xFF9B8BA1),
+              height: 1.35,
             ),
-          );
-        },
+          ),
+        ],
       ),
     );
   }
