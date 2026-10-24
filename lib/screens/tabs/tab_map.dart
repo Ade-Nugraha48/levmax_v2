@@ -366,6 +366,12 @@ class _TabMapState extends State<TabMap> with SingleTickerProviderStateMixin {
         gold: _gold,
         rank: newRank,
       );
+      SupabaseService.recordQuestCompleted(
+        userId: userId,
+        questId: 'dungeon_gate_upn',
+      );
+      final currentCount = HiveService.getQuestsCount() ?? 0;
+      HiveService.saveQuestsCount(currentCount + 1);
     }
 
     ScaffoldMessenger.of(context).showSnackBar(

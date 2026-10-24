@@ -283,6 +283,12 @@ class _TabGameState extends State<TabGame> with SingleTickerProviderStateMixin {
         gold: _gold,
         rank: rank,
       );
+      SupabaseService.recordQuestCompleted(
+        userId: userId,
+        questId: 'mana_gyro_stabilizer',
+      );
+      final currentCount = HiveService.getQuestsCount() ?? 0;
+      HiveService.saveQuestsCount(currentCount + 1);
     }
 
     _showVictoryDialog();

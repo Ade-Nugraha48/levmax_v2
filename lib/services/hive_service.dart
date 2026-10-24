@@ -118,9 +118,46 @@ class HiveService {
     await box.put('lastGameRewardDate', serverDate);
   }
 
-  /// Mengambil tanggal terakhir klaim reward mini game dari Hive
+  /// Menyimpan tanggal terakhir klaim reward mini game dari Hive
   static String? getGameRewardDate() {
     final box = sessionBox;
     return box.get('lastGameRewardDate')?.toString();
+  }
+
+  /// Menyimpan riwayat kesan & pesan feedback ke Hive
+  static Future<void> saveFeedback({
+    required String message,
+    String? createdAt,
+  }) async {
+    final box = sessionBox;
+    await box.put('latest_feedback_message', message);
+    if (createdAt != null) {
+      await box.put('latest_feedback_created_at', createdAt);
+    }
+  }
+
+  /// Mengambil data kesan & pesan feedback yang tersimpan di Hive
+  static Map<String, String>? getFeedback() {
+    final box = sessionBox;
+    final msg = box.get('latest_feedback_message')?.toString();
+    if (msg == null || msg.isEmpty) return null;
+    return {
+      'message': msg,
+      'created_at': box.get('latest_feedback_created_at')?.toString() ?? '',
+    };
+  }
+
+  /// Menyimpan jumlah quest yang telah diselesaikan ke Hive
+  static Future<void> saveQuestsCount(int count) async {
+    final box = sessionBox;
+    await box.put('quests_done_count', count);
+  }
+
+  /// Mengambil jumlah quest yang telah diselesaikan dari Hive
+  static int? getQuestsCount() {
+    final box = sessionBox;
+    final val = box.get('quests_done_count');
+    if (val is num) return val.toInt();
+    return null;
   }
 }

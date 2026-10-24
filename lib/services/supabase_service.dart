@@ -160,6 +160,57 @@ class SupabaseService {
       });
       return true;
     } catch (e) {
+      debugPrint('Error submitFeedback: $e');
+      return false;
+    }
+  }
+
+  /// Mengambil kesan dan pesan terbaru Hunter dari tabel 'feedbacks'
+  static Future<Map<String, dynamic>?> getLatestFeedback(String userId) async {
+    try {
+      final response = await client
+          .from('feedbacks')
+          .select()
+          .eq('user_id', userId)
+          .order('created_at', ascending: false)
+          .limit(1)
+          .maybeSingle();
+      return response;
+    } catch (e) {
+      debugPrint('Error getLatestFeedback: $e');
+      return null;
+    }
+  }
+
+  /// Mengambil jumlah total quest yang telah diselesaikan dari tabel 'user_quests'
+  static Future<int> getCompletedQuestsCount(String userId) async {
+    try {
+      final response = await client
+          .from('user_quests')
+          .select('id')
+          .eq('user_id', userId);
+      return (response as List).length;
+    } catch (e) {
+      debugPrint('Error getCompletedQuestsCount: $e');
+      return 0;
+    }
+  }
+
+  /// Mencatat quest yang diselesaikan oleh user ke tabel 'user_quests'
+  static Future<bool> recordQuestCompleted({
+    required String userId,
+    required String questId,
+  }) async {
+    try {
+      final today = DateTime.now().toIso8601String().split('T')[0];
+      await client.from('user_quests').insert({
+        'user_id': userId,
+        'quest_id': questId,
+        'last_completed_date': today,
+      });
+      return true;
+    } catch (e) {
+      debugPrint('Error recordQuestCompleted: $e');
       return false;
     }
   }

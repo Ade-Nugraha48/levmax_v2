@@ -267,6 +267,12 @@ class _TabHomeState extends State<TabHome> {
         gold: _gold,
         rank: _rank,
       );
+      SupabaseService.recordQuestCompleted(
+        userId: userId,
+        questId: qId,
+      );
+      final currentCount = HiveService.getQuestsCount() ?? 0;
+      HiveService.saveQuestsCount(currentCount + 1);
     }
 
     ScaffoldMessenger.of(context).showSnackBar(
