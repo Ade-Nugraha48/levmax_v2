@@ -1,6 +1,7 @@
 import 'dart:convert';
 import 'package:hive/hive.dart';
 import 'package:levmax_v2/models/ai_persona_model.dart';
+import 'package:levmax_v2/models/alarm_model.dart';
 import 'package:levmax_v2/utils/constants.dart';
 
 /// Service untuk manajemen penyimpanan lokal Hive (Session & Ledger Blockchain).
@@ -263,6 +264,27 @@ class HiveService {
       return AIPersona.defaultPersona.copyWith(avatarPath: legacyAvatar);
     }
     return AIPersona.defaultPersona;
+  }
+
+  /// Menyimpan konfigurasi alarm Hunter (Jam, Menit, Status, Ringtone MP3, Volume)
+  static Future<void> saveAlarm(AlarmModel alarm) async {
+    final box = sessionBox;
+    await box.put('hunter_alarm_data', jsonEncode(alarm.toJson()));
+  }
+
+  /// Mengambil konfigurasi alarm Hunter yang tersimpan dari Hive
+  static AlarmModel getAlarm() {
+    final box = sessionBox;
+    final raw = box.get('hunter_alarm_data');
+    if (raw != null) {
+      try {
+        final decoded = jsonDecode(raw.toString());
+        if (decoded is Map<String, dynamic>) {
+          return AlarmModel.fromJson(decoded);
+        }
+      } catch (_) {}
+    }
+    return AlarmModel.defaultAlarm;
   }
 
   /// Menyimpan status penyelesaian quest ke Hive (key: ${userId}_${questId})

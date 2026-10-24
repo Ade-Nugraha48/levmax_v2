@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:hive_flutter/hive_flutter.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 import 'package:levmax_v2/screens/splash_screen.dart';
+import 'package:levmax_v2/services/alarm_service.dart';
 import 'package:levmax_v2/services/notif_service.dart';
 import 'package:levmax_v2/utils/constants.dart';
 
@@ -22,9 +23,10 @@ Future<void> main() async {
     anonKey: 'sb_publishable_MZDpNOFHMgRKp8Ec7rhvKw_RXuO8kpw',
   );
 
-  // 3. Inisialisasi Notifikasi Lokal
+  // 3. Inisialisasi Notifikasi Lokal & Alarm Service
   try {
     await NotifService.init();
+    await AlarmService.init();
   } catch (_) {}
 
   runApp(const LevMaxApp());

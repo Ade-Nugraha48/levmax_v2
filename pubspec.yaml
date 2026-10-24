@@ -7,8 +7,10 @@ environment:
   sdk: ^3.13.2
 
 dependencies:
+  audioplayers: ^6.8.1
   camera: ^0.12.1
   crypto: ^3.0.7
+  file_picker: ^13.2.0
   flutter:
     sdk: flutter
   flutter_local_notifications: ^22.3.2
@@ -38,3 +40,4 @@ flutter:
   uses-material-design: true
   assets:
     - assets/images/
+    - assets/audio/
