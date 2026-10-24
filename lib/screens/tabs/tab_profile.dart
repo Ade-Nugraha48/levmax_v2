@@ -4,6 +4,7 @@ import 'package:google_fonts/google_fonts.dart';
 import 'package:image_picker/image_picker.dart';
 import '../../services/hive_service.dart';
 import '../../services/supabase_service.dart';
+import '../../widgets/avatar_adjust_dialog.dart';
 import '../../widgets/avatar_image.dart';
 import '../auth/login_screen.dart';
 
@@ -230,18 +231,27 @@ class _TabProfileState extends State<TabProfile> {
       final picker = ImagePicker();
       final picked = await picker.pickImage(
         source: ImageSource.gallery,
-        maxWidth: 800,
-        maxHeight: 800,
-        imageQuality: 85,
+        maxWidth: 1200,
+        maxHeight: 1200,
+        imageQuality: 90,
       );
       if (picked == null) return;
+
+      if (!mounted) return;
+
+      // Tampilkan dialog penyesuaian (crop / zoom / pan) sebelum diunggah
+      final File? adjustedFile = await showDialog<File>(
+        context: context,
+        barrierDismissible: false,
+        builder: (ctx) => AvatarAdjustDialog(imageFile: File(picked.path)),
+      );
+      if (adjustedFile == null) return; // Pengguna membatalkan proses penyesuaian
 
       setState(() {
         _isUploadingAvatar = true;
       });
 
-      final imageFile = File(picked.path);
-      final newUrl = await SupabaseService.uploadAvatar(imageFile, _userId);
+      final newUrl = await SupabaseService.uploadAvatar(adjustedFile, _userId);
 
       if (newUrl != null) {
         if (_userId != 'anonymous') {
@@ -585,11 +595,12 @@ class _TabProfileState extends State<TabProfile> {
                     child: Stack(
                       clipBehavior: Clip.none,
                       children: [
+                        // Outer Neon Square Frame
                         Container(
-                          width: 86,
-                          height: 86,
+                          width: 96,
+                          height: 96,
                           decoration: BoxDecoration(
-                            shape: BoxShape.circle,
+                            borderRadius: BorderRadius.circular(20),
                             gradient: const LinearGradient(
                               colors: [Color(0xFFB026FF), Color(0xFF00F4FE)],
                               begin: Alignment.topLeft,
@@ -608,54 +619,49 @@ class _TabProfileState extends State<TabProfile> {
                           ),
                           padding: const EdgeInsets.all(2.5),
                           child: Container(
-                            decoration: const BoxDecoration(
-                              shape: BoxShape.circle,
-                              color: Color(0xFF140D24),
+                            decoration: BoxDecoration(
+                              borderRadius: BorderRadius.circular(17),
+                              color: const Color(0xFF140D24),
                             ),
-                            child: Center(
-                              child: Container(
-                                width: 58,
-                                height: 58,
-                                decoration: BoxDecoration(
-                                  borderRadius: BorderRadius.circular(16),
-                                  color: const Color(0xFF2D2736),
-                                  border: Border.all(color: const Color(0xFF00F4FE).withValues(alpha: 0.6)),
-                                ),
-                                child: _isUploadingAvatar
-                                    ? const Center(
-                                        child: SizedBox(
-                                          width: 24,
-                                          height: 24,
-                                          child: CircularProgressIndicator(
-                                            strokeWidth: 2.5,
-                                            color: Color(0xFF00F4FE),
-                                          ),
-                                        ),
-                                      )
-                                    : HunterAvatar(
-                                        avatarUrl: _avatarUrl,
-                                        size: 58,
-                                        borderRadius: BorderRadius.circular(15),
-                                        fallback: const Center(
-                                          child: Icon(
-                                            Icons.shield_moon_rounded,
-                                            size: 34,
-                                            color: Color(0xFF00F4FE),
-                                          ),
-                                        ),
+                            clipBehavior: Clip.antiAlias,
+                            child: _isUploadingAvatar
+                                ? const Center(
+                                    child: SizedBox(
+                                      width: 28,
+                                      height: 28,
+                                      child: CircularProgressIndicator(
+                                        strokeWidth: 2.5,
+                                        color: Color(0xFF00F4FE),
                                       ),
-                              ),
-                            ),
+                                    ),
+                                  )
+                                : HunterAvatar(
+                                    avatarUrl: _avatarUrl,
+                                    size: 91,
+                                    borderRadius: BorderRadius.circular(17),
+                                    fallback: const Center(
+                                      child: Icon(
+                                        Icons.shield_moon_rounded,
+                                        size: 42,
+                                        color: Color(0xFF00F4FE),
+                                      ),
+                                    ),
+                                  ),
                           ),
                         ),
+                        // Edit Pencil Button (Bottom Right)
                         Positioned(
-                          bottom: 0,
-                          right: 0,
+                          bottom: -3,
+                          right: -3,
                           child: Container(
-                            padding: const EdgeInsets.all(5),
+                            padding: const EdgeInsets.all(5.5),
                             decoration: BoxDecoration(
                               color: const Color(0xFF00F4FE),
                               shape: BoxShape.circle,
+                              border: Border.all(
+                                color: const Color(0xFF1F1927),
+                                width: 2,
+                              ),
                               boxShadow: [
                                 BoxShadow(
                                   color: const Color(0xFF00F4FE).withValues(alpha: 0.6),
@@ -664,8 +670,8 @@ class _TabProfileState extends State<TabProfile> {
                               ],
                             ),
                             child: const Icon(
-                              Icons.edit,
-                              size: 14,
+                              Icons.edit_rounded,
+                              size: 13,
                               color: Colors.black,
                             ),
                           ),
