@@ -10,6 +10,9 @@ class HiveService {
   /// Box untuk menyimpan riwayat rantai blok (Blockchain)
   static Box get blockchainBox => Hive.box(AppConstants.blockchainBox);
 
+  /// Box untuk menyimpan status penyelesaian quest
+  static Box get questBox => Hive.box(AppConstants.questBox);
+
   /// Menyimpan sesi login Hunter setelah autentikasi berhasil
   static Future<void> saveSession({
     required String userId,
@@ -101,5 +104,67 @@ class HiveService {
   static String? getAIAvatar() {
     final box = sessionBox;
     return box.get('ai_avatar_path') as String?;
+  }
+
+  /// Menyimpan status penyelesaian quest ke Hive (key: ${userId}_${questId})
+  static Future<void> saveQuestCompletion({
+    required String userId,
+    required String questId,
+    DateTime? date,
+  }) async {
+    final box = questBox;
+    final timestamp = (date ?? DateTime.now()).toIso8601String();
+    await box.put('${userId}_$questId', timestamp);
+  }
+
+  /// Memeriksa apakah quest telah diselesaikan hari ini berdasarkan perbandingan tanggal
+  static bool isQuestCompletedToday({
+    required String userId,
+    required String questId,
+  }) {
+    final box = questBox;
+    final raw = box.get('${userId}_$questId');
+    if (raw == null) return false;
+    final dt = DateTime.tryParse(raw.toString());
+    if (dt == null) return false;
+    final now = DateTime.now();
+    return dt.year == now.year && dt.month == now.month && dt.day == now.day;
+  }
+
+  /// Mengambil kumpulan questId yang telah diselesaikan hari ini oleh user
+  static Set<String> getTodayCompletedQuestIds(String userId) {
+    final Set<String> completed = {};
+    final box = questBox;
+    final prefix = '${userId}_';
+    final now = DateTime.now();
+    for (final key in box.keys) {
+      final keyStr = key.toString();
+      if (keyStr.startsWith(prefix)) {
+        final qId = keyStr.substring(prefix.length);
+        final raw = box.get(key);
+        if (raw != null) {
+          final dt = DateTime.tryParse(raw.toString());
+          if (dt != null && dt.year == now.year && dt.month == now.month && dt.day == now.day) {
+            completed.add(qId);
+          }
+        }
+      }
+    }
+    return completed;
+  }
+
+  /// Menyimpan/menimpa data quest dari cloud Supabase ke Hive questBox
+  static Future<void> syncCompletedQuestsFromCloud({
+    required String userId,
+    required List<Map<String, dynamic>> records,
+  }) async {
+    final box = questBox;
+    for (final r in records) {
+      final qId = r['quest_id']?.toString();
+      final dateStr = r['last_completed_date']?.toString();
+      if (qId != null && dateStr != null) {
+        await box.put('${userId}_$qId', dateStr);
+      }
+    }
   }
 }

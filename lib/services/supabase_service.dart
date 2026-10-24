@@ -94,4 +94,53 @@ class SupabaseService {
       return false;
     }
   }
+
+  /// Melakukan upsert data penyelesaian quest ke tabel 'user_quests' di Supabase
+  static Future<bool> backupQuestCompletion({
+    required String userId,
+    required String questId,
+    String? completedDate,
+  }) async {
+    try {
+      final now = DateTime.now();
+      final dateStr = completedDate ??
+          '${now.year.toString().padLeft(4, '0')}-${now.month.toString().padLeft(2, '0')}-${now.day.toString().padLeft(2, '0')}';
+      try {
+        await client.from('user_quests').upsert({
+          'user_id': userId,
+          'quest_id': questId,
+          'last_completed_date': dateStr,
+        }, onConflict: 'user_id,quest_id');
+      } catch (_) {
+        await client.from('user_quests').upsert({
+          'user_id': userId,
+          'quest_id': questId,
+          'last_completed_date': dateStr,
+        });
+      }
+      return true;
+    } catch (e) {
+      return false;
+    }
+  }
+
+  /// Mengambil riwayat quest yang telah diselesaikan hari ini dari tabel 'user_quests' di Supabase
+  static Future<List<Map<String, dynamic>>> fetchTodayCompletedQuests({
+    required String userId,
+    String? todayDate,
+  }) async {
+    try {
+      final now = DateTime.now();
+      final dateStr = todayDate ??
+          '${now.year.toString().padLeft(4, '0')}-${now.month.toString().padLeft(2, '0')}-${now.day.toString().padLeft(2, '0')}';
+      final response = await client
+          .from('user_quests')
+          .select('quest_id, last_completed_date')
+          .eq('user_id', userId)
+          .eq('last_completed_date', dateStr);
+      return List<Map<String, dynamic>>.from(response);
+    } catch (e) {
+      return [];
+    }
+  }
 }

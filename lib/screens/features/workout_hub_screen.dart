@@ -229,9 +229,12 @@ class _WorkoutHubScreenState extends State<WorkoutHubScreen>
 
   // 2. State Lokal (Dimulai kosongan dari awal: 0 Reps & 0 Sets)
   late String _activeExercise;
-  int _currentReps = 0;
+  int _activeSetIndex = 0;
+  List<int> _setReps = [0, 0, 0];
   List<bool> _setsCompleted = [false, false, false];
   bool _isClaimed = false;
+
+  int get _currentReps => _setReps[_activeSetIndex];
 
   // 3. Controller Animasi Biomekanik Canvas
   late AnimationController _animController;
@@ -245,16 +248,17 @@ class _WorkoutHubScreenState extends State<WorkoutHubScreen>
   /// Aturan Validasi Selesai: Semua 3 sets telah dicentang DAN repetisi mencapai target protokol
   bool get _isProtocolReady {
     final bool allSetsDone = _setsCompleted.length == 3 && _setsCompleted.every((done) => done);
-    final bool repsReached = _currentReps >= _currentProtocol.targetReps;
-    return allSetsDone && repsReached;
+    final bool allRepsReached = _setReps.every((reps) => reps >= _currentProtocol.targetReps);
+    return allSetsDone && allRepsReached;
   }
 
   @override
   void initState() {
     super.initState();
     _activeExercise = widget.initialExercise;
-    _currentReps = 0; // Kosongan dari awal (0 repetisi)
-    _setsCompleted = [false, false, false]; // Kosongan dari awal (belum ada set selesai)
+    _activeSetIndex = 0;
+    _setReps = [0, 0, 0];
+    _setsCompleted = [false, false, false];
 
     // Animasi perulangan biomekanik halus (2.4 detik cycle dengan bolak-balik)
     _animController = AnimationController(
@@ -280,34 +284,53 @@ class _WorkoutHubScreenState extends State<WorkoutHubScreen>
     if (_activeExercise == key) return;
     setState(() {
       _activeExercise = key;
-      _currentReps = 0; // Reset ke 0
-      _setsCompleted = [false, false, false]; // Reset ke kosongan
+      _activeSetIndex = 0;
+      _setReps = [0, 0, 0];
+      _setsCompleted = [false, false, false];
       _isClaimed = false;
     });
   }
 
   /// Menambah repetisi (+1 biasa, atau +5 dengan long press)
   void _incrementReps({int count = 1}) {
-    if (_currentReps < _currentProtocol.targetReps) {
+    if (_setReps[_activeSetIndex] < _currentProtocol.targetReps) {
       setState(() {
-        _currentReps = min(_currentReps + count, _currentProtocol.targetReps);
+        _setReps[_activeSetIndex] = min(_setReps[_activeSetIndex] + count, _currentProtocol.targetReps);
+        if (_setReps[_activeSetIndex] >= _currentProtocol.targetReps) {
+          _setsCompleted[_activeSetIndex] = true;
+        }
       });
     }
   }
 
   /// Mengurangi repetisi (-1 biasa, atau -5 dengan long press)
   void _decrementReps({int count = 1}) {
-    if (_currentReps > 0) {
+    if (_setReps[_activeSetIndex] > 0) {
       setState(() {
-        _currentReps = max(_currentReps - count, 0);
+        _setReps[_activeSetIndex] = max(_setReps[_activeSetIndex] - count, 0);
+        if (_setReps[_activeSetIndex] < _currentProtocol.targetReps) {
+          _setsCompleted[_activeSetIndex] = false;
+        }
       });
     }
   }
 
-  /// Men-toggle checklist Set
-  void _toggleSet(int index) {
+  /// Mengecek apakah set terkunci secara sekuensial
+  bool _isSetLocked(int index) {
+    if (index <= 0) return false;
+    for (int i = 0; i < index; i++) {
+      if (_setReps[i] < _currentProtocol.targetReps) {
+        return true;
+      }
+    }
+    return false;
+  }
+
+  /// Berpindah fokus set tanpa mengubah nilai repetisi (hanya set yang sudah terbuka)
+  void _selectSet(int index) {
+    if (_isSetLocked(index)) return;
     setState(() {
-      _setsCompleted[index] = !_setsCompleted[index];
+      _activeSetIndex = index;
     });
   }
 
@@ -1357,59 +1380,90 @@ class _WorkoutHubScreenState extends State<WorkoutHubScreen>
           // 3 Set Pills (Set 1, Set 2, Set 3)
           Row(
             children: List.generate(3, (index) {
+              final isLocked = _isSetLocked(index);
               final isDone = _setsCompleted[index];
+              final isActive = _activeSetIndex == index;
               return Expanded(
                 child: Padding(
                   padding: EdgeInsets.only(
                     left: index == 0 ? 0 : 3,
                     right: index == 2 ? 0 : 3,
                   ),
-                  child: GestureDetector(
-                    onTap: () => _toggleSet(index),
-                    child: Container(
-                      padding: const EdgeInsets.symmetric(vertical: 8, horizontal: 8),
-                      decoration: BoxDecoration(
-                        color: isDone
-                            ? const Color(0xFF00F4FE).withValues(alpha: 0.1)
-                            : const Color(0xFF08050E),
-                        borderRadius: BorderRadius.circular(10),
-                        border: Border.all(
-                          color: isDone
-                              ? const Color(0xFF00F4FE).withValues(alpha: 0.6)
-                              : const Color(0xFF383241),
-                          width: 1.0,
+                  child: Opacity(
+                    opacity: isLocked ? 0.45 : 1.0,
+                    child: GestureDetector(
+                      onTap: isLocked ? null : () => _selectSet(index),
+                      child: Container(
+                        padding: const EdgeInsets.symmetric(vertical: 8, horizontal: 8),
+                        decoration: BoxDecoration(
+                          color: isLocked
+                              ? const Color(0xFF0A0712)
+                              : (isDone
+                                  ? const Color(0xFF00F4FE).withValues(alpha: 0.1)
+                                  : (isActive
+                                      ? const Color(0xFF1F1927)
+                                      : const Color(0xFF08050E))),
+                          borderRadius: BorderRadius.circular(10),
+                          border: Border.all(
+                            color: isLocked
+                                ? const Color(0xFF252030)
+                                : (isDone
+                                    ? const Color(0xFF00F4FE).withValues(alpha: 0.6)
+                                    : (isActive
+                                        ? const Color(0xFFB026FF).withValues(alpha: 0.8)
+                                        : const Color(0xFF383241))),
+                            width: 1.0,
+                          ),
                         ),
-                      ),
-                      child: Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                        children: [
-                          Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              Text(
-                                'STAGE',
-                                style: GoogleFonts.spaceGrotesk(
-                                  fontSize: 7.5,
-                                  fontWeight: FontWeight.w700,
-                                  color: const Color(0xFF9B8BA1),
+                        child: Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          children: [
+                            Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                Text(
+                                  isLocked ? 'LOCKED' : 'STAGE',
+                                  style: GoogleFonts.spaceGrotesk(
+                                    fontSize: 7.5,
+                                    fontWeight: FontWeight.w700,
+                                    color: isLocked
+                                        ? const Color(0xFF5D5373)
+                                        : const Color(0xFF9B8BA1),
+                                  ),
                                 ),
-                              ),
-                              Text(
-                                'SET ${index + 1}',
-                                style: GoogleFonts.spaceGrotesk(
-                                  fontSize: 10,
-                                  fontWeight: FontWeight.w800,
-                                  color: isDone ? const Color(0xFF00F4FE) : Colors.white,
+                                Text(
+                                  'SET ${index + 1}',
+                                  style: GoogleFonts.spaceGrotesk(
+                                    fontSize: 10,
+                                    fontWeight: FontWeight.w800,
+                                    color: isLocked
+                                        ? const Color(0xFF6C637D)
+                                        : (isDone
+                                            ? const Color(0xFF00F4FE)
+                                            : (isActive ? const Color(0xFFE5B5FF) : Colors.white)),
+                                  ),
                                 ),
-                              ),
-                            ],
-                          ),
-                          Icon(
-                            isDone ? Icons.check_circle_rounded : Icons.radio_button_unchecked_rounded,
-                            size: 16,
-                            color: isDone ? const Color(0xFF00F4FE) : const Color(0xFF5D5373),
-                          ),
-                        ],
+                              ],
+                            ),
+                            Icon(
+                              isLocked
+                                  ? Icons.lock_outline_rounded
+                                  : (isDone
+                                      ? Icons.check_circle_rounded
+                                      : (isActive
+                                          ? Icons.radio_button_checked_rounded
+                                          : Icons.radio_button_unchecked_rounded)),
+                              size: 16,
+                              color: isLocked
+                                  ? const Color(0xFF5D5373)
+                                  : (isDone
+                                      ? const Color(0xFF00F4FE)
+                                      : (isActive
+                                          ? const Color(0xFFB026FF)
+                                          : const Color(0xFF5D5373))),
+                            ),
+                          ],
+                        ),
                       ),
                     ),
                   ),
@@ -1552,7 +1606,7 @@ class _WorkoutHubScreenState extends State<WorkoutHubScreen>
       if (remainingSets > 0 && remainingReps > 0) {
         buttonText = 'SELESAIKAN $remainingSets SET & $remainingReps REPS LAGI';
       } else if (remainingSets > 0) {
-        buttonText = 'SELESAIKAN $remainingSets SET LAGI (CENTANG SET)';
+        buttonText = 'SELESAIKAN $remainingSets SET LAGI';
       } else {
         buttonText = 'CAPAI TARGET REPETISI ($remainingReps REPS LAGI)';
       }

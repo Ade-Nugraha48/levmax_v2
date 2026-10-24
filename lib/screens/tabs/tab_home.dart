@@ -40,12 +40,48 @@ class _TabHomeState extends State<TabHome> {
 
   // Tracking Quest yang sudah diselesaikan
   final Set<String> _completedQuests = {};
+  DateTime _lastMidnightCheck = DateTime.now();
 
   @override
   void initState() {
     super.initState();
     _loadUserSession();
+    _loadLocalQuestStatus();
+    _syncQuestsFromSupabase();
     _startServerClock();
+  }
+
+  /// Memuat status quest yang telah diselesaikan hari ini dari Hive questBox (Local Primary)
+  void _loadLocalQuestStatus() {
+    final session = HiveService.getSession();
+    final userId = session['userId']?.toString() ?? 'anonymous';
+    final completed = HiveService.getTodayCompletedQuestIds(userId);
+    if (mounted) {
+      setState(() {
+        _completedQuests.clear();
+        _completedQuests.addAll(completed);
+      });
+    }
+  }
+
+  /// Sinkronisasi data quest hari ini dari Supabase (Cloud Backup Restore)
+  Future<void> _syncQuestsFromSupabase() async {
+    final session = HiveService.getSession();
+    final userId = session['userId']?.toString();
+    if (userId == null || userId == 'anonymous') return;
+
+    try {
+      final cloudRecords = await SupabaseService.fetchTodayCompletedQuests(userId: userId);
+      if (cloudRecords.isNotEmpty) {
+        await HiveService.syncCompletedQuestsFromCloud(
+          userId: userId,
+          records: cloudRecords,
+        );
+        if (mounted) {
+          _loadLocalQuestStatus();
+        }
+      }
+    } catch (_) {}
   }
 
   void _loadUserSession() {
@@ -80,7 +116,16 @@ class _TabHomeState extends State<TabHome> {
   }
 
   void _updateClock() {
-    final nowUtc = DateTime.now().toUtc();
+    final now = DateTime.now();
+    // Pengecekan otomatis saat pergantian hari melewati pukul 00:00 (Reset Jam 12 Malam)
+    if (now.day != _lastMidnightCheck.day ||
+        now.month != _lastMidnightCheck.month ||
+        now.year != _lastMidnightCheck.year) {
+      _lastMidnightCheck = now;
+      _loadLocalQuestStatus();
+    }
+
+    final nowUtc = now.toUtc();
     final wib = nowUtc.add(const Duration(hours: 7));
     final wita = nowUtc.add(const Duration(hours: 8));
     final wit = nowUtc.add(const Duration(hours: 9));
@@ -199,13 +244,23 @@ class _TabHomeState extends State<TabHome> {
       hp: _currentHp,
     );
 
-    // 2. Sinkronisasi asinkron ke Supabase (jika user telah login)
+    // 2. Simpan status quest ke Hive questBox (Local Primary)
+    HiveService.saveQuestCompletion(
+      userId: userId,
+      questId: qId,
+    );
+
+    // 3. Sinkronisasi asinkron ke Supabase (Cloud Backup jika user login)
     if (userId != 'anonymous') {
       SupabaseService.updateUserStats(
         userId: userId,
         exp: _currentExp,
         gold: _gold,
         rank: _rank,
+      );
+      SupabaseService.backupQuestCompletion(
+        userId: userId,
+        questId: qId,
       );
     }
 
@@ -1051,12 +1106,6 @@ class _TabHomeState extends State<TabHome> {
       final String qId = q['id'] as String;
       final bool isDone = _completedQuests.contains(qId);
       if (isDone) {
-        completeQuest(
-          q['exp'] as int,
-          q['gold'] as int,
-          qId,
-          q['title'] as String,
-        );
         return;
       }
 
@@ -1151,13 +1200,13 @@ class _TabHomeState extends State<TabHome> {
             color: Colors.transparent,
             child: InkWell(
               borderRadius: BorderRadius.circular(12),
-              onTap: () => handleQuestAction(q),
+              onTap: isDone ? null : () => handleQuestAction(q),
               child: Container(
                 decoration: BoxDecoration(
-                  color: const Color(0xFF1F1927),
+                  color: isDone ? const Color(0xFF16121D) : const Color(0xFF1F1927),
                   borderRadius: BorderRadius.circular(12),
                   border: Border.all(
-                    color: isDone ? const Color(0xFF00F4FE).withValues(alpha: 0.5) : const Color(0xFF383241),
+                    color: isDone ? const Color(0xFF2C2436) : const Color(0xFF383241),
                     width: 1.0,
                   ),
                   boxShadow: [
@@ -1176,12 +1225,12 @@ class _TabHomeState extends State<TabHome> {
                       width: 44,
                       height: 44,
                       decoration: BoxDecoration(
-                        color: q['iconBg'] as Color,
+                        color: isDone ? const Color(0xFF1A1524) : (q['iconBg'] as Color),
                         borderRadius: BorderRadius.circular(10),
                       ),
                       child: Icon(
                         q['icon'] as IconData,
-                        color: q['iconColor'] as Color,
+                        color: isDone ? const Color(0xFF6B6178) : (q['iconColor'] as Color),
                         size: 22,
                       ),
                     ),
@@ -1200,7 +1249,7 @@ class _TabHomeState extends State<TabHome> {
                             style: GoogleFonts.sora(
                               fontSize: 13.5,
                               fontWeight: FontWeight.w700,
-                              color: const Color(0xFFE9DEF2),
+                              color: isDone ? const Color(0xFF7E728C) : const Color(0xFFE9DEF2),
                             ),
                           ),
                           const SizedBox(height: 3),
@@ -1209,7 +1258,7 @@ class _TabHomeState extends State<TabHome> {
                               Container(
                                 padding: const EdgeInsets.symmetric(horizontal: 5, vertical: 1.5),
                                 decoration: BoxDecoration(
-                                  color: const Color(0xFF2D164D),
+                                  color: isDone ? const Color(0xFF1F1A28) : const Color(0xFF2D164D),
                                   borderRadius: BorderRadius.circular(4),
                                 ),
                                 child: Text(
@@ -1217,7 +1266,7 @@ class _TabHomeState extends State<TabHome> {
                                   style: GoogleFonts.spaceGrotesk(
                                     fontSize: 8.5,
                                     fontWeight: FontWeight.w700,
-                                    color: const Color(0xFFE5B5FF),
+                                    color: isDone ? const Color(0xFF6E637D) : const Color(0xFFE5B5FF),
                                   ),
                                 ),
                               ),
@@ -1229,7 +1278,7 @@ class _TabHomeState extends State<TabHome> {
                                   overflow: TextOverflow.ellipsis,
                                   style: GoogleFonts.plusJakartaSans(
                                     fontSize: 10,
-                                    color: const Color(0xFF9B8BA1),
+                                    color: isDone ? const Color(0xFF635870) : const Color(0xFF9B8BA1),
                                   ),
                                 ),
                               ),
@@ -1253,7 +1302,7 @@ class _TabHomeState extends State<TabHome> {
                               style: GoogleFonts.spaceGrotesk(
                                 fontSize: 9.5,
                                 fontWeight: FontWeight.w700,
-                                color: Colors.white,
+                                color: isDone ? const Color(0xFF6E637D) : Colors.white,
                               ),
                             ),
                             const SizedBox(width: 4),
@@ -1262,7 +1311,7 @@ class _TabHomeState extends State<TabHome> {
                               style: GoogleFonts.spaceGrotesk(
                                 fontSize: 9.5,
                                 fontWeight: FontWeight.w700,
-                                color: const Color(0xFF00F4FE),
+                                color: isDone ? const Color(0xFF4A6870) : const Color(0xFF00F4FE),
                               ),
                             ),
                           ],
@@ -1270,20 +1319,20 @@ class _TabHomeState extends State<TabHome> {
                         const SizedBox(height: 5),
                         InkWell(
                           borderRadius: BorderRadius.circular(8),
-                          onTap: () => handleQuestAction(q),
+                          onTap: isDone ? null : () => handleQuestAction(q),
                           child: Container(
-                            width: 96,
+                            width: 102,
                             height: 32,
                             decoration: BoxDecoration(
                               color: isDone
-                                  ? const Color(0xFF2D2736)
+                                  ? const Color(0xFF201B28)
                                   : (q['btnColor'] as Color == Colors.transparent
                                       ? const Color(0xFF231B33)
                                       : q['btnColor'] as Color),
                               borderRadius: BorderRadius.circular(8),
                               border: Border.all(
                                 color: isDone
-                                    ? const Color(0xFF00F4FE)
+                                    ? const Color(0xFF352D40)
                                     : (q['btnColor'] as Color == Colors.transparent
                                         ? const Color(0xFFDCB8FC).withValues(alpha: 0.5)
                                         : Colors.transparent),
@@ -1306,18 +1355,22 @@ class _TabHomeState extends State<TabHome> {
                               mainAxisSize: MainAxisSize.min,
                               children: [
                                 Icon(
-                                  isDone ? Icons.check_circle_rounded : (q['isActionCyan'] == true ? Icons.navigation_rounded : Icons.bolt_rounded),
+                                  isDone
+                                      ? Icons.check_circle_rounded
+                                      : (q['isActionCyan'] == true
+                                          ? Icons.navigation_rounded
+                                          : Icons.bolt_rounded),
                                   size: 13,
-                                  color: isDone ? const Color(0xFF00F4FE) : q['btnTextColor'] as Color,
+                                  color: isDone ? const Color(0xFF8B8097) : q['btnTextColor'] as Color,
                                 ),
                                 const SizedBox(width: 4),
                                 Text(
-                                  isDone ? 'DONE' : q['btnText'] as String,
+                                  isDone ? 'COMPLETED' : q['btnText'] as String,
                                   style: GoogleFonts.spaceGrotesk(
                                     fontSize: 9.5,
                                     fontWeight: FontWeight.w800,
                                     letterSpacing: 0.4,
-                                    color: isDone ? const Color(0xFF00F4FE) : q['btnTextColor'] as Color,
+                                    color: isDone ? const Color(0xFF8B8097) : q['btnTextColor'] as Color,
                                   ),
                                 ),
                               ],

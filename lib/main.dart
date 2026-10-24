@@ -13,6 +13,7 @@ Future<void> main() async {
   await Hive.initFlutter();
   await Hive.openBox(AppConstants.sessionBox);
   await Hive.openBox(AppConstants.blockchainBox);
+  await Hive.openBox(AppConstants.questBox);
 
   // 2. Inisialisasi Supabase menggunakan kredensial riil
   await Supabase.initialize(
