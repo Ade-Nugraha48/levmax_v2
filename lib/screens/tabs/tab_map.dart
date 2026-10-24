@@ -102,7 +102,8 @@ class _TabMapState extends State<TabMap> with SingleTickerProviderStateMixin {
     try {
       bool serviceEnabled = await Geolocator.isLocationServiceEnabled();
       if (!serviceEnabled) {
-        // Layanan lokasi dinonaktifkan di perangkat
+        _fallbackSimulation();
+        return;
       }
 
       LocationPermission permission = await Geolocator.checkPermission();
@@ -175,6 +176,16 @@ class _TabMapState extends State<TabMap> with SingleTickerProviderStateMixin {
     });
   }
 
+  String _calculateRank(int exp) {
+    if (exp >= 2500) return 'RANK S';
+    if (exp >= 1500) return 'RANK A';
+    if (exp >= 1000) return 'RANK B';
+    if (exp >= 600) return 'RANK C';
+    if (exp >= 300) return 'RANK D';
+    if (exp >= 100) return 'RANK E';
+    return 'RANK F';
+  }
+
   /// Fungsi klaim reward jika hunter berada dalam radius <= 100 meter
   void _claimDungeonReward() {
     if (hasClaimed) return;
@@ -192,22 +203,24 @@ class _TabMapState extends State<TabMap> with SingleTickerProviderStateMixin {
       return;
     }
 
+    final newRank = _calculateRank(_currentExp + 50);
+
     setState(() {
       hasClaimed = true;
       _currentExp += 50;
       _gold += 100;
+      _rank = newRank;
     });
 
     // Simpan hasil raid ke Hive & Supabase
     final session = HiveService.getSession();
     final userId = session['userId']?.toString() ?? 'anonymous';
     final username = session['username']?.toString() ?? _hunterName;
-    final rank = session['rank']?.toString() ?? _rank;
 
     HiveService.saveSession(
       userId: userId,
       username: username,
-      rank: rank,
+      rank: newRank,
       exp: _currentExp,
       gold: _gold,
       hp: _currentHp,
@@ -218,7 +231,7 @@ class _TabMapState extends State<TabMap> with SingleTickerProviderStateMixin {
         userId: userId,
         exp: _currentExp,
         gold: _gold,
-        rank: rank,
+        rank: newRank,
       );
     }
 
@@ -260,6 +273,13 @@ class _TabMapState extends State<TabMap> with SingleTickerProviderStateMixin {
 
   @override
   Widget build(BuildContext context) {
+    // Sinkronkan data sesi Hunter secara dinamis
+    final session = HiveService.getSession();
+    _hunterName = session['username']?.toString() ?? _hunterName;
+    _gold = (session['gold'] as int?) ?? _gold;
+    _currentExp = (session['exp'] as int?) ?? _currentExp;
+    _rank = session['rank']?.toString() ?? _rank;
+
     return Scaffold(
       backgroundColor: const Color(0xFF16111E), // Background Solo Leveling Abyss
       body: SafeArea(

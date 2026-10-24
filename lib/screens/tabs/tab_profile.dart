@@ -21,7 +21,15 @@ class _TabProfileState extends State<TabProfile> {
   String _rank = 'RANK S';
   int _gold = 650;
   int _exp = 2850;
-  final int _maxExp = 3000;
+  int get _maxExp {
+    if (_exp >= 2500) return 3000;
+    if (_exp >= 1500) return 2500;
+    if (_exp >= 1000) return 1500;
+    if (_exp >= 600) return 1000;
+    if (_exp >= 300) return 600;
+    if (_exp >= 100) return 300;
+    return 100;
+  }
   final int _hp = 3;
 
   // Form Feedback Controller
@@ -212,6 +220,14 @@ class _TabProfileState extends State<TabProfile> {
 
   @override
   Widget build(BuildContext context) {
+    // Dynamic sync with current session in Hive
+    final session = HiveService.getSession();
+    _userId = session['userId']?.toString() ?? _userId;
+    _username = session['username']?.toString() ?? _username;
+    _rank = session['rank']?.toString() ?? _rank;
+    _gold = (session['gold'] as int?) ?? _gold;
+    _exp = (session['exp'] as int?) ?? _exp;
+
     final double expProgress = (_exp / _maxExp).clamp(0.0, 1.0);
 
     return Scaffold(
