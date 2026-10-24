@@ -28,7 +28,10 @@ class _TabMapState extends State<TabMap> with SingleTickerProviderStateMixin {
   double distance = 0.0;
   bool hasClaimed = false;
   bool _isLocating = true;
+  String _gpsStatus = 'GPS: 3D';
+  bool _isFirstFix = true;
   StreamSubscription<Position>? _positionSubscription;
+  StreamSubscription<ServiceStatus>? _serviceStatusSubscription;
 
   // 3. Map Controller & Animasi Sweep
   final MapController _mapController = MapController();
@@ -100,67 +103,191 @@ class _TabMapState extends State<TabMap> with SingleTickerProviderStateMixin {
 
   /// Memulai pemantauan GPS real-time dengan Geolocator
   Future<void> _initLocationService() async {
+    setState(() {
+      _isLocating = true;
+    });
+
     try {
+      // 1. Pantau status aktif/nonaktif GPS perangkat secara reaktif
+      _serviceStatusSubscription?.cancel();
+      _serviceStatusSubscription = Geolocator.getServiceStatusStream().listen((ServiceStatus status) {
+        if (status == ServiceStatus.enabled) {
+          _refreshGpsPosition();
+        } else {
+          if (mounted) {
+            setState(() {
+              _isLocating = false;
+              _gpsStatus = 'GPS OFF';
+            });
+          }
+        }
+      });
+
+      // 2. Cek apakah layanan GPS aktif di perangkat
       bool serviceEnabled = await Geolocator.isLocationServiceEnabled();
       if (!serviceEnabled) {
-        _fallbackSimulation();
+        if (mounted) {
+          setState(() {
+            _isLocating = false;
+            _gpsStatus = 'GPS OFF';
+          });
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(
+              content: Text(
+                'Layanan Lokasi (GPS) nonaktif. Aktifkan GPS untuk akurasi posisi Hunter.',
+                style: GoogleFonts.spaceGrotesk(color: Colors.white, fontWeight: FontWeight.w600),
+              ),
+              action: SnackBarAction(
+                label: 'AKTIFKAN',
+                textColor: const Color(0xFF00F4FE),
+                onPressed: () => Geolocator.openLocationSettings(),
+              ),
+              backgroundColor: const Color(0xFF1F1927),
+              duration: const Duration(seconds: 4),
+            ),
+          );
+        }
         return;
       }
 
+      // 3. Cek dan minta izin lokasi
       LocationPermission permission = await Geolocator.checkPermission();
       if (permission == LocationPermission.denied) {
         permission = await Geolocator.requestPermission();
         if (permission == LocationPermission.denied) {
-          _fallbackSimulation();
+          if (mounted) {
+            setState(() {
+              _isLocating = false;
+              _gpsStatus = 'DENIED';
+            });
+            ScaffoldMessenger.of(context).showSnackBar(
+              SnackBar(
+                content: Text(
+                  'Izin lokasi ditolak. Aktifkan izin agar radar dapat melacak posisi Anda.',
+                  style: GoogleFonts.spaceGrotesk(color: Colors.white),
+                ),
+                backgroundColor: const Color(0xFF93000A),
+              ),
+            );
+          }
           return;
         }
       }
 
       if (permission == LocationPermission.deniedForever) {
-        _fallbackSimulation();
+        if (mounted) {
+          setState(() {
+            _isLocating = false;
+            _gpsStatus = 'BLOCKED';
+          });
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(
+              content: Text(
+                'Izin lokasi diblokir. Harap buka pengaturan aplikasi untuk mengizinkan lokasi.',
+                style: GoogleFonts.spaceGrotesk(color: Colors.white),
+              ),
+              action: SnackBarAction(
+                label: 'PENGATURAN',
+                textColor: const Color(0xFF00F4FE),
+                onPressed: () => Geolocator.openAppSettings(),
+              ),
+              backgroundColor: const Color(0xFF93000A),
+              duration: const Duration(seconds: 5),
+            ),
+          );
+        }
         return;
       }
 
-      // Ambil lokasi awal
-      final Position current = await Geolocator.getCurrentPosition(
-        locationSettings: const LocationSettings(
-          accuracy: LocationAccuracy.high,
-        ),
-      );
-      _updatePosition(current);
+      // 4. Ambil posisi terakhir yang diketahui secara instan
+      try {
+        final lastKnown = await Geolocator.getLastKnownPosition();
+        if (lastKnown != null && mounted) {
+          _updatePosition(lastKnown, moveCamera: _isFirstFix);
+          _isFirstFix = false;
+        }
+      } catch (e) {
+        debugPrint('getLastKnownPosition error: $e');
+      }
 
-      // Stream posisi pengguna secara real-time
-      _positionSubscription = Geolocator.getPositionStream(
-        locationSettings: const LocationSettings(
-          accuracy: LocationAccuracy.high,
-          distanceFilter: 2, // Update setiap perubahan 2 meter
-        ),
-      ).listen((Position pos) {
-        _updatePosition(pos);
-      });
+      // 5. Mulai stream posisi real-time tanpa menunggu
+      _startPositionStream();
+
+      // 6. Request posisi satelit presisi tinggi saat ini
+      try {
+        final current = await Geolocator.getCurrentPosition(
+          locationSettings: const LocationSettings(
+            accuracy: LocationAccuracy.best,
+            timeLimit: Duration(seconds: 10),
+          ),
+        );
+        if (mounted) {
+          _updatePosition(current, moveCamera: _isFirstFix);
+          _isFirstFix = false;
+        }
+      } catch (e) {
+        debugPrint('getCurrentPosition timeout or error: $e');
+      }
     } catch (e) {
-      // Fallback jika emulator/perangkat tidak menyediakan koordinat
-      _fallbackSimulation();
+      debugPrint('Location service initialization error: $e');
+      if (mounted) {
+        setState(() {
+          _isLocating = false;
+        });
+      }
     }
   }
 
-  /// Simulasi posisi awal hunter (berjarak ~85 meter dari gate) jika GPS belum siap
-  void _fallbackSimulation() {
-    if (!mounted) return;
-    setState(() {
-      // Offset koordinat sekitar ~85m ke barat daya dari UPN
-      userLocation = const LatLng(-7.7619, 110.4084);
-      distance = Geolocator.distanceBetween(
-        userLocation!.latitude,
-        userLocation!.longitude,
-        _targetGate.latitude,
-        _targetGate.longitude,
-      );
-      _isLocating = false;
-    });
+  void _startPositionStream() {
+    _positionSubscription?.cancel();
+    _positionSubscription = Geolocator.getPositionStream(
+      locationSettings: const LocationSettings(
+        accuracy: LocationAccuracy.best,
+        distanceFilter: 1, // Update setiap perubahan 1 meter
+      ),
+    ).listen(
+      (Position pos) {
+        _updatePosition(pos, moveCamera: _isFirstFix);
+        _isFirstFix = false;
+      },
+      onError: (err) {
+        debugPrint('Position stream error: $err');
+      },
+    );
   }
 
-  void _updatePosition(Position pos) {
+  Future<void> _refreshGpsPosition() async {
+    if (!mounted) return;
+    setState(() {
+      _isLocating = true;
+    });
+    try {
+      final current = await Geolocator.getCurrentPosition(
+        locationSettings: const LocationSettings(
+          accuracy: LocationAccuracy.best,
+          timeLimit: Duration(seconds: 8),
+        ),
+      );
+      if (mounted) {
+        _updatePosition(current, moveCamera: true);
+      }
+    } catch (_) {
+      try {
+        final lastKnown = await Geolocator.getLastKnownPosition();
+        if (lastKnown != null && mounted) {
+          _updatePosition(lastKnown, moveCamera: true);
+        }
+      } catch (_) {}
+    } finally {
+      if (mounted) {
+        setState(() {
+          _isLocating = false;
+        });
+      }
+    }
+  }
+
+  void _updatePosition(Position pos, {bool moveCamera = false}) {
     final newLocation = LatLng(pos.latitude, pos.longitude);
     final calculatedDistance = Geolocator.distanceBetween(
       pos.latitude,
@@ -174,7 +301,12 @@ class _TabMapState extends State<TabMap> with SingleTickerProviderStateMixin {
       userLocation = newLocation;
       distance = calculatedDistance;
       _isLocating = false;
+      _gpsStatus = 'GPS: 3D';
     });
+
+    if (moveCamera) {
+      _mapController.move(newLocation, 16.5);
+    }
   }
 
   String _calculateRank(int exp) {
@@ -259,14 +391,16 @@ class _TabMapState extends State<TabMap> with SingleTickerProviderStateMixin {
     );
   }
 
-  void _recenterMap() {
+  void _recenterMap() async {
     final target = userLocation ?? _targetGate;
-    _mapController.move(target, 16.8);
+    _mapController.move(target, 16.5);
+    await _refreshGpsPosition();
   }
 
   @override
   void dispose() {
     _positionSubscription?.cancel();
+    _serviceStatusSubscription?.cancel();
     _serverClockTimer?.cancel();
     _sweepAnimController.dispose();
     super.dispose();
@@ -653,28 +787,32 @@ class _TabMapState extends State<TabMap> with SingleTickerProviderStateMixin {
             ],
           ),
 
-          // GPS 3D Pill Badge
-          Container(
-            padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
-            decoration: BoxDecoration(
-              color: const Color(0xFF2D2736).withValues(alpha: 0.9),
-              borderRadius: BorderRadius.circular(8),
-              border: Border.all(color: const Color(0xFF383241), width: 0.8),
-            ),
-            child: Row(
-              children: [
-                const Icon(Icons.satellite_alt_rounded, size: 13, color: Color(0xFF00F4FE)),
-                const SizedBox(width: 4),
-                Text(
-                  'GPS: 3D',
-                  style: GoogleFonts.spaceGrotesk(
-                    fontSize: 9,
-                    fontWeight: FontWeight.w800,
-                    letterSpacing: 0.6,
-                    color: const Color(0xFFE9DEF2),
+          // GPS Status Pill Badge (Tappable to re-check)
+          InkWell(
+            borderRadius: BorderRadius.circular(8),
+            onTap: _initLocationService,
+            child: Container(
+              padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+              decoration: BoxDecoration(
+                color: const Color(0xFF2D2736).withValues(alpha: 0.9),
+                borderRadius: BorderRadius.circular(8),
+                border: Border.all(color: const Color(0xFF383241), width: 0.8),
+              ),
+              child: Row(
+                children: [
+                  const Icon(Icons.satellite_alt_rounded, size: 13, color: Color(0xFF00F4FE)),
+                  const SizedBox(width: 4),
+                  Text(
+                    _gpsStatus,
+                    style: GoogleFonts.spaceGrotesk(
+                      fontSize: 9,
+                      fontWeight: FontWeight.w800,
+                      letterSpacing: 0.6,
+                      color: const Color(0xFFE9DEF2),
+                    ),
                   ),
-                ),
-              ],
+                ],
+              ),
             ),
           ),
         ],
@@ -1043,85 +1181,93 @@ class _TabMapState extends State<TabMap> with SingleTickerProviderStateMixin {
           // Details Grid: Target Info & Gate Reward
           Row(
             children: [
-              // Target & Distance Cluster
+              // Target & Distance Cluster (Tap to view Gate)
               Expanded(
-                child: Container(
-                  padding: const EdgeInsets.all(10),
-                  decoration: BoxDecoration(
-                    color: const Color(0xFF110C19).withValues(alpha: 0.65),
-                    borderRadius: BorderRadius.circular(12),
-                    border: Border.all(color: const Color(0xFF2C1E4E), width: 0.8),
-                  ),
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Row(
-                        children: [
-                          const Icon(Icons.near_me_rounded, color: Color(0xFF00F4FE), size: 16),
-                          const SizedBox(width: 6),
-                          Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              Text(
-                                'TARGET LOCK',
-                                style: GoogleFonts.spaceGrotesk(
-                                  fontSize: 8.5,
-                                  fontWeight: FontWeight.w700,
-                                  letterSpacing: 0.8,
-                                  color: const Color(0xFFDCB8FC),
-                                ),
-                              ),
-                              Text(
-                                'Area Kampus Terpadu',
-                                style: GoogleFonts.plusJakartaSans(
-                                  fontSize: 11,
-                                  fontWeight: FontWeight.w700,
-                                  color: const Color(0xFFE9DEF2),
-                                ),
-                                overflow: TextOverflow.ellipsis,
-                              ),
-                            ],
-                          ),
-                        ],
-                      ),
-                      const SizedBox(height: 8),
-                      Container(
-                        padding: const EdgeInsets.only(top: 6),
-                        decoration: const BoxDecoration(
-                          border: Border(top: BorderSide(color: Color(0xFF2D2736), width: 0.8)),
-                        ),
-                        child: Row(
+                child: InkWell(
+                  borderRadius: BorderRadius.circular(12),
+                  onTap: () => _mapController.move(_targetGate, 16.5),
+                  child: Container(
+                    padding: const EdgeInsets.all(10),
+                    decoration: BoxDecoration(
+                      color: const Color(0xFF110C19).withValues(alpha: 0.65),
+                      borderRadius: BorderRadius.circular(12),
+                      border: Border.all(color: const Color(0xFF2C1E4E), width: 0.8),
+                    ),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Row(
                           children: [
-                            const Icon(Icons.radar_rounded, color: Color(0xFF9B8BA1), size: 14),
-                            const SizedBox(width: 4),
-                            Text(
-                              'Jarak:',
-                              style: GoogleFonts.plusJakartaSans(
-                                fontSize: 10,
-                                color: const Color(0xFF9B8BA1),
-                              ),
-                            ),
+                            const Icon(Icons.near_me_rounded, color: Color(0xFF00F4FE), size: 16),
                             const SizedBox(width: 6),
-                            Container(
-                              padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 1.5),
-                              decoration: BoxDecoration(
-                                color: const Color(0xFF00F4FE).withValues(alpha: 0.18),
-                                borderRadius: BorderRadius.circular(4),
-                              ),
-                              child: Text(
-                                _isLocating ? 'Mencari...' : '${distance.toStringAsFixed(0)} Meter',
-                                style: GoogleFonts.spaceGrotesk(
-                                  fontSize: 9.5,
-                                  fontWeight: FontWeight.w800,
-                                  letterSpacing: 0.6,
-                                  color: const Color(0xFF00F4FE),
+                            Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                Text(
+                                  'TARGET LOCK',
+                                  style: GoogleFonts.spaceGrotesk(
+                                    fontSize: 8.5,
+                                    fontWeight: FontWeight.w700,
+                                    letterSpacing: 0.8,
+                                    color: const Color(0xFFDCB8FC),
+                                  ),
                                 ),
-                              ),
+                                Text(
+                                  'Area Kampus Terpadu',
+                                  style: GoogleFonts.plusJakartaSans(
+                                    fontSize: 11,
+                                    fontWeight: FontWeight.w700,
+                                    color: const Color(0xFFE9DEF2),
+                                  ),
+                                  overflow: TextOverflow.ellipsis,
+                                ),
+                              ],
                             ),
                           ],
                         ),
-                      ),
-                    ],
+                        const SizedBox(height: 8),
+                        Container(
+                          padding: const EdgeInsets.only(top: 6),
+                          decoration: const BoxDecoration(
+                            border: Border(top: BorderSide(color: Color(0xFF2D2736), width: 0.8)),
+                          ),
+                          child: Row(
+                            children: [
+                              const Icon(Icons.radar_rounded, color: Color(0xFF9B8BA1), size: 14),
+                              const SizedBox(width: 4),
+                              Text(
+                                'Jarak:',
+                                style: GoogleFonts.plusJakartaSans(
+                                  fontSize: 10,
+                                  color: const Color(0xFF9B8BA1),
+                                ),
+                              ),
+                              const SizedBox(width: 6),
+                              Container(
+                                padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 1.5),
+                                decoration: BoxDecoration(
+                                  color: const Color(0xFF00F4FE).withValues(alpha: 0.18),
+                                  borderRadius: BorderRadius.circular(4),
+                                ),
+                                child: Text(
+                                  _isLocating && userLocation == null
+                                      ? 'Mencari...'
+                                      : (distance >= 1000
+                                          ? '${(distance / 1000).toStringAsFixed(2)} KM'
+                                          : '${distance.toStringAsFixed(0)} Meter'),
+                                  style: GoogleFonts.spaceGrotesk(
+                                    fontSize: 9.5,
+                                    fontWeight: FontWeight.w800,
+                                    letterSpacing: 0.6,
+                                    color: const Color(0xFF00F4FE),
+                                  ),
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
+                      ],
+                    ),
                   ),
                 ),
               ),
@@ -1242,9 +1388,9 @@ class _TabMapState extends State<TabMap> with SingleTickerProviderStateMixin {
                         ? 'GATE BERHASIL DIBERSIHKAN!'
                         : (canClaim
                             ? 'KLAIM HADIAH DUNGEON'
-                            : (_isLocating
-                                ? 'MENCARI SINYAL GPS...'
-                                : 'RADIUS > 100M (${distance.toStringAsFixed(0)}M)')),
+                            : (userLocation == null
+                                ? (_isLocating ? 'MENCARI SINYAL GPS...' : 'GPS DIBUTUHKAN')
+                                : 'RADIUS > 100M (${distance >= 1000 ? "${(distance / 1000).toStringAsFixed(1)} KM" : "${distance.toStringAsFixed(0)} M"})')),
                     style: GoogleFonts.spaceGrotesk(
                       fontSize: 12,
                       fontWeight: FontWeight.w800,
