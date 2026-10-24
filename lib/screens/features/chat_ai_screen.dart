@@ -65,49 +65,63 @@ class _ChatAiScreenState extends State<ChatAiScreen> {
 
   /// Membuka Modal Pengaturan Personifikasi & Profile Picture AI
   void _openPersonaSettingsDialog(BuildContext context) {
+    _persona = HiveService.getAIPersona();
     final nameController = TextEditingController(text: _persona.name);
     final identityController = TextEditingController(text: _persona.identity);
     final toneController = TextEditingController(text: _persona.tone);
     final traitsController = TextEditingController(text: _persona.traits);
     String? tempAvatarPath = _persona.avatarPath;
+    bool avatarResetExplicit = false;
 
     showModalBottomSheet(
       context: context,
       isScrollControlled: true,
       backgroundColor: Colors.transparent,
+      useSafeArea: true,
+      elevation: 0,
       builder: (sheetContext) {
         return StatefulBuilder(
           builder: (dialogCtx, setModalState) {
-            return Container(
-              height: MediaQuery.of(dialogCtx).size.height * 0.88,
-              decoration: const BoxDecoration(
-                color: Color(0xFF110C19),
-                borderRadius: BorderRadius.only(
-                  topLeft: Radius.circular(24),
-                  topRight: Radius.circular(24),
+            final screenHeight = MediaQuery.of(dialogCtx).size.height;
+            return Material(
+              color: Colors.transparent,
+              child: Container(
+                height: screenHeight * 0.88,
+                clipBehavior: Clip.antiAlias,
+                decoration: BoxDecoration(
+                  color: const Color(0xFF110C19),
+                  borderRadius: const BorderRadius.only(
+                    topLeft: Radius.circular(24),
+                    topRight: Radius.circular(24),
+                  ),
+                  border: Border.all(
+                    color: const Color(0xFF00F4FE).withValues(alpha: 0.8),
+                    width: 1.5,
+                  ),
+                  boxShadow: [
+                    BoxShadow(
+                      color: const Color(0xFF00F4FE).withValues(alpha: 0.2),
+                      blurRadius: 20,
+                      offset: const Offset(0, -4),
+                    ),
+                  ],
                 ),
-                border: Border(
-                  top: BorderSide(color: Color(0xFF00F4FE), width: 1.5),
-                  left: BorderSide(color: Color(0xFF2C1E4E), width: 1.0),
-                  right: BorderSide(color: Color(0xFF2C1E4E), width: 1.0),
-                ),
-              ),
-              child: Column(
-                children: [
-                  // Drag Handle
-                  Center(
-                    child: Container(
-                      width: 44,
-                      height: 4,
-                      margin: const EdgeInsets.only(top: 12, bottom: 8),
-                      decoration: BoxDecoration(
-                        color: const Color(0xFF383241),
-                        borderRadius: BorderRadius.circular(2),
+                child: Column(
+                  children: [
+                    // Drag Handle
+                    Center(
+                      child: Container(
+                        width: 44,
+                        height: 4,
+                        margin: const EdgeInsets.only(top: 12, bottom: 8),
+                        decoration: BoxDecoration(
+                          color: const Color(0xFF383241),
+                          borderRadius: BorderRadius.circular(2),
+                        ),
                       ),
                     ),
-                  ),
 
-                  // Header Bar
+                    // Header Bar
                   Padding(
                     padding: const EdgeInsets.symmetric(horizontal: 18, vertical: 8),
                     child: Row(
@@ -199,7 +213,7 @@ class _ChatAiScreenState extends State<ChatAiScreen> {
                                     ],
                                   ),
                                   clipBehavior: Clip.antiAlias,
-                                  child: _buildAvatarImageWidget(tempAvatarPath),
+                                  child: _buildAvatarImageWidget(tempAvatarPath, avatarResetExplicit),
                                 ),
                                 const SizedBox(height: 10),
                                 Row(
@@ -218,6 +232,7 @@ class _ChatAiScreenState extends State<ChatAiScreen> {
                                         if (file != null) {
                                           setModalState(() {
                                             tempAvatarPath = file.path;
+                                            avatarResetExplicit = false;
                                           });
                                         }
                                       },
@@ -236,6 +251,7 @@ class _ChatAiScreenState extends State<ChatAiScreen> {
                                         if (file != null) {
                                           setModalState(() {
                                             tempAvatarPath = file.path;
+                                            avatarResetExplicit = false;
                                           });
                                         }
                                       },
@@ -247,6 +263,7 @@ class _ChatAiScreenState extends State<ChatAiScreen> {
                                       onTap: () {
                                         setModalState(() {
                                           tempAvatarPath = null;
+                                          avatarResetExplicit = true;
                                         });
                                       },
                                     ),
@@ -511,12 +528,13 @@ class _ChatAiScreenState extends State<ChatAiScreen> {
                   ),
                 ],
               ),
-            );
-          },
-        );
-      },
-    );
-  }
+            ),
+          );
+        },
+      );
+    },
+  );
+}
 
   /// Tombol aksi cepat untuk avatar (Galeri, Kamera, Default)
   Widget _buildAvatarActionButton({
@@ -1243,8 +1261,8 @@ class _ChatAiScreenState extends State<ChatAiScreen> {
   }
 
   /// Helper untuk merender gambar avatar AI (File jika kustom ada, Network fallback jika default)
-  Widget _buildAvatarImageWidget([String? customPath]) {
-    final path = customPath ?? _aiAvatarPath;
+  Widget _buildAvatarImageWidget([String? customPath, bool forceCustomNull = false]) {
+    final path = forceCustomNull ? customPath : (customPath ?? _aiAvatarPath);
     if (path != null && path.isNotEmpty) {
       final file = File(path);
       if (file.existsSync()) {
