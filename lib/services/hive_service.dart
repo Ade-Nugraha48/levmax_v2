@@ -1,4 +1,6 @@
+import 'dart:convert';
 import 'package:hive/hive.dart';
+import 'package:levmax_v2/models/ai_persona_model.dart';
 import 'package:levmax_v2/utils/constants.dart';
 
 /// Service untuk manajemen penyimpanan lokal Hive (Session & Ledger Blockchain).
@@ -223,12 +225,44 @@ class HiveService {
   static Future<void> saveAIAvatar(String path) async {
     final box = sessionBox;
     await box.put('ai_avatar_path', path);
+    final persona = getAIPersona();
+    await box.put('ai_persona_data', jsonEncode(persona.copyWith(avatarPath: path).toJson()));
   }
 
   /// Mengambil path gambar avatar custom AI dari Hive jika ada
   static String? getAIAvatar() {
     final box = sessionBox;
     return box.get('ai_avatar_path') as String?;
+  }
+
+  /// Menyimpan kustomisasi personifikasi AI (Nama, Identitas, Gaya Bahasa, Sifat, Avatar)
+  static Future<void> saveAIPersona(AIPersona persona) async {
+    final box = sessionBox;
+    await box.put('ai_persona_data', jsonEncode(persona.toJson()));
+    if (persona.avatarPath != null) {
+      await box.put('ai_avatar_path', persona.avatarPath);
+    } else {
+      await box.delete('ai_avatar_path');
+    }
+  }
+
+  /// Mengambil data personifikasi AI yang tersimpan dari Hive
+  static AIPersona getAIPersona() {
+    final box = sessionBox;
+    final raw = box.get('ai_persona_data');
+    if (raw != null) {
+      try {
+        final decoded = jsonDecode(raw.toString());
+        if (decoded is Map<String, dynamic>) {
+          return AIPersona.fromJson(decoded);
+        }
+      } catch (_) {}
+    }
+    final legacyAvatar = getAIAvatar();
+    if (legacyAvatar != null) {
+      return AIPersona.defaultPersona.copyWith(avatarPath: legacyAvatar);
+    }
+    return AIPersona.defaultPersona;
   }
 
   /// Menyimpan status penyelesaian quest ke Hive (key: ${userId}_${questId})

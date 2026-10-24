@@ -3,13 +3,14 @@ import 'package:flutter/material.dart';
 import 'package:flutter_markdown/flutter_markdown.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:image_picker/image_picker.dart';
+import '../../models/ai_persona_model.dart';
 import '../../services/gemini_service.dart';
 import '../../services/hive_service.dart';
 import '../../widgets/avatar_image.dart';
 
 /// ChatAiScreen
 /// Layar percakapan System Guide (AI Chat) bergaya Solo Leveling Monarch System.
-/// Terhubung dengan GeminiService dan mendukung Custom Avatar AI dari galeri via Hive.
+/// Terhubung dengan GeminiService dan mendukung Custom Avatar AI serta Personifikasi AI Kustom via Hive.
 class ChatAiScreen extends StatefulWidget {
   const ChatAiScreen({super.key});
 
@@ -28,6 +29,7 @@ class _ChatAiScreenState extends State<ChatAiScreen> {
   // 3. State Controller & Status
   bool _isLoading = false;
   String? _aiAvatarPath;
+  late AIPersona _persona;
   final TextEditingController _textController = TextEditingController();
   final ScrollController _scrollController = ScrollController();
   final ImagePicker _imagePicker = ImagePicker();
@@ -35,29 +37,22 @@ class _ChatAiScreenState extends State<ChatAiScreen> {
   @override
   void initState() {
     super.initState();
-    _loadCustomAvatar();
+    _loadAIPersona();
     _initializeDefaultMessage();
   }
 
-  /// Memuat avatar kustom AI yang tersimpan di Hive
-  void _loadCustomAvatar() {
-    final savedPath = HiveService.getAIAvatar();
-    if (savedPath != null && savedPath.isNotEmpty) {
-      final file = File(savedPath);
-      if (file.existsSync()) {
-        setState(() {
-          _aiAvatarPath = savedPath;
-        });
-      }
-    }
+  /// Memuat avatar kustom dan data personifikasi AI yang tersimpan di Hive
+  void _loadAIPersona() {
+    _persona = HiveService.getAIPersona();
+    _aiAvatarPath = _persona.avatarPath;
   }
 
-  /// Pesan sambutan awal dari Shadow Monarch Advisor
+  /// Pesan sambutan awal dari AI Advisor sesuai identitasnya
   void _initializeDefaultMessage() {
     _messages.add({
       'role': 'model',
       'text':
-          'Salam, Hunter. Sistem siap menganalisis data kekuatan, form biomekanik latihan, serta strategi menaikkan Rank Anda hari ini. Apa instruksi pertama Anda?',
+          'Salam, Hunter. Saya ${_persona.name} (${_persona.identity}). Sistem siap menganalisis data kekuatan, form biomekanik latihan, serta strategi menaikkan Rank Anda hari ini. Apa instruksi pertama Anda?',
     });
   }
 
@@ -68,54 +63,581 @@ class _ChatAiScreenState extends State<ChatAiScreen> {
     super.dispose();
   }
 
-  /// Memilih foto kustom dari galeri pengguna untuk dijadikan avatar AI
-  Future<void> _pickAIAvatar() async {
-    try {
-      final XFile? pickedFile = await _imagePicker.pickImage(
-        source: ImageSource.gallery,
-        maxWidth: 512,
-        maxHeight: 512,
-        imageQuality: 85,
-      );
+  /// Membuka Modal Pengaturan Personifikasi & Profile Picture AI
+  void _openPersonaSettingsDialog(BuildContext context) {
+    final nameController = TextEditingController(text: _persona.name);
+    final identityController = TextEditingController(text: _persona.identity);
+    final toneController = TextEditingController(text: _persona.tone);
+    final traitsController = TextEditingController(text: _persona.traits);
+    String? tempAvatarPath = _persona.avatarPath;
 
-      if (pickedFile != null) {
-        await HiveService.saveAIAvatar(pickedFile.path);
-        if (!mounted) return;
-        setState(() {
-          _aiAvatarPath = pickedFile.path;
-        });
-
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Row(
-              children: [
-                const Icon(Icons.check_circle_rounded, color: Colors.black, size: 18),
-                const SizedBox(width: 8),
-                Expanded(
-                  child: Text(
-                    'Avatar AI berhasil dimutakhirkan dari galeri!',
-                    style: GoogleFonts.spaceGrotesk(
-                      fontWeight: FontWeight.w700,
-                      color: Colors.black,
+    showModalBottomSheet(
+      context: context,
+      isScrollControlled: true,
+      backgroundColor: Colors.transparent,
+      builder: (sheetContext) {
+        return StatefulBuilder(
+          builder: (dialogCtx, setModalState) {
+            return Container(
+              height: MediaQuery.of(dialogCtx).size.height * 0.88,
+              decoration: const BoxDecoration(
+                color: Color(0xFF110C19),
+                borderRadius: BorderRadius.only(
+                  topLeft: Radius.circular(24),
+                  topRight: Radius.circular(24),
+                ),
+                border: Border(
+                  top: BorderSide(color: Color(0xFF00F4FE), width: 1.5),
+                  left: BorderSide(color: Color(0xFF2C1E4E), width: 1.0),
+                  right: BorderSide(color: Color(0xFF2C1E4E), width: 1.0),
+                ),
+              ),
+              child: Column(
+                children: [
+                  // Drag Handle
+                  Center(
+                    child: Container(
+                      width: 44,
+                      height: 4,
+                      margin: const EdgeInsets.only(top: 12, bottom: 8),
+                      decoration: BoxDecoration(
+                        color: const Color(0xFF383241),
+                        borderRadius: BorderRadius.circular(2),
+                      ),
                     ),
                   ),
-                ),
-              ],
-            ),
-            backgroundColor: const Color(0xFF00F4FE),
-            duration: const Duration(seconds: 2),
-          ),
+
+                  // Header Bar
+                  Padding(
+                    padding: const EdgeInsets.symmetric(horizontal: 18, vertical: 8),
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        Row(
+                          children: [
+                            Container(
+                              padding: const EdgeInsets.all(6),
+                              decoration: BoxDecoration(
+                                color: const Color(0xFF00F4FE).withValues(alpha: 0.15),
+                                borderRadius: BorderRadius.circular(8),
+                                border: Border.all(
+                                  color: const Color(0xFF00F4FE).withValues(alpha: 0.4),
+                                ),
+                              ),
+                              child: const Icon(
+                                Icons.psychology_rounded,
+                                color: Color(0xFF00F4FE),
+                                size: 18,
+                              ),
+                            ),
+                            const SizedBox(width: 10),
+                            Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                Text(
+                                  'AI PERSONA & AVATAR SETTINGS',
+                                  style: GoogleFonts.spaceGrotesk(
+                                    fontSize: 12.5,
+                                    fontWeight: FontWeight.w800,
+                                    letterSpacing: 0.8,
+                                    color: const Color(0xFF00F4FE),
+                                  ),
+                                ),
+                                Text(
+                                  'Kustomisasi Nama, Peran, Gaya Bahasa & Sifat AI',
+                                  style: GoogleFonts.plusJakartaSans(
+                                    fontSize: 10,
+                                    fontWeight: FontWeight.w500,
+                                    color: const Color(0xFF9B8BA1),
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ],
+                        ),
+                        IconButton(
+                          icon: const Icon(Icons.close_rounded, color: Color(0xFF9B8BA1), size: 20),
+                          onPressed: () => Navigator.pop(sheetContext),
+                        ),
+                      ],
+                    ),
+                  ),
+
+                  const Divider(color: Color(0xFF2C1E4E), height: 1),
+
+                  // Body Form Scrollable
+                  Expanded(
+                    child: SingleChildScrollView(
+                      physics: const BouncingScrollPhysics(),
+                      padding: EdgeInsets.only(
+                        left: 18,
+                        right: 18,
+                        top: 14,
+                        bottom: MediaQuery.of(dialogCtx).viewInsets.bottom + 18,
+                      ),
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          // 1. SECTION: AVATAR AI
+                          Center(
+                            child: Column(
+                              children: [
+                                Container(
+                                  width: 82,
+                                  height: 82,
+                                  decoration: BoxDecoration(
+                                    shape: BoxShape.circle,
+                                    border: Border.all(
+                                      color: const Color(0xFF00F4FE),
+                                      width: 2.0,
+                                    ),
+                                    boxShadow: [
+                                      BoxShadow(
+                                        color: const Color(0xFF00F4FE).withValues(alpha: 0.35),
+                                        blurRadius: 16,
+                                      ),
+                                    ],
+                                  ),
+                                  clipBehavior: Clip.antiAlias,
+                                  child: _buildAvatarImageWidget(tempAvatarPath),
+                                ),
+                                const SizedBox(height: 10),
+                                Row(
+                                  mainAxisAlignment: MainAxisAlignment.center,
+                                  children: [
+                                    _buildAvatarActionButton(
+                                      icon: Icons.photo_library_rounded,
+                                      label: 'Galeri',
+                                      onTap: () async {
+                                        final XFile? file = await _imagePicker.pickImage(
+                                          source: ImageSource.gallery,
+                                          maxWidth: 512,
+                                          maxHeight: 512,
+                                          imageQuality: 85,
+                                        );
+                                        if (file != null) {
+                                          setModalState(() {
+                                            tempAvatarPath = file.path;
+                                          });
+                                        }
+                                      },
+                                    ),
+                                    const SizedBox(width: 8),
+                                    _buildAvatarActionButton(
+                                      icon: Icons.camera_alt_rounded,
+                                      label: 'Kamera',
+                                      onTap: () async {
+                                        final XFile? file = await _imagePicker.pickImage(
+                                          source: ImageSource.camera,
+                                          maxWidth: 512,
+                                          maxHeight: 512,
+                                          imageQuality: 85,
+                                        );
+                                        if (file != null) {
+                                          setModalState(() {
+                                            tempAvatarPath = file.path;
+                                          });
+                                        }
+                                      },
+                                    ),
+                                    const SizedBox(width: 8),
+                                    _buildAvatarActionButton(
+                                      icon: Icons.restart_alt_rounded,
+                                      label: 'Default',
+                                      onTap: () {
+                                        setModalState(() {
+                                          tempAvatarPath = null;
+                                        });
+                                      },
+                                    ),
+                                  ],
+                                ),
+                              ],
+                            ),
+                          ),
+
+                          const SizedBox(height: 18),
+
+                          // 2. SECTION: NAMA AI
+                          _buildDialogField(
+                            label: 'NAMA AI // CODENAME',
+                            controller: nameController,
+                            hint: 'Contoh: SYSTEM GUIDE, BERU, IGRIS...',
+                          ),
+                          const SizedBox(height: 6),
+                          Wrap(
+                            spacing: 6,
+                            runSpacing: 4,
+                            children: [
+                              'SYSTEM GUIDE',
+                              'BERU',
+                              'IGRIS',
+                              'KAISEL',
+                              'BELLION',
+                              'ASHBORN',
+                            ].map((preset) {
+                              return _buildPresetChip(
+                                label: preset,
+                                isSelected: nameController.text == preset,
+                                onTap: () {
+                                  setModalState(() {
+                                    nameController.text = preset;
+                                  });
+                                },
+                              );
+                            }).toList(),
+                          ),
+
+                          const SizedBox(height: 16),
+
+                          // 3. SECTION: IDENTITAS & PERAN AI
+                          _buildDialogField(
+                            label: 'IDENTITAS // PERAN SISTEM',
+                            controller: identityController,
+                            hint: 'Contoh: HUNTER SUPPORT AI, PANGLIMA BAYANGAN...',
+                          ),
+                          const SizedBox(height: 6),
+                          Wrap(
+                            spacing: 6,
+                            runSpacing: 4,
+                            children: [
+                              'HUNTER SUPPORT AI',
+                              'PANGLIMA BAYANGAN',
+                              'PERSONAL TRAINER',
+                              'PENASIHAT TAKTIS',
+                            ].map((preset) {
+                              return _buildPresetChip(
+                                label: preset,
+                                isSelected: identityController.text == preset,
+                                onTap: () {
+                                  setModalState(() {
+                                    identityController.text = preset;
+                                  });
+                                },
+                              );
+                            }).toList(),
+                          ),
+
+                          const SizedBox(height: 16),
+
+                          // 4. SECTION: GAYA BAHASA (TONE OF VOICE)
+                          _buildDialogField(
+                            label: 'GAYA BAHASA & TUTUR KATA',
+                            controller: toneController,
+                            maxLines: 2,
+                            hint: 'Bagaimana AI harus bertutur kata saat membalas pesan...',
+                          ),
+                          const SizedBox(height: 6),
+                          Wrap(
+                            spacing: 6,
+                            runSpacing: 4,
+                            children: [
+                              MapEntry('Formal & Militer',
+                                  'Formal, dingin, dan berwibawa layaknya perwira militer sistem Solo Leveling.'),
+                              MapEntry('Santai & Gaul',
+                                  'Santai, akrab, menggunakan bahasa gaul layaknya teman gym seperjuangan.'),
+                              MapEntry('Tsundere & Tegas',
+                                  'Tsundere, cerewet jika malas, tapi peduli dan menuntut kedisiplinan tinggi.'),
+                              MapEntry('Penyemangat Ceria',
+                                  'Sangat enerjik, positif, penuh antusiasme dan membakar api semangat!'),
+                              MapEntry('Bijak & Tenang',
+                                  'Bijak, tenang, filosofis, memandu dengan kata-kata penuh motivasi mendalam.'),
+                            ].map((entry) {
+                              return _buildPresetChip(
+                                label: entry.key,
+                                isSelected: toneController.text == entry.value,
+                                onTap: () {
+                                  setModalState(() {
+                                    toneController.text = entry.value;
+                                  });
+                                },
+                              );
+                            }).toList(),
+                          ),
+
+                          const SizedBox(height: 16),
+
+                          // 5. SECTION: SIFAT & KEPRIBADIAN (TRAITS)
+                          _buildDialogField(
+                            label: 'SIFAT & KEPRIBADIAN (TRAITS)',
+                            controller: traitsController,
+                            maxLines: 2,
+                            hint: 'Sifat dominan dan kepribadian karakter AI...',
+                          ),
+                          const SizedBox(height: 6),
+                          Wrap(
+                            spacing: 6,
+                            runSpacing: 4,
+                            children: [
+                              MapEntry('Setia & Protektif',
+                                  'Sangat loyal dan protektif kepada Hunter, mengutamakan keselamatan dan progres fisik.'),
+                              MapEntry('Dingin & Analitis',
+                                  'Dingin, fokus murni pada kalkulasi angka, biomekanik, repetisi, dan efisiensi logis.'),
+                              MapEntry('Sarkastik Cerdas',
+                                  'Sarkastik halus, suka menyindir dengan cerdas jika latihan kurang keras, namun solutif.'),
+                              MapEntry('Penuh Ambisi',
+                                  'Ambisius, pantang menyerah, selalu mendorong Hunter melampaui batas Rank S.'),
+                            ].map((entry) {
+                              return _buildPresetChip(
+                                label: entry.key,
+                                isSelected: traitsController.text == entry.value,
+                                onTap: () {
+                                  setModalState(() {
+                                    traitsController.text = entry.value;
+                                  });
+                                },
+                              );
+                            }).toList(),
+                          ),
+
+                          const SizedBox(height: 24),
+
+                          // ACTION BUTTONS: RESET & SIMPAN
+                          Row(
+                            children: [
+                              TextButton(
+                                onPressed: () {
+                                  final def = AIPersona.defaultPersona;
+                                  setModalState(() {
+                                    nameController.text = def.name;
+                                    identityController.text = def.identity;
+                                    toneController.text = def.tone;
+                                    traitsController.text = def.traits;
+                                    tempAvatarPath = null;
+                                  });
+                                },
+                                child: Text(
+                                  'RESET DEFAULT',
+                                  style: GoogleFonts.spaceGrotesk(
+                                    fontSize: 11,
+                                    fontWeight: FontWeight.w700,
+                                    color: const Color(0xFF9B8BA1),
+                                  ),
+                                ),
+                              ),
+                              const Spacer(),
+                              GestureDetector(
+                                onTap: () async {
+                                  final newPersona = AIPersona(
+                                    name: nameController.text.trim().isEmpty
+                                        ? 'SYSTEM GUIDE'
+                                        : nameController.text.trim(),
+                                    identity: identityController.text.trim().isEmpty
+                                        ? 'HUNTER SUPPORT AI'
+                                        : identityController.text.trim(),
+                                    tone: toneController.text.trim().isEmpty
+                                        ? _persona.tone
+                                        : toneController.text.trim(),
+                                    traits: traitsController.text.trim().isEmpty
+                                        ? _persona.traits
+                                        : traitsController.text.trim(),
+                                    avatarPath: tempAvatarPath,
+                                  );
+
+                                  final messenger = ScaffoldMessenger.of(sheetContext);
+                                  final nav = Navigator.of(sheetContext);
+
+                                  await HiveService.saveAIPersona(newPersona);
+                                  GeminiService.updatePersona(newPersona);
+
+                                  if (!mounted) return;
+                                  setState(() {
+                                    _persona = newPersona;
+                                    _aiAvatarPath = newPersona.avatarPath;
+                                  });
+
+                                  nav.pop();
+
+                                  messenger.showSnackBar(
+                                    SnackBar(
+                                      content: Row(
+                                        children: [
+                                          const Icon(Icons.check_circle_rounded, color: Colors.black, size: 18),
+                                          const SizedBox(width: 8),
+                                          Expanded(
+                                            child: Text(
+                                              'Personifikasi [${newPersona.name}] berhasil diterapkan!',
+                                              style: GoogleFonts.spaceGrotesk(
+                                                fontWeight: FontWeight.w700,
+                                                color: Colors.black,
+                                              ),
+                                            ),
+                                          ),
+                                        ],
+                                      ),
+                                      backgroundColor: const Color(0xFF00F4FE),
+                                      duration: const Duration(seconds: 2),
+                                    ),
+                                  );
+                                },
+                                child: Container(
+                                  padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 12),
+                                  decoration: BoxDecoration(
+                                    gradient: const LinearGradient(
+                                      colors: [Color(0xFF00F4FE), Color(0xFF00B4D8)],
+                                    ),
+                                    borderRadius: BorderRadius.circular(10),
+                                    boxShadow: [
+                                      BoxShadow(
+                                        color: const Color(0xFF00F4FE).withValues(alpha: 0.5),
+                                        blurRadius: 14,
+                                        offset: const Offset(0, 3),
+                                      ),
+                                    ],
+                                  ),
+                                  child: Row(
+                                    mainAxisSize: MainAxisSize.min,
+                                    children: [
+                                      const Icon(Icons.save_rounded, color: Color(0xFF08050E), size: 18),
+                                      const SizedBox(width: 6),
+                                      Text(
+                                        'SIMPAN PERSONIFIKASI',
+                                        style: GoogleFonts.spaceGrotesk(
+                                          fontSize: 11.5,
+                                          fontWeight: FontWeight.w800,
+                                          letterSpacing: 0.8,
+                                          color: const Color(0xFF08050E),
+                                        ),
+                                      ),
+                                    ],
+                                  ),
+                                ),
+                              ),
+                            ],
+                          ),
+                        ],
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+            );
+          },
         );
-      }
-    } catch (e) {
-      if (!mounted) return;
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: Text('Gagal memilih gambar: $e'),
-          backgroundColor: Colors.redAccent,
+      },
+    );
+  }
+
+  /// Tombol aksi cepat untuk avatar (Galeri, Kamera, Default)
+  Widget _buildAvatarActionButton({
+    required IconData icon,
+    required String label,
+    required VoidCallback onTap,
+  }) {
+    return GestureDetector(
+      onTap: onTap,
+      child: Container(
+        padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
+        decoration: BoxDecoration(
+          color: const Color(0xFF1F1927),
+          borderRadius: BorderRadius.circular(8),
+          border: Border.all(
+            color: const Color(0xFF2C1E4E),
+            width: 1.0,
+          ),
         ),
-      );
-    }
+        child: Row(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Icon(icon, size: 13, color: const Color(0xFF00F4FE)),
+            const SizedBox(width: 4),
+            Text(
+              label,
+              style: GoogleFonts.spaceGrotesk(
+                fontSize: 10.5,
+                fontWeight: FontWeight.w700,
+                color: const Color(0xFFE5B5FF),
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  /// Helper TextField khusus dialog pengaturan persona
+  Widget _buildDialogField({
+    required String label,
+    required TextEditingController controller,
+    int maxLines = 1,
+    String? hint,
+  }) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Text(
+          label,
+          style: GoogleFonts.spaceGrotesk(
+            fontSize: 10,
+            fontWeight: FontWeight.w700,
+            letterSpacing: 0.8,
+            color: const Color(0xFF00F4FE),
+          ),
+        ),
+        const SizedBox(height: 6),
+        Container(
+          decoration: BoxDecoration(
+            color: const Color(0xFF181126),
+            borderRadius: BorderRadius.circular(10),
+            border: Border.all(
+              color: const Color(0xFF2C1E4E),
+              width: 1.0,
+            ),
+          ),
+          child: TextField(
+            controller: controller,
+            maxLines: maxLines,
+            style: GoogleFonts.plusJakartaSans(
+              fontSize: 12.5,
+              color: const Color(0xFFF1E9F7),
+            ),
+            cursorColor: const Color(0xFF00F4FE),
+            decoration: InputDecoration(
+              hintText: hint,
+              hintStyle: GoogleFonts.plusJakartaSans(
+                fontSize: 12,
+                color: const Color(0xFF5D5373),
+              ),
+              contentPadding: const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
+              border: InputBorder.none,
+              isDense: true,
+            ),
+          ),
+        ),
+      ],
+    );
+  }
+
+  /// Helper chip pilihan preset cepat
+  Widget _buildPresetChip({
+    required String label,
+    required VoidCallback onTap,
+    bool isSelected = false,
+  }) {
+    return GestureDetector(
+      onTap: onTap,
+      child: Container(
+        padding: const EdgeInsets.symmetric(horizontal: 9, vertical: 5),
+        decoration: BoxDecoration(
+          color: isSelected
+              ? const Color(0xFF00F4FE).withValues(alpha: 0.18)
+              : const Color(0xFF140D24),
+          borderRadius: BorderRadius.circular(7),
+          border: Border.all(
+            color: isSelected ? const Color(0xFF00F4FE) : const Color(0xFF2C1E4E),
+            width: 1.0,
+          ),
+        ),
+        child: Text(
+          label,
+          style: GoogleFonts.spaceGrotesk(
+            fontSize: 10,
+            fontWeight: isSelected ? FontWeight.w700 : FontWeight.w600,
+            color: isSelected ? const Color(0xFF00F4FE) : const Color(0xFFB5A8C8),
+          ),
+        ),
+      ),
+    );
   }
 
   /// Mengirim pesan ke Gemini AI dan memperbarui riwayat chat
@@ -259,7 +781,7 @@ class _ChatAiScreenState extends State<ChatAiScreen> {
                     mainAxisSize: MainAxisSize.min,
                     children: [
                       Text(
-                        'SYSTEM GUIDE',
+                        _persona.name.toUpperCase(),
                         style: GoogleFonts.spaceGrotesk(
                           fontSize: 12,
                           fontWeight: FontWeight.w800,
@@ -302,7 +824,7 @@ class _ChatAiScreenState extends State<ChatAiScreen> {
                   ),
                   const SizedBox(height: 1),
                   Text(
-                    'HUNTER SUPPORT AI',
+                    _persona.identity.toUpperCase(),
                     style: GoogleFonts.spaceGrotesk(
                       fontSize: 9,
                       fontWeight: FontWeight.w700,
@@ -315,13 +837,13 @@ class _ChatAiScreenState extends State<ChatAiScreen> {
             ],
           ),
 
-          // Tombol Ganti Avatar AI di Kanan
+          // Tombol Avatar & Kustomisasi Persona AI di Kanan
           Row(
             children: [
               GestureDetector(
-                onTap: _pickAIAvatar,
+                onTap: () => _openPersonaSettingsDialog(context),
                 child: Tooltip(
-                  message: 'Ganti Avatar AI dari Galeri',
+                  message: 'Kustomisasi Avatar & Personifikasi AI',
                   child: Container(
                     width: 38,
                     height: 38,
@@ -345,13 +867,13 @@ class _ChatAiScreenState extends State<ChatAiScreen> {
               ),
               const SizedBox(width: 8),
               IconButton(
-                tooltip: 'Ganti Foto Avatar AI',
+                tooltip: 'Kustomisasi Personifikasi AI',
                 icon: const Icon(
                   Icons.tune_rounded,
-                  color: Color(0xFF9B8BA1),
+                  color: Color(0xFF00F4FE),
                   size: 20,
                 ),
-                onPressed: _pickAIAvatar,
+                onPressed: () => _openPersonaSettingsDialog(context),
               ),
             ],
           ),
@@ -517,7 +1039,7 @@ class _ChatAiScreenState extends State<ChatAiScreen> {
                               child: Column(
                                 crossAxisAlignment: CrossAxisAlignment.start,
                                 children: [
-                                  // Header Tag: SYSTEM CORE // ADVISOR
+                                  // Header Tag: NAMA // PERAN
                                   Row(
                                     mainAxisSize: MainAxisSize.min,
                                     children: [
@@ -530,13 +1052,16 @@ class _ChatAiScreenState extends State<ChatAiScreen> {
                                         ),
                                       ),
                                       const SizedBox(width: 6),
-                                      Text(
-                                        'SYSTEM CORE // ADVISOR',
-                                        style: GoogleFonts.spaceGrotesk(
-                                          fontSize: 9,
-                                          fontWeight: FontWeight.w700,
-                                          letterSpacing: 0.8,
-                                          color: const Color(0xFF00F4FE),
+                                      Flexible(
+                                        child: Text(
+                                          '${_persona.name.toUpperCase()} // ${_persona.identity.toUpperCase()}',
+                                          style: GoogleFonts.spaceGrotesk(
+                                            fontSize: 9,
+                                            fontWeight: FontWeight.w700,
+                                            letterSpacing: 0.8,
+                                            color: const Color(0xFF00F4FE),
+                                          ),
+                                          overflow: TextOverflow.ellipsis,
                                         ),
                                       ),
                                     ],
@@ -718,9 +1243,10 @@ class _ChatAiScreenState extends State<ChatAiScreen> {
   }
 
   /// Helper untuk merender gambar avatar AI (File jika kustom ada, Network fallback jika default)
-  Widget _buildAvatarImageWidget() {
-    if (_aiAvatarPath != null && _aiAvatarPath!.isNotEmpty) {
-      final file = File(_aiAvatarPath!);
+  Widget _buildAvatarImageWidget([String? customPath]) {
+    final path = customPath ?? _aiAvatarPath;
+    if (path != null && path.isNotEmpty) {
+      final file = File(path);
       if (file.existsSync()) {
         return Image.file(
           file,
@@ -879,7 +1405,7 @@ class _ChatAiScreenState extends State<ChatAiScreen> {
     );
   }
 
-  /// 6. Cyberpunk Input Dock
+  /// 6. Cyberpunk Input Dock (Multiline and Scrollable if long)
   Widget _buildInputDock() {
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 8),
@@ -900,62 +1426,79 @@ class _ChatAiScreenState extends State<ChatAiScreen> {
         ],
       ),
       child: Row(
+        crossAxisAlignment: CrossAxisAlignment.end,
         children: [
-          // Input Capsule
+          // Input Capsule yang memanjang ke bawah dan scrollable saat panjang
           Expanded(
             child: Container(
-              padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 2),
+              padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 4),
               decoration: BoxDecoration(
                 color: const Color(0xFF1F1927),
-                borderRadius: BorderRadius.circular(12),
+                borderRadius: BorderRadius.circular(14),
                 border: Border.all(
                   color: const Color(0xFF383241),
                   width: 1.0,
                 ),
               ),
               child: Row(
+                crossAxisAlignment: CrossAxisAlignment.end,
                 children: [
-                  const Icon(
-                    Icons.psychology_rounded,
-                    size: 20,
-                    color: Color(0xFF00F4FE),
+                  const Padding(
+                    padding: EdgeInsets.only(bottom: 9.0),
+                    child: Icon(
+                      Icons.psychology_rounded,
+                      size: 20,
+                      color: Color(0xFF00F4FE),
+                    ),
                   ),
                   const SizedBox(width: 8),
                   Expanded(
-                    child: TextField(
-                      controller: _textController,
-                      style: GoogleFonts.plusJakartaSans(
-                        fontSize: 13,
-                        color: const Color(0xFFE9DEF2),
+                    child: ConstrainedBox(
+                      constraints: const BoxConstraints(
+                        maxHeight: 120, // Scrollable vertikal jika teks melebihi ~5 baris
                       ),
-                      cursorColor: const Color(0xFF00F4FE),
-                      decoration: InputDecoration(
-                        hintText: 'Tanyakan strategi pada sistem...',
-                        hintStyle: GoogleFonts.plusJakartaSans(
-                          fontSize: 12,
-                          color: const Color(0xFF5D5373),
+                      child: Scrollbar(
+                        child: TextField(
+                          controller: _textController,
+                          keyboardType: TextInputType.multiline,
+                          minLines: 1,
+                          maxLines: 5,
+                          style: GoogleFonts.plusJakartaSans(
+                            fontSize: 13,
+                            color: const Color(0xFFE9DEF2),
+                          ),
+                          cursorColor: const Color(0xFF00F4FE),
+                          decoration: InputDecoration(
+                            hintText: 'Tanyakan strategi pada ${_persona.name}...',
+                            hintStyle: GoogleFonts.plusJakartaSans(
+                              fontSize: 12,
+                              color: const Color(0xFF5D5373),
+                            ),
+                            border: InputBorder.none,
+                            isDense: true,
+                            contentPadding: const EdgeInsets.symmetric(vertical: 8),
+                          ),
                         ),
-                        border: InputBorder.none,
-                        isDense: true,
-                        contentPadding: const EdgeInsets.symmetric(vertical: 10),
                       ),
-                      onSubmitted: (_) => _handleSendMessage(),
                     ),
                   ),
-                  IconButton(
-                    icon: const Icon(
-                      Icons.mic_rounded,
-                      size: 19,
-                      color: Color(0xFF8B829E),
+                  Padding(
+                    padding: const EdgeInsets.only(bottom: 2.0),
+                    child: IconButton(
+                      icon: const Icon(
+                        Icons.mic_rounded,
+                        size: 19,
+                        color: Color(0xFF8B829E),
+                      ),
+                      onPressed: () {
+                        ScaffoldMessenger.of(context).showSnackBar(
+                          const SnackBar(
+                            content: Text('Voice command interface siap digunakan pada pembaruan mendatang.'),
+                            duration: Duration(seconds: 1),
+                          ),
+                        );
+                      },
                     ),
-                    onPressed: () {
-                      ScaffoldMessenger.of(context).showSnackBar(
-                        const SnackBar(
-                          content: Text('Voice command interface siap digunakan pada pembaruan mendatang.'),
-                          duration: Duration(seconds: 1),
-                        ),
-                      );
-                    },
                   ),
                 ],
               ),
@@ -964,28 +1507,31 @@ class _ChatAiScreenState extends State<ChatAiScreen> {
 
           const SizedBox(width: 8),
 
-          // Tombol Kirim Cyan Glowing 46x46
-          GestureDetector(
-            onTap: _isLoading ? null : _handleSendMessage,
-            child: Container(
-              width: 44,
-              height: 44,
-              decoration: BoxDecoration(
-                color: const Color(0xFF00F4FE),
-                borderRadius: BorderRadius.circular(12),
-                boxShadow: [
-                  BoxShadow(
-                    color: const Color(0xFF00F4FE).withValues(alpha: 0.6),
-                    blurRadius: 14,
-                    offset: const Offset(0, 2),
+          // Tombol Kirim Cyan Glowing 44x44 (tetap tertambat di kanan bawah)
+          Padding(
+            padding: const EdgeInsets.only(bottom: 2.0),
+            child: GestureDetector(
+              onTap: _isLoading ? null : _handleSendMessage,
+              child: Container(
+                width: 44,
+                height: 44,
+                decoration: BoxDecoration(
+                  color: const Color(0xFF00F4FE),
+                  borderRadius: BorderRadius.circular(12),
+                  boxShadow: [
+                    BoxShadow(
+                      color: const Color(0xFF00F4FE).withValues(alpha: 0.6),
+                      blurRadius: 14,
+                      offset: const Offset(0, 2),
+                    ),
+                  ],
+                ),
+                child: const Center(
+                  child: Icon(
+                    Icons.send_rounded,
+                    color: Color(0xFF08050E),
+                    size: 20,
                   ),
-                ],
-              ),
-              child: const Center(
-                child: Icon(
-                  Icons.send_rounded,
-                  color: Color(0xFF08050E),
-                  size: 20,
                 ),
               ),
             ),
