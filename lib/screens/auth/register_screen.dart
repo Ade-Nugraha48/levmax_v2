@@ -25,10 +25,6 @@ class _RegisterScreenState extends State<RegisterScreen> {
   // State untuk Foto Profil Kustom
   File? _selectedAvatar;
 
-  // State untuk Toggle Biometrik (UI Visual)
-  bool _fingerprintEnroll = true;
-  bool _faceScanEnroll = false;
-
   @override
   void dispose() {
     _usernameController.dispose();
@@ -550,85 +546,9 @@ class _RegisterScreenState extends State<RegisterScreen> {
                     onToggleVisibility: () => setState(() => _isConfirmObscure = !_isConfirmObscure),
                   ),
 
-                  const SizedBox(height: 13),
+                    const SizedBox(height: 18),
 
-                  // Section Header: Otentikasi Biometrik
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: [
-                      Row(
-                        mainAxisSize: MainAxisSize.min,
-                        children: [
-                          const Icon(
-                            Icons.security_rounded,
-                            size: 13,
-                            color: Color(0xFFE5B5FF),
-                          ),
-                          const SizedBox(width: 4),
-                          Text(
-                            'OTENTIKASI BIOMETRIK',
-                            style: GoogleFonts.spaceGrotesk(
-                              fontSize: 10,
-                              fontWeight: FontWeight.w600,
-                              letterSpacing: 0.8,
-                              color: const Color(0xFF9B8BA1),
-                            ),
-                          ),
-                        ],
-                      ),
-                      Text(
-                        'OPSIONAL • MULTI-LAYER',
-                        style: GoogleFonts.spaceGrotesk(
-                          fontSize: 9,
-                          fontWeight: FontWeight.w600,
-                          letterSpacing: 0.5,
-                          color: const Color(0xFFDCB8FC),
-                        ),
-                      ),
-                    ],
-                  ),
-
-                  const SizedBox(height: 8),
-
-                  // Biometric Toggle 1: Fingerprint
-                  _buildBiometricBox(
-                    icon: Icons.fingerprint_rounded,
-                    iconColor: const Color(0xFFB026FF),
-                    iconBgColor: const Color(0xFF1F1638),
-                    borderColor: const Color(0xFFB026FF).withValues(alpha: 0.35),
-                    title: 'Pindai Sidik Jari (Fingerprint)',
-                    badgeText: 'SIAP DIDAFTARKAN',
-                    badgeBgColor: const Color(0xFFB026FF).withValues(alpha: 0.20),
-                    badgeTextColor: const Color(0xFFE5B5FF),
-                    badgeBorderColor: const Color(0xFFB026FF).withValues(alpha: 0.40),
-                    subtitle: 'Daftarkan sidik jari perangkat untuk autentika...',
-                    switchValue: _fingerprintEnroll,
-                    activeTrackColor: const Color(0xFFB026FF),
-                    onChanged: (val) => setState(() => _fingerprintEnroll = val),
-                  ),
-
-                  const SizedBox(height: 7),
-
-                  // Biometric Toggle 2: Face Scan
-                  _buildBiometricBox(
-                    icon: Icons.face_rounded,
-                    iconColor: const Color(0xFF00F4FE),
-                    iconBgColor: const Color(0xFF0A2730),
-                    borderColor: const Color(0xFF00F4FE).withValues(alpha: 0.35),
-                    title: 'Pengenalan Wajah (Face Scan)',
-                    badgeText: 'KAMERA DEPAN',
-                    badgeBgColor: const Color(0xFF00F4FE).withValues(alpha: 0.20),
-                    badgeTextColor: const Color(0xFF00DCE5),
-                    badgeBorderColor: const Color(0xFF00F4FE).withValues(alpha: 0.40),
-                    subtitle: 'Daftarkan biometrik wajah via kamera depan',
-                    switchValue: _faceScanEnroll,
-                    activeTrackColor: const Color(0xFF00F4FE),
-                    onChanged: (val) => setState(() => _faceScanEnroll = val),
-                  ),
-
-                  const SizedBox(height: 12),
-
-                  // Submit Button: DAFTAR SEKARANG (REGISTER)
+                    // Submit Button: DAFTAR SEKARANG (REGISTER)
                   Container(
                     height: 46,
                     decoration: BoxDecoration(
@@ -796,126 +716,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
     );
   }
 
-  /// Widget Helper: Biometric Toggle Box
-  Widget _buildBiometricBox({
-    required IconData icon,
-    required Color iconColor,
-    required Color iconBgColor,
-    required Color borderColor,
-    required String title,
-    required String badgeText,
-    required Color badgeBgColor,
-    required Color badgeTextColor,
-    required Color badgeBorderColor,
-    required String subtitle,
-    required bool switchValue,
-    required Color activeTrackColor,
-    required ValueChanged<bool> onChanged,
-  }) {
-    return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 7),
-      decoration: BoxDecoration(
-        color: const Color(0xFF110C19),
-        borderRadius: BorderRadius.circular(10),
-        border: Border.all(
-          color: borderColor,
-          width: 1.0,
-        ),
-      ),
-      child: Row(
-        children: [
-          // Icon Box
-          Container(
-            width: 32,
-            height: 32,
-            decoration: BoxDecoration(
-              color: iconBgColor,
-              borderRadius: BorderRadius.circular(8),
-              border: Border.all(
-                color: borderColor,
-                width: 1.0,
-              ),
-            ),
-            child: Icon(icon, size: 18, color: iconColor),
-          ),
 
-          const SizedBox(width: 8),
-
-          // Texts
-          Expanded(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                Row(
-                  children: [
-                    Flexible(
-                      child: Text(
-                        title,
-                        maxLines: 1,
-                        overflow: TextOverflow.ellipsis,
-                        style: GoogleFonts.spaceGrotesk(
-                          fontSize: 11.5,
-                          fontWeight: FontWeight.w600,
-                          color: const Color(0xFFE9DEF2),
-                        ),
-                      ),
-                    ),
-                    const SizedBox(width: 5),
-                    Container(
-                      padding: const EdgeInsets.symmetric(horizontal: 4.5, vertical: 1.5),
-                      decoration: BoxDecoration(
-                        color: badgeBgColor,
-                        borderRadius: BorderRadius.circular(4),
-                        border: Border.all(color: badgeBorderColor, width: 0.8),
-                      ),
-                      child: Text(
-                        badgeText,
-                        style: GoogleFonts.spaceGrotesk(
-                          fontSize: 7.5,
-                          fontWeight: FontWeight.w700,
-                          color: badgeTextColor,
-                        ),
-                      ),
-                    ),
-                  ],
-                ),
-                const SizedBox(height: 1),
-                Text(
-                  subtitle,
-                  maxLines: 1,
-                  overflow: TextOverflow.ellipsis,
-                  style: GoogleFonts.plusJakartaSans(
-                    fontSize: 9.5,
-                    color: const Color(0xFF9B8BA1),
-                  ),
-                ),
-              ],
-            ),
-          ),
-
-          const SizedBox(width: 4),
-
-          // Switch
-          SizedBox(
-            height: 28,
-            width: 40,
-            child: FittedBox(
-              fit: BoxFit.contain,
-              child: Switch(
-                value: switchValue,
-                onChanged: onChanged,
-                activeThumbColor: Colors.white,
-                activeTrackColor: activeTrackColor,
-                inactiveThumbColor: const Color(0xFF9B8BA1),
-                inactiveTrackColor: const Color(0xFF383241),
-              ),
-            ),
-          ),
-        ],
-      ),
-    );
-  }
 
   /// 4. Monarch Directive Lore Banner
   Widget _buildMonarchBanner() {

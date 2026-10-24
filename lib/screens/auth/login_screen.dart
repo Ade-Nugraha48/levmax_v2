@@ -7,6 +7,7 @@ import '../../services/supabase_service.dart';
 import '../../utils/constants.dart';
 import '../main_navigation.dart';
 import 'register_screen.dart';
+import '../../widgets/face_scan_dialog.dart';
 
 class LoginScreen extends StatefulWidget {
   const LoginScreen({super.key});
@@ -38,17 +39,89 @@ class _LoginScreenState extends State<LoginScreen> {
   }
 
 
-  /// Autentikasi biometrik menggunakan local_auth
-  Future<void> _triggerBiometricAuth({bool autoPrompt = false}) async {
+  /// Autentikasi biometrik menggunakan local_auth dan kredensial tersimpan
+  Future<void> _triggerBiometricAuth({String type = 'fingerprint'}) async {
+    // a. Cek terlebih dahulu apakah isBiometricEnabled bernilai true di penyimpanan lokal
+    final bool isEnabled = HiveService.isBiometricEnabled();
+    final credentials = HiveService.getBiometricCredentials();
+
+    if (!isEnabled || credentials == null) {
+      // b. JIKA false: Munculkan SnackBar/Toast error
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Row(
+              children: [
+                const Icon(Icons.lock_person_rounded, color: Colors.white, size: 20),
+                const SizedBox(width: 8),
+                Expanded(
+                  child: Text(
+                    'Protokol Biometrik belum aktif. Silakan login manual dan aktifkan di menu Profil.',
+                    style: GoogleFonts.spaceGrotesk(
+                      color: Colors.white,
+                      fontWeight: FontWeight.w700,
+                      fontSize: 11.5,
+                    ),
+                  ),
+                ),
+              ],
+            ),
+            backgroundColor: const Color(0xFF93000A),
+            duration: const Duration(seconds: 3),
+          ),
+        );
+      }
+      return;
+    }
+
+    // c. JIKA tipe adalah Face Scan: Buka pemindai wajah real-time
+    if (type == 'facescan') {
+      if (!HiveService.hasEnrolledFace()) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Row(
+              children: [
+                const Icon(Icons.warning_amber_rounded, color: Colors.white, size: 20),
+                const SizedBox(width: 8),
+                Expanded(
+                  child: Text(
+                    'Basis wajah belum didaftarkan di Hive. Silakan aktifkan di Pengaturan Profil terlebih dahulu.',
+                    style: GoogleFonts.spaceGrotesk(fontSize: 12),
+                  ),
+                ),
+              ],
+            ),
+            backgroundColor: const Color(0xFF93000A),
+            duration: const Duration(seconds: 3),
+          ),
+        );
+        return;
+      }
+
+      final bool faceVerified = await FaceScanDialog.startFaceScan(
+        context,
+        mode: FaceScanMode.verify,
+      );
+      if (!mounted) return;
+
+      if (faceVerified) {
+        final username = credentials['username']!;
+        final password = credentials['password']!;
+        await _performBiometricLogin(username: username, password: password);
+      }
+      return;
+    }
+
+    // Untuk Fingerprint: Gunakan sensor biometrik local_auth
     try {
       final bool canAuthenticateWithBiometrics = await _localAuth.canCheckBiometrics;
       final bool canAuthenticate = canAuthenticateWithBiometrics || await _localAuth.isDeviceSupported();
 
       if (!canAuthenticate) {
-        if (!autoPrompt && mounted) {
+        if (mounted) {
           ScaffoldMessenger.of(context).showSnackBar(
             const SnackBar(
-              content: Text('Sensor biometrik tidak tersedia atau tidak didukung pada perangkat ini.'),
+              content: Text('Sensor biometrik sidik jari tidak tersedia atau tidak didukung pada perangkat ini.'),
               backgroundColor: AppColors.hpRed,
             ),
           );
@@ -60,12 +133,19 @@ class _LoginScreenState extends State<LoginScreen> {
         localizedReason: 'Pindai sidik jari untuk otorisasi akses cepat ke Hunter System',
       );
 
-      if (didAuthenticate && mounted) {
-        _navigateToMain();
+      if (!mounted) return;
+
+      if (didAuthenticate) {
+        // Ambil kredensial (username & password) dari penyimpanan lokal
+        final username = credentials['username']!;
+        final password = credentials['password']!;
+
+        // Jalankan fungsi login secara otomatis untuk masuk ke sistem
+        await _performBiometricLogin(username: username, password: password);
       }
     } catch (e) {
       debugPrint('[BiometricAuth] Error: $e');
-      if (!autoPrompt && mounted) {
+      if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
             content: Text('Autentikasi biometrik gagal: $e'),
@@ -73,6 +153,80 @@ class _LoginScreenState extends State<LoginScreen> {
           ),
         );
       }
+    }
+  }
+
+  /// Menjalankan login otomatis ke Supabase menggunakan kredensial biometrik
+  Future<void> _performBiometricLogin({
+    required String username,
+    required String password,
+  }) async {
+    setState(() => _isLoading = true);
+
+    try {
+      final passwordHash = HashService.hashSha256(password);
+      final user = await SupabaseService.login(
+        username: username,
+        passwordHash: passwordHash,
+      );
+
+      if (!mounted) return;
+      setState(() => _isLoading = false);
+
+      if (user != null) {
+        await HiveService.saveSession(
+          userId: user['id'].toString(),
+          username: user['username'].toString(),
+          password: password,
+          rank: user['rank']?.toString() ?? 'F',
+          exp: (user['exp'] as num?)?.toInt() ?? 0,
+          gold: (user['gold'] as num?)?.toInt() ?? 0,
+          hp: (user['hp'] as num?)?.toInt() ?? 3,
+          avatarUrl: user['avatar_url']?.toString(),
+        );
+
+        if (!mounted) return;
+
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Row(
+              children: [
+                const Icon(Icons.verified_rounded, color: Colors.black, size: 20),
+                const SizedBox(width: 8),
+                Expanded(
+                  child: Text(
+                    'Autentikasi Biometrik Berhasil! Selamat datang, Hunter $username!',
+                    style: GoogleFonts.spaceGrotesk(
+                      color: Colors.black,
+                      fontWeight: FontWeight.w800,
+                    ),
+                  ),
+                ),
+              ],
+            ),
+            backgroundColor: const Color(0xFF00F4FE),
+            duration: const Duration(seconds: 2),
+          ),
+        );
+
+        _navigateToMain();
+      } else {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(
+            content: Text('Kredensial biometrik kadaluarsa. Silakan login manual.'),
+            backgroundColor: AppColors.hpRed,
+          ),
+        );
+      }
+    } catch (e) {
+      if (!mounted) return;
+      setState(() => _isLoading = false);
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text('Login biometrik error: $e'),
+          backgroundColor: AppColors.hpRed,
+        ),
+      );
     }
   }
 
@@ -107,10 +261,11 @@ class _LoginScreenState extends State<LoginScreen> {
       setState(() => _isLoading = false);
 
       if (user != null) {
-        // 3. Simpan userId, username, rank, exp, gold, hp ke Hive sessionBox
+        // 3. Simpan userId, username, password, rank, exp, gold, hp ke Hive sessionBox
         await HiveService.saveSession(
           userId: user['id'].toString(),
           username: user['username'].toString(),
+          password: password,
           rank: user['rank']?.toString() ?? 'F',
           exp: (user['exp'] as num?)?.toInt() ?? 0,
           gold: (user['gold'] as num?)?.toInt() ?? 0,
@@ -763,7 +918,7 @@ class _LoginScreenState extends State<LoginScreen> {
                                               icon: Icons.fingerprint_rounded,
                                               iconColor: const Color(0xFFE5B5FF),
                                               glowColor: const Color(0xFFB026FF),
-                                              onTap: () => _triggerBiometricAuth(autoPrompt: false),
+                                              onTap: () => _triggerBiometricAuth(type: 'fingerprint'),
                                             ),
                                           ),
                                           const SizedBox(width: 10),
@@ -775,7 +930,7 @@ class _LoginScreenState extends State<LoginScreen> {
                                               icon: Icons.document_scanner_outlined,
                                               iconColor: const Color(0xFF00F4FE),
                                               glowColor: const Color(0xFF00F4FE),
-                                              onTap: () => _triggerBiometricAuth(autoPrompt: false),
+                                              onTap: () => _triggerBiometricAuth(type: 'facescan'),
                                             ),
                                           ),
                                         ],

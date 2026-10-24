@@ -1,8 +1,11 @@
 import 'dart:async';
+import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:intl/intl.dart';
 import 'package:hive/hive.dart';
+import '../../models/alarm_model.dart';
+import '../../services/alarm_service.dart';
 import '../../services/hive_service.dart';
 import '../../services/notif_service.dart';
 import '../../services/supabase_service.dart';
@@ -58,6 +61,8 @@ class _TabHomeState extends State<TabHome> {
   final Set<String> _completedQuests = {};
   DateTime _lastMidnightCheck = DateTime.now();
 
+  bool _isAlarmDialogShowing = false;
+
   @override
   void initState() {
     super.initState();
@@ -67,6 +72,23 @@ class _TabHomeState extends State<TabHome> {
     _syncQuestsFromSupabase();
     _startServerClock();
     _initDungeonGateDistance();
+    _setupAlarmListener();
+  }
+
+  void _setupAlarmListener() {
+    AlarmService.onAlarmStateChanged = () {
+      if (mounted) {
+        setState(() {});
+        if (AlarmService.isRinging) {
+          _showAlarmRingingDialog();
+        }
+      }
+    };
+    if (AlarmService.isRinging) {
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        if (mounted) _showAlarmRingingDialog();
+      });
+    }
   }
 
   /// Melakukan pengecekan pergantian hari & penalti pemotongan HP jika quest hari sebelumnya < 3
@@ -458,6 +480,7 @@ class _TabHomeState extends State<TabHome> {
 
   @override
   void dispose() {
+    AlarmService.onAlarmStateChanged = null;
     _homePositionSubscription?.cancel();
     _serverClockTimer?.cancel();
     _searchController.dispose();
@@ -1730,8 +1753,11 @@ class _TabHomeState extends State<TabHome> {
     );
   }
 
-  /// FAB Kiri: Notifikasi Lonceng
+  /// FAB Kiri: Hunter System Awakening Alarm
   Widget _buildLeftFab() {
+    final alarm = HiveService.getAlarm();
+    final bool isAlarmOn = alarm.isEnabled;
+
     return Container(
       width: 44,
       height: 44,
@@ -1739,36 +1765,1766 @@ class _TabHomeState extends State<TabHome> {
         color: const Color(0xFF1F1927),
         shape: BoxShape.circle,
         border: Border.all(
-          color: const Color(0xFF00F4FE).withValues(alpha: 0.4),
-          width: 1.2,
+          color: isAlarmOn
+              ? const Color(0xFF00F4FE)
+              : const Color(0xFF00F4FE).withValues(alpha: 0.3),
+          width: isAlarmOn ? 1.6 : 1.2,
         ),
         boxShadow: [
           BoxShadow(
-            color: const Color(0xFF00F4FE).withValues(alpha: 0.25),
-            blurRadius: 12,
+            color: isAlarmOn
+                ? const Color(0xFF00F4FE).withValues(alpha: 0.45)
+                : const Color(0xFF00F4FE).withValues(alpha: 0.15),
+            blurRadius: isAlarmOn ? 14 : 8,
+            spreadRadius: isAlarmOn ? 1 : 0,
           ),
         ],
       ),
-      child: IconButton(
-        icon: const Icon(
-          Icons.notifications_outlined,
-          color: Color(0xFFE9DEF2),
-          size: 20,
-        ),
-        onPressed: () async {
-          await NotifService.showQuestReminder();
-          if (!mounted) return;
-          ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(
-              content: Text(
-                'SYSTEM ALERT: Notifikasi pengingat quest dikirim ke status bar HP!',
-                style: GoogleFonts.spaceGrotesk(fontSize: 12),
-              ),
-              backgroundColor: const Color(0xFF1F1927),
-              duration: const Duration(seconds: 2),
+      child: Stack(
+        alignment: Alignment.center,
+        children: [
+          IconButton(
+            tooltip: 'Hunter System Awakening Alarm',
+            icon: Icon(
+              isAlarmOn ? Icons.alarm_on_rounded : Icons.alarm_rounded,
+              color: isAlarmOn ? const Color(0xFF00F4FE) : const Color(0xFF9B8BA1),
+              size: 20,
             ),
-          );
-        },
+            onPressed: () => _openAlarmSettingModal(context),
+          ),
+          if (isAlarmOn)
+            Positioned(
+              top: 7,
+              right: 7,
+              child: Container(
+                width: 7,
+                height: 7,
+                decoration: const BoxDecoration(
+                  shape: BoxShape.circle,
+                  color: Color(0xFF00F4FE),
+                  boxShadow: [
+                    BoxShadow(
+                      color: Color(0xFF00F4FE),
+                      blurRadius: 4,
+                      spreadRadius: 1,
+                    ),
+                  ],
+                ),
+              ),
+            ),
+        ],
+      ),
+    );
+  }
+
+  /// Helper untuk menghitung estimasi waktu berdering
+  String _getRemainingAlarmText(int hour, int minute) {
+    final now = DateTime.now();
+    var target = DateTime(now.year, now.month, now.day, hour, minute);
+    if (target.isBefore(now)) {
+      target = target.add(const Duration(days: 1));
+    }
+    final diff = target.difference(now);
+    final h = diff.inHours;
+    final m = diff.inMinutes % 60;
+    if (h == 0 && m == 0) return 'Berdering kurang dari 1 menit lagi';
+    if (h == 0) return 'Berdering dalam $m menit ke depan';
+    return 'Berdering dalam $h jam $m menit ke depan';
+  }
+
+  /// Membuka Hub Pengaturan Hunter System Alarm
+  void _openAlarmSettingModal(BuildContext context) {
+    final initialAlarm = HiveService.getAlarm();
+    int selectedHour = initialAlarm.hour;
+    int selectedMinute = initialAlarm.minute;
+    bool isEnabled = initialAlarm.isEnabled;
+    double volume = initialAlarm.volume;
+    String ringtoneName = initialAlarm.ringtoneName;
+    String? ringtonePath = initialAlarm.ringtonePath;
+    bool vibrate = initialAlarm.vibrate;
+    final labelCtrl = TextEditingController(text: initialAlarm.label);
+    bool isPreviewing = false;
+
+    showModalBottomSheet(
+      context: context,
+      isScrollControlled: true,
+      backgroundColor: Colors.transparent,
+      useSafeArea: true,
+      elevation: 0,
+      builder: (sheetContext) {
+        return StatefulBuilder(
+          builder: (dialogCtx, setModalState) {
+            final screenHeight = MediaQuery.of(dialogCtx).size.height;
+            final isKeyboardOpen = MediaQuery.of(dialogCtx).viewInsets.bottom > 0;
+
+            return Material(
+              color: Colors.transparent,
+              child: Container(
+                height: isKeyboardOpen ? screenHeight * 0.95 : screenHeight * 0.88,
+                clipBehavior: Clip.antiAlias,
+                decoration: BoxDecoration(
+                  color: const Color(0xFF110C19),
+                  borderRadius: const BorderRadius.only(
+                    topLeft: Radius.circular(24),
+                    topRight: Radius.circular(24),
+                  ),
+                  border: Border.all(
+                    color: const Color(0xFF00F4FE).withValues(alpha: 0.8),
+                    width: 1.5,
+                  ),
+                  boxShadow: [
+                    BoxShadow(
+                      color: const Color(0xFF00F4FE).withValues(alpha: 0.25),
+                      blurRadius: 24,
+                      offset: const Offset(0, -4),
+                    ),
+                  ],
+                ),
+                child: Column(
+                  children: [
+                    // Drag Handle
+                    Center(
+                      child: Container(
+                        width: 44,
+                        height: 4,
+                        margin: const EdgeInsets.only(top: 12, bottom: 8),
+                        decoration: BoxDecoration(
+                          color: const Color(0xFF383241),
+                          borderRadius: BorderRadius.circular(2),
+                        ),
+                      ),
+                    ),
+
+                    // Header Bar
+                    Padding(
+                      padding: const EdgeInsets.symmetric(horizontal: 18, vertical: 8),
+                      child: Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: [
+                          Row(
+                            children: [
+                              Container(
+                                padding: const EdgeInsets.all(7),
+                                decoration: BoxDecoration(
+                                  color: const Color(0xFF00F4FE).withValues(alpha: 0.15),
+                                  borderRadius: BorderRadius.circular(8),
+                                  border: Border.all(
+                                    color: const Color(0xFF00F4FE).withValues(alpha: 0.4),
+                                  ),
+                                ),
+                                child: const Icon(
+                                  Icons.alarm_rounded,
+                                  color: Color(0xFF00F4FE),
+                                  size: 20,
+                                ),
+                              ),
+                              const SizedBox(width: 10),
+                              Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  Text(
+                                    'HUNTER AWAKENING ALARM',
+                                    style: GoogleFonts.spaceGrotesk(
+                                      fontSize: 13,
+                                      fontWeight: FontWeight.w800,
+                                      letterSpacing: 0.8,
+                                      color: const Color(0xFF00F4FE),
+                                    ),
+                                  ),
+                                  Text(
+                                    'Standar Alarm & Protokol Bangkit Harian',
+                                    style: GoogleFonts.plusJakartaSans(
+                                      fontSize: 10,
+                                      fontWeight: FontWeight.w500,
+                                      color: const Color(0xFF9B8BA1),
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            ],
+                          ),
+                          IconButton(
+                            icon: const Icon(Icons.close_rounded, color: Color(0xFF9B8BA1), size: 20),
+                            onPressed: () {
+                              AlarmService.stopPreview();
+                              Navigator.pop(sheetContext);
+                            },
+                          ),
+                        ],
+                      ),
+                    ),
+
+                    const Divider(color: Color(0xFF2C1E4E), height: 1),
+
+                    // Content Scrollable
+                    Expanded(
+                      child: SingleChildScrollView(
+                        physics: const BouncingScrollPhysics(),
+                        padding: const EdgeInsets.fromLTRB(16, 14, 16, 24),
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            // 1. Status Toggle & Countdown Banner
+                            Container(
+                              padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 12),
+                              decoration: BoxDecoration(
+                                color: const Color(0xFF1F1927),
+                                borderRadius: BorderRadius.circular(14),
+                                border: Border.all(
+                                  color: isEnabled
+                                      ? const Color(0xFF00F4FE).withValues(alpha: 0.5)
+                                      : const Color(0xFF2C1E4E),
+                                  width: 1.2,
+                                ),
+                              ),
+                              child: Row(
+                                children: [
+                                  Container(
+                                    width: 10,
+                                    height: 10,
+                                    decoration: BoxDecoration(
+                                      shape: BoxShape.circle,
+                                      color: isEnabled ? const Color(0xFF00F4FE) : const Color(0xFF70657B),
+                                      boxShadow: isEnabled
+                                          ? [
+                                              const BoxShadow(
+                                                color: Color(0xFF00F4FE),
+                                                blurRadius: 6,
+                                                spreadRadius: 1,
+                                              ),
+                                            ]
+                                          : [],
+                                    ),
+                                  ),
+                                  const SizedBox(width: 10),
+                                  Expanded(
+                                    child: Column(
+                                      crossAxisAlignment: CrossAxisAlignment.start,
+                                      children: [
+                                        Text(
+                                          isEnabled ? 'ALARM AKTIF' : 'ALARM NONAKTIF',
+                                          style: GoogleFonts.spaceGrotesk(
+                                            fontSize: 12,
+                                            fontWeight: FontWeight.w800,
+                                            letterSpacing: 0.6,
+                                            color: isEnabled ? const Color(0xFF00F4FE) : const Color(0xFF9B8BA1),
+                                          ),
+                                        ),
+                                        Text(
+                                          isEnabled
+                                              ? _getRemainingAlarmText(selectedHour, selectedMinute)
+                                              : 'Nyalakan switch untuk mengaktifkan jadwal alarm.',
+                                          style: GoogleFonts.plusJakartaSans(
+                                            fontSize: 10.5,
+                                            color: isEnabled ? const Color(0xFFD4C7E3) : const Color(0xFF70657B),
+                                          ),
+                                        ),
+                                      ],
+                                    ),
+                                  ),
+                                  Switch(
+                                    value: isEnabled,
+                                    activeThumbColor: const Color(0xFF00F4FE),
+                                    activeTrackColor: const Color(0xFF00F4FE).withValues(alpha: 0.3),
+                                    inactiveThumbColor: const Color(0xFF70657B),
+                                    inactiveTrackColor: const Color(0xFF2C1E4E),
+                                    onChanged: (val) {
+                                      setModalState(() => isEnabled = val);
+                                    },
+                                  ),
+                                ],
+                              ),
+                            ),
+
+                            const SizedBox(height: 16),
+
+                            // 2. Large Digital Time Display & Picker
+                            Container(
+                              padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 16),
+                              decoration: BoxDecoration(
+                                color: const Color(0xFF171022),
+                                borderRadius: BorderRadius.circular(16),
+                                border: Border.all(
+                                  color: const Color(0xFF2C1E4E),
+                                  width: 1.2,
+                                ),
+                              ),
+                              child: Column(
+                                children: [
+                                  Row(
+                                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                    children: [
+                                      Text(
+                                        'WAKTU ALARM (FORMAT 24 JAM)',
+                                        style: GoogleFonts.spaceGrotesk(
+                                          fontSize: 11,
+                                          fontWeight: FontWeight.w800,
+                                          letterSpacing: 0.6,
+                                          color: const Color(0xFFE5B5FF),
+                                        ),
+                                      ),
+                                      GestureDetector(
+                                        onTap: () async {
+                                          final picked = await showTimePicker(
+                                            context: dialogCtx,
+                                            initialTime: TimeOfDay(hour: selectedHour, minute: selectedMinute),
+                                            builder: (ctx, child) {
+                                              return Theme(
+                                                data: ThemeData.dark().copyWith(
+                                                  colorScheme: const ColorScheme.dark(
+                                                    primary: Color(0xFF00F4FE),
+                                                    onPrimary: Color(0xFF0D0814),
+                                                    surface: Color(0xFF1A1325),
+                                                    onSurface: Color(0xFFE9DEF2),
+                                                  ),
+                                                ),
+                                                child: child!,
+                                              );
+                                            },
+                                          );
+                                          if (picked != null) {
+                                            setModalState(() {
+                                              selectedHour = picked.hour;
+                                              selectedMinute = picked.minute;
+                                            });
+                                          }
+                                        },
+                                        child: Container(
+                                          padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                                          decoration: BoxDecoration(
+                                            color: const Color(0xFF00F4FE).withValues(alpha: 0.15),
+                                            borderRadius: BorderRadius.circular(6),
+                                            border: Border.all(
+                                              color: const Color(0xFF00F4FE).withValues(alpha: 0.4),
+                                            ),
+                                          ),
+                                          child: Row(
+                                            mainAxisSize: MainAxisSize.min,
+                                            children: [
+                                              const Icon(Icons.access_time_rounded, size: 12, color: Color(0xFF00F4FE)),
+                                              const SizedBox(width: 4),
+                                              Text(
+                                                'DIAL PICKER',
+                                                style: GoogleFonts.spaceGrotesk(
+                                                  fontSize: 10,
+                                                  fontWeight: FontWeight.w700,
+                                                  color: const Color(0xFF00F4FE),
+                                                ),
+                                              ),
+                                            ],
+                                          ),
+                                        ),
+                                      ),
+                                    ],
+                                  ),
+                                  const SizedBox(height: 14),
+
+                                  // Clock Display & Steppers
+                                  Row(
+                                    mainAxisAlignment: MainAxisAlignment.center,
+                                    children: [
+                                      // Hour Block
+                                      Column(
+                                        children: [
+                                          IconButton(
+                                            icon: const Icon(Icons.keyboard_arrow_up_rounded, color: Color(0xFF00F4FE)),
+                                            onPressed: () {
+                                              setModalState(() {
+                                                selectedHour = (selectedHour + 1) % 24;
+                                              });
+                                            },
+                                          ),
+                                          Container(
+                                            width: 82,
+                                            height: 72,
+                                            alignment: Alignment.center,
+                                            decoration: BoxDecoration(
+                                              color: const Color(0xFF1F1927),
+                                              borderRadius: BorderRadius.circular(12),
+                                              border: Border.all(
+                                                color: const Color(0xFF00F4FE).withValues(alpha: 0.6),
+                                                width: 1.5,
+                                              ),
+                                              boxShadow: [
+                                                BoxShadow(
+                                                  color: const Color(0xFF00F4FE).withValues(alpha: 0.15),
+                                                  blurRadius: 10,
+                                                ),
+                                              ],
+                                            ),
+                                            child: Text(
+                                              selectedHour.toString().padLeft(2, '0'),
+                                              style: GoogleFonts.spaceGrotesk(
+                                                fontSize: 42,
+                                                fontWeight: FontWeight.w900,
+                                                color: Colors.white,
+                                              ),
+                                            ),
+                                          ),
+                                          IconButton(
+                                            icon: const Icon(Icons.keyboard_arrow_down_rounded, color: Color(0xFF00F4FE)),
+                                            onPressed: () {
+                                              setModalState(() {
+                                                selectedHour = (selectedHour - 1 + 24) % 24;
+                                              });
+                                            },
+                                          ),
+                                          Text(
+                                            'JAM',
+                                            style: GoogleFonts.spaceGrotesk(
+                                              fontSize: 9.5,
+                                              fontWeight: FontWeight.w700,
+                                              color: const Color(0xFF9B8BA1),
+                                            ),
+                                          ),
+                                        ],
+                                      ),
+
+                                      // Colon Separator
+                                      Padding(
+                                        padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 20),
+                                        child: Text(
+                                          ':',
+                                          style: GoogleFonts.spaceGrotesk(
+                                            fontSize: 42,
+                                            fontWeight: FontWeight.w900,
+                                            color: const Color(0xFF00F4FE),
+                                          ),
+                                        ),
+                                      ),
+
+                                      // Minute Block
+                                      Column(
+                                        children: [
+                                          IconButton(
+                                            icon: const Icon(Icons.keyboard_arrow_up_rounded, color: Color(0xFF00F4FE)),
+                                            onPressed: () {
+                                              setModalState(() {
+                                                selectedMinute = (selectedMinute + 1) % 60;
+                                              });
+                                            },
+                                          ),
+                                          Container(
+                                            width: 82,
+                                            height: 72,
+                                            alignment: Alignment.center,
+                                            decoration: BoxDecoration(
+                                              color: const Color(0xFF1F1927),
+                                              borderRadius: BorderRadius.circular(12),
+                                              border: Border.all(
+                                                color: const Color(0xFF00F4FE).withValues(alpha: 0.6),
+                                                width: 1.5,
+                                              ),
+                                              boxShadow: [
+                                                BoxShadow(
+                                                  color: const Color(0xFF00F4FE).withValues(alpha: 0.15),
+                                                  blurRadius: 10,
+                                                ),
+                                              ],
+                                            ),
+                                            child: Text(
+                                              selectedMinute.toString().padLeft(2, '0'),
+                                              style: GoogleFonts.spaceGrotesk(
+                                                fontSize: 42,
+                                                fontWeight: FontWeight.w900,
+                                                color: Colors.white,
+                                              ),
+                                            ),
+                                          ),
+                                          IconButton(
+                                            icon: const Icon(Icons.keyboard_arrow_down_rounded, color: Color(0xFF00F4FE)),
+                                            onPressed: () {
+                                              setModalState(() {
+                                                selectedMinute = (selectedMinute - 1 + 60) % 60;
+                                              });
+                                            },
+                                          ),
+                                          Text(
+                                            'MENIT',
+                                            style: GoogleFonts.spaceGrotesk(
+                                              fontSize: 9.5,
+                                              fontWeight: FontWeight.w700,
+                                              color: const Color(0xFF9B8BA1),
+                                            ),
+                                          ),
+                                        ],
+                                      ),
+                                    ],
+                                  ),
+
+                                  const SizedBox(height: 10),
+
+                                  // Quick Presets
+                                  Wrap(
+                                    spacing: 8,
+                                    runSpacing: 6,
+                                    alignment: WrapAlignment.center,
+                                    children: [
+                                      for (final preset in [
+                                        const TimeOfDay(hour: 5, minute: 0),
+                                        const TimeOfDay(hour: 6, minute: 0),
+                                        const TimeOfDay(hour: 7, minute: 0),
+                                        const TimeOfDay(hour: 21, minute: 0),
+                                        const TimeOfDay(hour: 22, minute: 0),
+                                        const TimeOfDay(hour: 23, minute: 0),
+                                      ])
+                                        GestureDetector(
+                                          onTap: () {
+                                            setModalState(() {
+                                              selectedHour = preset.hour;
+                                              selectedMinute = preset.minute;
+                                            });
+                                          },
+                                          child: Container(
+                                            padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
+                                            decoration: BoxDecoration(
+                                              color: (selectedHour == preset.hour && selectedMinute == preset.minute)
+                                                  ? const Color(0xFF00F4FE).withValues(alpha: 0.2)
+                                                  : const Color(0xFF1F1927),
+                                              borderRadius: BorderRadius.circular(8),
+                                              border: Border.all(
+                                                color: (selectedHour == preset.hour && selectedMinute == preset.minute)
+                                                  ? const Color(0xFF00F4FE)
+                                                  : const Color(0xFF2C1E4E),
+                                              ),
+                                            ),
+                                            child: Text(
+                                              '${preset.hour.toString().padLeft(2, '0')}:${preset.minute.toString().padLeft(2, '0')}',
+                                              style: GoogleFonts.spaceGrotesk(
+                                                fontSize: 11,
+                                                fontWeight: FontWeight.w700,
+                                                color: (selectedHour == preset.hour && selectedMinute == preset.minute)
+                                                    ? const Color(0xFF00F4FE)
+                                                    : const Color(0xFFB5A9C2),
+                                              ),
+                                            ),
+                                          ),
+                                        ),
+                                    ],
+                                  ),
+                                ],
+                              ),
+                            ),
+
+                            const SizedBox(height: 16),
+
+                            // 3. Custom Ringtone Selector (MP3 Lokal & Default Solo Leveling Siren)
+                            Container(
+                              padding: const EdgeInsets.all(14),
+                              decoration: BoxDecoration(
+                                color: const Color(0xFF171022),
+                                borderRadius: BorderRadius.circular(16),
+                                border: Border.all(
+                                  color: const Color(0xFF2C1E4E),
+                                  width: 1.2,
+                                ),
+                              ),
+                              child: Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  Row(
+                                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                    children: [
+                                      Text(
+                                        'RINGTONE / NADA ALARM',
+                                        style: GoogleFonts.spaceGrotesk(
+                                          fontSize: 11,
+                                          fontWeight: FontWeight.w800,
+                                          letterSpacing: 0.6,
+                                          color: const Color(0xFFE5B5FF),
+                                        ),
+                                      ),
+                                      Container(
+                                        padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
+                                        decoration: BoxDecoration(
+                                          color: (ringtonePath != null && ringtonePath!.isNotEmpty)
+                                              ? const Color(0xFFB026FF).withValues(alpha: 0.2)
+                                              : const Color(0xFF00F4FE).withValues(alpha: 0.2),
+                                          borderRadius: BorderRadius.circular(6),
+                                        ),
+                                        child: Text(
+                                          (ringtonePath != null && ringtonePath!.isNotEmpty)
+                                              ? 'MP3 LOKAL'
+                                              : 'SYSTEM DEFAULT',
+                                          style: GoogleFonts.spaceGrotesk(
+                                            fontSize: 9,
+                                            fontWeight: FontWeight.w800,
+                                            color: (ringtonePath != null && ringtonePath!.isNotEmpty)
+                                                ? const Color(0xFFB026FF)
+                                                : const Color(0xFF00F4FE),
+                                          ),
+                                        ),
+                                      ),
+                                    ],
+                                  ),
+                                  const SizedBox(height: 10),
+
+                                  // Ringtone Name Display
+                                  Container(
+                                    padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
+                                    decoration: BoxDecoration(
+                                      color: const Color(0xFF1F1927),
+                                      borderRadius: BorderRadius.circular(10),
+                                      border: Border.all(color: const Color(0xFF2C1E4E)),
+                                    ),
+                                    child: Row(
+                                      children: [
+                                        Icon(
+                                          (ringtonePath != null && ringtonePath!.isNotEmpty)
+                                              ? Icons.audio_file_rounded
+                                              : Icons.graphic_eq_rounded,
+                                          size: 18,
+                                          color: const Color(0xFF00F4FE),
+                                        ),
+                                        const SizedBox(width: 10),
+                                        Expanded(
+                                          child: Text(
+                                            ringtoneName,
+                                            maxLines: 1,
+                                            overflow: TextOverflow.ellipsis,
+                                            style: GoogleFonts.spaceGrotesk(
+                                              fontSize: 11.5,
+                                              fontWeight: FontWeight.w700,
+                                              color: const Color(0xFFE9DEF2),
+                                            ),
+                                          ),
+                                        ),
+                                      ],
+                                    ),
+                                  ),
+                                  const SizedBox(height: 10),
+
+                                  // Buttons Row: Pick MP3, Reset Default, Preview
+                                  Row(
+                                    children: [
+                                      // Pick MP3 File
+                                      Expanded(
+                                        child: ElevatedButton.icon(
+                                          style: ElevatedButton.styleFrom(
+                                            backgroundColor: const Color(0xFFB026FF),
+                                            foregroundColor: Colors.white,
+                                            padding: const EdgeInsets.symmetric(vertical: 10),
+                                            shape: RoundedRectangleBorder(
+                                              borderRadius: BorderRadius.circular(10),
+                                            ),
+                                            elevation: 0,
+                                          ),
+                                          icon: const Icon(Icons.file_upload_outlined, size: 16),
+                                          label: Text(
+                                            'PILIH MP3',
+                                            style: GoogleFonts.spaceGrotesk(
+                                              fontSize: 11,
+                                              fontWeight: FontWeight.w800,
+                                            ),
+                                          ),
+                                          onPressed: () async {
+                                            try {
+                                              final res = await FilePicker.pickFiles(
+                                                type: FileType.custom,
+                                                allowedExtensions: ['mp3', 'wav', 'm4a', 'aac', 'ogg'],
+                                              );
+                                              if (res.isNotEmpty && res.first.path != null) {
+                                                final f = res.first;
+                                                setModalState(() {
+                                                  ringtoneName = f.name;
+                                                  ringtonePath = f.path;
+                                                });
+                                                if (isPreviewing) {
+                                                  await AlarmService.stopPreview();
+                                                  setModalState(() => isPreviewing = false);
+                                                }
+                                              }
+                                            } catch (e) {
+                                              debugPrint('Pick file error: $e');
+                                            }
+                                          },
+                                        ),
+                                      ),
+                                      const SizedBox(width: 8),
+
+                                      // Reset to Default
+                                      if (ringtonePath != null && ringtonePath!.isNotEmpty) ...[
+                                        IconButton(
+                                          tooltip: 'Kembali ke Default Siren',
+                                          style: IconButton.styleFrom(
+                                            backgroundColor: const Color(0xFF1F1927),
+                                            shape: RoundedRectangleBorder(
+                                              borderRadius: BorderRadius.circular(10),
+                                              side: const BorderSide(color: Color(0xFF2C1E4E)),
+                                            ),
+                                          ),
+                                          icon: const Icon(Icons.restart_alt_rounded, color: Color(0xFF9B8BA1), size: 18),
+                                          onPressed: () async {
+                                            setModalState(() {
+                                              ringtoneName = 'Solo Leveling Siren System (Default WAV)';
+                                              ringtonePath = null;
+                                            });
+                                            if (isPreviewing) {
+                                              await AlarmService.stopPreview();
+                                              setModalState(() => isPreviewing = false);
+                                            }
+                                          },
+                                        ),
+                                        const SizedBox(width: 8),
+                                      ],
+
+                                      // Preview Button
+                                      ElevatedButton.icon(
+                                        style: ElevatedButton.styleFrom(
+                                          backgroundColor: isPreviewing
+                                              ? const Color(0xFFFF2A6D)
+                                              : const Color(0xFF00F4FE).withValues(alpha: 0.15),
+                                          foregroundColor: isPreviewing ? Colors.white : const Color(0xFF00F4FE),
+                                          padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 10),
+                                          shape: RoundedRectangleBorder(
+                                            borderRadius: BorderRadius.circular(10),
+                                            side: BorderSide(
+                                              color: isPreviewing
+                                                  ? const Color(0xFFFF2A6D)
+                                                  : const Color(0xFF00F4FE).withValues(alpha: 0.5),
+                                            ),
+                                          ),
+                                          elevation: 0,
+                                        ),
+                                        icon: Icon(
+                                          isPreviewing ? Icons.stop_rounded : Icons.play_arrow_rounded,
+                                          size: 18,
+                                        ),
+                                        label: Text(
+                                          isPreviewing ? 'STOP' : 'TEST',
+                                          style: GoogleFonts.spaceGrotesk(
+                                            fontSize: 11,
+                                            fontWeight: FontWeight.w800,
+                                          ),
+                                        ),
+                                        onPressed: () async {
+                                          if (isPreviewing) {
+                                            await AlarmService.stopPreview();
+                                            setModalState(() => isPreviewing = false);
+                                          } else {
+                                            setModalState(() => isPreviewing = true);
+                                            await AlarmService.previewRingtone(
+                                              ringtonePath: ringtonePath,
+                                              volume: volume,
+                                            );
+                                          }
+                                        },
+                                      ),
+                                    ],
+                                  ),
+                                ],
+                              ),
+                            ),
+
+                            const SizedBox(height: 16),
+
+                            // 4. Custom Volume Control (0% - 100%)
+                            Container(
+                              padding: const EdgeInsets.all(14),
+                              decoration: BoxDecoration(
+                                color: const Color(0xFF171022),
+                                borderRadius: BorderRadius.circular(16),
+                                border: Border.all(
+                                  color: const Color(0xFF2C1E4E),
+                                  width: 1.2,
+                                ),
+                              ),
+                              child: Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  Row(
+                                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                    children: [
+                                      Row(
+                                        children: [
+                                          Icon(
+                                            volume == 0
+                                                ? Icons.volume_off_rounded
+                                                : volume < 0.5
+                                                    ? Icons.volume_down_rounded
+                                                    : Icons.volume_up_rounded,
+                                            size: 18,
+                                            color: const Color(0xFF00F4FE),
+                                          ),
+                                          const SizedBox(width: 8),
+                                          Text(
+                                            'INTENSITAS VOLUME',
+                                            style: GoogleFonts.spaceGrotesk(
+                                              fontSize: 11,
+                                              fontWeight: FontWeight.w800,
+                                              letterSpacing: 0.6,
+                                              color: const Color(0xFFE5B5FF),
+                                            ),
+                                          ),
+                                        ],
+                                      ),
+                                      Text(
+                                        '${(volume * 100).toInt()}%',
+                                        style: GoogleFonts.spaceGrotesk(
+                                          fontSize: 13,
+                                          fontWeight: FontWeight.w900,
+                                          color: const Color(0xFF00F4FE),
+                                        ),
+                                      ),
+                                    ],
+                                  ),
+                                  const SizedBox(height: 6),
+                                  SliderTheme(
+                                    data: SliderTheme.of(dialogCtx).copyWith(
+                                      activeTrackColor: const Color(0xFF00F4FE),
+                                      inactiveTrackColor: const Color(0xFF2C1E4E),
+                                      thumbColor: const Color(0xFF00F4FE),
+                                      overlayColor: const Color(0xFF00F4FE).withValues(alpha: 0.2),
+                                      thumbShape: const RoundSliderThumbShape(enabledThumbRadius: 8),
+                                      trackHeight: 4,
+                                    ),
+                                    child: Slider(
+                                      value: volume,
+                                      min: 0.0,
+                                      max: 1.0,
+                                      divisions: 100,
+                                      onChanged: (val) {
+                                        setModalState(() => volume = val);
+                                        if (isPreviewing) {
+                                          AlarmService.previewRingtone(ringtonePath: ringtonePath, volume: val);
+                                        }
+                                      },
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            ),
+
+                            const SizedBox(height: 16),
+
+                            // 5. Vibrate & Alarm Label
+                            Container(
+                              padding: const EdgeInsets.all(14),
+                              decoration: BoxDecoration(
+                                color: const Color(0xFF171022),
+                                borderRadius: BorderRadius.circular(16),
+                                border: Border.all(
+                                  color: const Color(0xFF2C1E4E),
+                                  width: 1.2,
+                                ),
+                              ),
+                              child: Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  Row(
+                                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                    children: [
+                                      Row(
+                                        children: [
+                                          const Icon(Icons.vibration_rounded, size: 18, color: Color(0xFF00F4FE)),
+                                          const SizedBox(width: 8),
+                                          Text(
+                                            'GETAR SAAT ALARM BERBUNYI',
+                                            style: GoogleFonts.spaceGrotesk(
+                                              fontSize: 11,
+                                              fontWeight: FontWeight.w800,
+                                              letterSpacing: 0.6,
+                                              color: const Color(0xFFE5B5FF),
+                                            ),
+                                          ),
+                                        ],
+                                      ),
+                                      Switch(
+                                        value: vibrate,
+                                        activeThumbColor: const Color(0xFF00F4FE),
+                                        activeTrackColor: const Color(0xFF00F4FE).withValues(alpha: 0.3),
+                                        inactiveThumbColor: const Color(0xFF70657B),
+                                        inactiveTrackColor: const Color(0xFF2C1E4E),
+                                        onChanged: (val) => setModalState(() => vibrate = val),
+                                      ),
+                                    ],
+                                  ),
+                                  const Divider(color: Color(0xFF2C1E4E), height: 16),
+                                  Text(
+                                    'LABEL ALARM',
+                                    style: GoogleFonts.spaceGrotesk(
+                                      fontSize: 10.5,
+                                      fontWeight: FontWeight.w700,
+                                      color: const Color(0xFF9B8BA1),
+                                    ),
+                                  ),
+                                  const SizedBox(height: 6),
+                                  TextField(
+                                    controller: labelCtrl,
+                                    style: GoogleFonts.plusJakartaSans(
+                                      fontSize: 12.5,
+                                      color: const Color(0xFFE9DEF2),
+                                      fontWeight: FontWeight.w600,
+                                    ),
+                                    decoration: InputDecoration(
+                                      hintText: 'Cth: Quest Harian: Waktunya Bangkit!',
+                                      hintStyle: GoogleFonts.plusJakartaSans(
+                                        fontSize: 12,
+                                        color: const Color(0xFF70657B),
+                                      ),
+                                      filled: true,
+                                      fillColor: const Color(0xFF1F1927),
+                                      contentPadding: const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
+                                      border: OutlineInputBorder(
+                                        borderRadius: BorderRadius.circular(10),
+                                        borderSide: const BorderSide(color: Color(0xFF2C1E4E)),
+                                      ),
+                                      enabledBorder: OutlineInputBorder(
+                                        borderRadius: BorderRadius.circular(10),
+                                        borderSide: const BorderSide(color: Color(0xFF2C1E4E)),
+                                      ),
+                                      focusedBorder: OutlineInputBorder(
+                                        borderRadius: BorderRadius.circular(10),
+                                        borderSide: const BorderSide(color: Color(0xFF00F4FE)),
+                                      ),
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            ),
+
+                            const SizedBox(height: 20),
+
+                            // 6. Action Buttons: Simpan Alarm & Uji Sekarang
+                            Row(
+                              children: [
+                                // Uji Alarm Sekarang Button
+                                Expanded(
+                                  flex: 1,
+                                  child: OutlinedButton(
+                                    style: OutlinedButton.styleFrom(
+                                      foregroundColor: const Color(0xFFFF2A6D),
+                                      side: const BorderSide(color: Color(0xFFFF2A6D), width: 1.4),
+                                      padding: const EdgeInsets.symmetric(vertical: 14),
+                                      shape: RoundedRectangleBorder(
+                                        borderRadius: BorderRadius.circular(12),
+                                      ),
+                                    ),
+                                    onPressed: () async {
+                                      final testAlarm = AlarmModel(
+                                        id: initialAlarm.id,
+                                        hour: selectedHour,
+                                        minute: selectedMinute,
+                                        isEnabled: true,
+                                        label: labelCtrl.text.trim().isEmpty ? 'Uji Alarm Hunter' : labelCtrl.text.trim(),
+                                        ringtoneName: ringtoneName,
+                                        ringtonePath: ringtonePath,
+                                        volume: volume,
+                                        vibrate: vibrate,
+                                      );
+                                      await AlarmService.stopPreview();
+                                      if (sheetContext.mounted) Navigator.pop(sheetContext);
+                                      await AlarmService.triggerAlarm(alarm: testAlarm);
+                                    },
+                                    child: Row(
+                                      mainAxisAlignment: MainAxisAlignment.center,
+                                      children: [
+                                        const Icon(Icons.bolt_rounded, size: 18),
+                                        const SizedBox(width: 4),
+                                        Text(
+                                          'UJI ALARM',
+                                          style: GoogleFonts.spaceGrotesk(
+                                            fontSize: 12,
+                                            fontWeight: FontWeight.w800,
+                                          ),
+                                        ),
+                                      ],
+                                    ),
+                                  ),
+                                ),
+                                const SizedBox(width: 10),
+
+                                // Simpan Alarm Button
+                                Expanded(
+                                  flex: 2,
+                                  child: ElevatedButton(
+                                    style: ElevatedButton.styleFrom(
+                                      backgroundColor: const Color(0xFF00F4FE),
+                                      foregroundColor: const Color(0xFF0D0814),
+                                      padding: const EdgeInsets.symmetric(vertical: 14),
+                                      shape: RoundedRectangleBorder(
+                                        borderRadius: BorderRadius.circular(12),
+                                      ),
+                                      elevation: 6,
+                                      shadowColor: const Color(0xFF00F4FE).withValues(alpha: 0.5),
+                                    ),
+                                    onPressed: () async {
+                                      final updatedAlarm = AlarmModel(
+                                        id: initialAlarm.id,
+                                        hour: selectedHour,
+                                        minute: selectedMinute,
+                                        isEnabled: isEnabled,
+                                        label: labelCtrl.text.trim().isEmpty ? 'Waktunya Bangkit!' : labelCtrl.text.trim(),
+                                        ringtoneName: ringtoneName,
+                                        ringtonePath: ringtonePath,
+                                        volume: volume,
+                                        vibrate: vibrate,
+                                      );
+
+                                      final messenger = ScaffoldMessenger.of(context);
+                                      await AlarmService.stopPreview();
+                                      await AlarmService.scheduleAlarm(updatedAlarm);
+
+                                      if (sheetContext.mounted) Navigator.pop(sheetContext);
+                                      if (mounted) {
+                                        setState(() {});
+                                        messenger.showSnackBar(
+                                          SnackBar(
+                                            content: Text(
+                                              isEnabled
+                                                  ? '⏰ Alarm berhasil diset untuk ${updatedAlarm.formattedTime} WIB (${_getRemainingAlarmText(selectedHour, selectedMinute)})'
+                                                  : '🔕 Alarm dinonaktifkan.',
+                                              style: GoogleFonts.spaceGrotesk(fontWeight: FontWeight.w700),
+                                            ),
+                                            backgroundColor: isEnabled ? const Color(0xFF00F4FE) : const Color(0xFF70657B),
+                                          ),
+                                        );
+                                      }
+                                    },
+                                    child: Row(
+                                      mainAxisAlignment: MainAxisAlignment.center,
+                                      children: [
+                                        const Icon(Icons.save_rounded, size: 18),
+                                        const SizedBox(width: 6),
+                                        Text(
+                                          'SIMPAN ALARM',
+                                          style: GoogleFonts.spaceGrotesk(
+                                            fontSize: 13,
+                                            fontWeight: FontWeight.w800,
+                                            letterSpacing: 0.5,
+                                          ),
+                                        ),
+                                      ],
+                                    ),
+                                  ),
+                                ),
+                              ],
+                            ),
+
+                            const SizedBox(height: 18),
+
+                            // 7. Akses ke 5 Notifikasi Push Sistem (Tetap Tersedia)
+                            Center(
+                              child: TextButton.icon(
+                                style: TextButton.styleFrom(
+                                  foregroundColor: const Color(0xFF9B8BA1),
+                                ),
+                                icon: const Icon(Icons.notifications_active_outlined, size: 16),
+                                label: Text(
+                                  'Akses 5 Protokol Push Notifikasi Sistem',
+                                  style: GoogleFonts.spaceGrotesk(
+                                    fontSize: 11,
+                                    fontWeight: FontWeight.w700,
+                                    decoration: TextDecoration.underline,
+                                  ),
+                                ),
+                                onPressed: () {
+                                  AlarmService.stopPreview();
+                                  Navigator.pop(sheetContext);
+                                  _openNotificationHubModal(context);
+                                },
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            );
+          },
+        );
+      },
+    ).whenComplete(() {
+      AlarmService.stopPreview();
+    });
+  }
+
+  /// Dialog Layar Penuh Saat Alarm Sedang Berdering (Awakening Alarm Screen)
+  void _showAlarmRingingDialog() {
+    if (_isAlarmDialogShowing || !mounted) return;
+    _isAlarmDialogShowing = true;
+
+    final alarm = HiveService.getAlarm();
+    final now = DateTime.now();
+    final timeStr = DateFormat('HH:mm').format(now);
+
+    showDialog(
+      context: context,
+      barrierDismissible: false,
+      builder: (dialogCtx) {
+        return PopScope(
+          canPop: false,
+          child: Dialog(
+            backgroundColor: Colors.transparent,
+            insetPadding: const EdgeInsets.symmetric(horizontal: 20, vertical: 24),
+            child: Container(
+              padding: const EdgeInsets.all(22),
+              decoration: BoxDecoration(
+                color: const Color(0xFF140D22),
+                borderRadius: BorderRadius.circular(24),
+                border: Border.all(
+                  color: const Color(0xFF00F4FE),
+                  width: 2.0,
+                ),
+                boxShadow: [
+                  BoxShadow(
+                    color: const Color(0xFF00F4FE).withValues(alpha: 0.4),
+                    blurRadius: 30,
+                    spreadRadius: 2,
+                  ),
+                ],
+              ),
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  // Pulsing icon
+                  Container(
+                    width: 72,
+                    height: 72,
+                    decoration: BoxDecoration(
+                      shape: BoxShape.circle,
+                      color: const Color(0xFF00F4FE).withValues(alpha: 0.15),
+                      border: Border.all(
+                        color: const Color(0xFF00F4FE),
+                        width: 2,
+                      ),
+                      boxShadow: [
+                        BoxShadow(
+                          color: const Color(0xFF00F4FE).withValues(alpha: 0.4),
+                          blurRadius: 18,
+                        ),
+                      ],
+                    ),
+                    child: const Icon(
+                      Icons.alarm_on_rounded,
+                      color: Color(0xFF00F4FE),
+                      size: 38,
+                    ),
+                  ),
+                  const SizedBox(height: 14),
+
+                  // Header tag
+                  Container(
+                    padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
+                    decoration: BoxDecoration(
+                      color: const Color(0xFFFF2A6D).withValues(alpha: 0.15),
+                      borderRadius: BorderRadius.circular(8),
+                      border: Border.all(
+                        color: const Color(0xFFFF2A6D).withValues(alpha: 0.5),
+                      ),
+                    ),
+                    child: Text(
+                      '🚨 PROTOKOL AWAKENING: ALARM AKTIF',
+                      style: GoogleFonts.spaceGrotesk(
+                        fontSize: 10,
+                        fontWeight: FontWeight.w800,
+                        letterSpacing: 0.8,
+                        color: const Color(0xFFFF2A6D),
+                      ),
+                    ),
+                  ),
+                  const SizedBox(height: 10),
+
+                  // Big Digital Time
+                  Text(
+                    timeStr,
+                    style: GoogleFonts.spaceGrotesk(
+                      fontSize: 48,
+                      fontWeight: FontWeight.w900,
+                      color: Colors.white,
+                      letterSpacing: 2.0,
+                    ),
+                  ),
+                  const SizedBox(height: 4),
+
+                  // Alarm Label
+                  Text(
+                    alarm.label,
+                    textAlign: TextAlign.center,
+                    style: GoogleFonts.spaceGrotesk(
+                      fontSize: 15,
+                      fontWeight: FontWeight.w700,
+                      color: const Color(0xFF00F4FE),
+                    ),
+                  ),
+                  const SizedBox(height: 8),
+
+                  // Ringtone info badge
+                  Container(
+                    padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+                    decoration: BoxDecoration(
+                      color: const Color(0xFF1F1927),
+                      borderRadius: BorderRadius.circular(10),
+                      border: Border.all(
+                        color: const Color(0xFF2C1E4E),
+                      ),
+                    ),
+                    child: Row(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        const Icon(Icons.music_note_rounded, size: 14, color: Color(0xFFE5B5FF)),
+                        const SizedBox(width: 6),
+                        Flexible(
+                          child: Text(
+                            alarm.ringtoneName,
+                            maxLines: 1,
+                            overflow: TextOverflow.ellipsis,
+                            style: GoogleFonts.plusJakartaSans(
+                              fontSize: 11,
+                              color: const Color(0xFFD4C7E3),
+                            ),
+                          ),
+                        ),
+                        const SizedBox(width: 8),
+                        Text(
+                          '${(alarm.volume * 100).toInt()}% Vol',
+                          style: GoogleFonts.spaceGrotesk(
+                            fontSize: 11,
+                            fontWeight: FontWeight.w700,
+                            color: const Color(0xFF00F4FE),
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                  const SizedBox(height: 22),
+
+                  // Dismiss button: BANGKIT
+                  SizedBox(
+                    width: double.infinity,
+                    height: 50,
+                    child: ElevatedButton(
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: const Color(0xFF00F4FE),
+                        foregroundColor: const Color(0xFF0D0814),
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(14),
+                        ),
+                        elevation: 6,
+                        shadowColor: const Color(0xFF00F4FE).withValues(alpha: 0.5),
+                      ),
+                      onPressed: () async {
+                        await AlarmService.stopAlarm();
+                        _isAlarmDialogShowing = false;
+                        if (dialogCtx.mounted) Navigator.pop(dialogCtx);
+                      },
+                      child: Row(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          const Icon(Icons.check_circle_rounded, size: 20),
+                          const SizedBox(width: 8),
+                          Text(
+                            'BANGKIT (MATIKAN ALARM)',
+                            style: GoogleFonts.spaceGrotesk(
+                              fontSize: 13.5,
+                              fontWeight: FontWeight.w800,
+                              letterSpacing: 0.5,
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                  ),
+                  const SizedBox(height: 10),
+
+                  // Snooze button
+                  SizedBox(
+                    width: double.infinity,
+                    height: 42,
+                    child: OutlinedButton(
+                      style: OutlinedButton.styleFrom(
+                        foregroundColor: const Color(0xFFD4C7E3),
+                        side: const BorderSide(
+                          color: Color(0xFF2C1E4E),
+                          width: 1.2,
+                        ),
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(12),
+                        ),
+                      ),
+                      onPressed: () async {
+                        final snoozeTime = DateTime.now().add(const Duration(minutes: 5));
+                        final snoozed = alarm.copyWith(
+                          hour: snoozeTime.hour,
+                          minute: snoozeTime.minute,
+                          isEnabled: true,
+                        );
+                        await AlarmService.stopAlarm();
+                        await AlarmService.scheduleAlarm(snoozed);
+                        _isAlarmDialogShowing = false;
+                        if (dialogCtx.mounted) Navigator.pop(dialogCtx);
+                        if (mounted) {
+                          ScaffoldMessenger.of(context).showSnackBar(
+                            SnackBar(
+                              content: Text(
+                                '💤 Alarm ditunda 5 menit (${DateFormat('HH:mm').format(snoozeTime)} WIB)',
+                                style: GoogleFonts.spaceGrotesk(fontWeight: FontWeight.w700),
+                              ),
+                              backgroundColor: const Color(0xFFB026FF),
+                            ),
+                          );
+                        }
+                      },
+                      child: Text(
+                        'TUNDA 5 MENIT (SNOOZE)',
+                        style: GoogleFonts.spaceGrotesk(
+                          fontSize: 12,
+                          fontWeight: FontWeight.w700,
+                          color: const Color(0xFFB5A9C2),
+                        ),
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          ),
+        );
+      },
+    );
+  }
+
+  /// Membuka Hub Pengaturan & Pengujian 5 Protokol Notifikasi Hunter (Sub-Terminal)
+  void _openNotificationHubModal(BuildContext context) {
+    final persona = HiveService.getAIPersona();
+    final String aiName = persona.name;
+
+    showModalBottomSheet(
+      context: context,
+      isScrollControlled: true,
+      backgroundColor: Colors.transparent,
+      useSafeArea: true,
+      elevation: 0,
+      builder: (sheetContext) {
+        return StatefulBuilder(
+          builder: (dialogCtx, setModalState) {
+            final screenHeight = MediaQuery.of(dialogCtx).size.height;
+            return Material(
+              color: Colors.transparent,
+              child: Container(
+                height: screenHeight * 0.88,
+                clipBehavior: Clip.antiAlias,
+                decoration: BoxDecoration(
+                  color: const Color(0xFF110C19),
+                  borderRadius: const BorderRadius.only(
+                    topLeft: Radius.circular(24),
+                    topRight: Radius.circular(24),
+                  ),
+                  border: Border.all(
+                    color: const Color(0xFF00F4FE).withValues(alpha: 0.8),
+                    width: 1.5,
+                  ),
+                  boxShadow: [
+                    BoxShadow(
+                      color: const Color(0xFF00F4FE).withValues(alpha: 0.2),
+                      blurRadius: 20,
+                      offset: const Offset(0, -4),
+                    ),
+                  ],
+                ),
+                child: Column(
+                  children: [
+                    // Drag Handle
+                    Center(
+                      child: Container(
+                        width: 44,
+                        height: 4,
+                        margin: const EdgeInsets.only(top: 12, bottom: 8),
+                        decoration: BoxDecoration(
+                          color: const Color(0xFF383241),
+                          borderRadius: BorderRadius.circular(2),
+                        ),
+                      ),
+                    ),
+
+                    // Header Bar
+                    Padding(
+                      padding: const EdgeInsets.symmetric(horizontal: 18, vertical: 8),
+                      child: Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: [
+                          Row(
+                            children: [
+                              Container(
+                                padding: const EdgeInsets.all(6),
+                                decoration: BoxDecoration(
+                                  color: const Color(0xFF00F4FE).withValues(alpha: 0.15),
+                                  borderRadius: BorderRadius.circular(8),
+                                  border: Border.all(
+                                    color: const Color(0xFF00F4FE).withValues(alpha: 0.4),
+                                  ),
+                                ),
+                                child: const Icon(
+                                  Icons.notifications_active_rounded,
+                                  color: Color(0xFF00F4FE),
+                                  size: 18,
+                                ),
+                              ),
+                              const SizedBox(width: 10),
+                              Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  Text(
+                                    'HUNTER NOTIFICATION HUB',
+                                    style: GoogleFonts.spaceGrotesk(
+                                      fontSize: 12.5,
+                                      fontWeight: FontWeight.w800,
+                                      letterSpacing: 0.8,
+                                      color: const Color(0xFF00F4FE),
+                                    ),
+                                  ),
+                                  Text(
+                                    '5 Protokol Peringatan Sistem Solo Leveling',
+                                    style: GoogleFonts.plusJakartaSans(
+                                      fontSize: 10,
+                                      fontWeight: FontWeight.w500,
+                                      color: const Color(0xFF9B8BA1),
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            ],
+                          ),
+                          IconButton(
+                            icon: const Icon(Icons.close_rounded, color: Color(0xFF9B8BA1), size: 20),
+                            onPressed: () => Navigator.pop(sheetContext),
+                          ),
+                        ],
+                      ),
+                    ),
+
+                    const Divider(color: Color(0xFF2C1E4E), height: 1),
+
+                    // Content Scrollable
+                    Expanded(
+                      child: SingleChildScrollView(
+                        physics: const BouncingScrollPhysics(),
+                        padding: const EdgeInsets.all(16),
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            // Status Banner
+                            Container(
+                              padding: const EdgeInsets.all(12),
+                              decoration: BoxDecoration(
+                                color: const Color(0xFF1F1927),
+                                borderRadius: BorderRadius.circular(12),
+                                border: Border.all(
+                                  color: const Color(0xFF00F4FE).withValues(alpha: 0.3),
+                                  width: 1.0,
+                                ),
+                              ),
+                              child: Row(
+                                children: [
+                                  Container(
+                                    width: 10,
+                                    height: 10,
+                                    decoration: const BoxDecoration(
+                                      shape: BoxShape.circle,
+                                      color: Color(0xFF00F4FE),
+                                      boxShadow: [
+                                        BoxShadow(
+                                          color: Color(0xFF00F4FE),
+                                          blurRadius: 6,
+                                          spreadRadius: 1,
+                                        ),
+                                      ],
+                                    ),
+                                  ),
+                                  const SizedBox(width: 10),
+                                  Expanded(
+                                    child: Column(
+                                      crossAxisAlignment: CrossAxisAlignment.start,
+                                      children: [
+                                        Text(
+                                          'AUTO-SCHEDULER: AKTIF',
+                                          style: GoogleFonts.spaceGrotesk(
+                                            fontSize: 11,
+                                            fontWeight: FontWeight.w800,
+                                            color: const Color(0xFF00F4FE),
+                                            letterSpacing: 0.5,
+                                          ),
+                                        ),
+                                        Text(
+                                          '5 jadwal notifikasi otomatis aktif di latar belakang perangkat ponsel.',
+                                          style: GoogleFonts.plusJakartaSans(
+                                            fontSize: 10,
+                                            color: const Color(0xFFD4C7E3),
+                                          ),
+                                        ),
+                                      ],
+                                    ),
+                                  ),
+                                  const SizedBox(width: 8),
+                                  GestureDetector(
+                                    onTap: () async {
+                                      await NotifService.scheduleAllAutomatedNotifications();
+                                      if (!context.mounted) return;
+                                      ScaffoldMessenger.of(context).showSnackBar(
+                                        SnackBar(
+                                          content: Text(
+                                            '5 Jadwal Notifikasi Berhasil Disinkronkan!',
+                                            style: GoogleFonts.spaceGrotesk(fontWeight: FontWeight.w700),
+                                          ),
+                                          backgroundColor: const Color(0xFF00F4FE),
+                                        ),
+                                      );
+                                    },
+                                    child: Container(
+                                      padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 6),
+                                      decoration: BoxDecoration(
+                                        color: const Color(0xFF00F4FE).withValues(alpha: 0.15),
+                                        borderRadius: BorderRadius.circular(6),
+                                        border: Border.all(
+                                          color: const Color(0xFF00F4FE).withValues(alpha: 0.5),
+                                        ),
+                                      ),
+                                      child: Text(
+                                        'SYNC',
+                                        style: GoogleFonts.spaceGrotesk(
+                                          fontSize: 10,
+                                          fontWeight: FontWeight.w800,
+                                          color: const Color(0xFF00F4FE),
+                                        ),
+                                      ),
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            ),
+
+                            const SizedBox(height: 16),
+
+                            Text(
+                              'PENGUJIAN INSTAN & DAFTAR JADWAL (5 SKENARIO)',
+                              style: GoogleFonts.spaceGrotesk(
+                                fontSize: 10.5,
+                                fontWeight: FontWeight.w800,
+                                letterSpacing: 0.8,
+                                color: const Color(0xFFE5B5FF),
+                              ),
+                            ),
+                            const SizedBox(height: 10),
+
+                            // 1. Reset Quest Harian
+                            _buildNotifCard(
+                              number: '01',
+                              icon: Icons.restart_alt_rounded,
+                              iconColor: const Color(0xFF00F4FE),
+                              title: 'Reset Quest Harian',
+                              schedule: 'Setiap 00:00 (Tengah Malam)',
+                              desc: 'Pemberitahuan saat jam server berganti hari dan seluruh quest & dungeon disegarkan.',
+                              onTest: () async {
+                                await NotifService.showDailyResetNotif();
+                                if (!context.mounted) return;
+                                ScaffoldMessenger.of(context).showSnackBar(
+                                  const SnackBar(
+                                    content: Text('⚡ Notifikasi Reset Quest Harian terkirim ke status bar!'),
+                                    duration: Duration(seconds: 2),
+                                  ),
+                                );
+                              },
+                            ),
+
+                            // 2. Aktivitas Tertunda
+                            _buildNotifCard(
+                              number: '02',
+                              icon: Icons.warning_amber_rounded,
+                              iconColor: const Color(0xFFFFB800),
+                              title: 'Aktivitas Belum Dijalankan',
+                              schedule: 'Setiap 14:00 (Siang Hari)',
+                              desc: 'Peringatan jika Quest Fisik, Dungeon Radar, atau Latihan Mana belum tuntas hari ini.',
+                              onTest: () async {
+                                await NotifService.showUnfinishedActivitiesNotif();
+                                if (!context.mounted) return;
+                                ScaffoldMessenger.of(context).showSnackBar(
+                                  const SnackBar(
+                                    content: Text('⚠️ Notifikasi Aktivitas Tertunda terkirim ke status bar!'),
+                                    duration: Duration(seconds: 2),
+                                  ),
+                                );
+                              },
+                            ),
+
+                            // 3. Quest Belum Dijalankan Tiap 3 Jam
+                            _buildNotifCard(
+                              number: '03',
+                              icon: Icons.timer_rounded,
+                              iconColor: const Color(0xFFFF4081),
+                              title: 'Pengingat Berkala Tiap 3 Jam',
+                              schedule: 'Interval 3 Jam (09:00, 12:00, 15:00, 18:00, 21:00)',
+                              desc: 'Peringatan berulang tiap 3 jam server jika quest masih tertunda untuk mencegah penalti HP.',
+                              onTest: () async {
+                                await NotifService.showPeriodicQuestReminderNotif();
+                                if (!context.mounted) return;
+                                ScaffoldMessenger.of(context).showSnackBar(
+                                  const SnackBar(
+                                    content: Text('⚔️ Notifikasi Siklus 3 Jam terkirim ke status bar!'),
+                                    duration: Duration(seconds: 2),
+                                  ),
+                                );
+                              },
+                            ),
+
+                            // 4. AI Kangen User
+                            _buildNotifCard(
+                              number: '04',
+                              icon: Icons.favorite_rounded,
+                              iconColor: const Color(0xFFB026FF),
+                              title: '[$aiName] Kangen User',
+                              schedule: 'Setiap 19:30 (Malam Hari)',
+                              desc: 'Pesan personal dari AI pendamping Anda ($aiName) untuk kembali berlatih bersama.',
+                              onTest: () async {
+                                await NotifService.showAiMissesUserNotif();
+                                if (!context.mounted) return;
+                                ScaffoldMessenger.of(context).showSnackBar(
+                                  SnackBar(
+                                    content: Text('💬 Notifikasi [$aiName Kangen] terkirim ke status bar!'),
+                                    duration: const Duration(seconds: 2),
+                                  ),
+                                );
+                              },
+                            ),
+
+                            // 5. Hari Ingin Berakhir
+                            _buildNotifCard(
+                              number: '05',
+                              icon: Icons.hourglass_bottom_rounded,
+                              iconColor: const Color(0xFFFF2A6D),
+                              title: 'Hari / Server Ingin Berakhir',
+                              schedule: 'Setiap 23:00 (1 Jam Sebelum 00:00)',
+                              desc: 'Peringatan darurat sebelum pergantian hari untuk menghindari Penalty Quest.',
+                              onTest: () async {
+                                await NotifService.showEndOfDayWarningNotif();
+                                if (!context.mounted) return;
+                                ScaffoldMessenger.of(context).showSnackBar(
+                                  const SnackBar(
+                                    content: Text('🚨 Notifikasi Peringatan Akhir Hari terkirim ke status bar!'),
+                                    duration: Duration(seconds: 2),
+                                  ),
+                                );
+                              },
+                            ),
+
+                            const SizedBox(height: 10),
+                          ],
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            );
+          },
+        );
+      },
+    );
+  }
+
+  /// Helper Card untuk masing-masing skenario notifikasi
+  Widget _buildNotifCard({
+    required String number,
+    required IconData icon,
+    required Color iconColor,
+    required String title,
+    required String schedule,
+    required String desc,
+    required VoidCallback onTest,
+  }) {
+    return Container(
+      margin: const EdgeInsets.only(bottom: 12),
+      padding: const EdgeInsets.all(12),
+      decoration: BoxDecoration(
+        color: const Color(0xFF171022),
+        borderRadius: BorderRadius.circular(12),
+        border: Border.all(
+          color: const Color(0xFF2C1E4E),
+          width: 1.0,
+        ),
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Row(
+            children: [
+              Container(
+                padding: const EdgeInsets.all(7),
+                decoration: BoxDecoration(
+                  color: iconColor.withValues(alpha: 0.15),
+                  borderRadius: BorderRadius.circular(8),
+                  border: Border.all(
+                    color: iconColor.withValues(alpha: 0.4),
+                  ),
+                ),
+                child: Icon(icon, color: iconColor, size: 16),
+              ),
+              const SizedBox(width: 10),
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      title,
+                      style: GoogleFonts.spaceGrotesk(
+                        fontSize: 12,
+                        fontWeight: FontWeight.w700,
+                        color: const Color(0xFFE9DEF2),
+                      ),
+                    ),
+                    Text(
+                      schedule,
+                      style: GoogleFonts.spaceGrotesk(
+                        fontSize: 9.5,
+                        fontWeight: FontWeight.w600,
+                        color: iconColor,
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+              const SizedBox(width: 8),
+              GestureDetector(
+                onTap: onTest,
+                child: Container(
+                  padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
+                  decoration: BoxDecoration(
+                    color: iconColor.withValues(alpha: 0.15),
+                    borderRadius: BorderRadius.circular(8),
+                    border: Border.all(
+                      color: iconColor.withValues(alpha: 0.6),
+                    ),
+                  ),
+                  child: Row(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      Icon(Icons.send_rounded, size: 12, color: iconColor),
+                      const SizedBox(width: 4),
+                      Text(
+                        'TES NOTIF',
+                        style: GoogleFonts.spaceGrotesk(
+                          fontSize: 9.5,
+                          fontWeight: FontWeight.w800,
+                          color: iconColor,
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+              ),
+            ],
+          ),
+          const SizedBox(height: 8),
+          Text(
+            desc,
+            style: GoogleFonts.plusJakartaSans(
+              fontSize: 10.5,
+              color: const Color(0xFF9B8BA1),
+              height: 1.35,
+            ),
+          ),
+        ],
       ),
     );
   }
