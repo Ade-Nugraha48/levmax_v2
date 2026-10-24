@@ -1,49 +1,61 @@
 import 'dart:async';
-import 'dart:io';
+import 'package:camera/camera.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:google_fonts/google_fonts.dart';
-import 'package:image_picker/image_picker.dart';
+import 'package:levmax_v2/services/face_recognition_service.dart';
+import 'package:levmax_v2/services/hive_service.dart';
 
-/// Dialog & Visual Scanning HUD untuk Face Scan Biometrik
-/// Membuka kamera depan pengguna lalu melakukan verifikasi wajah dengan efek pemindai laser Solo Leveling.
+/// Mode pemindaian wajah biometrik
+enum FaceScanMode {
+  /// Mendaftarkan wajah baru sebagai basis biometrik dan disimpan ke Hive
+  enroll,
+
+  /// Memverifikasi wajah kandidat real-time terhadap basis wajah yang ada di Hive
+  verify,
+}
+
+/// Status visual antarmuka pemindai wajah
+enum _ScannerVisualState {
+  initializing,
+  scanning,
+  processing,
+  matched,
+  mismatched,
+  error,
+}
+
+/// Dialog & Visual Scanning HUD untuk Face Scan Biometrik Real-Time
+/// Menampilkan live camera feed kamera depan di dalam retikel cyber Solo Leveling
+/// dan melakukan pencocokan biometrik berbasis data Hive.
 class FaceScanDialog extends StatefulWidget {
-  final File faceFile;
+  final FaceScanMode mode;
 
   const FaceScanDialog({
     super.key,
-    required this.faceFile,
+    required this.mode,
   });
 
-  /// Helper statis untuk memicu alur Face Scan:
-  /// 1. Membuka kamera depan via ImagePicker
-  /// 2. Menampilkan FaceScanDialog dengan efek pemindaian holografis
-  /// 3. Mengembalikan `true` jika berhasil diverifikasi, atau `false` jika dibatalkan
+  /// Helper statis utama untuk memicu pemindaian wajah real-time
+  static Future<bool> startFaceScan(
+    BuildContext context, {
+    required FaceScanMode mode,
+  }) async {
+    final bool? verified = await showDialog<bool>(
+      context: context,
+      barrierDismissible: false,
+      builder: (ctx) => FaceScanDialog(mode: mode),
+    );
+    return verified == true;
+  }
+
+  /// Kompatibilitas mundur dengan pemanggilan lama
   static Future<bool> performFaceScan(BuildContext context) async {
-    try {
-      final picker = ImagePicker();
-      final XFile? pickedFile = await picker.pickImage(
-        source: ImageSource.camera,
-        preferredCameraDevice: CameraDevice.front,
-        maxWidth: 800,
-        maxHeight: 800,
-        imageQuality: 85,
-      );
-
-      if (pickedFile == null) return false;
-
-      if (!context.mounted) return false;
-
-      final bool? verified = await showDialog<bool>(
-        context: context,
-        barrierDismissible: false,
-        builder: (ctx) => FaceScanDialog(faceFile: File(pickedFile.path)),
-      );
-
-      return verified == true;
-    } catch (e) {
-      debugPrint('[FaceScanDialog] Error opening camera: $e');
-      return false;
-    }
+    final hasBaseline = HiveService.hasEnrolledFace();
+    return startFaceScan(
+      context,
+      mode: hasBaseline ? FaceScanMode.verify : FaceScanMode.enroll,
+    );
   }
 
   @override
@@ -51,106 +63,304 @@ class FaceScanDialog extends StatefulWidget {
 }
 
 class _FaceScanDialogState extends State<FaceScanDialog>
-    with SingleTickerProviderStateMixin {
+    with WidgetsBindingObserver, SingleTickerProviderStateMixin {
+  CameraController? _cameraController;
+  _ScannerVisualState _visualState = _ScannerVisualState.initializing;
+
   late AnimationController _laserController;
   late Animation<double> _laserAnimation;
 
-  double _progress = 0.0;
-  String _scanStatus = 'MENGANALISIS POLA RETINAL...';
-  IconData _statusIcon = Icons.face_retouching_natural_rounded;
-  Color _statusColor = const Color(0xFF00F4FE);
-  Timer? _stepTimer;
+  Timer? _autoScanTimer;
+  String _statusText = 'MEMULAI SENSOR OPTIK DEPAN...';
+  String _errorMessage = '';
+  double? _lastScore;
+  bool _isProcessing = false;
 
   @override
   void initState() {
     super.initState();
+    WidgetsBinding.instance.addObserver(this);
 
-    // Laser scanning animation (bergerak naik-turun melintasi foto wajah)
+    // Animasi pergerakan laser pemindai naik-turun
     _laserController = AnimationController(
       vsync: this,
-      duration: const Duration(milliseconds: 900),
+      duration: const Duration(milliseconds: 1100),
     )..repeat(reverse: true);
 
     _laserAnimation = Tween<double>(begin: 0.05, end: 0.95).animate(
       CurvedAnimation(parent: _laserController, curve: Curves.easeInOut),
     );
 
-    // Simulasi tahapan verifikasi wajah biometrik (1.8 detik total)
-    _startScanSequence();
+    _initCamera();
   }
 
-  void _startScanSequence() {
-    // Fase 1: Inisialisasi Analisis
-    Timer(const Duration(milliseconds: 500), () {
-      if (!mounted) return;
-      setState(() {
-        _progress = 0.35;
-        _scanStatus = 'MENYELARASKAN GELOMBANG MANA...';
-        _statusIcon = Icons.track_changes_rounded;
-        _statusColor = const Color(0xFFB026FF);
-      });
+  @override
+  void didChangeAppLifecycleState(AppLifecycleState state) {
+    final CameraController? cameraController = _cameraController;
+    if (cameraController == null || !cameraController.value.isInitialized) {
+      return;
+    }
+
+    if (state == AppLifecycleState.inactive) {
+      cameraController.dispose();
+    } else if (state == AppLifecycleState.resumed) {
+      _initCamera();
+    }
+  }
+
+  Future<void> _initCamera() async {
+    setState(() {
+      _visualState = _ScannerVisualState.initializing;
+      _statusText = 'MENGINISIALISASI KAMERA DEPAN...';
+      _errorMessage = '';
     });
 
-    // Fase 2: Pencocokan Biometrik
-    Timer(const Duration(milliseconds: 1100), () {
-      if (!mounted) return;
+    try {
+      final cameras = await availableCameras();
+      if (cameras.isEmpty) {
+        setState(() {
+          _visualState = _ScannerVisualState.error;
+          _errorMessage = 'Tidak ditemukan modul kamera pada perangkat.';
+        });
+        return;
+      }
+
+      // Pilih kamera depan (front lens)
+      final frontCamera = cameras.firstWhere(
+        (cam) => cam.lensDirection == CameraLensDirection.front,
+        orElse: () => cameras.first,
+      );
+
+      final controller = CameraController(
+        frontCamera,
+        ResolutionPreset.medium,
+        enableAudio: false,
+        imageFormatGroup: ImageFormatGroup.jpeg,
+      );
+
+      await controller.initialize();
+
+      if (!mounted) {
+        await controller.dispose();
+        return;
+      }
+
       setState(() {
-        _progress = 0.75;
-        _scanStatus = 'PENCOCOKAN STRUKTUR WAJAH 99.8%...';
-        _statusIcon = Icons.verified_user_rounded;
-        _statusColor = const Color(0xFF00F4FE);
+        _cameraController = controller;
+        _visualState = _ScannerVisualState.scanning;
+        _statusText = widget.mode == FaceScanMode.enroll
+            ? 'POSISIKAN WAJAH DI DALAM RETIKEL...'
+            : 'MEMINDAI WAJAH SECARA REAL-TIME...';
       });
+
+      // Jadwalkan pemindaian otomatis setelah user stabil menatap kamera (1.4 detik)
+      _scheduleAutoScan();
+    } catch (e) {
+      debugPrint('[FaceScanDialog] Gagal inisialisasi kamera: $e');
+      if (mounted) {
+        setState(() {
+          _visualState = _ScannerVisualState.error;
+          _errorMessage = 'Gagal mengakses kamera: $e';
+        });
+      }
+    }
+  }
+
+  void _scheduleAutoScan() {
+    _autoScanTimer?.cancel();
+    _autoScanTimer = Timer(const Duration(milliseconds: 1400), () {
+      if (mounted &&
+          _visualState == _ScannerVisualState.scanning &&
+          !_isProcessing) {
+        _executeScan();
+      }
+    });
+  }
+
+  Future<void> _executeScan() async {
+    if (_cameraController == null ||
+        !_cameraController!.value.isInitialized ||
+        _isProcessing) {
+      return;
+    }
+
+    setState(() {
+      _isProcessing = true;
+      _visualState = _ScannerVisualState.processing;
+      _statusText = widget.mode == FaceScanMode.enroll
+          ? 'MEREKAM STRUKTUR POLA WAJAH...'
+          : 'MENCOCOKKAN FITUR BIOMETRIK KE HIVE...';
     });
 
-    // Fase 3: Selesai & Terverifikasi
-    Timer(const Duration(milliseconds: 1700), () {
-      if (!mounted) return;
-      setState(() {
-        _progress = 1.0;
-        _scanStatus = 'IDENTITAS TERVERIFIKASI // AKSES DITERIMA';
-        _statusIcon = Icons.check_circle_rounded;
-        _statusColor = const Color(0xFF00F4FE);
-      });
+    try {
+      // Ambil frame real-time dari stream kamera depan
+      final XFile imageFile = await _cameraController!.takePicture();
+      final Uint8List imageBytes = await imageFile.readAsBytes();
 
-      // Tutup dialog dan kembalikan nilai sukses
-      Timer(const Duration(milliseconds: 400), () {
-        if (mounted) {
-          Navigator.of(context).pop(true);
+      if (!mounted) return;
+
+      if (widget.mode == FaceScanMode.enroll) {
+        // Mode ENROLL: Ekstraksi fitur dan simpan ke Hive
+        final FaceTemplate? template =
+            FaceRecognitionService.extractTemplate(imageBytes);
+
+        if (template == null) {
+          setState(() {
+            _visualState = _ScannerVisualState.mismatched;
+            _statusText = 'WAJAH TIDAK TERDETEKSI JELAS';
+            _errorMessage =
+                'Pastikan wajah Anda tepat di tengah dan pencahayaan ruangan cukup terang.';
+            _isProcessing = false;
+          });
+          HapticFeedback.vibrate();
+          return;
         }
-      });
+
+        // Simpan template JSON dan thumbnail ke Hive
+        await HiveService.saveEnrolledFace(
+          templateJson: template.serialize(),
+          thumbnailBase64: template.thumbnailBase64,
+        );
+
+        setState(() {
+          _visualState = _ScannerVisualState.matched;
+          _statusText = 'BASIS BIOMETRIK BERHASIL DISIMPAN KE HIVE!';
+          _lastScore = 100.0;
+        });
+
+        HapticFeedback.mediumImpact();
+
+        Timer(const Duration(milliseconds: 900), () {
+          if (mounted) {
+            Navigator.of(context).pop(true);
+          }
+        });
+      } else {
+        // Mode VERIFY: Periksa kecocokan terhadap basis di Hive
+        final String? enrolledJson = HiveService.getEnrolledFaceTemplate();
+
+        if (enrolledJson == null || enrolledJson.isEmpty) {
+          setState(() {
+            _visualState = _ScannerVisualState.error;
+            _errorMessage =
+                'Belum ada basis wajah terdaftar di Hive. Daftarkan di Profil terlebih dahulu.';
+            _isProcessing = false;
+          });
+          return;
+        }
+
+        final FaceComparisonResult result =
+            FaceRecognitionService.compareBytesWithTemplate(
+          imageBytes,
+          enrolledJson,
+        );
+
+        _lastScore = result.score;
+
+        if (result.isMatch) {
+          // Wajah Cocok -> AKSES DITERIMA
+          setState(() {
+            _visualState = _ScannerVisualState.matched;
+            _statusText =
+                'AKSES DITERIMA // HUNTER TERVERIFIKASI (${result.score.toStringAsFixed(1)}%)';
+          });
+
+          HapticFeedback.lightImpact();
+
+          Timer(const Duration(milliseconds: 800), () {
+            if (mounted) {
+              Navigator.of(context).pop(true);
+            }
+          });
+        } else {
+          // Wajah Beda / Tidak Cocok -> AKSES DITOLAK
+          setState(() {
+            _visualState = _ScannerVisualState.mismatched;
+            _statusText =
+                'AKSES DITOLAK: WAJAH TIDAK COCOK (${result.score.toStringAsFixed(1)}%)';
+            _errorMessage =
+                'Wajah yang terdeteksi berbeda dari data Hunter terdaftar di Hive (Min. 70.0%).';
+            _isProcessing = false;
+          });
+
+          HapticFeedback.heavyImpact();
+        }
+      }
+    } catch (e) {
+      debugPrint('[FaceScanDialog] Error running scan: $e');
+      if (mounted) {
+        setState(() {
+          _visualState = _ScannerVisualState.error;
+          _errorMessage = 'Terjadi kesalahan saat memproses frame: $e';
+          _isProcessing = false;
+        });
+      }
+    }
+  }
+
+  void _retryScan() {
+    setState(() {
+      _visualState = _ScannerVisualState.scanning;
+      _errorMessage = '';
+      _isProcessing = false;
+      _lastScore = null;
+      _statusText = widget.mode == FaceScanMode.enroll
+          ? 'POSISIKAN WAJAH DI DALAM RETIKEL...'
+          : 'MEMINDAI WAJAH SECARA REAL-TIME...';
     });
+    _scheduleAutoScan();
   }
 
   @override
   void dispose() {
+    WidgetsBinding.instance.removeObserver(this);
+    _autoScanTimer?.cancel();
     _laserController.dispose();
-    _stepTimer?.cancel();
+    _cameraController?.dispose();
     super.dispose();
+  }
+
+  Color get _accentColor {
+    switch (_visualState) {
+      case _ScannerVisualState.matched:
+        return const Color(0xFF00FFA3); // Neon Green / Mint Hunter
+      case _ScannerVisualState.mismatched:
+        return const Color(0xFFFF0055); // Crimson Red Alert
+      case _ScannerVisualState.processing:
+        return const Color(0xFFB026FF); // Neon Purple
+      case _ScannerVisualState.error:
+        return const Color(0xFFFF5252);
+      case _ScannerVisualState.initializing:
+      case _ScannerVisualState.scanning:
+        return const Color(0xFF00F4FE); // Neon Cyan
+    }
   }
 
   @override
   Widget build(BuildContext context) {
+    final Color currentAccent = _accentColor;
+
     return Dialog(
       backgroundColor: Colors.transparent,
-      insetPadding: const EdgeInsets.symmetric(horizontal: 24, vertical: 24),
+      insetPadding: const EdgeInsets.symmetric(horizontal: 20, vertical: 24),
       child: Container(
         width: double.infinity,
         constraints: const BoxConstraints(maxWidth: 360),
         decoration: BoxDecoration(
           color: const Color(0xFF140D24),
-          borderRadius: BorderRadius.circular(20),
+          borderRadius: BorderRadius.circular(24),
           border: Border.all(
-            color: const Color(0xFF00F4FE).withValues(alpha: 0.6),
-            width: 1.2,
+            color: currentAccent.withValues(alpha: 0.7),
+            width: 1.5,
           ),
           boxShadow: [
             BoxShadow(
-              color: const Color(0xFF00F4FE).withValues(alpha: 0.25),
-              blurRadius: 28,
+              color: currentAccent.withValues(alpha: 0.3),
+              blurRadius: 30,
               spreadRadius: 2,
             ),
-            BoxShadow(
-              color: const Color(0xFFB026FF).withValues(alpha: 0.2),
+            const BoxShadow(
+              color: Color(0xFF0B0714),
               blurRadius: 20,
             ),
           ],
@@ -166,45 +376,51 @@ class _FaceScanDialogState extends State<FaceScanDialog>
                 Row(
                   children: [
                     Container(
-                      width: 8,
-                      height: 8,
-                      decoration: const BoxDecoration(
+                      width: 9,
+                      height: 9,
+                      decoration: BoxDecoration(
                         shape: BoxShape.circle,
-                        color: Color(0xFF00F4FE),
+                        color: currentAccent,
                         boxShadow: [
                           BoxShadow(
-                            color: Color(0xFF00F4FE),
-                            blurRadius: 8,
-                            spreadRadius: 1,
+                            color: currentAccent,
+                            blurRadius: 10,
+                            spreadRadius: 2,
                           ),
                         ],
                       ),
                     ),
                     const SizedBox(width: 8),
                     Text(
-                      'NEURAL FACE SCANNER',
+                      widget.mode == FaceScanMode.enroll
+                          ? 'FACE BIOMETRIC ENROLLMENT'
+                          : 'REAL-TIME FACE SCANNER',
                       style: GoogleFonts.spaceGrotesk(
-                        fontSize: 12,
+                        fontSize: 11.5,
                         fontWeight: FontWeight.w800,
                         letterSpacing: 1.2,
-                        color: const Color(0xFF00F4FE),
+                        color: currentAccent,
                       ),
                     ),
                   ],
                 ),
                 Container(
-                  padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
+                  padding:
+                      const EdgeInsets.symmetric(horizontal: 6, vertical: 2.5),
                   decoration: BoxDecoration(
                     color: const Color(0xFF231D2B),
                     borderRadius: BorderRadius.circular(4),
-                    border: Border.all(color: const Color(0xFF383241)),
+                    border: Border.all(
+                        color: currentAccent.withValues(alpha: 0.5)),
                   ),
                   child: Text(
-                    'CAM: FRONT',
+                    widget.mode == FaceScanMode.enroll
+                        ? 'SAVE: HIVE'
+                        : 'CAM: LIVE',
                     style: GoogleFonts.spaceGrotesk(
                       fontSize: 8.5,
-                      fontWeight: FontWeight.w700,
-                      color: const Color(0xFFE5B5FF),
+                      fontWeight: FontWeight.w800,
+                      color: currentAccent,
                     ),
                   ),
                 ),
@@ -213,210 +429,363 @@ class _FaceScanDialogState extends State<FaceScanDialog>
 
             const SizedBox(height: 16),
 
-            // Viewport Foto Wajah dengan Bingkai Retikel & Pemindai Laser
+            // Live Viewfinder Reticle
             SizedBox(
-              width: 200,
-              height: 200,
+              width: 230,
+              height: 270,
               child: Stack(
                 alignment: Alignment.center,
                 children: [
-                  // Foto Kamera
-                  Container(
-                    width: 190,
-                    height: 190,
-                    decoration: BoxDecoration(
-                      borderRadius: BorderRadius.circular(16),
-                      border: Border.all(
-                        color: const Color(0xFF2C1E4E),
-                        width: 1.5,
-                      ),
-                    ),
-                    clipBehavior: Clip.antiAlias,
-                    child: Image.file(
-                      widget.faceFile,
-                      fit: BoxFit.cover,
-                    ),
-                  ),
-
-                  // Overlay Grid & Dark Filter
-                  Container(
-                    width: 190,
-                    height: 190,
-                    decoration: BoxDecoration(
-                      borderRadius: BorderRadius.circular(16),
-                      gradient: LinearGradient(
-                        colors: [
-                          const Color(0xFF00F4FE).withValues(alpha: 0.12),
-                          Colors.transparent,
-                          const Color(0xFFB026FF).withValues(alpha: 0.15),
-                        ],
-                        begin: Alignment.topCenter,
-                        end: Alignment.bottomCenter,
-                      ),
-                    ),
-                  ),
-
-                  // Sudut Retikel Cyber (Top-Left)
-                  Positioned(
-                    top: 0,
-                    left: 0,
+                  // Live Camera Stream atau Loading/Error Placeholder
+                  ClipRRect(
+                    borderRadius: BorderRadius.circular(20),
                     child: Container(
-                      width: 18,
-                      height: 18,
-                      decoration: const BoxDecoration(
-                        border: Border(
-                          top: BorderSide(color: Color(0xFF00F4FE), width: 2.5),
-                          left: BorderSide(color: Color(0xFF00F4FE), width: 2.5),
+                      width: 220,
+                      height: 260,
+                      color: const Color(0xFF0A0612),
+                      child: _cameraController != null &&
+                              _cameraController!.value.isInitialized
+                          ? OverflowBox(
+                              alignment: Alignment.center,
+                              child: FittedBox(
+                                fit: BoxFit.cover,
+                                child: SizedBox(
+                                  width: _cameraController!
+                                          .value.previewSize?.height ??
+                                      220,
+                                  height: _cameraController!
+                                          .value.previewSize?.width ??
+                                      260,
+                                  child: CameraPreview(_cameraController!),
+                                ),
+                              ),
+                            )
+                          : Center(
+                              child: _visualState == _ScannerVisualState.error
+                                  ? const Icon(Icons.videocam_off_rounded,
+                                      size: 48, color: Color(0xFFFF5252))
+                                  : CircularProgressIndicator(
+                                      strokeWidth: 2.5,
+                                      valueColor: AlwaysStoppedAnimation<Color>(
+                                          currentAccent),
+                                    ),
+                            ),
+                    ),
+                  ),
+
+                  // Overlay Hologram Tint
+                  ClipRRect(
+                    borderRadius: BorderRadius.circular(20),
+                    child: Container(
+                      width: 220,
+                      height: 260,
+                      decoration: BoxDecoration(
+                        gradient: LinearGradient(
+                          colors: [
+                            currentAccent.withValues(alpha: 0.12),
+                            Colors.transparent,
+                            const Color(0xFFB026FF).withValues(alpha: 0.12),
+                          ],
+                          begin: Alignment.topCenter,
+                          end: Alignment.bottomCenter,
                         ),
                       ),
                     ),
                   ),
 
-                  // Sudut Retikel Cyber (Top-Right)
-                  Positioned(
-                    top: 0,
-                    right: 0,
+                  // Oval Face Guide Reticle
+                  IgnorePointer(
                     child: Container(
-                      width: 18,
-                      height: 18,
-                      decoration: const BoxDecoration(
-                        border: Border(
-                          top: BorderSide(color: Color(0xFF00F4FE), width: 2.5),
-                          right: BorderSide(color: Color(0xFF00F4FE), width: 2.5),
+                      width: 175,
+                      height: 220,
+                      decoration: BoxDecoration(
+                        borderRadius: BorderRadius.circular(90),
+                        border: Border.all(
+                          color: currentAccent.withValues(alpha: 0.65),
+                          width: 1.8,
                         ),
                       ),
                     ),
                   ),
 
-                  // Sudut Retikel Cyber (Bottom-Left)
+                  // Corner Brackets
                   Positioned(
-                    bottom: 0,
-                    left: 0,
+                    top: 8,
+                    left: 8,
                     child: Container(
-                      width: 18,
-                      height: 18,
-                      decoration: const BoxDecoration(
+                      width: 20,
+                      height: 20,
+                      decoration: BoxDecoration(
                         border: Border(
-                          bottom: BorderSide(color: Color(0xFF00F4FE), width: 2.5),
-                          left: BorderSide(color: Color(0xFF00F4FE), width: 2.5),
+                          top: BorderSide(color: currentAccent, width: 3),
+                          left: BorderSide(color: currentAccent, width: 3),
+                        ),
+                      ),
+                    ),
+                  ),
+                  Positioned(
+                    top: 8,
+                    right: 8,
+                    child: Container(
+                      width: 20,
+                      height: 20,
+                      decoration: BoxDecoration(
+                        border: Border(
+                          top: BorderSide(color: currentAccent, width: 3),
+                          right: BorderSide(color: currentAccent, width: 3),
+                        ),
+                      ),
+                    ),
+                  ),
+                  Positioned(
+                    bottom: 8,
+                    left: 8,
+                    child: Container(
+                      width: 20,
+                      height: 20,
+                      decoration: BoxDecoration(
+                        border: Border(
+                          bottom: BorderSide(color: currentAccent, width: 3),
+                          left: BorderSide(color: currentAccent, width: 3),
+                        ),
+                      ),
+                    ),
+                  ),
+                  Positioned(
+                    bottom: 8,
+                    right: 8,
+                    child: Container(
+                      width: 20,
+                      height: 20,
+                      decoration: BoxDecoration(
+                        border: Border(
+                          bottom: BorderSide(color: currentAccent, width: 3),
+                          right: BorderSide(color: currentAccent, width: 3),
                         ),
                       ),
                     ),
                   ),
 
-                  // Sudut Retikel Cyber (Bottom-Right)
-                  Positioned(
-                    bottom: 0,
-                    right: 0,
-                    child: Container(
-                      width: 18,
-                      height: 18,
-                      decoration: const BoxDecoration(
-                        border: Border(
-                          bottom: BorderSide(color: Color(0xFF00F4FE), width: 2.5),
-                          right: BorderSide(color: Color(0xFF00F4FE), width: 2.5),
-                        ),
-                      ),
-                    ),
-                  ),
-
-                  // Animasi Laser Bar Pemindai Vertikal
-                  AnimatedBuilder(
-                    animation: _laserAnimation,
-                    builder: (context, child) {
-                      return Positioned(
-                        top: _laserAnimation.value * 190,
-                        left: 5,
-                        right: 5,
-                        child: Container(
-                          height: 3,
-                          decoration: BoxDecoration(
-                            gradient: const LinearGradient(
-                              colors: [
-                                Colors.transparent,
-                                Color(0xFF00F4FE),
-                                Colors.white,
-                                Color(0xFF00F4FE),
-                                Colors.transparent,
+                  // Animasi Laser Scan Line
+                  if (_visualState == _ScannerVisualState.scanning ||
+                      _visualState == _ScannerVisualState.processing)
+                    AnimatedBuilder(
+                      animation: _laserAnimation,
+                      builder: (context, child) {
+                        return Positioned(
+                          top: 15 + (_laserAnimation.value * 230),
+                          left: 15,
+                          right: 15,
+                          child: Container(
+                            height: 3,
+                            decoration: BoxDecoration(
+                              gradient: LinearGradient(
+                                colors: [
+                                  Colors.transparent,
+                                  currentAccent,
+                                  Colors.white,
+                                  currentAccent,
+                                  Colors.transparent,
+                                ],
+                              ),
+                              boxShadow: [
+                                BoxShadow(
+                                  color: currentAccent.withValues(alpha: 0.95),
+                                  blurRadius: 12,
+                                  spreadRadius: 2,
+                                ),
                               ],
                             ),
-                            boxShadow: [
-                              BoxShadow(
-                                color: const Color(0xFF00F4FE).withValues(alpha: 0.9),
-                                blurRadius: 10,
-                                spreadRadius: 2,
-                              ),
-                            ],
                           ),
-                        ),
-                      );
-                    },
-                  ),
-                ],
-              ),
-            ),
-
-            const SizedBox(height: 16),
-
-            // Indikator Status & Progress Bar
-            Row(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                Icon(_statusIcon, size: 16, color: _statusColor),
-                const SizedBox(width: 8),
-                Flexible(
-                  child: Text(
-                    _scanStatus,
-                    textAlign: TextAlign.center,
-                    style: GoogleFonts.spaceGrotesk(
-                      fontSize: 10.5,
-                      fontWeight: FontWeight.w700,
-                      letterSpacing: 0.8,
-                      color: _statusColor,
+                        );
+                      },
                     ),
-                  ),
-                ),
-              ],
-            ),
 
-            const SizedBox(height: 10),
+                  // State Indicator Icon Overlay (Matched / Mismatched)
+                  if (_visualState == _ScannerVisualState.matched)
+                    Container(
+                      width: 220,
+                      height: 260,
+                      decoration: BoxDecoration(
+                        color: const Color(0xFF00FFA3).withValues(alpha: 0.25),
+                        borderRadius: BorderRadius.circular(20),
+                      ),
+                      child: const Center(
+                        child: Icon(
+                          Icons.verified_rounded,
+                          size: 72,
+                          color: Color(0xFF00FFA3),
+                        ),
+                      ),
+                    ),
 
-            // Progress Bar
-            ClipRRect(
-              borderRadius: BorderRadius.circular(6),
-              child: LinearProgressIndicator(
-                value: _progress,
-                minHeight: 6,
-                backgroundColor: const Color(0xFF1F1927),
-                valueColor: AlwaysStoppedAnimation<Color>(_statusColor),
+                  if (_visualState == _ScannerVisualState.mismatched)
+                    Container(
+                      width: 220,
+                      height: 260,
+                      decoration: BoxDecoration(
+                        color: const Color(0xFFFF0055).withValues(alpha: 0.3),
+                        borderRadius: BorderRadius.circular(20),
+                      ),
+                      child: const Center(
+                        child: Icon(
+                          Icons.gpp_bad_rounded,
+                          size: 72,
+                          color: Color(0xFFFF0055),
+                        ),
+                      ),
+                    ),
+                ],
               ),
             ),
 
             const SizedBox(height: 14),
 
-            // Tombol Batal
-            SizedBox(
-              width: double.infinity,
-              height: 36,
-              child: OutlinedButton(
-                style: OutlinedButton.styleFrom(
-                  side: const BorderSide(color: Color(0xFF383241)),
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(8),
-                  ),
+            // Telemetri Status Wajah
+            Text(
+              _statusText,
+              textAlign: TextAlign.center,
+              style: GoogleFonts.spaceGrotesk(
+                fontSize: 11,
+                fontWeight: FontWeight.w700,
+                letterSpacing: 0.6,
+                color: currentAccent,
+              ),
+            ),
+
+            if (_lastScore != null) ...[
+              const SizedBox(height: 4),
+              Text(
+                'SKOR KECOCOKAN: ${_lastScore!.toStringAsFixed(1)}% (SYARAT: >= 70.0%)',
+                style: GoogleFonts.spaceGrotesk(
+                  fontSize: 10,
+                  fontWeight: FontWeight.w800,
+                  color: _lastScore! >= 70.0
+                      ? const Color(0xFF00FFA3)
+                      : const Color(0xFFFF0055),
                 ),
-                onPressed: () => Navigator.of(context).pop(false),
+              ),
+            ],
+
+            if (_errorMessage.isNotEmpty) ...[
+              const SizedBox(height: 8),
+              Container(
+                padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
+                decoration: BoxDecoration(
+                  color: const Color(0xFF280B15),
+                  borderRadius: BorderRadius.circular(8),
+                  border: Border.all(
+                      color: const Color(0xFFFF0055).withValues(alpha: 0.5)),
+                ),
                 child: Text(
-                  'BATALKAN PEMINDAIAN',
+                  _errorMessage,
+                  textAlign: TextAlign.center,
                   style: GoogleFonts.spaceGrotesk(
-                    fontSize: 10,
-                    fontWeight: FontWeight.w700,
-                    letterSpacing: 1.0,
-                    color: const Color(0xFF9B8BA1),
+                    fontSize: 9.5,
+                    color: const Color(0xFFFFB4AB),
+                    fontWeight: FontWeight.w500,
                   ),
                 ),
               ),
-            ),
+            ],
+
+            const SizedBox(height: 16),
+
+            // Tombol Aksi
+            if (_visualState == _ScannerVisualState.mismatched ||
+                _visualState == _ScannerVisualState.error) ...[
+              Row(
+                children: [
+                  Expanded(
+                    child: OutlinedButton(
+                      style: OutlinedButton.styleFrom(
+                        side: const BorderSide(color: Color(0xFF383241)),
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(10),
+                        ),
+                      ),
+                      onPressed: () => Navigator.of(context).pop(false),
+                      child: Text(
+                        'BATAL',
+                        style: GoogleFonts.spaceGrotesk(
+                          fontSize: 10,
+                          fontWeight: FontWeight.w700,
+                          color: const Color(0xFF9B8BA1),
+                        ),
+                      ),
+                    ),
+                  ),
+                  const SizedBox(width: 10),
+                  Expanded(
+                    child: ElevatedButton(
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: currentAccent,
+                        foregroundColor: Colors.black,
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(10),
+                        ),
+                      ),
+                      onPressed: _retryScan,
+                      child: Text(
+                        'PINDAI ULANG',
+                        style: GoogleFonts.spaceGrotesk(
+                          fontSize: 10,
+                          fontWeight: FontWeight.w800,
+                        ),
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+            ] else ...[
+              Row(
+                children: [
+                  Expanded(
+                    child: OutlinedButton(
+                      style: OutlinedButton.styleFrom(
+                        side: const BorderSide(color: Color(0xFF383241)),
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(10),
+                        ),
+                      ),
+                      onPressed: () => Navigator.of(context).pop(false),
+                      child: Text(
+                        'BATALKAN',
+                        style: GoogleFonts.spaceGrotesk(
+                          fontSize: 10,
+                          fontWeight: FontWeight.w700,
+                          color: const Color(0xFF9B8BA1),
+                        ),
+                      ),
+                    ),
+                  ),
+                  if (_visualState == _ScannerVisualState.scanning) ...[
+                    const SizedBox(width: 10),
+                    Expanded(
+                      child: ElevatedButton(
+                        style: ElevatedButton.styleFrom(
+                          backgroundColor: currentAccent,
+                          foregroundColor: Colors.black,
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(10),
+                          ),
+                        ),
+                        onPressed: _executeScan,
+                        child: Text(
+                          widget.mode == FaceScanMode.enroll
+                              ? 'REKAM WAJAH'
+                              : 'PINDAI SEKARANG',
+                          style: GoogleFonts.spaceGrotesk(
+                            fontSize: 10,
+                            fontWeight: FontWeight.w800,
+                          ),
+                        ),
+                      ),
+                    ),
+                  ],
+                ],
+              ),
+            ],
           ],
         ),
       ),

@@ -138,6 +138,42 @@ class HiveService {
     await box.put('isFaceScanEnabled', false);
     await box.delete('bio_username');
     await box.delete('bio_password');
+    await clearEnrolledFace();
+  }
+
+  /// Menyimpan template data biometrik wajah & thumbnail ke Hive sebagai basis pembanding
+  static Future<void> saveEnrolledFace({
+    required String templateJson,
+    String? thumbnailBase64,
+  }) async {
+    final box = sessionBox;
+    await box.put('enrolled_face_template', templateJson);
+    if (thumbnailBase64 != null) {
+      await box.put('enrolled_face_thumbnail', thumbnailBase64);
+    }
+  }
+
+  /// Mengambil data template biometrik wajah yang terdaftar di Hive
+  static String? getEnrolledFaceTemplate() {
+    return sessionBox.get('enrolled_face_template')?.toString();
+  }
+
+  /// Mengambil thumbnail wajah terdaftar dari Hive jika ada
+  static String? getEnrolledFaceThumbnail() {
+    return sessionBox.get('enrolled_face_thumbnail')?.toString();
+  }
+
+  /// Memeriksa apakah user sudah mendaftarkan basis foto wajah di Hive
+  static bool hasEnrolledFace() {
+    final template = getEnrolledFaceTemplate();
+    return template != null && template.isNotEmpty;
+  }
+
+  /// Menghapus basis data biometrik wajah dari Hive
+  static Future<void> clearEnrolledFace() async {
+    final box = sessionBox;
+    await box.delete('enrolled_face_template');
+    await box.delete('enrolled_face_thumbnail');
   }
 
   /// Menyimpan transaksi item/title ke ledger blockchain lokal

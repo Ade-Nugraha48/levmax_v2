@@ -74,9 +74,34 @@ class _LoginScreenState extends State<LoginScreen> {
       return;
     }
 
-    // c. JIKA tipe adalah Face Scan: Buka kamera depan
+    // c. JIKA tipe adalah Face Scan: Buka pemindai wajah real-time
     if (type == 'facescan') {
-      final bool faceVerified = await FaceScanDialog.performFaceScan(context);
+      if (!HiveService.hasEnrolledFace()) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Row(
+              children: [
+                const Icon(Icons.warning_amber_rounded, color: Colors.white, size: 20),
+                const SizedBox(width: 8),
+                Expanded(
+                  child: Text(
+                    'Basis wajah belum didaftarkan di Hive. Silakan aktifkan di Pengaturan Profil terlebih dahulu.',
+                    style: GoogleFonts.spaceGrotesk(fontSize: 12),
+                  ),
+                ),
+              ],
+            ),
+            backgroundColor: const Color(0xFF93000A),
+            duration: const Duration(seconds: 3),
+          ),
+        );
+        return;
+      }
+
+      final bool faceVerified = await FaceScanDialog.startFaceScan(
+        context,
+        mode: FaceScanMode.verify,
+      );
       if (!mounted) return;
 
       if (faceVerified) {

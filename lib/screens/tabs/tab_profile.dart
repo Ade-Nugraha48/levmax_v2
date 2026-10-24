@@ -1236,6 +1236,7 @@ class _TabProfileState extends State<TabProfile> {
   Future<void> _handleToggleFaceScan(bool value) async {
     if (!value) {
       setState(() => _isFaceScanEnabled = false);
+      await HiveService.clearEnrolledFace();
       if (!_isFingerprintEnabled) {
         await HiveService.clearBiometricCredentials();
       } else {
@@ -1253,12 +1254,15 @@ class _TabProfileState extends State<TabProfile> {
     }
 
     try {
-      // Membuka kamera depan untuk memindai wajah pengguna
-      final bool faceVerified = await FaceScanDialog.performFaceScan(context);
+      // Membuka scanner kamera depan real-time untuk merekam basis wajah ke Hive
+      final bool faceEnrolled = await FaceScanDialog.startFaceScan(
+        context,
+        mode: FaceScanMode.enroll,
+      );
 
       if (!mounted) return;
 
-      if (faceVerified) {
+      if (faceEnrolled) {
         String? password = HiveService.getActivePassword() ??
             HiveService.getBiometricCredentials()?['password'];
 
@@ -1266,6 +1270,7 @@ class _TabProfileState extends State<TabProfile> {
           password = await _showPasswordConfirmationDialog();
           if (password == null || password.isEmpty) {
             setState(() => _isFaceScanEnabled = false);
+            await HiveService.clearEnrolledFace();
             return;
           }
         }
@@ -1291,7 +1296,7 @@ class _TabProfileState extends State<TabProfile> {
                 const SizedBox(width: 8),
                 Expanded(
                   child: Text(
-                    'Biometric Protocol Synced! Face Scan login aktif.',
+                    'Basis Wajah Hunter Disimpan di Hive! Face Scan Login Aktif.',
                     style: GoogleFonts.spaceGrotesk(
                       color: Colors.black,
                       fontWeight: FontWeight.w800,
@@ -1313,7 +1318,7 @@ class _TabProfileState extends State<TabProfile> {
         setState(() => _isFaceScanEnabled = false);
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
-            content: Text('Verifikasi biometrik gagal: $e'),
+            content: Text('Registrasi biometrik wajah gagal: $e'),
             backgroundColor: const Color(0xFF93000A),
           ),
         );
