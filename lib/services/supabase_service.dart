@@ -132,12 +132,14 @@ class SupabaseService {
     int? exp,
     int? gold,
     String? rank,
+    int? hp,
   }) async {
     try {
       final Map<String, dynamic> updates = {};
       if (exp != null) updates['exp'] = exp;
       if (gold != null) updates['gold'] = gold;
       if (rank != null) updates['rank'] = rank;
+      if (hp != null) updates['hp'] = hp;
 
       if (updates.isEmpty) return true;
 

@@ -225,6 +225,30 @@ class HiveService {
     if (val is num) return val.toInt();
     return null;
   }
-}
 
-//
+  /// Menyimpan tanggal aktivitas/login terakhir untuk pelacakan pergantian hari & penalti HP
+  static Future<void> saveLastLoginDate(String date) async {
+    final box = sessionBox;
+    await box.put('last_login_date', date);
+  }
+
+  /// Mengambil tanggal login terakhir dari sessionBox
+  static String? getLastLoginDate() {
+    final box = sessionBox;
+    return box.get('last_login_date')?.toString();
+  }
+
+  /// Menyimpan jumlah quest yang diselesaikan pada hari aktif ini
+  static Future<void> saveCompletedQuestsTodayCount(int count) async {
+    final box = sessionBox;
+    await box.put('completed_quests_today_count', count);
+  }
+
+  /// Mengambil jumlah quest yang diselesaikan pada hari aktif ini
+  static int getCompletedQuestsTodayCount() {
+    final box = sessionBox;
+    final val = box.get('completed_quests_today_count');
+    if (val is num) return val.toInt();
+    return 0;
+  }
+}

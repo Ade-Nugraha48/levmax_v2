@@ -61,10 +61,103 @@ class _TabHomeState extends State<TabHome> {
   void initState() {
     super.initState();
     _loadUserSession();
+    _checkDailyHpPenalty();
     _loadLocalQuestStatus();
     _syncQuestsFromSupabase();
     _startServerClock();
     _initDungeonGateDistance();
+  }
+
+  /// Melakukan pengecekan pergantian hari & penalti pemotongan HP jika quest hari sebelumnya < 3
+  void _checkDailyHpPenalty() {
+    final now = DateTime.now();
+    final todayDateStr = '${now.year}-${now.month.toString().padLeft(2, '0')}-${now.day.toString().padLeft(2, '0')}';
+    final lastLoginDateStr = HiveService.getLastLoginDate();
+
+    if (lastLoginDateStr != null && lastLoginDateStr.isNotEmpty) {
+      DateTime? lastDate;
+      try {
+        lastDate = DateTime.parse(lastLoginDateStr);
+      } catch (_) {
+        final parts = lastLoginDateStr.split('-');
+        if (parts.length >= 3) {
+          lastDate = DateTime(int.parse(parts[0]), int.parse(parts[1]), int.parse(parts[2]));
+        }
+      }
+
+      if (lastDate != null) {
+        final bool isDifferentDay = now.year != lastDate.year ||
+            now.month != lastDate.month ||
+            now.day != lastDate.day;
+
+        if (isDifferentDay) {
+          final previousCount = HiveService.getCompletedQuestsTodayCount();
+
+          // Jika jumlah quest hari sebelumnya < 3, kurangi HP sebanyak 1 (minimal 0)
+          if (previousCount < 3) {
+            final int newHp = (_currentHp - 1).clamp(0, _maxHp);
+            setState(() {
+              _currentHp = newHp;
+            });
+
+            // Simpan perubahan HP ke Hive session
+            final session = HiveService.getSession();
+            final userId = session['userId']?.toString() ?? 'anonymous';
+            final username = session['username']?.toString() ?? _hunterName;
+            HiveService.saveSession(
+              userId: userId,
+              username: username,
+              rank: _rank,
+              exp: _currentExp,
+              gold: _gold,
+              hp: newHp,
+            );
+
+            // Update ke Supabase jika login
+            if (userId != 'anonymous') {
+              SupabaseService.updateUserStats(
+                userId: userId,
+                hp: newHp,
+              );
+            }
+
+            // Notifikasi UI peringatan penalti HP
+            WidgetsBinding.instance.addPostFrameCallback((_) {
+              if (mounted) {
+                ScaffoldMessenger.of(context).showSnackBar(
+                  SnackBar(
+                    content: Row(
+                      children: [
+                        const Icon(Icons.favorite_border_rounded, color: Color(0xFFFF5252), size: 20),
+                        const SizedBox(width: 8),
+                        Expanded(
+                          child: Text(
+                            'SYSTEM PENALTY: HP berkurang 1! (Menyelesaikan $previousCount/3 quest harian kemarin)',
+                            style: GoogleFonts.spaceGrotesk(
+                              fontWeight: FontWeight.w700,
+                              color: Colors.white,
+                              fontSize: 12,
+                            ),
+                          ),
+                        ),
+                      ],
+                    ),
+                    backgroundColor: const Color(0xFF4A0E17),
+                    duration: const Duration(seconds: 4),
+                  ),
+                );
+              }
+            });
+          }
+
+          // Reset jumlah quest hari aktif menjadi 0 untuk hari baru
+          HiveService.saveCompletedQuestsTodayCount(0);
+        }
+      }
+    }
+
+    // Perbarui tanggal login terakhir menjadi hari ini
+    HiveService.saveLastLoginDate(todayDateStr);
   }
 
   Future<void> _initDungeonGateDistance() async {
@@ -124,6 +217,7 @@ class _TabHomeState extends State<TabHome> {
         _completedQuests.clear();
         _completedQuests.addAll(completed);
       });
+      HiveService.saveCompletedQuestsTodayCount(_completedQuests.length);
     }
   }
 
@@ -186,6 +280,7 @@ class _TabHomeState extends State<TabHome> {
         now.month != _lastMidnightCheck.month ||
         now.year != _lastMidnightCheck.year) {
       _lastMidnightCheck = now;
+      _checkDailyHpPenalty();
       _loadLocalQuestStatus();
     }
 
@@ -297,6 +392,8 @@ class _TabHomeState extends State<TabHome> {
       _gold = latestGold + goldReward;
     });
 
+    HiveService.saveCompletedQuestsTodayCount(_completedQuests.length);
+
     checkRankUp(_currentExp);
 
     // 1. Simpan ke sesi lokal Hive
@@ -324,6 +421,7 @@ class _TabHomeState extends State<TabHome> {
         exp: _currentExp,
         gold: _gold,
         rank: _rank,
+        hp: _currentHp,
       );
       SupabaseService.backupQuestCompletion(
         userId: userId,
@@ -366,6 +464,10 @@ class _TabHomeState extends State<TabHome> {
     _avatarUrl = session['avatar_url']?.toString() ?? _avatarUrl;
     _gold = (session['gold'] as int?) ?? _gold;
     _currentExp = (session['exp'] as int?) ?? _currentExp;
+    final loadedHp = session['hp'] as int?;
+    if (loadedHp != null) {
+      _currentHp = loadedHp;
+    }
 
     return Scaffold(
       backgroundColor: const Color(0xFF16111E), // Deep Abyss Surface
@@ -1029,43 +1131,71 @@ class _TabHomeState extends State<TabHome> {
   /// 5. Today's Daily Quests Header
   Widget _buildDailyQuestsHeader() {
     final completedCount = _completedQuests.length;
+    final safetyCount = completedCount > 3 ? 3 : completedCount;
+    final bool isSafe = completedCount >= 3;
 
     return Row(
       mainAxisAlignment: MainAxisAlignment.spaceBetween,
       children: [
-        Row(
-          children: [
-            const Icon(
-              Icons.local_fire_department_rounded,
-              size: 17,
-              color: Color(0xFFFF7A00),
-            ),
-            const SizedBox(width: 5),
-            Text(
-              "TODAY'S DAILY QUESTS",
-              style: GoogleFonts.spaceGrotesk(
-                fontSize: 12,
-                fontWeight: FontWeight.w700,
-                letterSpacing: 0.8,
-                color: const Color(0xFFE9DEF2),
+        Expanded(
+          child: Row(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              const Icon(
+                Icons.local_fire_department_rounded,
+                size: 17,
+                color: Color(0xFFFF7A00),
               ),
-            ),
-          ],
-        ),
-        Container(
-          padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
-          decoration: BoxDecoration(
-            color: const Color(0xFF2D2736),
-            borderRadius: BorderRadius.circular(6),
+              const SizedBox(width: 5),
+              Flexible(
+                child: Text(
+                  "TODAY'S DAILY QUESTS",
+                  overflow: TextOverflow.ellipsis,
+                  style: GoogleFonts.spaceGrotesk(
+                    fontSize: 12,
+                    fontWeight: FontWeight.w700,
+                    letterSpacing: 0.8,
+                    color: const Color(0xFFE9DEF2),
+                  ),
+                ),
+              ),
+            ],
           ),
-          child: Text(
-            '$completedCount / ${_dailyQuestsData.length} DONE',
-            style: GoogleFonts.spaceGrotesk(
-              fontSize: 10,
-              fontWeight: FontWeight.w700,
-              letterSpacing: 0.8,
-              color: const Color(0xFFE5B5FF),
+        ),
+        const SizedBox(width: 8),
+        Container(
+          padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 3.5),
+          decoration: BoxDecoration(
+            color: isSafe
+                ? const Color(0xFF0C242B)
+                : const Color(0xFF26121E),
+            borderRadius: BorderRadius.circular(6),
+            border: Border.all(
+              color: isSafe
+                  ? const Color(0xFF00F4FE).withValues(alpha: 0.4)
+                  : const Color(0xFFFF5252).withValues(alpha: 0.4),
+              width: 1.0,
             ),
+          ),
+          child: Row(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Icon(
+                isSafe ? Icons.shield_rounded : Icons.shield_outlined,
+                size: 11,
+                color: isSafe ? const Color(0xFF00F4FE) : const Color(0xFFFF5252),
+              ),
+              const SizedBox(width: 4),
+              Text(
+                'Safety: $safetyCount/3  |  Max: $completedCount/7',
+                style: GoogleFonts.spaceGrotesk(
+                  fontSize: 10,
+                  fontWeight: FontWeight.w700,
+                  letterSpacing: 0.4,
+                  color: isSafe ? const Color(0xFF00F4FE) : const Color(0xFFFFB4AB),
+                ),
+              ),
+            ],
           ),
         ),
       ],
