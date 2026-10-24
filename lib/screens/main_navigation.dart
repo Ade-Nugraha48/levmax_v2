@@ -3,6 +3,7 @@ import 'package:google_fonts/google_fonts.dart';
 import '../utils/constants.dart';
 import 'tabs/tab_home.dart';
 import 'tabs/tab_map.dart';
+import 'tabs/tab_game.dart';
 
 class MainNavigation extends StatefulWidget {
   const MainNavigation({super.key});
@@ -23,12 +24,7 @@ class _MainNavigationState extends State<MainNavigation> {
     _tabs = [
       const TabHome(),
       const TabMap(),
-      const _PlaceholderTab(
-        title: 'MANA BALANCER (MINI GAME)',
-        subtitle: 'Latihan Fokus Mana dengan Sensor Gyroscope',
-        icon: Icons.screen_rotation_outlined,
-        accentColor: AppColors.neonViolet,
-      ),
+      const TabGame(),
       const _PlaceholderTab(
         title: 'HUNTER SHOP & LEDGER',
         subtitle: 'Toko Item Title, Kurs Mata Uang & Blockchain Hive',
