@@ -3,6 +3,7 @@ import 'package:camera/camera.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:permission_handler/permission_handler.dart';
 import 'package:levmax_v2/services/face_recognition_service.dart';
 import 'package:levmax_v2/services/hive_service.dart';
 
@@ -75,6 +76,7 @@ class _FaceScanDialogState extends State<FaceScanDialog>
   String _errorMessage = '';
   double? _lastScore;
   bool _isProcessing = false;
+  bool _isPermissionPermanentlyDenied = false;
 
   @override
   void initState() {
@@ -96,13 +98,39 @@ class _FaceScanDialogState extends State<FaceScanDialog>
   Future<void> _initCamera() async {
     setState(() {
       _visualState = _ScannerVisualState.initializing;
-      _statusText = 'MENGINISIALISASI KAMERA DEPAN...';
+      _statusText = 'MEMERIKSA IZIN AKSES KAMERA...';
       _errorMessage = '';
+      _isPermissionPermanentlyDenied = false;
     });
 
     try {
+      // 1. Minta izin akses kamera secara eksplisit ke OS ponsel
+      var status = await Permission.camera.status;
+      if (!status.isGranted) {
+        status = await Permission.camera.request();
+      }
+
+      if (!status.isGranted) {
+        if (!mounted) return;
+        setState(() {
+          _visualState = _ScannerVisualState.error;
+          _isPermissionPermanentlyDenied = status.isPermanentlyDenied;
+          _errorMessage = status.isPermanentlyDenied
+              ? 'Izin kamera ditolak permanen di ponsel. Buka Pengaturan Aplikasi untuk mengaktifkan izin kamera.'
+              : 'Izin kamera diperlukan untuk menggunakan fitur biometrik Face Scan.';
+        });
+        return;
+      }
+
+      if (!mounted) return;
+
+      setState(() {
+        _statusText = 'MENGHUBUNGKAN SENSOR OPTIK DEPAN...';
+      });
+
       final cameras = await availableCameras();
       if (cameras.isEmpty) {
+        if (!mounted) return;
         setState(() {
           _visualState = _ScannerVisualState.error;
           _errorMessage = 'Tidak ditemukan modul kamera pada perangkat.';
@@ -287,6 +315,11 @@ class _FaceScanDialogState extends State<FaceScanDialog>
   }
 
   void _retryScan() {
+    _autoScanTimer?.cancel();
+    if (_cameraController == null || !_cameraController!.value.isInitialized) {
+      _initCamera();
+      return;
+    }
     setState(() {
       _visualState = _ScannerVisualState.scanning;
       _errorMessage = '';
@@ -707,9 +740,18 @@ class _FaceScanDialogState extends State<FaceScanDialog>
                           borderRadius: BorderRadius.circular(10),
                         ),
                       ),
-                      onPressed: _retryScan,
+                      onPressed: _isPermissionPermanentlyDenied
+                          ? () async {
+                              await openAppSettings();
+                              if (mounted) _retryScan();
+                            }
+                          : _retryScan,
                       child: Text(
-                        'PINDAI ULANG',
+                        _isPermissionPermanentlyDenied
+                            ? 'BUKA PENGATURAN'
+                            : (_visualState == _ScannerVisualState.error
+                                ? 'COBA LAGI'
+                                : 'PINDAI ULANG'),
                         style: GoogleFonts.spaceGrotesk(
                           fontSize: 10,
                           fontWeight: FontWeight.w800,
