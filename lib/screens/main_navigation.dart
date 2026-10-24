@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import '../utils/constants.dart';
 import 'tabs/tab_home.dart';
+import 'tabs/tab_map.dart';
 
 class MainNavigation extends StatefulWidget {
   const MainNavigation({super.key});
@@ -21,12 +22,7 @@ class _MainNavigationState extends State<MainNavigation> {
     super.initState();
     _tabs = [
       const TabHome(),
-      const _PlaceholderTab(
-        title: 'DUNGEON RADAR (LBS)',
-        subtitle: 'Pencarian Gate & Titik Hadiah Kampus via GPS',
-        icon: Icons.explore_outlined,
-        accentColor: AppColors.manaCyan,
-      ),
+      const TabMap(),
       const _PlaceholderTab(
         title: 'MANA BALANCER (MINI GAME)',
         subtitle: 'Latihan Fokus Mana dengan Sensor Gyroscope',
