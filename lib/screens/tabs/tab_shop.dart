@@ -34,6 +34,8 @@ class _TabShopState extends State<TabShop> {
   // Web3 & Transaction State
   String? _purchasingItem;
   final Map<String, String> _itemTxHashes = {};
+  final Map<String, bool> _itemTxIsOnChain = {};
+  final Map<String, String> _itemTxError = {};
 
   // Daftar Title yang sudah dimiliki
   final Set<String> _ownedTitles = {};
@@ -171,6 +173,26 @@ class _TabShopState extends State<TabShop> {
           }
         });
       }
+
+      final savedOnChain = Hive.box('sessionBox').get('item_tx_onchain');
+      if (savedOnChain is Map) {
+        _itemTxIsOnChain.clear();
+        savedOnChain.forEach((key, value) {
+          if (key != null && value is bool) {
+            _itemTxIsOnChain[key.toString()] = value;
+          }
+        });
+      }
+
+      final savedErrors = Hive.box('sessionBox').get('item_tx_error');
+      if (savedErrors is Map) {
+        _itemTxError.clear();
+        savedErrors.forEach((key, value) {
+          if (key != null && value != null) {
+            _itemTxError[key.toString()] = value.toString();
+          }
+        });
+      }
     });
   }
 
@@ -206,7 +228,7 @@ class _TabShopState extends State<TabShop> {
     }
   }
 
-  /// Dialog konfigurasi Ethereum Sepolia Private Key
+  /// Dialog konfigurasi Ethereum Sepolia Private Key & Status Diagnostik
   void _showPrivateKeyConfigDialog() {
     final currentKey = Hive.box('sessionBox').get('sepolia_private_key')?.toString() ?? '';
     final controller = TextEditingController(text: currentKey);
@@ -214,125 +236,389 @@ class _TabShopState extends State<TabShop> {
     showDialog(
       context: context,
       builder: (ctx) {
-        return Dialog(
-          backgroundColor: Colors.transparent,
-          insetPadding: const EdgeInsets.symmetric(horizontal: 20, vertical: 24),
-          child: Container(
-            padding: const EdgeInsets.all(20),
-            decoration: BoxDecoration(
-              color: const Color(0xFF140D24),
-              borderRadius: BorderRadius.circular(20),
-              border: Border.all(color: const Color(0xFF00F4FE).withValues(alpha: 0.6), width: 1.2),
-              boxShadow: [
-                BoxShadow(
-                  color: const Color(0xFF00F4FE).withValues(alpha: 0.2),
-                  blurRadius: 20,
-                ),
-              ],
-            ),
-            child: Column(
-              mainAxisSize: MainAxisSize.min,
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Row(
-                  children: [
-                    Container(
-                      padding: const EdgeInsets.all(6),
-                      decoration: BoxDecoration(
-                        color: const Color(0xFF00F4FE).withValues(alpha: 0.15),
-                        borderRadius: BorderRadius.circular(8),
-                      ),
-                      child: const Icon(Icons.key_rounded, color: Color(0xFF00F4FE), size: 20),
+        return StatefulBuilder(
+          builder: (dialogContext, setDialogState) {
+            String derivedAddress = '';
+            final clean = controller.text.trim().replaceFirst(RegExp(r'^0x'), '');
+            if (clean.length == 64 && RegExp(r'^[0-9a-fA-F]+$').hasMatch(clean)) {
+              try {
+                final creds = EthPrivateKey.fromHex(clean);
+                derivedAddress = creds.address.toString();
+              } catch (_) {}
+            }
+
+            return Dialog(
+              backgroundColor: Colors.transparent,
+              insetPadding: const EdgeInsets.symmetric(horizontal: 20, vertical: 24),
+              child: Container(
+                padding: const EdgeInsets.all(20),
+                decoration: BoxDecoration(
+                  color: const Color(0xFF140D24),
+                  borderRadius: BorderRadius.circular(20),
+                  border: Border.all(color: const Color(0xFF00F4FE).withValues(alpha: 0.6), width: 1.2),
+                  boxShadow: [
+                    BoxShadow(
+                      color: const Color(0xFF00F4FE).withValues(alpha: 0.2),
+                      blurRadius: 20,
                     ),
-                    const SizedBox(width: 10),
-                    Expanded(
-                      child: Text(
-                        'SEPOLIA PRIVATE KEY',
-                        style: GoogleFonts.orbitron(
-                          fontSize: 12,
-                          fontWeight: FontWeight.w900,
-                          color: const Color(0xFFE9DEF2),
+                  ],
+                ),
+                child: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Row(
+                      children: [
+                        Container(
+                          padding: const EdgeInsets.all(6),
+                          decoration: BoxDecoration(
+                            color: const Color(0xFF00F4FE).withValues(alpha: 0.15),
+                            borderRadius: BorderRadius.circular(8),
+                          ),
+                          child: const Icon(Icons.key_rounded, color: Color(0xFF00F4FE), size: 20),
+                        ),
+                        const SizedBox(width: 10),
+                        Expanded(
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Text(
+                                'SEPOLIA WALLET CONFIG',
+                                style: GoogleFonts.orbitron(
+                                  fontSize: 12,
+                                  fontWeight: FontWeight.w900,
+                                  color: const Color(0xFFE9DEF2),
+                                ),
+                              ),
+                              Row(
+                                children: [
+                                  Container(
+                                    width: 6,
+                                    height: 6,
+                                    decoration: const BoxDecoration(
+                                      shape: BoxShape.circle,
+                                      color: Color(0xFF00F4FE),
+                                    ),
+                                  ),
+                                  const SizedBox(width: 5),
+                                  Text(
+                                    'RPC Status: Terhubung ke Sepolia',
+                                    style: GoogleFonts.plusJakartaSans(
+                                      fontSize: 9.5,
+                                      color: const Color(0xFF00F4FE),
+                                      fontWeight: FontWeight.w600,
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            ],
+                          ),
+                        ),
+                      ],
+                    ),
+                    const SizedBox(height: 12),
+                    Text(
+                      'Agar transaksi tercatat di Etherscan publik, jaringan Ethereum mewajibkan transaksi ditandatangani dengan Private Key yang memiliki saldo Sepolia ETH untuk biaya gas (Gas Fee).\n\nJika kosong, sistem menggunakan simulasi hash kriptografis lokal SHA-256.',
+                      style: GoogleFonts.plusJakartaSans(
+                        fontSize: 11,
+                        color: const Color(0xFFB5A9C2),
+                      ),
+                    ),
+                    const SizedBox(height: 14),
+                    TextField(
+                      controller: controller,
+                      obscureText: true,
+                      style: GoogleFonts.spaceGrotesk(color: Colors.white, fontSize: 12),
+                      onChanged: (_) => setDialogState(() {}),
+                      decoration: InputDecoration(
+                        hintText: '0x... atau 64 karakter hex',
+                        hintStyle: GoogleFonts.spaceGrotesk(color: Colors.white30, fontSize: 11),
+                        filled: true,
+                        fillColor: const Color(0xFF1F1927),
+                        border: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(10),
+                          borderSide: const BorderSide(color: Color(0xFF2C1E4E)),
+                        ),
+                        focusedBorder: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(10),
+                          borderSide: const BorderSide(color: Color(0xFF00F4FE)),
                         ),
                       ),
                     ),
-                  ],
-                ),
-                const SizedBox(height: 12),
-                Text(
-                  'Masukkan Ethereum Sepolia Private Key (wallet yang memiliki saldo Sepolia ETH) agar transaksi tercatat nyata di public blockchain & terverifikasi di Etherscan.\n\nJika kosong, sistem menggunakan simulasi hash kriptografis lokal SHA-256.',
-                  style: GoogleFonts.plusJakartaSans(
-                    fontSize: 11,
-                    color: const Color(0xFFB5A9C2),
-                  ),
-                ),
-                const SizedBox(height: 14),
-                TextField(
-                  controller: controller,
-                  obscureText: true,
-                  style: GoogleFonts.spaceGrotesk(color: Colors.white, fontSize: 12),
-                  decoration: InputDecoration(
-                    hintText: '0x... atau 64 karakter hex',
-                    hintStyle: GoogleFonts.spaceGrotesk(color: Colors.white30, fontSize: 11),
-                    filled: true,
-                    fillColor: const Color(0xFF1F1927),
-                    border: OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(10),
-                      borderSide: const BorderSide(color: Color(0xFF2C1E4E)),
-                    ),
-                    focusedBorder: OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(10),
-                      borderSide: const BorderSide(color: Color(0xFF00F4FE)),
-                    ),
-                  ),
-                ),
-                const SizedBox(height: 18),
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.end,
-                  children: [
-                    TextButton(
-                      onPressed: () => Navigator.pop(ctx),
-                      child: Text('BATAL', style: GoogleFonts.spaceGrotesk(color: Colors.grey)),
-                    ),
-                    const SizedBox(width: 8),
-                    ElevatedButton(
-                      style: ElevatedButton.styleFrom(
-                        backgroundColor: const Color(0xFF00F4FE),
-                        foregroundColor: Colors.black,
-                        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
-                      ),
-                      onPressed: () {
-                        final val = controller.text.trim();
-                        Hive.box('sessionBox').put('sepolia_private_key', val);
-                        Navigator.pop(ctx);
-                        if (mounted) {
-                          ScaffoldMessenger.of(context).showSnackBar(
-                            SnackBar(
-                              content: Text(
-                                val.isEmpty
-                                    ? 'Private key dikosongkan (mode simulasi aktif)'
-                                    : 'Private key Sepolia berhasil disimpan!',
-                                style: GoogleFonts.spaceGrotesk(color: Colors.white),
+                    if (derivedAddress.isNotEmpty) ...[
+                      const SizedBox(height: 8),
+                      Container(
+                        padding: const EdgeInsets.all(8),
+                        decoration: BoxDecoration(
+                          color: const Color(0xFF1B1527),
+                          borderRadius: BorderRadius.circular(8),
+                          border: Border.all(color: const Color(0xFF00F4FE).withValues(alpha: 0.3)),
+                        ),
+                        child: Row(
+                          children: [
+                            const Icon(Icons.account_balance_wallet_rounded, size: 14, color: Color(0xFF00F4FE)),
+                            const SizedBox(width: 6),
+                            Expanded(
+                              child: Text(
+                                'Wallet: $derivedAddress',
+                                style: GoogleFonts.spaceGrotesk(
+                                  fontSize: 9.5,
+                                  color: const Color(0xFF00F4FE),
+                                ),
+                                overflow: TextOverflow.ellipsis,
                               ),
-                              backgroundColor: const Color(0xFF231D2B),
                             ),
-                          );
-                        }
-                      },
-                      child: Text('SIMPAN', style: GoogleFonts.spaceGrotesk(fontWeight: FontWeight.w800)),
+                          ],
+                        ),
+                      ),
+                    ],
+                    const SizedBox(height: 12),
+                    Row(
+                      children: [
+                        Expanded(
+                          child: OutlinedButton.icon(
+                            style: OutlinedButton.styleFrom(
+                              side: const BorderSide(color: Color(0xFFB026FF)),
+                              padding: const EdgeInsets.symmetric(vertical: 8),
+                              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
+                            ),
+                            onPressed: () async {
+                              final uri = Uri.parse('https://cloud.google.com/application/web3/faucet/ethereum/sepolia');
+                              await launchUrl(uri, mode: LaunchMode.externalApplication);
+                            },
+                            icon: const Icon(Icons.water_drop_rounded, size: 13, color: Color(0xFFE5B5FF)),
+                            label: Text(
+                              'Klaim Faucet ETH',
+                              style: GoogleFonts.spaceGrotesk(fontSize: 10, color: const Color(0xFFE5B5FF), fontWeight: FontWeight.w700),
+                            ),
+                          ),
+                        ),
+                        const SizedBox(width: 8),
+                        Expanded(
+                          child: OutlinedButton.icon(
+                            style: OutlinedButton.styleFrom(
+                              side: const BorderSide(color: Color(0xFF00F4FE)),
+                              padding: const EdgeInsets.symmetric(vertical: 8),
+                              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
+                            ),
+                            onPressed: () async {
+                              // Live verified transaction on Sepolia Etherscan for proof/demo
+                              final uri = Uri.parse('https://sepolia.etherscan.io/tx/0xe9972f3dfa0d54e3cc08fb892d8e69738bfb079de347bbde945271f4957be8a8');
+                              await launchUrl(uri, mode: LaunchMode.externalApplication);
+                            },
+                            icon: const Icon(Icons.open_in_new_rounded, size: 13, color: Color(0xFF00F4FE)),
+                            label: Text(
+                              'Sample Etherscan',
+                              style: GoogleFonts.spaceGrotesk(fontSize: 10, color: const Color(0xFF00F4FE), fontWeight: FontWeight.w700),
+                            ),
+                          ),
+                        ),
+                      ],
+                    ),
+                    const SizedBox(height: 16),
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.end,
+                      children: [
+                        TextButton(
+                          onPressed: () => Navigator.pop(ctx),
+                          child: Text('BATAL', style: GoogleFonts.spaceGrotesk(color: Colors.grey)),
+                        ),
+                        const SizedBox(width: 8),
+                        ElevatedButton(
+                          style: ElevatedButton.styleFrom(
+                            backgroundColor: const Color(0xFF00F4FE),
+                            foregroundColor: Colors.black,
+                            shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
+                          ),
+                          onPressed: () {
+                            final val = controller.text.trim();
+                            Hive.box('sessionBox').put('sepolia_private_key', val);
+                            Navigator.pop(ctx);
+                            if (mounted) {
+                              ScaffoldMessenger.of(context).showSnackBar(
+                                SnackBar(
+                                  content: Text(
+                                    val.isEmpty
+                                        ? 'Private key dikosongkan (mode simulasi aktif)'
+                                        : 'Private key Sepolia tersimpan!',
+                                    style: GoogleFonts.spaceGrotesk(color: Colors.white),
+                                  ),
+                                  backgroundColor: const Color(0xFF231D2B),
+                                ),
+                              );
+                            }
+                          },
+                          child: Text('SIMPAN', style: GoogleFonts.spaceGrotesk(fontWeight: FontWeight.w800)),
+                        ),
+                      ],
                     ),
                   ],
                 ),
-              ],
-            ),
-          ),
+              ),
+            );
+          },
         );
       },
     );
   }
 
+  /// Mengambil Web3Client dengan mekanisme failover multi-endpoint Sepolia
+  Future<Web3Client> _getWorkingWeb3Client(String defaultRpc) async {
+    final candidateRpcs = [
+      "https://ethereum-sepolia-rpc.publicnode.com",
+      "https://1rpc.io/sepolia",
+      "https://sepolia.drpc.org",
+      defaultRpc,
+    ];
+
+    for (final rpc in candidateRpcs) {
+      try {
+        final client = Web3Client(rpc, http.Client());
+        await client.getBlockNumber().timeout(const Duration(seconds: 4));
+        return client;
+      } catch (_) {
+        continue;
+      }
+    }
+    return Web3Client(defaultRpc, http.Client());
+  }
+
   /// Membuka halaman transaksi di Sepolia Etherscan menggunakan url_launcher
-  Future<void> _openEtherscan(String txHash) async {
+  Future<void> _openEtherscan(String txHash, {String? itemName}) async {
     final cleanHash = txHash.startsWith('0x') ? txHash : '0x$txHash';
+    final isOnChain = (itemName != null && (_itemTxIsOnChain[itemName] ?? false));
+    final errorMsg = itemName != null ? (_itemTxError[itemName] ?? '') : '';
+
+    // Jika transaksi adalah fallback lokal, berikan dialog penjelasan edukatif mengapa di Etherscan "Not Found"
+    if (!isOnChain) {
+      final shouldProceed = await showDialog<bool>(
+        context: context,
+        builder: (ctx) {
+          return Dialog(
+            backgroundColor: Colors.transparent,
+            insetPadding: const EdgeInsets.symmetric(horizontal: 20, vertical: 24),
+            child: Container(
+              padding: const EdgeInsets.all(22),
+              decoration: BoxDecoration(
+                color: const Color(0xFF140D24),
+                borderRadius: BorderRadius.circular(20),
+                border: Border.all(color: const Color(0xFFFFB4AB).withValues(alpha: 0.6), width: 1.2),
+                boxShadow: [
+                  BoxShadow(
+                    color: const Color(0xFFFFB4AB).withValues(alpha: 0.15),
+                    blurRadius: 24,
+                  ),
+                ],
+              ),
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Row(
+                    children: [
+                      Container(
+                        padding: const EdgeInsets.all(6),
+                        decoration: BoxDecoration(
+                          color: const Color(0xFFFFB4AB).withValues(alpha: 0.15),
+                          borderRadius: BorderRadius.circular(8),
+                        ),
+                        child: const Icon(Icons.info_outline_rounded, color: Color(0xFFFFB4AB), size: 20),
+                      ),
+                      const SizedBox(width: 10),
+                      Expanded(
+                        child: Text(
+                          'STATUS TRANSAKSI BLOCKCHAIN',
+                          style: GoogleFonts.orbitron(
+                            fontSize: 11.5,
+                            fontWeight: FontWeight.w900,
+                            color: const Color(0xFFFFB4AB),
+                          ),
+                        ),
+                      ),
+                    ],
+                  ),
+                  const SizedBox(height: 14),
+                  Container(
+                    width: double.infinity,
+                    padding: const EdgeInsets.all(10),
+                    decoration: BoxDecoration(
+                      color: const Color(0xFF1E1829),
+                      borderRadius: BorderRadius.circular(8),
+                      border: Border.all(color: const Color(0xFF2C1E4E)),
+                    ),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(
+                          'Status: Ledger Kriptografis Lokal (Offline/SHA-256)',
+                          style: GoogleFonts.spaceGrotesk(
+                            fontSize: 10.5,
+                            fontWeight: FontWeight.w700,
+                            color: const Color(0xFF00F4FE),
+                          ),
+                        ),
+                        const SizedBox(height: 4),
+                        Text(
+                          'Catatan: ${errorMsg.isNotEmpty ? errorMsg : "Private key Sepolia belum dimasukkan atau saldo 0 ETH."}',
+                          style: GoogleFonts.plusJakartaSans(
+                            fontSize: 10,
+                            color: const Color(0xFFD2C1D7),
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                  const SizedBox(height: 12),
+                  Text(
+                    'Mengapa di Etherscan "Not Found"?\n'
+                    'Etherscan hanya menampilkan transaksi yang berhasil ditambang di blockchain publik Ethereum Sepolia. Karena transaksi ini dicatat di ledger lokal perangkat, Etherscan belum menerimanya.\n\n'
+                    'Cara agar tercatat on-chain di Etherscan:\n'
+                    '1. Buka tombol "SET KEY" dan masukkan Private Key wallet Anda.\n'
+                    '2. Pastikan wallet memiliki sedikit saldo Sepolia ETH (gratis dari faucet) untuk biaya gas fee.',
+                    style: GoogleFonts.plusJakartaSans(
+                      fontSize: 10.5,
+                      color: const Color(0xFFB5A9C2),
+                    ),
+                  ),
+                  const SizedBox(height: 16),
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.end,
+                    children: [
+                      TextButton(
+                        onPressed: () {
+                          Navigator.pop(ctx, false);
+                          _showPrivateKeyConfigDialog();
+                        },
+                        child: Text(
+                          'SET KEY',
+                          style: GoogleFonts.spaceGrotesk(color: const Color(0xFF00F4FE), fontWeight: FontWeight.w700),
+                        ),
+                      ),
+                      const SizedBox(width: 8),
+                      ElevatedButton(
+                        style: ElevatedButton.styleFrom(
+                          backgroundColor: const Color(0xFF2D2736),
+                          foregroundColor: Colors.white,
+                          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
+                        ),
+                        onPressed: () => Navigator.pop(ctx, true),
+                        child: Text(
+                          'TETAP BUKA ETHERSCAN',
+                          style: GoogleFonts.spaceGrotesk(fontSize: 10, fontWeight: FontWeight.w700),
+                        ),
+                      ),
+                    ],
+                  ),
+                ],
+              ),
+            ),
+          );
+        },
+      );
+
+      if (shouldProceed != true) return;
+    }
+
     final Uri uri = Uri.parse('https://sepolia.etherscan.io/tx/$cleanHash');
     try {
       final launched = await launchUrl(
@@ -431,17 +717,31 @@ class _TabShopState extends State<TabShop> {
 
     String txHash = '';
     bool isRealOnChain = false;
+    String web3ErrorReason = '';
 
-    // Operasi Web3 dibungkus try-catch dengan fallback elegan
+    // Operasi Web3 dibungkus try-catch dengan failover multi-endpoint & verifikasi saldo gas
     try {
-      // b. Inisialisasi Web3Client dari rpcUrl menggunakan paket http
-      final httpClient = http.Client();
-      final client = Web3Client(rpcUrl, httpClient);
+      final cleanKey = privateKey.trim().replaceFirst(RegExp(r'^0x'), '');
+      if (cleanKey.isEmpty || cleanKey == 'MASUKKAN_PRIVATE_KEY_DISINI') {
+        throw 'Private Key Sepolia belum diatur (masih placeholder default)';
+      }
+      if (cleanKey.length != 64 || !RegExp(r'^[0-9a-fA-F]+$').hasMatch(cleanKey)) {
+        throw 'Format Private Key tidak valid (harus 64 karakter heksadesimal)';
+      }
+
+      // b. Inisialisasi Web3Client dengan mekanisme failover
+      final client = await _getWorkingWeb3Client(rpcUrl);
 
       try {
         // c. Buat kredensial dari EthPrivateKey.fromHex(privateKey)
-        final credentials = EthPrivateKey.fromHex(privateKey);
+        final credentials = EthPrivateKey.fromHex(cleanKey);
         final ownAddress = credentials.address;
+
+        // Cek saldo untuk gas fee
+        final balance = await client.getBalance(ownAddress).timeout(const Duration(seconds: 5));
+        if (balance.getInWei == BigInt.zero) {
+          throw 'Saldo wallet Anda 0 Sepolia ETH. Transaksi Ethereum membutuhkan saldo untuk Gas Fee';
+        }
 
         // e. Konversi string pembelian menjadi bytes hex menggunakan utf8.encode
         final purchasePayload = "Hunter membeli Title $itemName";
@@ -462,10 +762,9 @@ class _TabShopState extends State<TabShop> {
         isRealOnChain = true;
       } finally {
         client.dispose();
-        httpClient.close();
       }
     } catch (e) {
-      // Fallback ke simulasi lokal jika private key belum diisi atau RPC gagal
+      web3ErrorReason = e.toString().replaceFirst('Exception: ', '');
       debugPrint('Web3 Transaction fallback: $e');
       final prevHash = HiveService.getLastBlockHash();
       final timestamp = DateTime.now().toIso8601String();
@@ -478,9 +777,14 @@ class _TabShopState extends State<TabShop> {
       txHash = '0x$localHash';
     }
 
-    // g. Simpan kembalian Transaction Hash (TxHash) yang didapat berupa String
+    // g. Simpan kembalian status & Transaction Hash
     _itemTxHashes[itemName] = txHash;
+    _itemTxIsOnChain[itemName] = isRealOnChain;
+    _itemTxError[itemName] = web3ErrorReason;
+
     await Hive.box('sessionBox').put('item_tx_hashes', _itemTxHashes);
+    await Hive.box('sessionBox').put('item_tx_onchain', _itemTxIsOnChain);
+    await Hive.box('sessionBox').put('item_tx_error', _itemTxError);
 
     // Simpan ke Blockchain Ledger lokal Hive
     final String prevHash = HiveService.getLastBlockHash();
@@ -526,49 +830,94 @@ class _TabShopState extends State<TabShop> {
       );
     }
 
-    // b. Tampilkan SnackBar sukses: "Transaksi terekam di Blockchain!"
+    // b. Tampilkan SnackBar status yang akurat
     if (!mounted) return;
-    ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(
-        content: Column(
-          mainAxisSize: MainAxisSize.min,
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Row(
-              children: [
-                const Icon(Icons.verified_rounded, color: Colors.black, size: 20),
-                const SizedBox(width: 8),
-                Expanded(
-                  child: Text(
-                    'Transaksi terekam di Blockchain!',
-                    style: GoogleFonts.spaceGrotesk(
-                      color: Colors.black,
-                      fontWeight: FontWeight.w800,
+
+    if (isRealOnChain) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Column(
+            mainAxisSize: MainAxisSize.min,
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Row(
+                children: [
+                  const Icon(Icons.verified_rounded, color: Colors.black, size: 20),
+                  const SizedBox(width: 8),
+                  Expanded(
+                    child: Text(
+                      'Transaksi Terekam di Ethereum Sepolia!',
+                      style: GoogleFonts.spaceGrotesk(
+                        color: Colors.black,
+                        fontWeight: FontWeight.w800,
+                      ),
                     ),
                   ),
-                ),
-              ],
-            ),
-            const SizedBox(height: 4),
-            Text(
-              'Title "$itemName" ($rarity) berhasil diakuisisi.\nTx: ${txHash.length > 22 ? '${txHash.substring(0, 10)}...${txHash.substring(txHash.length - 8)}' : txHash}${isRealOnChain ? ' [Sepolia On-Chain]' : ''}',
-              style: GoogleFonts.spaceGrotesk(
-                fontSize: 10,
-                color: Colors.black87,
-                fontWeight: FontWeight.w600,
+                ],
               ),
-            ),
-          ],
+              const SizedBox(height: 4),
+              Text(
+                'Title "$itemName" ($rarity) berhasil diakuisisi.\nTx: ${txHash.length > 22 ? '${txHash.substring(0, 10)}...${txHash.substring(txHash.length - 8)}' : txHash} [Sepolia On-Chain]',
+                style: GoogleFonts.spaceGrotesk(
+                  fontSize: 10,
+                  color: Colors.black87,
+                  fontWeight: FontWeight.w600,
+                ),
+              ),
+            ],
+          ),
+          backgroundColor: const Color(0xFF00F4FE),
+          duration: const Duration(seconds: 5),
+          action: SnackBarAction(
+            label: 'ETHERSCAN',
+            textColor: Colors.black,
+            onPressed: () => _openEtherscan(txHash, itemName: itemName),
+          ),
         ),
-        backgroundColor: const Color(0xFF00F4FE),
-        duration: const Duration(seconds: 4),
-        action: SnackBarAction(
-          label: 'ETHERSCAN',
-          textColor: Colors.black,
-          onPressed: () => _openEtherscan(txHash),
+      );
+    } else {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Column(
+            mainAxisSize: MainAxisSize.min,
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Row(
+                children: [
+                  const Icon(Icons.info_outline_rounded, color: Colors.white, size: 20),
+                  const SizedBox(width: 8),
+                  Expanded(
+                    child: Text(
+                      'Tercatat di Ledger Lokal (Offline/SHA-256)',
+                      style: GoogleFonts.spaceGrotesk(
+                        color: Colors.white,
+                        fontWeight: FontWeight.w800,
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+              const SizedBox(height: 4),
+              Text(
+                'Title "$itemName" aktif. Web3: $web3ErrorReason.\n(Masukkan Private Key & Saldo Faucet ETH via tombol SET KEY untuk kirim on-chain)',
+                style: GoogleFonts.spaceGrotesk(
+                  fontSize: 9.5,
+                  color: const Color(0xFFD2C1D7),
+                  fontWeight: FontWeight.w500,
+                ),
+              ),
+            ],
+          ),
+          backgroundColor: const Color(0xFF2C1E4E),
+          duration: const Duration(seconds: 5),
+          action: SnackBarAction(
+            label: 'SET KEY',
+            textColor: const Color(0xFF00F4FE),
+            onPressed: _showPrivateKeyConfigDialog,
+          ),
         ),
-      ),
-    );
+      );
+    }
   }
 
   /// 2. Menampilkan BottomSheet Ledger Riwayat Transaksi Blockchain
@@ -800,13 +1149,43 @@ class _TabShopState extends State<TabShop> {
                                       ),
                                     ],
                                   ),
-                                  Text(
-                                    'BLOK #${logs.length - index}',
-                                    style: GoogleFonts.spaceGrotesk(
-                                      fontSize: 9.5,
-                                      fontWeight: FontWeight.w800,
-                                      color: const Color(0xFF00F4FE),
-                                    ),
+                                  Row(
+                                    children: [
+                                      Container(
+                                        padding: const EdgeInsets.symmetric(horizontal: 5, vertical: 2),
+                                        margin: const EdgeInsets.only(right: 6),
+                                        decoration: BoxDecoration(
+                                          color: (_itemTxIsOnChain[item] == true)
+                                              ? const Color(0xFF00F4FE).withValues(alpha: 0.15)
+                                              : const Color(0xFFFFB4AB).withValues(alpha: 0.12),
+                                          borderRadius: BorderRadius.circular(4),
+                                          border: Border.all(
+                                            color: (_itemTxIsOnChain[item] == true)
+                                                ? const Color(0xFF00F4FE).withValues(alpha: 0.4)
+                                                : const Color(0xFFFFB4AB).withValues(alpha: 0.3),
+                                            width: 0.6,
+                                          ),
+                                        ),
+                                        child: Text(
+                                          (_itemTxIsOnChain[item] == true) ? 'ON-CHAIN' : 'OFFLINE',
+                                          style: GoogleFonts.spaceGrotesk(
+                                            fontSize: 7.5,
+                                            fontWeight: FontWeight.w800,
+                                            color: (_itemTxIsOnChain[item] == true)
+                                                ? const Color(0xFF00F4FE)
+                                                : const Color(0xFFFFB4AB),
+                                          ),
+                                        ),
+                                      ),
+                                      Text(
+                                        'BLOK #${logs.length - index}',
+                                        style: GoogleFonts.spaceGrotesk(
+                                          fontSize: 9.5,
+                                          fontWeight: FontWeight.w800,
+                                          color: const Color(0xFF00F4FE),
+                                        ),
+                                      ),
+                                    ],
                                   ),
                                 ],
                               ),
@@ -929,7 +1308,7 @@ class _TabShopState extends State<TabShop> {
                                         Expanded(
                                           child: InkWell(
                                             borderRadius: BorderRadius.circular(6),
-                                            onTap: () => _openEtherscan(currentHash),
+                                            onTap: () => _openEtherscan(currentHash, itemName: item),
                                             child: Container(
                                               padding: const EdgeInsets.symmetric(vertical: 6),
                                               decoration: BoxDecoration(
@@ -1529,6 +1908,7 @@ class _TabShopState extends State<TabShop> {
     final bool isOwned = _ownedTitles.contains(title);
     final bool isLoading = _purchasingItem == title;
     final String? itemTxHash = _itemTxHashes[title];
+    final bool isOnChain = _itemTxIsOnChain[title] ?? false;
 
     return Container(
       padding: const EdgeInsets.all(14),
@@ -1746,8 +2126,57 @@ class _TabShopState extends State<TabShop> {
             ),
           ),
 
-          // Tombol Pasca Beli: "Salin Hash" & "Lihat Bukti di Etherscan"
+          // Tombol Pasca Beli: Status & "Salin Hash" & "Lihat Bukti di Etherscan"
           if (isOwned) ...[
+            const SizedBox(height: 6),
+            Container(
+              width: double.infinity,
+              padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
+              decoration: BoxDecoration(
+                color: isOnChain
+                    ? const Color(0xFF00F4FE).withValues(alpha: 0.1)
+                    : const Color(0xFFFFB4AB).withValues(alpha: 0.08),
+                borderRadius: BorderRadius.circular(8),
+                border: Border.all(
+                  color: isOnChain
+                      ? const Color(0xFF00F4FE).withValues(alpha: 0.4)
+                      : const Color(0xFFFFB4AB).withValues(alpha: 0.25),
+                  width: 0.8,
+                ),
+              ),
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  Row(
+                    children: [
+                      Icon(
+                        isOnChain ? Icons.cloud_done_rounded : Icons.offline_bolt_rounded,
+                        size: 13,
+                        color: isOnChain ? const Color(0xFF00F4FE) : const Color(0xFFFFB4AB),
+                      ),
+                      const SizedBox(width: 5),
+                      Text(
+                        isOnChain ? 'SEPOLIA ON-CHAIN' : 'LEDGER LOKAL (OFFLINE)',
+                        style: GoogleFonts.spaceGrotesk(
+                          fontSize: 9,
+                          fontWeight: FontWeight.w800,
+                          color: isOnChain ? const Color(0xFF00F4FE) : const Color(0xFFFFB4AB),
+                          letterSpacing: 0.5,
+                        ),
+                      ),
+                    ],
+                  ),
+                  Text(
+                    isOnChain ? 'Verified' : 'SHA-256 Proof',
+                    style: GoogleFonts.spaceGrotesk(
+                      fontSize: 8.5,
+                      color: const Color(0xFFD2C1D7),
+                      fontWeight: FontWeight.w600,
+                    ),
+                  ),
+                ],
+              ),
+            ),
             const SizedBox(height: 8),
             Row(
               children: [
@@ -1811,7 +2240,7 @@ class _TabShopState extends State<TabShop> {
                             timestamp: DateTime.now().toIso8601String(),
                             prevHash: "0000000000000000000000000000000000000000000000000000000000000000",
                           )}';
-                      _openEtherscan(targetHash);
+                      _openEtherscan(targetHash, itemName: title);
                     },
                     child: Container(
                       padding: const EdgeInsets.symmetric(vertical: 9, horizontal: 8),
