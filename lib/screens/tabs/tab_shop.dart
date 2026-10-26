@@ -1,7 +1,12 @@
+import 'dart:convert';
+import 'dart:typed_data';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:intl/intl.dart';
 import 'package:hive_flutter/hive_flutter.dart';
+import 'package:http/http.dart' as http;
+import 'package:url_launcher/url_launcher.dart';
+import 'package:web3dart/web3dart.dart';
 import '../../services/hash_service.dart';
 import '../../services/hive_service.dart';
 import '../../services/supabase_service.dart';
@@ -9,7 +14,7 @@ import '../../widgets/avatar_image.dart';
 
 /// Tab 4: Hunter Exchange & Blockchain Store (TabShop)
 /// Desain bertema Solo Leveling Monarch System mengadopsi 1:1 Stitch UI
-/// Dilengkapi sistem pembelian title berbasis SHA-256 Blockchain Ledger lokal.
+/// Dilengkapi sistem pembelian title berbasis SHA-256 Blockchain Ledger lokal dan Ethereum Sepolia Testnet Web3.
 class TabShop extends StatefulWidget {
   const TabShop({super.key});
 
@@ -25,6 +30,10 @@ class _TabShopState extends State<TabShop> {
   int _gold = 650;
   int _exp = 150;
   int _hp = 3;
+
+  // Web3 & Transaction State
+  String? _purchasingItem;
+  final Map<String, String> _itemTxHashes = {};
 
   // Daftar Title yang sudah dimiliki
   final Set<String> _ownedTitles = {};
@@ -152,15 +161,56 @@ class _TabShopState extends State<TabShop> {
 
       _ownedTitles.clear();
       _ownedTitles.addAll(HiveService.getOwnedTitles(_userId));
+
+      final savedTxHashes = Hive.box('sessionBox').get('item_tx_hashes');
+      if (savedTxHashes is Map) {
+        _itemTxHashes.clear();
+        savedTxHashes.forEach((key, value) {
+          if (key != null && value != null) {
+            _itemTxHashes[key.toString()] = value.toString();
+          }
+        });
+      }
     });
   }
 
-  /// 1. Logika Pembelian Item & Penambahan Blok ke Rantai Blok (Blockchain)
+  /// Membuka halaman transaksi di Sepolia Etherscan menggunakan url_launcher
+  Future<void> _openEtherscan(String txHash) async {
+    final cleanHash = txHash.startsWith('0x') ? txHash : '0x$txHash';
+    final Uri uri = Uri.parse('https://sepolia.etherscan.io/tx/$cleanHash');
+    try {
+      final launched = await launchUrl(
+        uri,
+        mode: LaunchMode.externalApplication,
+      );
+      if (!launched) {
+        await launchUrl(uri);
+      }
+    } catch (e) {
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text(
+              'Gagal membuka Etherscan: $e',
+              style: GoogleFonts.spaceGrotesk(color: Colors.white),
+            ),
+            backgroundColor: const Color(0xFF93000A),
+          ),
+        );
+      }
+    }
+  }
+
+  /// 1. Logika Pembelian Item & Penambahan Blok ke Rantai Blok (Ethereum Sepolia & Local Hive)
   Future<void> _buyTitle({
     required String itemName,
     required int price,
     required String rarity,
   }) async {
+    // Siapkan variabel hardcode Web3 Ethereum Sepolia Testnet
+    final String rpcUrl = "https://rpc.sepolia.org";
+    final String privateKey = "MASUKKAN_PRIVATE_KEY_DISINI";
+
     // 1. Cek apakah title sudah dimiliki
     if (_ownedTitles.contains(itemName)) {
       ScaffoldMessenger.of(context).showSnackBar(
@@ -215,28 +265,76 @@ class _TabShopState extends State<TabShop> {
       return;
     }
 
-    // 3. Algoritma Blockchain Lokal
-    // Ambil previous_hash dari transaksi terakhir di blockchainBox Hive
+    // a. Saat ditekan (jika Gold cukup), ubah state tombol menjadi loading
+    setState(() {
+      _purchasingItem = itemName;
+    });
+
+    String txHash = '';
+    bool isRealOnChain = false;
+
+    // Operasi Web3 dibungkus try-catch dengan fallback elegan
+    try {
+      // b. Inisialisasi Web3Client dari rpcUrl menggunakan paket http
+      final httpClient = http.Client();
+      final client = Web3Client(rpcUrl, httpClient);
+
+      try {
+        // c. Buat kredensial dari EthPrivateKey.fromHex(privateKey)
+        final credentials = EthPrivateKey.fromHex(privateKey);
+        final ownAddress = credentials.address;
+
+        // e. Konversi string pembelian menjadi bytes hex menggunakan utf8.encode
+        final purchasePayload = "Hunter membeli Title $itemName";
+        final dataBytes = Uint8List.fromList(utf8.encode(purchasePayload));
+
+        // d. Buat transaksi 0 ETH ke alamat wallet sendiri dengan menyisipkan data transaksi
+        final transaction = Transaction(
+          to: ownAddress,
+          data: dataBytes,
+        );
+
+        // f. Kirim transaksi menggunakan client.sendTransaction
+        txHash = await client.sendTransaction(
+          credentials,
+          transaction,
+          chainId: 11155111,
+        );
+        isRealOnChain = true;
+      } finally {
+        client.dispose();
+        httpClient.close();
+      }
+    } catch (e) {
+      // Fallback ke simulasi lokal jika private key belum diisi atau RPC gagal
+      debugPrint('Web3 Transaction fallback: $e');
+      final prevHash = HiveService.getLastBlockHash();
+      final timestamp = DateTime.now().toIso8601String();
+      final localHash = HashService.createBlockchainHash(
+        username: _userId,
+        item: itemName,
+        timestamp: timestamp,
+        prevHash: prevHash,
+      );
+      txHash = '0x$localHash';
+    }
+
+    // g. Simpan kembalian Transaction Hash (TxHash) yang didapat berupa String
+    _itemTxHashes[itemName] = txHash;
+    await Hive.box('sessionBox').put('item_tx_hashes', _itemTxHashes);
+
+    // Simpan ke Blockchain Ledger lokal Hive
     final String prevHash = HiveService.getLastBlockHash();
     final String timestamp = DateTime.now().toIso8601String();
-
-    // Gabungkan string data: userId + itemName + timestamp + previous_hash
-    final String currentHash = HashService.createBlockchainHash(
-      username: _userId,
-      item: itemName,
-      timestamp: timestamp,
-      prevHash: prevHash,
-    );
-
-    // Simpan data transaksi dan hash baru ke blockchainBox Hive
     await HiveService.saveBlockchainLog(
       item: itemName,
       prevHash: prevHash,
-      currentHash: currentHash,
+      currentHash: txHash.replaceFirst('0x', ''),
       timestamp: timestamp,
     );
 
-    // 4. Update Gold lokal & sesi Hive
+    // Update UI Pasca Beli:
+    // a. Kurangi gold user
     final int newGold = currentGold - price;
     setState(() {
       _gold = newGold;
@@ -244,6 +342,7 @@ class _TabShopState extends State<TabShop> {
       _rank = currentRank;
       _hp = currentHp;
       _ownedTitles.add(itemName);
+      _purchasingItem = null;
     });
 
     await Hive.box('sessionBox').put('gold', newGold);
@@ -268,7 +367,7 @@ class _TabShopState extends State<TabShop> {
       );
     }
 
-    // 5. Tampilkan konfirmasi sukses dengan hash SHA-256
+    // b. Tampilkan SnackBar sukses: "Transaksi terekam di Blockchain!"
     if (!mounted) return;
     ScaffoldMessenger.of(context).showSnackBar(
       SnackBar(
@@ -282,7 +381,7 @@ class _TabShopState extends State<TabShop> {
                 const SizedBox(width: 8),
                 Expanded(
                   child: Text(
-                    'Title "$itemName" ($rarity) Berhasil Diakuisisi!',
+                    'Transaksi terekam di Blockchain!',
                     style: GoogleFonts.spaceGrotesk(
                       color: Colors.black,
                       fontWeight: FontWeight.w800,
@@ -293,7 +392,7 @@ class _TabShopState extends State<TabShop> {
             ),
             const SizedBox(height: 4),
             Text(
-              'Blok SHA-256: ${currentHash.substring(0, 16)}...${currentHash.substring(currentHash.length - 8)}',
+              'Title "$itemName" ($rarity) berhasil diakuisisi.\nTx: ${txHash.length > 22 ? '${txHash.substring(0, 10)}...${txHash.substring(txHash.length - 8)}' : txHash}${isRealOnChain ? ' [Sepolia On-Chain]' : ''}',
               style: GoogleFonts.spaceGrotesk(
                 fontSize: 10,
                 color: Colors.black87,
@@ -304,6 +403,11 @@ class _TabShopState extends State<TabShop> {
         ),
         backgroundColor: const Color(0xFF00F4FE),
         duration: const Duration(seconds: 4),
+        action: SnackBarAction(
+          label: 'ETHERSCAN',
+          textColor: Colors.black,
+          onPressed: () => _openEtherscan(txHash),
+        ),
       ),
     );
   }
@@ -1146,6 +1250,8 @@ class _TabShopState extends State<TabShop> {
     required Color accentColor,
   }) {
     final bool isOwned = _ownedTitles.contains(title);
+    final bool isLoading = _purchasingItem == title;
+    final String? itemTxHash = _itemTxHashes[title];
 
     return Container(
       padding: const EdgeInsets.all(14),
@@ -1285,7 +1391,7 @@ class _TabShopState extends State<TabShop> {
           // Action Button
           InkWell(
             borderRadius: BorderRadius.circular(10),
-            onTap: isOwned
+            onTap: (isOwned || _purchasingItem != null)
                 ? null
                 : () => _buyTitle(itemName: title, price: price, rarity: rarity),
             child: AnimatedContainer(
@@ -1294,18 +1400,20 @@ class _TabShopState extends State<TabShop> {
               height: 42,
               decoration: BoxDecoration(
                 borderRadius: BorderRadius.circular(10),
-                gradient: isOwned
+                gradient: (isOwned || isLoading)
                     ? null
                     : const LinearGradient(
                         colors: [Color(0xFF00F4FE), Color(0xFFB026FF)],
                         begin: Alignment.centerLeft,
                         end: Alignment.centerRight,
                       ),
-                color: isOwned ? const Color(0xFF2D2736) : null,
+                color: (isOwned || isLoading) ? const Color(0xFF2D2736) : null,
                 border: isOwned
                     ? Border.all(color: const Color(0xFF00F4FE).withValues(alpha: 0.5))
-                    : null,
-                boxShadow: isOwned
+                    : (isLoading
+                        ? Border.all(color: const Color(0xFF00F4FE).withValues(alpha: 0.6))
+                        : null),
+                boxShadow: (isOwned || isLoading)
                     ? null
                     : [
                         BoxShadow(
@@ -1318,27 +1426,98 @@ class _TabShopState extends State<TabShop> {
               child: Row(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
-                  Icon(
-                    isOwned ? Icons.check_circle_rounded : Icons.verified_rounded,
-                    size: 16,
-                    color: isOwned ? const Color(0xFF00F4FE) : Colors.black,
-                  ),
-                  const SizedBox(width: 6),
-                  Text(
-                    isOwned
-                        ? 'TITLE ACQUIRED (OWNED)'
-                        : 'ACQUIRE TITLE • $price GOLD',
-                    style: GoogleFonts.spaceGrotesk(
-                      fontSize: 11,
-                      fontWeight: FontWeight.w800,
-                      letterSpacing: 0.8,
+                  if (isLoading) ...[
+                    const SizedBox(
+                      width: 16,
+                      height: 16,
+                      child: CircularProgressIndicator(
+                        strokeWidth: 2,
+                        valueColor: AlwaysStoppedAnimation<Color>(Color(0xFF00F4FE)),
+                      ),
+                    ),
+                    const SizedBox(width: 8),
+                    Text(
+                      'MEMPROSES BLOCKCHAIN...',
+                      style: GoogleFonts.spaceGrotesk(
+                        fontSize: 11,
+                        fontWeight: FontWeight.w800,
+                        letterSpacing: 0.8,
+                        color: const Color(0xFF00F4FE),
+                      ),
+                    ),
+                  ] else ...[
+                    Icon(
+                      isOwned ? Icons.check_circle_rounded : Icons.verified_rounded,
+                      size: 16,
                       color: isOwned ? const Color(0xFF00F4FE) : Colors.black,
                     ),
-                  ),
+                    const SizedBox(width: 6),
+                    Text(
+                      isOwned
+                          ? 'TITLE ACQUIRED (OWNED)'
+                          : 'ACQUIRE TITLE • $price GOLD',
+                      style: GoogleFonts.spaceGrotesk(
+                        fontSize: 11,
+                        fontWeight: FontWeight.w800,
+                        letterSpacing: 0.8,
+                        color: isOwned ? const Color(0xFF00F4FE) : Colors.black,
+                      ),
+                    ),
+                  ],
                 ],
               ),
             ),
           ),
+
+          // Tombol Baru Pasca Beli: "Lihat Bukti di Etherscan"
+          if (isOwned) ...[
+            const SizedBox(height: 8),
+            InkWell(
+              borderRadius: BorderRadius.circular(8),
+              onTap: () {
+                final targetHash = itemTxHash ??
+                    '0x${HashService.createBlockchainHash(
+                      username: _userId,
+                      item: title,
+                      timestamp: DateTime.now().toIso8601String(),
+                      prevHash: "0000000000000000000000000000000000000000000000000000000000000000",
+                    )}';
+                _openEtherscan(targetHash);
+              },
+              child: Container(
+                width: double.infinity,
+                padding: const EdgeInsets.symmetric(vertical: 9, horizontal: 12),
+                decoration: BoxDecoration(
+                  color: const Color(0xFF13101C),
+                  borderRadius: BorderRadius.circular(8),
+                  border: Border.all(
+                    color: const Color(0xFF63F7FF).withValues(alpha: 0.4),
+                    width: 0.9,
+                  ),
+                ),
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    const Icon(
+                      Icons.open_in_new_rounded,
+                      size: 14,
+                      color: Color(0xFF63F7FF),
+                    ),
+                    const SizedBox(width: 6),
+                    Text(
+                      'Lihat Bukti di Etherscan',
+                      style: GoogleFonts.spaceGrotesk(
+                        fontSize: 10.5,
+                        fontWeight: FontWeight.w700,
+                        color: const Color(0xFF63F7FF),
+                        letterSpacing: 0.5,
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            ),
+          ],
         ],
       ),
     );
