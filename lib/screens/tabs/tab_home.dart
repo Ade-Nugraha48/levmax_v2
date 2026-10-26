@@ -9,6 +9,7 @@ import '../../services/alarm_service.dart';
 import '../../services/hive_service.dart';
 import '../../services/notif_service.dart';
 import '../../services/supabase_service.dart';
+import '../../services/gemini_service.dart';
 import '../features/appearance_quest_screen.dart';
 import '../features/chat_ai_screen.dart';
 import '../features/quest_sensor.dart';
@@ -536,6 +537,11 @@ class _TabHomeState extends State<TabHome> {
                   const SizedBox(height: 8),
 
                   _buildQuestList(),
+
+                  const SizedBox(height: 12),
+
+                  // 5.1 Tombol LLM Hidden Quest Generator
+                  _buildScanHiddenDungeonButton(),
 
                   const SizedBox(height: 14),
 
@@ -1645,6 +1651,375 @@ class _TabHomeState extends State<TabHome> {
           ),
         );
       }).toList(),
+    );
+  }
+
+  /// Tombol Scan Hidden Dungeon berbasis Gemini LLM
+  Widget _buildScanHiddenDungeonButton() {
+    return Container(
+      decoration: BoxDecoration(
+        borderRadius: BorderRadius.circular(16),
+        gradient: const LinearGradient(
+          colors: [
+            Color(0xFF28071E),
+            Color(0xFF1E0A2D),
+          ],
+          begin: Alignment.topLeft,
+          end: Alignment.bottomRight,
+        ),
+        border: Border.all(
+          color: const Color(0xFFFF0055).withValues(alpha: 0.8),
+          width: 1.5,
+        ),
+        boxShadow: [
+          BoxShadow(
+            color: const Color(0xFFFF0055).withValues(alpha: 0.28),
+            blurRadius: 16,
+            spreadRadius: 1,
+            offset: const Offset(0, 3),
+          ),
+          BoxShadow(
+            color: const Color(0xFFB026FF).withValues(alpha: 0.2),
+            blurRadius: 22,
+          ),
+        ],
+      ),
+      child: Material(
+        color: Colors.transparent,
+        child: InkWell(
+          borderRadius: BorderRadius.circular(16),
+          onTap: _handleScanHiddenDungeon,
+          splashColor: const Color(0xFFFF0055).withValues(alpha: 0.25),
+          highlightColor: const Color(0xFFB026FF).withValues(alpha: 0.15),
+          child: Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
+            child: Row(
+              children: [
+                // Neon Red / Purple Orbital Radar Icon
+                Container(
+                  width: 44,
+                  height: 44,
+                  decoration: BoxDecoration(
+                    shape: BoxShape.circle,
+                    gradient: const RadialGradient(
+                      colors: [
+                        Color(0xFFFF0055),
+                        Color(0xFFB026FF),
+                      ],
+                    ),
+                    boxShadow: [
+                      BoxShadow(
+                        color: const Color(0xFFFF0055).withValues(alpha: 0.55),
+                        blurRadius: 12,
+                        spreadRadius: 1,
+                      ),
+                    ],
+                  ),
+                  child: const Icon(
+                    Icons.radar_rounded,
+                    color: Colors.white,
+                    size: 24,
+                  ),
+                ),
+                const SizedBox(width: 14),
+                // Text Column
+                Expanded(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Row(
+                        children: [
+                          Flexible(
+                            child: Text(
+                              'SCAN HIDDEN DUNGEON',
+                              style: GoogleFonts.orbitron(
+                                fontSize: 12.5,
+                                fontWeight: FontWeight.w900,
+                                letterSpacing: 0.8,
+                                color: const Color(0xFFFF2A6D),
+                              ),
+                            ),
+                          ),
+                          const SizedBox(width: 6),
+                          Container(
+                            padding: const EdgeInsets.symmetric(horizontal: 5, vertical: 2),
+                            decoration: BoxDecoration(
+                              color: const Color(0xFFB026FF).withValues(alpha: 0.25),
+                              borderRadius: BorderRadius.circular(4),
+                              border: Border.all(
+                                color: const Color(0xFFB026FF).withValues(alpha: 0.6),
+                                width: 0.8,
+                              ),
+                            ),
+                            child: Text(
+                              'LLM',
+                              style: GoogleFonts.orbitron(
+                                fontSize: 8.5,
+                                fontWeight: FontWeight.w800,
+                                color: const Color(0xFFE5B5FF),
+                              ),
+                            ),
+                          ),
+                        ],
+                      ),
+                      const SizedBox(height: 3),
+                      Text(
+                        'Pindai fluktuasi Mana rahasia menggunakan Gemini AI Engine',
+                        style: GoogleFonts.plusJakartaSans(
+                          fontSize: 10.5,
+                          fontWeight: FontWeight.w500,
+                          color: const Color(0xFFC0B4CE),
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+                const SizedBox(width: 6),
+                const Icon(
+                  Icons.arrow_forward_ios_rounded,
+                  color: Color(0xFFFF2A6D),
+                  size: 15,
+                ),
+              ],
+            ),
+          ),
+        ),
+      ),
+    );
+  }
+
+  /// Handler pemindaian hidden dungeon menggunakan Gemini LLM
+  Future<void> _handleScanHiddenDungeon() async {
+    // 1. Tampilkan dialog loading "Mendeteksi gelombang mana..."
+    showDialog(
+      context: context,
+      barrierDismissible: false,
+      builder: (loadingCtx) {
+        return PopScope(
+          canPop: false,
+          child: Dialog(
+            backgroundColor: Colors.transparent,
+            elevation: 0,
+            child: Container(
+              padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 28),
+              decoration: BoxDecoration(
+                color: const Color(0xFF140D22),
+                borderRadius: BorderRadius.circular(20),
+                border: Border.all(
+                  color: const Color(0xFFFF0055),
+                  width: 1.6,
+                ),
+                boxShadow: [
+                  BoxShadow(
+                    color: const Color(0xFFFF0055).withValues(alpha: 0.35),
+                    blurRadius: 24,
+                    spreadRadius: 2,
+                  ),
+                ],
+              ),
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  const SizedBox(
+                    width: 48,
+                    height: 48,
+                    child: CircularProgressIndicator(
+                      strokeWidth: 3.5,
+                      valueColor: AlwaysStoppedAnimation<Color>(Color(0xFFFF0055)),
+                    ),
+                  ),
+                  const SizedBox(height: 20),
+                  Text(
+                    'MENDETEKSI GELOMBANG MANA...',
+                    textAlign: TextAlign.center,
+                    style: GoogleFonts.orbitron(
+                      fontSize: 12.5,
+                      fontWeight: FontWeight.w800,
+                      letterSpacing: 1.2,
+                      color: const Color(0xFFFF0055),
+                    ),
+                  ),
+                  const SizedBox(height: 8),
+                  Text(
+                    'Menghubungkan ke Gemini LLM Gateway untuk mengurai koordinat dungeon rahasia...',
+                    textAlign: TextAlign.center,
+                    style: GoogleFonts.plusJakartaSans(
+                      fontSize: 11,
+                      color: const Color(0xFFB5A9C2),
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          ),
+        );
+      },
+    );
+
+    try {
+      // 2. Panggil GeminiService.generateHiddenQuest dengan data rank & exp hunter
+      final questText = await GeminiService.generateHiddenQuest(_rank, _currentExp);
+
+      // 3. Tutup dialog loading
+      if (!mounted) return;
+      Navigator.of(context, rootNavigator: true).pop();
+
+      // 4. Tampilkan AlertDialog hasil generate LLM bergaya Solo Leveling
+      _showHiddenQuestResultDialog(questText);
+    } catch (e) {
+      if (!mounted) return;
+      Navigator.of(context, rootNavigator: true).pop();
+      _showHiddenQuestResultDialog('Gagal memindai gelombang mana: $e');
+    }
+  }
+
+  /// Menampilkan dialog hasil generate Hidden Quest dari Gemini LLM
+  void _showHiddenQuestResultDialog(String questText) {
+    showDialog(
+      context: context,
+      builder: (dialogCtx) {
+        return Dialog(
+          backgroundColor: Colors.transparent,
+          insetPadding: const EdgeInsets.symmetric(horizontal: 20, vertical: 24),
+          child: Container(
+            padding: const EdgeInsets.all(22),
+            decoration: BoxDecoration(
+              color: const Color(0xFF140D22),
+              borderRadius: BorderRadius.circular(22),
+              border: Border.all(
+                color: const Color(0xFFFF0055),
+                width: 2.0,
+              ),
+              boxShadow: [
+                BoxShadow(
+                  color: const Color(0xFFFF0055).withValues(alpha: 0.4),
+                  blurRadius: 28,
+                  spreadRadius: 2,
+                ),
+                BoxShadow(
+                  color: const Color(0xFFB026FF).withValues(alpha: 0.25),
+                  blurRadius: 40,
+                ),
+              ],
+            ),
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              crossAxisAlignment: CrossAxisAlignment.stretch,
+              children: [
+                // Header Bar Icon & Title
+                Row(
+                  children: [
+                    Container(
+                      padding: const EdgeInsets.all(8),
+                      decoration: BoxDecoration(
+                        color: const Color(0xFFFF0055).withValues(alpha: 0.15),
+                        borderRadius: BorderRadius.circular(10),
+                        border: Border.all(
+                          color: const Color(0xFFFF0055).withValues(alpha: 0.5),
+                        ),
+                      ),
+                      child: const Icon(
+                        Icons.crisis_alert_rounded,
+                        color: Color(0xFFFF0055),
+                        size: 22,
+                      ),
+                    ),
+                    const SizedBox(width: 12),
+                    Expanded(
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text(
+                            'HIDDEN QUEST DETECTED',
+                            style: GoogleFonts.orbitron(
+                              fontSize: 13,
+                              fontWeight: FontWeight.w900,
+                              letterSpacing: 1.0,
+                              color: const Color(0xFFFF0055),
+                            ),
+                          ),
+                          Text(
+                            'Sistem Peringatan Gerbang Darurat (LLM)',
+                            style: GoogleFonts.plusJakartaSans(
+                              fontSize: 10,
+                              fontWeight: FontWeight.w600,
+                              color: const Color(0xFFE5B5FF),
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                  ],
+                ),
+
+                const SizedBox(height: 14),
+                const Divider(color: Color(0xFF2C1E4E), height: 1),
+                const SizedBox(height: 14),
+
+                // Quest Content Container
+                Container(
+                  constraints: const BoxConstraints(maxHeight: 280),
+                  padding: const EdgeInsets.all(14),
+                  decoration: BoxDecoration(
+                    color: const Color(0xFF1B112B),
+                    borderRadius: BorderRadius.circular(14),
+                    border: Border.all(
+                      color: const Color(0xFFB026FF).withValues(alpha: 0.35),
+                      width: 1.0,
+                    ),
+                  ),
+                  child: SingleChildScrollView(
+                    physics: const BouncingScrollPhysics(),
+                    child: Text(
+                      questText,
+                      style: GoogleFonts.spaceGrotesk(
+                        fontSize: 13,
+                        height: 1.5,
+                        fontWeight: FontWeight.w600,
+                        color: const Color(0xFFF3EFF5),
+                      ),
+                    ),
+                  ),
+                ),
+
+                const SizedBox(height: 20),
+
+                // Tombol TUTUP
+                SizedBox(
+                  height: 46,
+                  child: ElevatedButton(
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: const Color(0xFFFF0055),
+                      foregroundColor: Colors.white,
+                      elevation: 6,
+                      shadowColor: const Color(0xFFFF0055).withValues(alpha: 0.5),
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(12),
+                      ),
+                    ),
+                    onPressed: () => Navigator.pop(dialogCtx),
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        const Icon(Icons.check_circle_outline_rounded, size: 18),
+                        const SizedBox(width: 8),
+                        Text(
+                          'TUTUP',
+                          style: GoogleFonts.orbitron(
+                            fontSize: 12,
+                            fontWeight: FontWeight.w800,
+                            letterSpacing: 1.0,
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                ),
+              ],
+            ),
+          ),
+        );
+      },
     );
   }
 

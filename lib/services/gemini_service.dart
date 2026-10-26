@@ -71,4 +71,35 @@ PANDUAN & ATURAN UTAMA:
       }
     }
   }
+
+  /// Menghasilkan misi rahasia (Hidden Quest) dramatis ala Solo Leveling menggunakan Gemini LLM
+  static Future<String> generateHiddenQuest(String rank, int exp) async {
+    final prompt =
+        'Buatkan satu deskripsi misi rahasia (Hidden Quest) bernada dramatis dan epik ala Solo Leveling untuk hunter dengan Rank $rank dan EXP $exp. Maksimal 3 kalimat saja. Berikan judul misi di awal dengan format [JUDUL MISI].';
+
+    try {
+      final response = await _model.generateContent([Content.text(prompt)]);
+      final text = response.text?.trim();
+      if (text != null && text.isNotEmpty) {
+        return text;
+      }
+      return 'Tidak ada respons dari Gemini LLM.';
+    } catch (e) {
+      // Fallback ke model gemini-3.5-flash jika model utama mengalami kendala
+      try {
+        final fallbackModel = _createModel('gemini-3.5-flash', _currentPrompt);
+        final fallbackResponse = await fallbackModel.generateContent([Content.text(prompt)]);
+        final text = fallbackResponse.text?.trim();
+        if (text != null && text.isNotEmpty) {
+          return text;
+        }
+      } catch (_) {}
+
+      // Fallback naratif darurat Solo Leveling jika koneksi gagal atau kuota terlampaui
+      return '[PENALTY ZONE: THE SHADOW TRIAL]\n'
+          'Peringatan Darurat: Gelombang Mana abnormal terdeteksi di koordinat terlarang! '
+          'Sebagai Hunter $rank dengan $exp EXP, Anda diperintahkan menembus kabut abyss dan memusnahkan Shadow Monarch Minion sebelum gerbang dimensional runtuh. '
+          'Selesaikan quest ini sekarang atau bersiaplah menghadapi penalti mutlak dari Sang Sistem!';
+    }
+  }
 }
