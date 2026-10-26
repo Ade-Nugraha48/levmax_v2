@@ -26,7 +26,7 @@ lib/
 │   │   ├── tab_home.dart      # Tab 1: Dashboard, Daftar Quest, Waktu Server
 │   │   ├── tab_map.dart       # Tab 2: LBS (flutter_map & geolocator)
 │   │   ├── tab_game.dart      # Tab 3: Mini Game Gyroscope
-│   │   ├── tab_shop.dart      # Tab 4: Shop Item, Konversi Mata Uang, Log Blockchain
+│   │   ├── tab_shop.dart      # Tab 4: Shop Item, Valuasi Valas Real-time, Web3 Sepolia Testnet Blockchain
 │   │   └── tab_profile.dart   # Tab 5: Profil, Kesan Pesan Matkul, Logout
 │   │
 │   └── features/              # Halaman UI tambahan yang dipanggil dari Tab
@@ -36,9 +36,9 @@ lib/
 ├── services/                  # Logika Bisnis & Koneksi (Tidak boleh ada UI di sini)
 │   ├── supabase_service.dart  # Fungsi CRUD ke Supabase (Auth, Update EXP/Gold, Insert Feedback)
 │   ├── hive_service.dart      # Fungsi simpan/ambil Session Login dan Log Blockchain
-│   ├── gemini_service.dart    # Pemanggilan API Google Generative AI
+│   ├── gemini_service.dart    # Pemanggilan API Google Generative AI (Chat AI & Hidden Quest Generator)
 │   ├── notif_service.dart     # Logika flutter_local_notifications
-│   └── hash_service.dart      # Algoritma crypto (SHA-256) untuk Password & Blockchain
+│   └── hash_service.dart      # Algoritma crypto (SHA-256) untuk Enkripsi Password Client
 │
 └── utils/                     # Konstanta, Helper, dan Tema
     └── constants.dart         # Warna (Hitam/Hijau), Ukuran, TextStyles standar aplikasi

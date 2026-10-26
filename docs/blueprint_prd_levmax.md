@@ -14,9 +14,11 @@
 - **Maps / LBS:** `flutter_map` (OpenStreetMap) + `geolocator`
 - **Biometric:** `local_auth`
 - **Sensors:** `sensors_plus` (Accelerometer & Gyroscope)
-- **AI/LLM:** `google_generative_ai` (Gemini API)
+- **AI/LLM:** `google_generative_ai` (Gemini API untuk Chat AI & Hidden Quest Generator)
+- **Blockchain Web3:** `web3dart`, `http`, `url_launcher` (Ethereum Sepolia Testnet on-chain)
+- **Valas Real-Time:** API Open Exchange Rates (`https://open.er-api.com/v6/latest/USD`)
 - **Notifikasi:** `flutter_local_notifications`
-- **Keamanan (Hashing):** `crypto` (untuk hashing password manual & Blockchain SHA-256)
+- **Keamanan (Hashing):** `crypto` (untuk hashing password manual SHA-256)
 
 ## 3. Struktur Database
 ### 3.1 Hive (Local Storage)
@@ -64,6 +66,7 @@ Terdiri dari 5 Tab Menu Utama:
 - **Daftar Quest (ListTile / Card):**
   - **Quest Biasa:** Checkbox mandiri (Self-report). Jika dicentang, `setState` tambah EXP dan Gold.
   - **Quest Sensor (Syarat Accelerometer):** Quest "Cardio Shake". Ketika diklik, buka pop-up. User harus mengocok HP 50 kali (menggunakan package `sensors_plus` accelerometer). Jika terpenuhi, quest selesai otomatis.
+  - **Fitur LLM Hidden Quest Generator:** Tombol "SCAN HIDDEN DUNGEON" berdesain neon di bawah daftar quest harian. Memanggil Gemini Generative AI secara dinamis berdasarkan Rank dan EXP Hunter untuk menghasilkan narasi misi rahasia Solo Leveling maksimal 3 kalimat `[JUDUL MISI]`.
 - **Floating Action Button (AI LLM & Notifikasi):**
   - **Tombol Chat (Kanan Bawah):** Membuka modal/halaman baru untuk *Chat AI*. Menggunakan Gemini API dengan *System Prompt*: "Kamu adalah asisten LevMax. Berikan jawaban singkat terkait tips pengembangan diri, olahraga, dan nutrisi."
   - **Tombol Alarm/Notifikasi (Kiri Bawah):** Memicu `flutter_local_notifications` untuk mengirim push notification lokal "Waktunya menyelesaikan quest harian Anda!".
@@ -82,14 +85,16 @@ Terdiri dari 5 Tab Menu Utama:
 - **Goal:** Menjaga bola berada di area tengah (zona hijau) selama 5 detik penuh. 
 - **Reward:** Jika menang mendapat 100 Gold (Cukup batasi dengan state boolean `hasPlayedToday` = true).
 
-#### Tab 4: Shop & Konversi & Blockchain
-- **Toko Item:** Daftar "Title" atau "Border" profil (contoh: Title 'Awakened', 'Hunter', dll) yang bisa dibeli dengan Gold.
-- **Syarat Konversi Mata Uang:** 
-  - Di bagian bawah layar, terdapat Card informasi: *"Top Up Gold Rate hari ini: 100 Gold = Rp 15.000 | $1.00 USD | €0.95 EUR"*. (Bisa hardcode atau hitung dari base rate).
-- **Syarat Blockchain Sederhana:**
-  - Setiap pembelian Title/Item di-klik, sistem memicu fungsi pencatatan *Ledger*.
-  - **Algoritma:** Ambil `previous_hash` dari transaksi terakhir di Hive. Buat string `data = "$userId-$itemName-$timestamp-$previous_hash"`. Lakukan hashing SHA-256 menggunakan package `crypto`. Simpan `current_hash` ke Hive.
-  - **Tampilan:** Sediakan tombol "Lihat Log Transaksi Blockchain" yang memunculkan BottomSheet berisi list *hash* transaksi sebagai bukti integritas data (hanya list teks String hash yang panjang).
+#### Tab 4: Shop, Valuasi Valas Real-Time & Blockchain Web3
+- **Toko Item:** Daftar Title prestise Hunter (*Shadow Monarch*, *Demon Slayer*, *Necromancer*, *Monarch King*) yang dibeli menggunakan Gold dan terekam on-chain.
+- **Valuasi Kurs Valas Real-Time:** 
+  - Card Hunter Exchange yang terhubung langsung ke API `https://open.er-api.com/v6/latest/USD`.
+  - Mengonversi saldo Hunter ke IDR (Rupiah), USD (Dollar), dan EUR (Euro) secara live, disertai modal kalkulator konversi interaktif.
+- **Public Blockchain Ethereum Sepolia Testnet:**
+  - Setiap pembelian Title ditandatangani menggunakan Private Key pengguna melalui package `web3dart` dan disiarkan ke jaringan publik Ethereum Sepolia (Chain ID 11155111).
+  - Menyisipkan data payload pembelian ke blockchain dan mengonsumsi Sepolia Gas Fee.
+  - **Verifikasi 100% Full Online di Etherscan:** Tombol *"Lihat Bukti di Etherscan"* membuka transaksi asli publik di `https://sepolia.etherscan.io/tx/<hash>` dengan status Success. Seluruh pengecekan offline telah dihapus.
+  - **Fitur Penunjang:** Tombol *"Salin Hash"*, Blockchain Ledger berstatus `SEPOLIA ONLINE`, dan tombol *"RESET"* inventori untuk kemudahan pengujian.
 
 #### Tab 5: Profile (Kesan Matkul & Logout)
 - **Visual:** Foto Profil (bisa pakai `image_picker` atau avatar default asset).

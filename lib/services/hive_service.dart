@@ -60,10 +60,6 @@ class HiveService {
     final userId = box.get('userId')?.toString() ?? 'anonymous';
     final username = box.get('username')?.toString();
     int gold = (box.get('gold', defaultValue: 0) as num).toInt();
-    if (username?.toLowerCase() == 'hunter_sung' && gold < 10000) {
-      gold = 10000;
-      box.put('gold', 10000);
-    }
     return {
       'isLoggedIn': box.get('isLoggedIn', defaultValue: false) as bool,
       'userId': userId,

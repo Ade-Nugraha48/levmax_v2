@@ -166,23 +166,11 @@ class _TabShopState extends State<TabShop> {
       Hive.box('sessionBox').put('sepolia_private_key', '6c318245963e51c5e4730b2485c54900a0ec0f8f18b8b7022538702a5b8d7660');
     }
 
-    // Auto-reset inventori pembelian jika belum di-reset untuk wallet baru
-    final bool hasReset = Hive.box('sessionBox').get('has_reset_purchases_v3', defaultValue: false) as bool;
-    if (!hasReset) {
-      _executeResetPurchases(silent: true);
-      Hive.box('sessionBox').put('has_reset_purchases_v3', true);
-      return;
-    }
-
     setState(() {
       _userId = session['userId']?.toString() ?? 'anonymous';
       _username = session['username']?.toString() ?? 'HUNTER SUNG';
       _rank = session['rank']?.toString() ?? 'RANK S';
       _gold = (session['gold'] as int?) ?? 650;
-      if (_username.toLowerCase() == 'hunter_sung' && _gold < 10000) {
-        _gold = 10000;
-        Hive.box('sessionBox').put('gold', 10000);
-      }
       _exp = (session['exp'] as int?) ?? 150;
       _hp = (session['hp'] as int?) ?? 3;
 

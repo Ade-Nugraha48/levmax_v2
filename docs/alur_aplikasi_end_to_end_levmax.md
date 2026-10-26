@@ -34,14 +34,16 @@ flowchart TD
     Tab1 -->|Kerjakan Quest Biasa| AddEXP1[+EXP & +Gold]
     Tab1 -->|Quest Sensor 1: Shake HP 50x| AddEXP2[+20 EXP & +15 Gold]
     Tab1 -->|Konsultasi AI Gemini| AIChat[Chat Saran Workout/Nutrisi]
+    Tab1 -->|Scan Hidden Dungeon| LLMQuest[Hidden Quest Generator via Gemini]
     Tab1 -->|Set Alarm Notifikasi| TriggerNotif[Notifikasi Lokal Aktif]
 
     Tab2 -->|GPS < 100m dari Marker Kampus| ClaimPortal[Klaim Titik Portal +50 EXP & +100 Gold]
     
     Tab3 -->|Sensor Gyroscope: Tahan 5 Detik| WinGame[Menang Mini Game +50 Gold]
     
-    Tab4 -->|Cek Kurs Uang & Beli Title| BuyItem[Beli Title Hunter]
-    BuyItem --> GenBlock[Generate Hash SHA-256 Berantai & Simpan di Hive]
+    Tab4 -->|Cek Kurs Valas Real-Time| LiveForex[Kurs IDR/USD/EUR via API]
+    Tab4 -->|Beli Title Hunter| Web3Tx[Transaksi On-Chain Ethereum Sepolia via Web3dart]
+    Web3Tx --> EtherscanProof[Verifikasi Full Online di Etherscan Sepolia]
 
     %% Puncak Rank S
     AddEXP1 & AddEXP2 & ClaimPortal --> CheckEXP{Total EXP >= 2500?}
@@ -103,6 +105,10 @@ flowchart TD
    * Pengguna menekan tombol FAB Chat AI di kanan bawah (`chat_ai_screen.dart`).
    * Pengguna mengirim prompt: *"Bagaimana cara cepat mencapai Rank S dari Rank F?"*.
    * LLM Gemini dengan *System Persona Hunter Guide* memberikan panduan nutrisi, jadwal workout, dan prioritas quest.
+5. **Mendeteksi Misi Rahasia (LLM Hidden Quest Generator):**
+   * Di bawah daftar Quest Harian, terdapat tombol neon merah/ungu: **"SCAN HIDDEN DUNGEON"**.
+   * Ketika ditekan, fungsi `generateHiddenQuest(rank, exp)` di `gemini_service.dart` memicu Gemini LLM dengan prompt dinamis yang mengolah Rank dan EXP saat ini.
+   * LLM membalas berupa 1 narasi misi rahasia epik dan dramatis ala *Solo Leveling* berformat `[JUDUL MISI]` maksimal 3 kalimat tanpa menyebutkan istilah teknis AI di antarmuka pengguna agar tetap imersif.
 
 ---
 
@@ -153,21 +159,24 @@ flowchart TD
 
 ---
 
-### FASE 6: Shop, Konversi Mata Uang, dan Transaksi Blockchain (Tab 4 - Shop)
-1. **Memeriksa Kurs Mata Uang Dunia Nyata:**
-   * Di bagian atas layar Shop terdapat konversi kurs:
-     $$\text{100 Gold} = \text{Rp 15.000 (IDR)} \mid \$1.00\text{ (USD)} \mid €0.95\text{ (EUR)}$$
-   * Pengguna dapat mencoba kalkulator interaktif untuk menghitung valuasi Gold yang telah dikumpulkan.
-2. **Membeli Title Hunter Eksklusif:**
-   * Pengguna memiliki cukup Gold dan memilih membeli item prestise: **"Title: Shadow Monarch"** (300 Gold).
-3. **Pencatatan Transaksi ke Blockchain Lokal:**
-   * Sistem mengambil hash transaksi terakhir dari Hive `blockchainBox`.
-   * Sistem membuat string blok baru:
-     $$\text{Data} = \text{userId} + \text{"Title: Shadow Monarch"} + \text{timestamp} + \text{previous\_hash}$$
-   * Hash baru dihitung dengan `SHA-256` dan disimpan secara permanen di Hive.
-4. **Verifikasi Integritas Data (Ledger Explorer):**
-   * Pengguna menekan tombol **"Lihat Log Transaksi Blockchain"**.
-   * Muncul Bottom Sheet yang menampilkan riwayat hash berantai panjang (bukti bahwa transaksi telah tercatat secara desentralistik di penyimpanan lokal).
+### FASE 6: Shop, Valuasi Valas Real-Time, dan Transaksi Blockchain Web3 (Tab 4 - Shop)
+1. **Memeriksa Kurs Valuta Asing Real-Time:**
+   * Di bagian atas layar Shop terdapat Card Valuasi Hunter Exchange yang tersambung ke API publik (`https://open.er-api.com/v6/latest/USD`).
+   * Menampilkan konversi saldo Hunter secara live ke dalam **IDR (Rupiah)**, **USD (Dollar AS)**, dan **EUR (Euro)**.
+   * Dilengkapi kalkulator konversi interaktif untuk simulasi nilai konversi Gold kustom secara dinamis.
+2. **Membeli Title Hunter Eksklusif On-Chain:**
+   * Pengguna memilih salah satu Title eksklusif: **"Shadow Monarch"**, **"Demon Slayer"**, **"Necromancer"**, atau **"Monarch King"**.
+3. **Pencatatan Transaksi On-Chain (Ethereum Sepolia Testnet):**
+   * Transaksi ditandatangani menggunakan Private Key pengguna melalui package `web3dart`.
+   * Sistem menghubungkan client ke jaringan publik Ethereum Sepolia (Chain ID 11155111) dengan failover multi-endpoint RPC publik (`publicnode`, `1rpc`, `drpc`, `sepolia.org`).
+   * Mengirim transaksi 0 ETH ke wallet sendiri dengan menyematkan payload data pembelian title (`utf8.encode`) dan mengonsumsi gas fee testnet.
+   * Transaksi berhasil ditambang (*mined*) secara publik dan mengembalikan *Transaction Hash* asli.
+4. **Verifikasi Integritas 100% Online di Etherscan:**
+   * Pengecekan offline/simulasi telah dieliminasi sepenuhnya.
+   * Pengguna dapat menekan tombol **"Lihat Bukti di Etherscan"** untuk langsung membuka `https://sepolia.etherscan.io/tx/<hash>` di browser dan melihat status **Success** secara publik.
+   * Terdapat tombol **"Salin Hash"** untuk memudahkan copy-paste hash 64-karakter ke explorer luar.
+   * Di dalam Bottom Sheet **Blockchain Ledger**, seluruh riwayat transaksi berantai tercatat dengan status **`SEPOLIA ONLINE`**.
+   * Disediakan tombol **`RESET`** untuk mereset inventori dan data transaksi ke status awal kapan saja bila diperlukan pengujian ulang.
 
 ---
 

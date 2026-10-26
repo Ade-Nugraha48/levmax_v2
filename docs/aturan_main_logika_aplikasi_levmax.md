@@ -56,6 +56,12 @@ Saat kartu quest ini diklik, akan muncul **Modal Bottom Sheet**. User harus menc
 *   **Fokus 30 Menit / Baca Materi:** *Self-reported*. 
 *   *Reward:* +15 EXP, +10 Gold.
 
+### E. Misi Rahasia: Hidden Quest Generator (LLM Gemini)
+*   **Tombol Pemicu:** Tombol neon merah/ungu "SCAN HIDDEN DUNGEON" di bawah daftar quest harian Tab Home.
+*   **Logika Dinamis:** Memanggil fungsi `generateHiddenQuest(rank, exp)` di `gemini_service.dart`. Prompt dibuat dinamis menyesuaikan Rank dan EXP Hunter yang sedang aktif.
+*   **Format Output:** Menghasilkan 1 misi rahasia bernada dramatis dan epik ala *Solo Leveling* maksimal 3 kalimat diawali dengan `[JUDUL MISI]`.
+*   **Atmosfer Game:** UI murni bertema dungeon hunter tanpa menampilkan istilah teknis AI / LLM / Gemini untuk menjaga imersi pengguna.
+
 ## 4. Logika Mini Game (Gyroscope)
 *   **Nama:** Gyro Balancer (Tab 3).
 *   **Aturan:** User memiringkan HP untuk menahan bola di tengah layar selama 5 detik.
@@ -67,9 +73,11 @@ Saat kartu quest ini diklik, akan muncul **Modal Bottom Sheet**. User harus menc
 *   **Mekanisme:** User membuka Tab LBS, menekan tombol "Klaim Titik". Sistem menghitung jarak koordinat user dengan koordinat titik sasaran. Jika jarak < 100 meter, klaim berhasil.
 *   **Reward:** +50 EXP, +100 Gold (Hanya bisa diklaim 1 kali per minggu).
 
-## 6. Logika Konversi & Blockchain (Shop)
+## 6. Logika Konversi & Blockchain Web3 (Shop)
 *   **Konversi Waktu (UI):** Ditampilkan di Dashboard. Jam saat ini dikonversi manual: WIB (UTC+7), WITA (UTC+8), WIT (UTC+9), London (UTC+0).
-*   **Konversi Uang (UI):** Di halaman Shop, 100 Gold disetarakan dengan Rp 15.000 / $1.00 USD (Hanya tampilan teks informasi).
-*   **Sistem Blockchain Sederhana:** Saat user membeli *Title* seharga misalnya 300 Gold, transaksi dicatat.
-    *   Formula Hash: `SHA-256(Username + Nama_Title + Timestamp + Prev_Hash)`.
-    *   Data hash ini disimpan ke *Hive Local Storage* agar memenuhi syarat desentralisasi data lokal dari Dosen.
+*   **Valuasi Mata Uang Real-Time:** Di halaman Shop, kurs diambil secara live dari REST API `https://open.er-api.com/v6/latest/USD`. Saldo Hunter secara dinamis dikonversikan ke IDR, USD, dan EUR serta disediakan modal kalkulator konversi interaktif.
+*   **Sistem Blockchain Web3 On-Chain:**
+    *   Transaksi pembelian title ditandatangani menggunakan Private Key Ethereum pengguna via `web3dart`.
+    *   Transaksi disiarkan ke publik di **Ethereum Sepolia Testnet** (Chain ID 11155111) dengan payload string terenkripsi bytes (`utf8.encode`) dan mengonsumsi saldo Sepolia ETH untuk gas fee.
+    *   **Verifikasi 100% Full Online:** Transaksi terverifikasi langsung secara publik di **Sepolia Etherscan** (`https://sepolia.etherscan.io/tx/<hash>`) dengan status `Success`.
+    *   Seluruh pengecekan offline telah dihapus. Disediakan tombol Salin Hash, status SEPOLIA ONLINE di buku besar lokal Hive, serta tombol Reset Inventori untuk kemudahan pengujian.

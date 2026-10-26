@@ -23,13 +23,13 @@ Dokumen ini mendokumentasikan pemetaan 13 syarat dan ketentuan penilaian mata ku
 | **4** | **Terkoneksi database lokal & online** | **TERPENUHI** | • **Online:** Supabase (tabel `users`, `feedbacks`).<br>• **Lokal:** Hive Box (`sessionBox`, `blockchainBox`). | `supabase_flutter`, `hive_flutter` | `lib/services/supabase_service.dart`<br>`lib/services/hive_service.dart`<br>`lib/main.dart` |
 | **5** | **Web Service/API, Multiplatform & LBS terkait tema** | **TERPENUHI** | • **API:** Supabase REST & Gemini AI API.<br>• **LBS:** Peta OpenStreetMap dengan marker *"Dungeon Portal"* di sekitar kampus, tombol check-in reward jika jarak < 100m. | `flutter_map`, `geolocator`, `latlong2` | `lib/screens/tabs/tab_map.dart` |
 | **6** | **Bottom Navigation (Profil + Gambar, Kesan/Saran, Logout)** | **TERPENUHI** | 5 Tab Menu (IndexedStack). Tab Profile berisi: Avatar RPG, Form Feedback multiline ke Supabase, dan Tombol Logout (reset Hive session). | Native Flutter (`IndexedStack`, `BottomNavigationBar`) | `lib/screens/main_navigation.dart`<br>`lib/screens/tabs/tab_profile.dart` |
-| **7** | **Konversi mata uang (min. 3) & waktu (WIB, WIT, WITA, London)** | **TERPENUHI** | • **Waktu:** Banner Server Time real-time (WIB, WITA, WIT, London GMT).<br>• **Uang:** Kurs & kalkulator Gold ke IDR (Rupiah), USD (Dollar), EUR (Euro). | `intl`, Dart `DateTime` | `lib/screens/tabs/tab_home.dart`<br>`lib/screens/tabs/tab_shop.dart` |
+| **7** | **Konversi mata uang (min. 3) & waktu (WIB, WIT, WITA, London)** | **TERPENUHI** | • **Waktu:** Banner Server Time real-time (WIB, WITA, WIT, London GMT).<br>• **Uang:** Valuasi kurs valas real-time dari API `open.er-api.com` (IDR, USD, EUR) & kalkulator konversi interaktif. | `http`, `intl`, Dart `DateTime` | `lib/screens/tabs/tab_home.dart`<br>`lib/screens/tabs/tab_shop.dart` |
 | **8** | **Minimal 2 sensor sesuai konsep lanjutan** | **TERPENUHI** | 1. **Accelerometer:** Quest "Cardio Shake" (shake HP 50x).<br>2. **Gyroscope:** Mini game "Balance the Mana Core" (tahan bola di tengah 5 detik). | `sensors_plus` | `lib/screens/features/quest_sensor.dart`<br>`lib/screens/tabs/tab_game.dart` |
-| **9** | **Fitur AI / LLM sesuai konsep tema** | **TERPENUHI** | Chatbot "Hunter AI Guide" untuk panduan workout, nutrisi, dan leveling hunter via Gemini Generative AI. | `google_generative_ai` | `lib/screens/features/chat_ai_screen.dart`<br>`lib/services/gemini_service.dart` |
+| **9** | **Fitur AI / LLM sesuai konsep tema** | **TERPENUHI** | 1. **Chatbot "Hunter AI Guide"** (`chat_ai_screen.dart`).<br>2. **LLM "Hidden Quest Generator"** ("SCAN HIDDEN DUNGEON" di `tab_home.dart`) menghasilkan misi rahasia epik dinamis via Gemini API. | `google_generative_ai` | `lib/screens/features/chat_ai_screen.dart`<br>`lib/screens/tabs/tab_home.dart`<br>`lib/services/gemini_service.dart` |
 | **10** | **Mini game sederhana terkait konsep** | **TERPENUHI** | "Gyro Balancer / Balance the Mana Core" melatih fokus mana hunter menggunakan sensor gyroscope berhadiah Gold harian. | `sensors_plus`, Canvas/Container math | `lib/screens/tabs/tab_game.dart` |
 | **11** | **Fasilitas pencarian dan pemilihan** | **TERPENUHI** | Fitur di Tab Home:<br>• **Search:** `TextField` live search nama quest.<br>• **Filter/Select:** `DropdownButton` kategori quest (Workout, Cardio, Appearance, Study). | Native Flutter Widgets | `lib/screens/tabs/tab_home.dart` |
 | **12** | **Notifikasi berbasis mobile sesuai konsep** | **TERPENUHI** | Pengiriman push notification lokal pengingat quest hunter harian agar user tidak terkena pinalti HP/Rank. | `flutter_local_notifications` | `lib/services/notif_service.dart`<br>`lib/screens/tabs/tab_home.dart` |
-| **13** | **Blockchain sederhana** | **TERPENUHI** | Pencatatan transaksi belanja Title/Item di Shop menggunakan algoritma SHA-256 berantai (`prev_hash` + data) disimpan di Hive dan dapat diinspeksi. | `crypto`, `hive` | `lib/screens/tabs/tab_shop.dart`<br>`lib/services/hash_service.dart`<br>`lib/services/hive_service.dart` |
+| **13** | **Blockchain sederhana & Web3** | **TERPENUHI** | Pembelian Title on-chain di **Ethereum Sepolia Testnet** via `web3dart`, ditandatangani private key, tervalidasi 100% online di Etherscan Sepolia (`https://sepolia.etherscan.io/tx/<hash>`), fitur salin hash, dan buku besar lokal Hive. | `web3dart`, `http`, `url_launcher`, `hive` | `lib/screens/tabs/tab_shop.dart`<br>`lib/services/hive_service.dart` |
 
 ---
 
@@ -83,9 +83,12 @@ Dokumen ini mendokumentasikan pemetaan 13 syarat dan ketentuan penilaian mata ku
     * **WIT:** UTC + 9
     * **London (GMT):** UTC + 0
 * **Konversi Mata Uang (Tab Shop):**
-  * Kurs konversi mata uang dalam pembelian Gold:
-    $$\text{100 Gold} \approx \text{Rp 15.000 (IDR)} \approx \$1.00\text{ (USD)} \approx €0.95\text{ (EUR)}$$
-  * Dilengkapi kalkulator konversi interaktif untuk simulasi nilai top up.
+  * Terhubung secara live ke REST API Open Exchange Rates (`https://open.er-api.com/v6/latest/USD`).
+  * Valuasi kekayaan Hunter dihitung secara dinamis dan real-time ke dalam:
+    * **IDR:** Rupiah Indonesia (kurs live)
+    * **USD:** US Dollar (basis valas)
+    * **EUR:** Euro Uni Eropa (kurs live)
+  * Dilengkapi modal kalkulator konversi interaktif dengan opsi preset kustom.
 
 ### Syarat 8 & 10: Sensor (2 Sensor) & Mini Game
 * Menggunakan package resmi `sensors_plus`:
@@ -94,9 +97,9 @@ Dokumen ini mendokumentasikan pemetaan 13 syarat dan ketentuan penilaian mata ku
 * **Optimasi:** Dilengkapi *throttling* pembaruan UI (interval $\ge 100$ms) dan *stream cancellation* pada `dispose()` agar tidak lag di perangkat low-end.
 
 ### Syarat 9: Fitur AI & LLM (Gemini API)
-* Mengintegrasikan package `google_generative_ai`.
-* Modal / layar chat khusus (`chat_ai_screen.dart`).
-* Didukung *System Instruction*: *"Kamu adalah asisten LevMax. Berikan panduan ringkas, padat, dan memotivasi seputar tips olahraga, pembentukan kebiasaan, nutrisi, dan strategi naik rank hunter."*
+* Mengintegrasikan package `google_generative_ai` dengan 2 fitur utama:
+  1. **Chatbot Hunter AI Guide (`chat_ai_screen.dart`):** Layar chat interaktif yang didukung *System Instruction* asisten LevMax seputar kebugaran, pola makan, dan leveling hunter.
+  2. **LLM Hidden Quest Generator (`tab_home.dart`):** Tombol *"SCAN HIDDEN DUNGEON"* yang secara asinkron memicu fungsi `generateHiddenQuest(rank, exp)` di `gemini_service.dart`. Model menghasilkan satu narasi misi rahasia epik Solo Leveling maksimal 3 kalimat berformat `[JUDUL MISI]` disesuaikan dengan Rank dan EXP pemain.
 
 ### Syarat 11: Pencarian & Pemilihan
 * Terletak di Tab Home:
@@ -107,13 +110,13 @@ Dokumen ini mendokumentasikan pemetaan 13 syarat dan ketentuan penilaian mata ku
 * Menggunakan package `flutter_local_notifications`.
 * Tersedia tombol lonceng/alarm di Tab Home yang memicu notifikasi lokal instan / terjadwal dengan pesan pengingat menyelesaikan quest harian hunter.
 
-### Syarat 13: Blockchain Sederhana
-* Mekanisme pencatatan transaksi pembelian item Title di Halaman Shop.
-* Struktur Block:
-  $$\text{Current Hash} = \text{SHA-256}(\text{Username} + \text{ItemName} + \text{Timestamp} + \text{Previous Hash})$$
-* Transaksi pertama berakar pada *Genesis Hash* (`"0000000000000000"`).
-* Setiap blok tersimpan di Hive `blockchainBox`.
-* Pengguna dapat menekan tombol "Lihat Ledger Blockchain" untuk menampilkan riwayat hash transaksi berantai sebagai bukti integritas data.
+### Syarat 13: Blockchain Sederhana & Web3
+* Peningkatan sistem transaksi belanja Title di Halaman Shop ke **Public Blockchain Ethereum Sepolia Testnet**:
+  * Menggunakan package `web3dart`, `http`, dan `url_launcher`.
+  * Transaksi ditandatangani dengan kredensial Ethereum Private Key pengguna dan disiarkan ke jaringan Sepolia publik (Chain ID 11155111).
+  * Payload transaksi pembelian disematkan ke dalam blok melalui data bytes `utf8.encode`.
+  * **Verifikasi 100% Full Online di Sepolia Etherscan:** Tombol *"Lihat Bukti di Etherscan"* membuka transaksi riil di `https://sepolia.etherscan.io/tx/<hash>` yang terkonfirmasi status `Success` (seluruh simulasi offline telah dihilangkan).
+  * Dilengkapi tombol *"Salin Hash"*, Blockchain Ledger berstatus `SEPOLIA ONLINE`, dan tombol *"RESET"* inventori untuk pengujian.
 
 ---
 
