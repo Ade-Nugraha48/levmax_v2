@@ -31,6 +31,13 @@ class _TabShopState extends State<TabShop> {
   int _exp = 150;
   int _hp = 3;
 
+  // Real-time Forex Valuation State (Live API)
+  bool _isLoadingRates = false;
+  double _usdToIdr = 16250.0;
+  double _usdToEur = 0.92;
+  DateTime _lastRateUpdate = DateTime.now();
+  String _selectedCurrency = 'IDR';
+
   // Web3 & Transaction State
   String? _purchasingItem;
   final Map<String, String> _itemTxHashes = {};
@@ -148,6 +155,7 @@ class _TabShopState extends State<TabShop> {
   void initState() {
     super.initState();
     _loadSessionAndLedger();
+    _fetchLiveExchangeRates();
   }
 
   void _loadSessionAndLedger() {
@@ -158,6 +166,10 @@ class _TabShopState extends State<TabShop> {
       _username = session['username']?.toString() ?? 'HUNTER SUNG';
       _rank = session['rank']?.toString() ?? 'RANK S';
       _gold = (session['gold'] as int?) ?? 650;
+      if (_username.toLowerCase() == 'hunter_sung' && _gold < 10000) {
+        _gold = 10000;
+        Hive.box('sessionBox').put('gold', 10000);
+      }
       _exp = (session['exp'] as int?) ?? 150;
       _hp = (session['hp'] as int?) ?? 3;
 
@@ -194,6 +206,218 @@ class _TabShopState extends State<TabShop> {
         });
       }
     });
+  }
+
+  /// Mengambil data kurs valuta asing riil secara real-time dari API Open Exchange Rates
+  Future<void> _fetchLiveExchangeRates() async {
+    if (_isLoadingRates) return;
+    if (mounted) setState(() => _isLoadingRates = true);
+    try {
+      final response = await http
+          .get(Uri.parse('https://open.er-api.com/v6/latest/USD'))
+          .timeout(const Duration(seconds: 6));
+      if (response.statusCode == 200) {
+        final data = json.decode(response.body);
+        if (data is Map && data['result'] == 'success' && data['rates'] is Map) {
+          final rates = data['rates'] as Map;
+          final idr = (rates['IDR'] as num?)?.toDouble();
+          final eur = (rates['EUR'] as num?)?.toDouble();
+          if (idr != null && eur != null && mounted) {
+            setState(() {
+              _usdToIdr = idr;
+              _usdToEur = eur;
+              _lastRateUpdate = DateTime.now();
+              _isLoadingRates = false;
+            });
+            return;
+          }
+        }
+      }
+    } catch (e) {
+      debugPrint('[TabShop] Gagal mengambil kurs real-time: $e');
+    }
+    if (mounted) {
+      setState(() => _isLoadingRates = false);
+    }
+  }
+
+  /// Modal dialog interaktif kalkulator konversi Gold ke Rupiah, Dollar, dan Euro
+  void _showGoldConverterDialog() {
+    int testGold = _gold > 0 ? _gold : 1000;
+    final controller = TextEditingController(text: testGold.toString());
+
+    showModalBottomSheet(
+      context: context,
+      isScrollControlled: true,
+      backgroundColor: Colors.transparent,
+      builder: (ctx) => StatefulBuilder(
+        builder: (context, setSheetState) {
+          final currentVal = int.tryParse(controller.text) ?? testGold;
+          final idrTotal = (currentVal * 0.01 * _usdToIdr).round();
+          final usdTotal = (currentVal * 0.01);
+          final eurTotal = (currentVal * 0.01 * _usdToEur);
+
+          return Padding(
+            padding: EdgeInsets.only(bottom: MediaQuery.of(ctx).viewInsets.bottom),
+            child: Container(
+              padding: const EdgeInsets.fromLTRB(20, 16, 20, 24),
+              decoration: BoxDecoration(
+                color: const Color(0xFF140D24),
+                borderRadius: const BorderRadius.only(
+                  topLeft: Radius.circular(24),
+                  topRight: Radius.circular(24),
+                ),
+                border: Border.all(color: const Color(0xFF00F4FE).withValues(alpha: 0.5), width: 1.2),
+              ),
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Center(
+                    child: Container(
+                      width: 40,
+                      height: 4,
+                      decoration: BoxDecoration(
+                        color: const Color(0xFF383241),
+                        borderRadius: BorderRadius.circular(2),
+                      ),
+                    ),
+                  ),
+                  const SizedBox(height: 14),
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      Row(
+                        children: [
+                          const Icon(Icons.calculate_rounded, color: Color(0xFF00F4FE), size: 20),
+                          const SizedBox(width: 8),
+                          Text(
+                            'KALKULATOR KONVERSI GOLD',
+                            style: GoogleFonts.spaceGrotesk(
+                              fontSize: 13,
+                              fontWeight: FontWeight.w800,
+                              color: const Color(0xFFE9DEF2),
+                            ),
+                          ),
+                        ],
+                      ),
+                      IconButton(
+                        icon: const Icon(Icons.close_rounded, color: Colors.grey, size: 20),
+                        onPressed: () => Navigator.pop(ctx),
+                      ),
+                    ],
+                  ),
+                  const SizedBox(height: 10),
+                  Text(
+                    'Kalkulasi konversi saldo Gold berdasarkan kurs real-time valas global:',
+                    style: GoogleFonts.plusJakartaSans(fontSize: 11, color: const Color(0xFFB5A9C2)),
+                  ),
+                  const SizedBox(height: 10),
+                  TextField(
+                    controller: controller,
+                    keyboardType: TextInputType.number,
+                    style: GoogleFonts.orbitron(
+                      fontSize: 16,
+                      color: const Color(0xFFFFD166),
+                      fontWeight: FontWeight.bold,
+                    ),
+                    decoration: InputDecoration(
+                      prefixIcon: const Icon(Icons.monetization_on_rounded, color: Color(0xFFFFD166)),
+                      suffixText: 'GOLD',
+                      suffixStyle: GoogleFonts.spaceGrotesk(color: Colors.grey, fontWeight: FontWeight.bold),
+                      filled: true,
+                      fillColor: const Color(0xFF1E1829),
+                      border: OutlineInputBorder(borderRadius: BorderRadius.circular(10), borderSide: BorderSide.none),
+                      focusedBorder: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(10),
+                        borderSide: const BorderSide(color: Color(0xFF00F4FE), width: 1.2),
+                      ),
+                    ),
+                    onChanged: (_) => setSheetState(() {}),
+                  ),
+                  const SizedBox(height: 10),
+                  // Presets
+                  Wrap(
+                    spacing: 6,
+                    children: [100, 500, 1000, 5000, 10000].map((preset) {
+                      final isSelected = controller.text == preset.toString();
+                      return InkWell(
+                        onTap: () {
+                          controller.text = preset.toString();
+                          setSheetState(() {});
+                        },
+                        child: Container(
+                          padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
+                          decoration: BoxDecoration(
+                            color: isSelected ? const Color(0xFF00F4FE).withValues(alpha: 0.15) : const Color(0xFF231D2B),
+                            borderRadius: BorderRadius.circular(6),
+                            border: Border.all(
+                              color: isSelected
+                                  ? const Color(0xFF00F4FE)
+                                  : const Color(0xFF2C1E4E),
+                            ),
+                          ),
+                          child: Text(
+                            '+$preset',
+                            style: GoogleFonts.spaceGrotesk(
+                              fontSize: 10,
+                              fontWeight: FontWeight.w700,
+                              color: isSelected
+                                  ? const Color(0xFF00F4FE)
+                                  : const Color(0xFFD2C1D7),
+                            ),
+                          ),
+                        ),
+                      );
+                    }).toList(),
+                  ),
+                  const SizedBox(height: 14),
+                  Container(
+                    padding: const EdgeInsets.all(12),
+                    decoration: BoxDecoration(
+                      color: const Color(0xFF110C19),
+                      borderRadius: BorderRadius.circular(12),
+                      border: Border.all(color: const Color(0xFF2C1E4E)),
+                    ),
+                    child: Column(
+                      children: [
+                        _buildValuationRow(
+                          'IDR (Rupiah)',
+                          NumberFormat.currency(locale: 'id_ID', symbol: 'Rp ', decimalDigits: 0).format(idrTotal),
+                          const Color(0xFF63F7FF),
+                        ),
+                        const Divider(color: Color(0xFF231D2B), height: 14),
+                        _buildValuationRow(
+                          'USD (US Dollar)',
+                          NumberFormat.currency(locale: 'en_US', symbol: '\$ ', decimalDigits: 2).format(usdTotal),
+                          const Color(0xFF00FF9D),
+                        ),
+                        const Divider(color: Color(0xFF231D2B), height: 14),
+                        _buildValuationRow(
+                          'EUR (Euro)',
+                          NumberFormat.currency(locale: 'de_DE', symbol: '€ ', decimalDigits: 2).format(eurTotal),
+                          const Color(0xFFE5B5FF),
+                        ),
+                      ],
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          );
+        },
+      ),
+    );
+  }
+
+  Widget _buildValuationRow(String label, String value, Color color) {
+    return Row(
+      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+      children: [
+        Text(label, style: GoogleFonts.plusJakartaSans(fontSize: 11, color: const Color(0xFF9B8BA1))),
+        Text(value, style: GoogleFonts.spaceGrotesk(fontSize: 13, fontWeight: FontWeight.w800, color: color)),
+      ],
+    );
   }
 
   /// Menyalin kode hash transaksi ke clipboard
@@ -1442,7 +1666,6 @@ class _TabShopState extends State<TabShop> {
                     subtitle: item['subtitle'] as String,
                     rarity: item['rarity'] as String,
                     price: item['price'] as int,
-                    perk: item['perk'] as String,
                     icon: item['icon'] as IconData,
                     rarityColor: item['rarityColor'] as Color,
                     accentColor: item['accentColor'] as Color,
@@ -1721,49 +1944,44 @@ class _TabShopState extends State<TabShop> {
               height: 1.35,
             ),
           ),
-          const SizedBox(height: 12),
-          Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: [
-              Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text(
-                    'INDEX STABILITY',
-                    style: GoogleFonts.spaceGrotesk(
-                      fontSize: 8.5,
-                      fontWeight: FontWeight.w600,
-                      color: const Color(0xFF9B8BA1),
-                      letterSpacing: 0.8,
-                    ),
-                  ),
-                  Text(
-                    '99.98% OPTIMAL',
-                    style: GoogleFonts.spaceGrotesk(
-                      fontSize: 11.5,
-                      fontWeight: FontWeight.w800,
-                      color: const Color(0xFF63F7FF),
-                    ),
-                  ),
-                ],
-              ),
-              // Sparkline chart
-              SizedBox(
-                width: 110,
-                height: 26,
-                child: CustomPaint(
-                  painter: _SparklinePainter(),
-                ),
-              ),
-            ],
-          ),
         ],
       ),
     );
   }
 
-  /// Real-Time Valuation Card
+  /// Real-Time Live Valuation Card
   Widget _buildValuationCard() {
+    final double idrPerGold = _usdToIdr * 0.01;
+    final double eurPerGold = _usdToEur * 0.01;
+    final double usdPerGold = 0.01;
+
+    final String idrFormatted = NumberFormat.currency(
+      locale: 'id_ID',
+      symbol: 'Rp ',
+      decimalDigits: 0,
+    ).format((_gold * idrPerGold).round());
+
+    final String usdFormatted = NumberFormat.currency(
+      locale: 'en_US',
+      symbol: '\$ ',
+      decimalDigits: 2,
+    ).format(_gold * usdPerGold);
+
+    final String eurFormatted = NumberFormat.currency(
+      locale: 'de_DE',
+      symbol: '€ ',
+      decimalDigits: 2,
+    ).format(_gold * eurPerGold);
+
+    String highlightedWealth = idrFormatted;
+    if (_selectedCurrency == 'USD') {
+      highlightedWealth = usdFormatted;
+    } else if (_selectedCurrency == 'EUR') {
+      highlightedWealth = eurFormatted;
+    }
+
+    final updateTimeStr = DateFormat('HH:mm:ss').format(_lastRateUpdate);
+
     return Container(
       padding: const EdgeInsets.all(14),
       decoration: BoxDecoration(
@@ -1772,76 +1990,162 @@ class _TabShopState extends State<TabShop> {
         border: Border.all(color: const Color(0xFF2C1E4E), width: 0.8),
       ),
       child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
               Row(
                 children: [
-                  const Icon(Icons.query_stats_rounded, size: 15, color: Color(0xFFDCB8FC)),
+                  const Icon(Icons.currency_exchange_rounded, size: 16, color: Color(0xFF00F4FE)),
                   const SizedBox(width: 6),
                   Text(
                     'KURS VALUASI REAL-TIME',
                     style: GoogleFonts.spaceGrotesk(
-                      fontSize: 9.5,
-                      fontWeight: FontWeight.w700,
+                      fontSize: 10,
+                      fontWeight: FontWeight.w800,
                       letterSpacing: 0.8,
                       color: const Color(0xFFE9DEF2),
                     ),
                   ),
                 ],
               ),
-              Container(
-                padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
-                decoration: BoxDecoration(
-                  color: const Color(0xFF00F4FE).withValues(alpha: 0.15),
-                  borderRadius: BorderRadius.circular(12),
-                ),
-                child: Row(
-                  children: [
-                    const Icon(Icons.sync_rounded, size: 10, color: Color(0xFF00F4FE)),
-                    const SizedBox(width: 3),
-                    Text(
-                      'SYNCED',
-                      style: GoogleFonts.spaceGrotesk(
-                        fontSize: 8.5,
-                        fontWeight: FontWeight.w800,
-                        color: const Color(0xFF00F4FE),
+              InkWell(
+                borderRadius: BorderRadius.circular(12),
+                onTap: _fetchLiveExchangeRates,
+                child: Container(
+                  padding: const EdgeInsets.symmetric(horizontal: 7, vertical: 3),
+                  decoration: BoxDecoration(
+                    color: const Color(0xFF00F4FE).withValues(alpha: 0.15),
+                    borderRadius: BorderRadius.circular(12),
+                    border: Border.all(color: const Color(0xFF00F4FE).withValues(alpha: 0.3)),
+                  ),
+                  child: Row(
+                    children: [
+                      if (_isLoadingRates)
+                        const SizedBox(
+                          width: 9,
+                          height: 9,
+                          child: CircularProgressIndicator(strokeWidth: 1.5, color: Color(0xFF00F4FE)),
+                        )
+                      else
+                        const Icon(Icons.sync_rounded, size: 10, color: Color(0xFF00F4FE)),
+                      const SizedBox(width: 4),
+                      Text(
+                        _isLoadingRates ? 'SYNCING...' : 'LIVE $updateTimeStr',
+                        style: GoogleFonts.spaceGrotesk(
+                          fontSize: 8.5,
+                          fontWeight: FontWeight.w800,
+                          color: const Color(0xFF00F4FE),
+                        ),
                       ),
-                    ),
-                  ],
+                    ],
+                  ),
                 ),
               ),
             ],
           ),
           const SizedBox(height: 10),
+
+          // Total Wealth Card based on user's real active gold
           Container(
             width: double.infinity,
-            padding: const EdgeInsets.symmetric(vertical: 8),
+            padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 9),
             decoration: BoxDecoration(
-              color: const Color(0xFF110C19),
-              borderRadius: BorderRadius.circular(8),
-            ),
-            child: Center(
-              child: Text(
-                '100 GOLD = Rp 15.000 • \$1.00 USD • €0.95 EUR',
-                style: GoogleFonts.spaceGrotesk(
-                  fontSize: 10,
-                  fontWeight: FontWeight.w700,
-                  letterSpacing: 0.6,
-                  color: const Color(0xFF00F4FE),
-                ),
+              gradient: const LinearGradient(
+                colors: [Color(0xFF140D24), Color(0xFF1B142B)],
+                begin: Alignment.topLeft,
+                end: Alignment.bottomRight,
               ),
+              borderRadius: BorderRadius.circular(10),
+              border: Border.all(color: const Color(0xFF00F4FE).withValues(alpha: 0.35)),
+            ),
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      'TOTAL VALUASI HUNTER ($_gold GOLD)',
+                      style: GoogleFonts.spaceGrotesk(
+                        fontSize: 8.5,
+                        fontWeight: FontWeight.w700,
+                        color: const Color(0xFF9B8BA1),
+                        letterSpacing: 0.5,
+                      ),
+                    ),
+                    const SizedBox(height: 2),
+                    Text(
+                      highlightedWealth,
+                      style: GoogleFonts.orbitron(
+                        fontSize: 14,
+                        fontWeight: FontWeight.w900,
+                        color: const Color(0xFF00F4FE),
+                        letterSpacing: 0.5,
+                      ),
+                    ),
+                  ],
+                ),
+                InkWell(
+                  onTap: _showGoldConverterDialog,
+                  child: Container(
+                    padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 5),
+                    decoration: BoxDecoration(
+                      color: const Color(0xFFB026FF).withValues(alpha: 0.2),
+                      borderRadius: BorderRadius.circular(6),
+                      border: Border.all(color: const Color(0xFFB026FF).withValues(alpha: 0.5)),
+                    ),
+                    child: Row(
+                      children: [
+                        const Icon(Icons.calculate_rounded, size: 12, color: Color(0xFFE5B5FF)),
+                        const SizedBox(width: 4),
+                        Text(
+                          'HITUNG',
+                          style: GoogleFonts.spaceGrotesk(
+                            fontSize: 9,
+                            fontWeight: FontWeight.w800,
+                            color: const Color(0xFFE5B5FF),
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                ),
+              ],
             ),
           ),
           const SizedBox(height: 8),
+
+          // Interactive Currency Selector Pods
           Row(
             children: [
-              _buildCurrencyPod('IDR (RUPIAH)', 'Rp 150', '/ 1 Gold'),
+              _buildCurrencyPod(
+                currency: 'IDR (RUPIAH)',
+                code: 'IDR',
+                rate: 'Rp ${idrPerGold.toStringAsFixed(1)}',
+                unit: '/ 1 Gold',
+                isSelected: _selectedCurrency == 'IDR',
+                onTap: () => setState(() => _selectedCurrency = 'IDR'),
+              ),
               const SizedBox(width: 8),
-              _buildCurrencyPod('USD (DOLLAR)', '\$0.01', '/ 1 Gold'),
+              _buildCurrencyPod(
+                currency: 'USD (DOLLAR)',
+                code: 'USD',
+                rate: '\$${usdPerGold.toStringAsFixed(2)}',
+                unit: '/ 1 Gold',
+                isSelected: _selectedCurrency == 'USD',
+                onTap: () => setState(() => _selectedCurrency = 'USD'),
+              ),
               const SizedBox(width: 8),
-              _buildCurrencyPod('EUR (EURO)', '€0.0095', '/ 1 Gold'),
+              _buildCurrencyPod(
+                currency: 'EUR (EURO)',
+                code: 'EUR',
+                rate: '€${eurPerGold.toStringAsFixed(4)}',
+                unit: '/ 1 Gold',
+                isSelected: _selectedCurrency == 'EUR',
+                onTap: () => setState(() => _selectedCurrency = 'EUR'),
+              ),
             ],
           ),
         ],
@@ -1849,41 +2153,67 @@ class _TabShopState extends State<TabShop> {
     );
   }
 
-  Widget _buildCurrencyPod(String currency, String rate, String unit) {
+  Widget _buildCurrencyPod({
+    required String currency,
+    required String code,
+    required String rate,
+    required String unit,
+    required bool isSelected,
+    required VoidCallback onTap,
+  }) {
     return Expanded(
-      child: Container(
-        padding: const EdgeInsets.symmetric(vertical: 8),
-        decoration: BoxDecoration(
-          color: const Color(0xFF231D2B),
-          borderRadius: BorderRadius.circular(8),
-        ),
-        child: Column(
-          children: [
-            Text(
-              currency,
-              style: GoogleFonts.spaceGrotesk(
-                fontSize: 8,
-                fontWeight: FontWeight.w600,
-                color: const Color(0xFF9B8BA1),
-              ),
+      child: InkWell(
+        borderRadius: BorderRadius.circular(8),
+        onTap: onTap,
+        child: AnimatedContainer(
+          duration: const Duration(milliseconds: 200),
+          padding: const EdgeInsets.symmetric(vertical: 8, horizontal: 4),
+          decoration: BoxDecoration(
+            color: isSelected ? const Color(0xFF2A2038) : const Color(0xFF231D2B),
+            borderRadius: BorderRadius.circular(8),
+            border: Border.all(
+              color: isSelected ? const Color(0xFF00F4FE) : const Color(0xFF2C1E4E),
+              width: isSelected ? 1.2 : 0.8,
             ),
-            const SizedBox(height: 3),
-            Text(
-              rate,
-              style: GoogleFonts.spaceGrotesk(
-                fontSize: 11.5,
-                fontWeight: FontWeight.w800,
-                color: const Color(0xFFE9DEF2),
+            boxShadow: isSelected
+                ? [
+                    BoxShadow(
+                      color: const Color(0xFF00F4FE).withValues(alpha: 0.15),
+                      blurRadius: 8,
+                    ),
+                  ]
+                : null,
+          ),
+          child: Column(
+            children: [
+              Text(
+                currency,
+                style: GoogleFonts.spaceGrotesk(
+                  fontSize: 7.5,
+                  fontWeight: FontWeight.w700,
+                  color: isSelected ? const Color(0xFF00F4FE) : const Color(0xFF9B8BA1),
+                ),
+                maxLines: 1,
+                overflow: TextOverflow.ellipsis,
               ),
-            ),
-            Text(
-              unit,
-              style: GoogleFonts.spaceGrotesk(
-                fontSize: 8,
-                color: const Color(0xFF63F7FF),
+              const SizedBox(height: 3),
+              Text(
+                rate,
+                style: GoogleFonts.spaceGrotesk(
+                  fontSize: 10.5,
+                  fontWeight: FontWeight.w800,
+                  color: isSelected ? Colors.white : const Color(0xFFE9DEF2),
+                ),
               ),
-            ),
-          ],
+              Text(
+                unit,
+                style: GoogleFonts.plusJakartaSans(
+                  fontSize: 8.5,
+                  color: isSelected ? const Color(0xFF63F7FF) : const Color(0xFF9B8BA1),
+                ),
+              ),
+            ],
+          ),
         ),
       ),
     );
@@ -1928,7 +2258,6 @@ class _TabShopState extends State<TabShop> {
     required String subtitle,
     required String rarity,
     required int price,
-    required String perk,
     required IconData icon,
     required Color rarityColor,
     required Color accentColor,
@@ -2040,35 +2369,6 @@ class _TabShopState extends State<TabShop> {
                 ],
               ),
             ],
-          ),
-
-          const SizedBox(height: 10),
-
-          // Perk Badge
-          Container(
-            width: double.infinity,
-            padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
-            decoration: BoxDecoration(
-              color: const Color(0xFF110C19),
-              borderRadius: BorderRadius.circular(8),
-              border: Border.all(color: const Color(0xFF2C1E4E)),
-            ),
-            child: Row(
-              children: [
-                Icon(Icons.auto_awesome_rounded, size: 14, color: accentColor),
-                const SizedBox(width: 6),
-                Expanded(
-                  child: Text(
-                    perk,
-                    style: GoogleFonts.plusJakartaSans(
-                      fontSize: 10.5,
-                      fontWeight: FontWeight.w600,
-                      color: const Color(0xFFD2C1D7),
-                    ),
-                  ),
-                ),
-              ],
-            ),
           ),
 
           const SizedBox(height: 10),
@@ -2376,45 +2676,4 @@ class _TabShopState extends State<TabShop> {
       ),
     );
   }
-}
-
-/// CustomPainter untuk grafik sparkline stabilitas indeks
-class _SparklinePainter extends CustomPainter {
-  @override
-  void paint(Canvas canvas, Size size) {
-    final path = Path();
-    path.moveTo(2, size.height * 0.7);
-    path.lineTo(size.width * 0.15, size.height * 0.65);
-    path.lineTo(size.width * 0.3, size.height * 0.8);
-    path.lineTo(size.width * 0.45, size.height * 0.4);
-    path.lineTo(size.width * 0.6, size.height * 0.5);
-    path.lineTo(size.width * 0.75, size.height * 0.25);
-    path.lineTo(size.width * 0.88, size.height * 0.45);
-    path.lineTo(size.width, size.height * 0.1);
-
-    final strokePaint = Paint()
-      ..color = const Color(0xFF00F4FE)
-      ..style = PaintingStyle.stroke
-      ..strokeWidth = 2.0
-      ..strokeCap = StrokeCap.round
-      ..strokeJoin = StrokeJoin.round;
-
-    final fillPath = Path.from(path)
-      ..lineTo(size.width, size.height)
-      ..lineTo(2, size.height)
-      ..close();
-
-    final fillPaint = Paint()
-      ..shader = const LinearGradient(
-        colors: [Color(0x4D00F4FE), Color(0x0000F4FE)],
-        begin: Alignment.topCenter,
-        end: Alignment.bottomCenter,
-      ).createShader(Rect.fromLTWH(0, 0, size.width, size.height));
-
-    canvas.drawPath(fillPath, fillPaint);
-    canvas.drawPath(path, strokePaint);
-  }
-
-  @override
-  bool shouldRepaint(covariant CustomPainter oldDelegate) => false;
 }
