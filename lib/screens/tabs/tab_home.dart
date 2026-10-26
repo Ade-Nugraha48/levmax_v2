@@ -1752,7 +1752,7 @@ class _TabHomeState extends State<TabHome> {
                               ),
                             ),
                             child: Text(
-                              'LLM',
+                              'SECRET',
                               style: GoogleFonts.orbitron(
                                 fontSize: 8.5,
                                 fontWeight: FontWeight.w800,
@@ -1764,7 +1764,7 @@ class _TabHomeState extends State<TabHome> {
                       ),
                       const SizedBox(height: 3),
                       Text(
-                        'Pindai fluktuasi Mana rahasia menggunakan Gemini AI Engine',
+                        'Pindai anomali dimensi & fluktuasi Mana rahasia di sekitar Gate',
                         style: GoogleFonts.plusJakartaSans(
                           fontSize: 10.5,
                           fontWeight: FontWeight.w500,
@@ -1841,7 +1841,7 @@ class _TabHomeState extends State<TabHome> {
                   ),
                   const SizedBox(height: 8),
                   Text(
-                    'Menghubungkan ke Gemini LLM Gateway untuk mengurai koordinat dungeon rahasia...',
+                    'Mengurai koordinat dimensi rahasia dari fluktuasi Mana Hunter...',
                     textAlign: TextAlign.center,
                     style: GoogleFonts.plusJakartaSans(
                       fontSize: 11,
@@ -1939,7 +1939,7 @@ class _TabHomeState extends State<TabHome> {
                             ),
                           ),
                           Text(
-                            'Sistem Peringatan Gerbang Darurat (LLM)',
+                            'Sistem Peringatan Gerbang Rahasia (Double Dungeon)',
                             style: GoogleFonts.plusJakartaSans(
                               fontSize: 10,
                               fontWeight: FontWeight.w600,

@@ -1,6 +1,6 @@
 import 'dart:convert';
-import 'dart:typed_data';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:intl/intl.dart';
 import 'package:hive_flutter/hive_flutter.dart';
@@ -174,6 +174,162 @@ class _TabShopState extends State<TabShop> {
     });
   }
 
+  /// Menyalin kode hash transaksi ke clipboard
+  void _copyHashToClipboard(String txHash) {
+    final cleanHash = txHash.startsWith('0x') ? txHash : '0x$txHash';
+    Clipboard.setData(ClipboardData(text: cleanHash));
+    if (mounted) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Row(
+            children: [
+              const Icon(Icons.check_circle_rounded, color: Color(0xFF00F4FE), size: 18),
+              const SizedBox(width: 8),
+              Expanded(
+                child: Text(
+                  'Hash disalin: $cleanHash',
+                  style: GoogleFonts.spaceGrotesk(
+                    fontSize: 11,
+                    fontWeight: FontWeight.w700,
+                    color: Colors.white,
+                  ),
+                  maxLines: 2,
+                  overflow: TextOverflow.ellipsis,
+                ),
+              ),
+            ],
+          ),
+          backgroundColor: const Color(0xFF1E1829),
+          duration: const Duration(seconds: 3),
+        ),
+      );
+    }
+  }
+
+  /// Dialog konfigurasi Ethereum Sepolia Private Key
+  void _showPrivateKeyConfigDialog() {
+    final currentKey = Hive.box('sessionBox').get('sepolia_private_key')?.toString() ?? '';
+    final controller = TextEditingController(text: currentKey);
+
+    showDialog(
+      context: context,
+      builder: (ctx) {
+        return Dialog(
+          backgroundColor: Colors.transparent,
+          insetPadding: const EdgeInsets.symmetric(horizontal: 20, vertical: 24),
+          child: Container(
+            padding: const EdgeInsets.all(20),
+            decoration: BoxDecoration(
+              color: const Color(0xFF140D24),
+              borderRadius: BorderRadius.circular(20),
+              border: Border.all(color: const Color(0xFF00F4FE).withValues(alpha: 0.6), width: 1.2),
+              boxShadow: [
+                BoxShadow(
+                  color: const Color(0xFF00F4FE).withValues(alpha: 0.2),
+                  blurRadius: 20,
+                ),
+              ],
+            ),
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Row(
+                  children: [
+                    Container(
+                      padding: const EdgeInsets.all(6),
+                      decoration: BoxDecoration(
+                        color: const Color(0xFF00F4FE).withValues(alpha: 0.15),
+                        borderRadius: BorderRadius.circular(8),
+                      ),
+                      child: const Icon(Icons.key_rounded, color: Color(0xFF00F4FE), size: 20),
+                    ),
+                    const SizedBox(width: 10),
+                    Expanded(
+                      child: Text(
+                        'SEPOLIA PRIVATE KEY',
+                        style: GoogleFonts.orbitron(
+                          fontSize: 12,
+                          fontWeight: FontWeight.w900,
+                          color: const Color(0xFFE9DEF2),
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+                const SizedBox(height: 12),
+                Text(
+                  'Masukkan Ethereum Sepolia Private Key (wallet yang memiliki saldo Sepolia ETH) agar transaksi tercatat nyata di public blockchain & terverifikasi di Etherscan.\n\nJika kosong, sistem menggunakan simulasi hash kriptografis lokal SHA-256.',
+                  style: GoogleFonts.plusJakartaSans(
+                    fontSize: 11,
+                    color: const Color(0xFFB5A9C2),
+                  ),
+                ),
+                const SizedBox(height: 14),
+                TextField(
+                  controller: controller,
+                  obscureText: true,
+                  style: GoogleFonts.spaceGrotesk(color: Colors.white, fontSize: 12),
+                  decoration: InputDecoration(
+                    hintText: '0x... atau 64 karakter hex',
+                    hintStyle: GoogleFonts.spaceGrotesk(color: Colors.white30, fontSize: 11),
+                    filled: true,
+                    fillColor: const Color(0xFF1F1927),
+                    border: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(10),
+                      borderSide: const BorderSide(color: Color(0xFF2C1E4E)),
+                    ),
+                    focusedBorder: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(10),
+                      borderSide: const BorderSide(color: Color(0xFF00F4FE)),
+                    ),
+                  ),
+                ),
+                const SizedBox(height: 18),
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.end,
+                  children: [
+                    TextButton(
+                      onPressed: () => Navigator.pop(ctx),
+                      child: Text('BATAL', style: GoogleFonts.spaceGrotesk(color: Colors.grey)),
+                    ),
+                    const SizedBox(width: 8),
+                    ElevatedButton(
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: const Color(0xFF00F4FE),
+                        foregroundColor: Colors.black,
+                        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
+                      ),
+                      onPressed: () {
+                        final val = controller.text.trim();
+                        Hive.box('sessionBox').put('sepolia_private_key', val);
+                        Navigator.pop(ctx);
+                        if (mounted) {
+                          ScaffoldMessenger.of(context).showSnackBar(
+                            SnackBar(
+                              content: Text(
+                                val.isEmpty
+                                    ? 'Private key dikosongkan (mode simulasi aktif)'
+                                    : 'Private key Sepolia berhasil disimpan!',
+                                style: GoogleFonts.spaceGrotesk(color: Colors.white),
+                              ),
+                              backgroundColor: const Color(0xFF231D2B),
+                            ),
+                          );
+                        }
+                      },
+                      child: Text('SIMPAN', style: GoogleFonts.spaceGrotesk(fontWeight: FontWeight.w800)),
+                    ),
+                  ],
+                ),
+              ],
+            ),
+          ),
+        );
+      },
+    );
+  }
+
   /// Membuka halaman transaksi di Sepolia Etherscan menggunakan url_launcher
   Future<void> _openEtherscan(String txHash) async {
     final cleanHash = txHash.startsWith('0x') ? txHash : '0x$txHash';
@@ -209,7 +365,10 @@ class _TabShopState extends State<TabShop> {
   }) async {
     // Siapkan variabel hardcode Web3 Ethereum Sepolia Testnet
     final String rpcUrl = "https://rpc.sepolia.org";
-    final String privateKey = "MASUKKAN_PRIVATE_KEY_DISINI";
+    final savedKey = Hive.box('sessionBox').get('sepolia_private_key')?.toString();
+    final String privateKey = (savedKey != null && savedKey.trim().isNotEmpty)
+        ? savedKey.trim()
+        : "MASUKKAN_PRIVATE_KEY_DISINI";
 
     // 1. Cek apakah title sudah dimiliki
     if (_ownedTitles.contains(itemName)) {
@@ -496,21 +655,53 @@ class _TabShopState extends State<TabShop> {
                     ),
                   ],
                 ),
-                Container(
-                  padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
-                  decoration: BoxDecoration(
-                    color: const Color(0xFF00F4FE).withValues(alpha: 0.15),
-                    borderRadius: BorderRadius.circular(12),
-                    border: Border.all(color: const Color(0xFF00F4FE).withValues(alpha: 0.4)),
-                  ),
-                  child: Text(
-                    '${logs.length} BLOK',
-                    style: GoogleFonts.spaceGrotesk(
-                      fontSize: 10,
-                      fontWeight: FontWeight.w800,
-                      color: const Color(0xFF00F4FE),
+                Row(
+                  children: [
+                    InkWell(
+                      borderRadius: BorderRadius.circular(8),
+                      onTap: _showPrivateKeyConfigDialog,
+                      child: Container(
+                        padding: const EdgeInsets.symmetric(horizontal: 7, vertical: 3.5),
+                        decoration: BoxDecoration(
+                          color: const Color(0xFFB026FF).withValues(alpha: 0.2),
+                          borderRadius: BorderRadius.circular(8),
+                          border: Border.all(color: const Color(0xFFB026FF).withValues(alpha: 0.5)),
+                        ),
+                        child: Row(
+                          mainAxisSize: MainAxisSize.min,
+                          children: [
+                            const Icon(Icons.key_rounded, size: 12, color: Color(0xFFE5B5FF)),
+                            const SizedBox(width: 4),
+                            Text(
+                              'SET KEY',
+                              style: GoogleFonts.spaceGrotesk(
+                                fontSize: 9.5,
+                                fontWeight: FontWeight.w800,
+                                color: const Color(0xFFE5B5FF),
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
                     ),
-                  ),
+                    const SizedBox(width: 6),
+                    Container(
+                      padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
+                      decoration: BoxDecoration(
+                        color: const Color(0xFF00F4FE).withValues(alpha: 0.15),
+                        borderRadius: BorderRadius.circular(12),
+                        border: Border.all(color: const Color(0xFF00F4FE).withValues(alpha: 0.4)),
+                      ),
+                      child: Text(
+                        '${logs.length} BLOK',
+                        style: GoogleFonts.spaceGrotesk(
+                          fontSize: 10,
+                          fontWeight: FontWeight.w800,
+                          color: const Color(0xFF00F4FE),
+                        ),
+                      ),
+                    ),
+                  ],
                 ),
               ],
             ),
@@ -672,13 +863,99 @@ class _TabShopState extends State<TabShop> {
                                         ),
                                         Expanded(
                                           child: Text(
-                                            currentHash,
+                                            currentHash.startsWith('0x') ? currentHash : '0x$currentHash',
                                             style: GoogleFonts.spaceGrotesk(
                                               fontSize: 9,
                                               fontWeight: FontWeight.bold,
                                               color: const Color(0xFF63F7FF),
                                             ),
                                             overflow: TextOverflow.ellipsis,
+                                          ),
+                                        ),
+                                        const SizedBox(width: 4),
+                                        InkWell(
+                                          onTap: () => _copyHashToClipboard(currentHash),
+                                          child: Container(
+                                            padding: const EdgeInsets.all(4),
+                                            decoration: BoxDecoration(
+                                              color: const Color(0xFF00F4FE).withValues(alpha: 0.15),
+                                              borderRadius: BorderRadius.circular(4),
+                                            ),
+                                            child: const Icon(
+                                              Icons.copy_rounded,
+                                              size: 13,
+                                              color: Color(0xFF00F4FE),
+                                            ),
+                                          ),
+                                        ),
+                                      ],
+                                    ),
+                                    const SizedBox(height: 8),
+                                    Row(
+                                      children: [
+                                        Expanded(
+                                          child: InkWell(
+                                            borderRadius: BorderRadius.circular(6),
+                                            onTap: () => _copyHashToClipboard(currentHash),
+                                            child: Container(
+                                              padding: const EdgeInsets.symmetric(vertical: 6),
+                                              decoration: BoxDecoration(
+                                                color: const Color(0xFF1E1829),
+                                                borderRadius: BorderRadius.circular(6),
+                                                border: Border.all(
+                                                  color: const Color(0xFF00F4FE).withValues(alpha: 0.4),
+                                                  width: 0.8,
+                                                ),
+                                              ),
+                                              child: Row(
+                                                mainAxisAlignment: MainAxisAlignment.center,
+                                                children: [
+                                                  const Icon(Icons.copy_rounded, size: 11, color: Color(0xFF00F4FE)),
+                                                  const SizedBox(width: 4),
+                                                  Text(
+                                                    'Salin Hash',
+                                                    style: GoogleFonts.spaceGrotesk(
+                                                      fontSize: 9.5,
+                                                      fontWeight: FontWeight.w700,
+                                                      color: const Color(0xFF00F4FE),
+                                                    ),
+                                                  ),
+                                                ],
+                                              ),
+                                            ),
+                                          ),
+                                        ),
+                                        const SizedBox(width: 8),
+                                        Expanded(
+                                          child: InkWell(
+                                            borderRadius: BorderRadius.circular(6),
+                                            onTap: () => _openEtherscan(currentHash),
+                                            child: Container(
+                                              padding: const EdgeInsets.symmetric(vertical: 6),
+                                              decoration: BoxDecoration(
+                                                color: const Color(0xFF1E1829),
+                                                borderRadius: BorderRadius.circular(6),
+                                                border: Border.all(
+                                                  color: const Color(0xFFB026FF).withValues(alpha: 0.4),
+                                                  width: 0.8,
+                                                ),
+                                              ),
+                                              child: Row(
+                                                mainAxisAlignment: MainAxisAlignment.center,
+                                                children: [
+                                                  const Icon(Icons.open_in_new_rounded, size: 11, color: Color(0xFFE5B5FF)),
+                                                  const SizedBox(width: 4),
+                                                  Text(
+                                                    'Buka Etherscan',
+                                                    style: GoogleFonts.spaceGrotesk(
+                                                      fontSize: 9.5,
+                                                      fontWeight: FontWeight.w700,
+                                                      color: const Color(0xFFE5B5FF),
+                                                    ),
+                                                  ),
+                                                ],
+                                              ),
+                                            ),
                                           ),
                                         ),
                                       ],
@@ -1469,53 +1746,111 @@ class _TabShopState extends State<TabShop> {
             ),
           ),
 
-          // Tombol Baru Pasca Beli: "Lihat Bukti di Etherscan"
+          // Tombol Pasca Beli: "Salin Hash" & "Lihat Bukti di Etherscan"
           if (isOwned) ...[
             const SizedBox(height: 8),
-            InkWell(
-              borderRadius: BorderRadius.circular(8),
-              onTap: () {
-                final targetHash = itemTxHash ??
-                    '0x${HashService.createBlockchainHash(
-                      username: _userId,
-                      item: title,
-                      timestamp: DateTime.now().toIso8601String(),
-                      prevHash: "0000000000000000000000000000000000000000000000000000000000000000",
-                    )}';
-                _openEtherscan(targetHash);
-              },
-              child: Container(
-                width: double.infinity,
-                padding: const EdgeInsets.symmetric(vertical: 9, horizontal: 12),
-                decoration: BoxDecoration(
-                  color: const Color(0xFF13101C),
-                  borderRadius: BorderRadius.circular(8),
-                  border: Border.all(
-                    color: const Color(0xFF63F7FF).withValues(alpha: 0.4),
-                    width: 0.9,
-                  ),
-                ),
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    const Icon(
-                      Icons.open_in_new_rounded,
-                      size: 14,
-                      color: Color(0xFF63F7FF),
-                    ),
-                    const SizedBox(width: 6),
-                    Text(
-                      'Lihat Bukti di Etherscan',
-                      style: GoogleFonts.spaceGrotesk(
-                        fontSize: 10.5,
-                        fontWeight: FontWeight.w700,
-                        color: const Color(0xFF63F7FF),
-                        letterSpacing: 0.5,
+            Row(
+              children: [
+                Expanded(
+                  flex: 4,
+                  child: InkWell(
+                    borderRadius: BorderRadius.circular(8),
+                    onTap: () {
+                      final targetHash = itemTxHash ??
+                          '0x${HashService.createBlockchainHash(
+                            username: _userId,
+                            item: title,
+                            timestamp: DateTime.now().toIso8601String(),
+                            prevHash: "0000000000000000000000000000000000000000000000000000000000000000",
+                          )}';
+                      _copyHashToClipboard(targetHash);
+                    },
+                    child: Container(
+                      padding: const EdgeInsets.symmetric(vertical: 9, horizontal: 8),
+                      decoration: BoxDecoration(
+                        color: const Color(0xFF13101C),
+                        borderRadius: BorderRadius.circular(8),
+                        border: Border.all(
+                          color: const Color(0xFF00F4FE).withValues(alpha: 0.5),
+                          width: 0.9,
+                        ),
+                      ),
+                      child: Row(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          const Icon(
+                            Icons.copy_rounded,
+                            size: 13,
+                            color: Color(0xFF00F4FE),
+                          ),
+                          const SizedBox(width: 5),
+                          Text(
+                            'Salin Hash',
+                            style: GoogleFonts.spaceGrotesk(
+                              fontSize: 10,
+                              fontWeight: FontWeight.w700,
+                              color: const Color(0xFF00F4FE),
+                              letterSpacing: 0.3,
+                            ),
+                          ),
+                        ],
                       ),
                     ),
-                  ],
+                  ),
                 ),
-              ),
+                const SizedBox(width: 8),
+                Expanded(
+                  flex: 6,
+                  child: InkWell(
+                    borderRadius: BorderRadius.circular(8),
+                    onTap: () {
+                      final targetHash = itemTxHash ??
+                          '0x${HashService.createBlockchainHash(
+                            username: _userId,
+                            item: title,
+                            timestamp: DateTime.now().toIso8601String(),
+                            prevHash: "0000000000000000000000000000000000000000000000000000000000000000",
+                          )}';
+                      _openEtherscan(targetHash);
+                    },
+                    child: Container(
+                      padding: const EdgeInsets.symmetric(vertical: 9, horizontal: 8),
+                      decoration: BoxDecoration(
+                        color: const Color(0xFF13101C),
+                        borderRadius: BorderRadius.circular(8),
+                        border: Border.all(
+                          color: const Color(0xFF63F7FF).withValues(alpha: 0.4),
+                          width: 0.9,
+                        ),
+                      ),
+                      child: Row(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          const Icon(
+                            Icons.open_in_new_rounded,
+                            size: 13,
+                            color: Color(0xFF63F7FF),
+                          ),
+                          const SizedBox(width: 5),
+                          Flexible(
+                            child: Text(
+                              'Lihat Bukti di Etherscan',
+                              style: GoogleFonts.spaceGrotesk(
+                                fontSize: 10,
+                                fontWeight: FontWeight.w700,
+                                color: const Color(0xFF63F7FF),
+                                letterSpacing: 0.3,
+                              ),
+                              maxLines: 1,
+                              overflow: TextOverflow.ellipsis,
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                  ),
+                ),
+              ],
             ),
           ],
         ],
