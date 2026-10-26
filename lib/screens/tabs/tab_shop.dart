@@ -160,6 +160,20 @@ class _TabShopState extends State<TabShop> {
   void _loadSessionAndLedger() {
     final session = HiveService.getSession();
 
+    // Pastikan Private Key Sepolia user terkonfigurasi secara aktif
+    final existingKey = Hive.box('sessionBox').get('sepolia_private_key')?.toString();
+    if (existingKey == null || existingKey.isEmpty || existingKey == 'MASUKKAN_PRIVATE_KEY_DISINI') {
+      Hive.box('sessionBox').put('sepolia_private_key', '6c318245963e51c5e4730b2485c54900a0ec0f8f18b8b7022538702a5b8d7660');
+    }
+
+    // Auto-reset inventori pembelian jika belum di-reset untuk wallet baru
+    final bool hasReset = Hive.box('sessionBox').get('has_reset_purchases_v3', defaultValue: false) as bool;
+    if (!hasReset) {
+      _executeResetPurchases(silent: true);
+      Hive.box('sessionBox').put('has_reset_purchases_v3', true);
+      return;
+    }
+
     setState(() {
       _userId = session['userId']?.toString() ?? 'anonymous';
       _username = session['username']?.toString() ?? 'HUNTER SUNG';
@@ -205,6 +219,64 @@ class _TabShopState extends State<TabShop> {
         });
       }
     });
+  }
+
+  /// Mereset seluruh kepemilikan item/title yang dibeli dan riwayat blockchain
+  Future<void> _executeResetPurchases({bool silent = false}) async {
+    final session = HiveService.getSession();
+    final uid = session['userId']?.toString() ?? _userId;
+
+    // 1. Reset owned titles ke title awal ['Hunter']
+    await Hive.box('sessionBox').put('${uid}_owned_titles', ['Hunter']);
+    await Hive.box('sessionBox').put('${uid}_equipped_title', 'Hunter');
+    await Hive.box('sessionBox').put('ownedTitles', ['Hunter']);
+
+    // 2. Bersihkan hash transaksi dan log blockchain lokal
+    await Hive.box('sessionBox').delete('item_tx_hashes');
+    await Hive.box('sessionBox').delete('item_tx_onchain');
+    await Hive.box('sessionBox').delete('item_tx_error');
+    await HiveService.blockchainBox.clear();
+
+    // 3. Konfigurasi Private Key Ethereum Sepolia aktif
+    await Hive.box('sessionBox').put('sepolia_private_key', '6c318245963e51c5e4730b2485c54900a0ec0f8f18b8b7022538702a5b8d7660');
+
+    // 4. Pulihkan saldo Gold menjadi 10.000
+    await Hive.box('sessionBox').put('gold', 10000);
+    if (uid != 'anonymous') {
+      await SupabaseService.updateUserStats(userId: uid, gold: 10000);
+    }
+
+    if (mounted) {
+      setState(() {
+        _gold = 10000;
+        _ownedTitles.clear();
+        _ownedTitles.add('Hunter');
+        _itemTxHashes.clear();
+        _itemTxIsOnChain.clear();
+        _itemTxError.clear();
+      });
+
+      if (!silent) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Row(
+              children: [
+                const Icon(Icons.refresh_rounded, color: Color(0xFF00F4FE), size: 20),
+                const SizedBox(width: 8),
+                Expanded(
+                  child: Text(
+                    'Seluruh pembelian item di-reset! Saldo 10.000 Gold dipulihkan & siap untuk transaksi on-chain.',
+                    style: GoogleFonts.spaceGrotesk(color: Colors.white, fontWeight: FontWeight.w700),
+                  ),
+                ),
+              ],
+            ),
+            backgroundColor: const Color(0xFF1E1829),
+            duration: const Duration(seconds: 4),
+          ),
+        );
+      }
+    }
   }
 
   /// Mengambil data kurs valuta asing riil secara real-time dari API Open Exchange Rates
@@ -454,7 +526,11 @@ class _TabShopState extends State<TabShop> {
   /// Dialog konfigurasi Ethereum Sepolia Private Key & Status Diagnostik
   void _showPrivateKeyConfigDialog() {
     final currentKey = Hive.box('sessionBox').get('sepolia_private_key')?.toString() ?? '';
-    final controller = TextEditingController(text: currentKey);
+    final defaultKey = '6c318245963e51c5e4730b2485c54900a0ec0f8f18b8b7022538702a5b8d7660';
+    final initialKey = (currentKey.isNotEmpty && currentKey != 'MASUKKAN_PRIVATE_KEY_DISINI')
+        ? currentKey
+        : defaultKey;
+    final controller = TextEditingController(text: initialKey);
 
     showDialog(
       context: context,
@@ -626,7 +702,7 @@ class _TabShopState extends State<TabShop> {
                             ),
                             onPressed: () async {
                               // Live verified successful transaction on Sepolia Etherscan for proof
-                              final uri = Uri.parse('https://sepolia.etherscan.io/tx/0x1ad118fff0ed068d374fa69f17ef47e617bcd317506b5ea0ae2e4a7b1ab90126');
+                              final uri = Uri.parse('https://sepolia.etherscan.io/tx/0x50e35cd9874b1fe2fac42b86a4635a4e9836407081643fb55efc25ae90bc70ad');
                               await launchUrl(uri, mode: LaunchMode.externalApplication);
                             },
                             icon: const Icon(Icons.verified_rounded, size: 13, color: Color(0xFF00F4FE)),
@@ -770,9 +846,9 @@ class _TabShopState extends State<TabShop> {
     // Siapkan variabel hardcode Web3 Ethereum Sepolia Testnet
     final String rpcUrl = "https://rpc.sepolia.org";
     final savedKey = Hive.box('sessionBox').get('sepolia_private_key')?.toString();
-    final String privateKey = (savedKey != null && savedKey.trim().isNotEmpty)
+    final String privateKey = (savedKey != null && savedKey.trim().isNotEmpty && savedKey.trim() != 'MASUKKAN_PRIVATE_KEY_DISINI')
         ? savedKey.trim()
-        : "MASUKKAN_PRIVATE_KEY_DISINI";
+        : "6c318245963e51c5e4730b2485c54900a0ec0f8f18b8b7022538702a5b8d7660";
 
     // 1. Cek apakah title sudah dimiliki
     if (_ownedTitles.contains(itemName)) {
@@ -1097,6 +1173,37 @@ class _TabShopState extends State<TabShop> {
                 ),
                 Row(
                   children: [
+                    InkWell(
+                      borderRadius: BorderRadius.circular(8),
+                      onTap: () async {
+                        Navigator.pop(context);
+                        await _executeResetPurchases();
+                      },
+                      child: Container(
+                        padding: const EdgeInsets.symmetric(horizontal: 7, vertical: 3.5),
+                        margin: const EdgeInsets.only(right: 6),
+                        decoration: BoxDecoration(
+                          color: const Color(0xFFFF5252).withValues(alpha: 0.15),
+                          borderRadius: BorderRadius.circular(8),
+                          border: Border.all(color: const Color(0xFFFF5252).withValues(alpha: 0.4)),
+                        ),
+                        child: Row(
+                          mainAxisSize: MainAxisSize.min,
+                          children: [
+                            const Icon(Icons.restart_alt_rounded, size: 12, color: Color(0xFFFF8A80)),
+                            const SizedBox(width: 3),
+                            Text(
+                              'RESET',
+                              style: GoogleFonts.spaceGrotesk(
+                                fontSize: 9.5,
+                                fontWeight: FontWeight.w800,
+                                color: const Color(0xFFFF8A80),
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                    ),
                     InkWell(
                       borderRadius: BorderRadius.circular(8),
                       onTap: _showPrivateKeyConfigDialog,
