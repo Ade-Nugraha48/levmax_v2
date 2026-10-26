@@ -432,6 +432,34 @@ class _TabShopState extends State<TabShop> {
                           ),
                           onPressed: () {
                             final val = controller.text.trim();
+                            if (val.isNotEmpty) {
+                              final clean = val.replaceFirst(RegExp(r'^0x'), '');
+                              if (clean.length == 40) {
+                                ScaffoldMessenger.of(context).showSnackBar(
+                                  SnackBar(
+                                    content: Text(
+                                      'Ini adalah Public Address (40 karakter), bukan Private Key. Untuk menandatangani transaksi on-chain, masukkan Private Key (64 karakter) dari MetaMask.',
+                                      style: GoogleFonts.spaceGrotesk(color: Colors.white),
+                                    ),
+                                    backgroundColor: const Color(0xFF93000A),
+                                    duration: const Duration(seconds: 4),
+                                  ),
+                                );
+                                return;
+                              }
+                              if (clean.length != 64 || !RegExp(r'^[0-9a-fA-F]+$').hasMatch(clean)) {
+                                ScaffoldMessenger.of(context).showSnackBar(
+                                  SnackBar(
+                                    content: Text(
+                                      'Format Private Key tidak valid. Harus 64 karakter heksadesimal.',
+                                      style: GoogleFonts.spaceGrotesk(color: Colors.white),
+                                    ),
+                                    backgroundColor: const Color(0xFF93000A),
+                                  ),
+                                );
+                                return;
+                              }
+                            }
                             Hive.box('sessionBox').put('sepolia_private_key', val);
                             Navigator.pop(ctx);
                             if (mounted) {
