@@ -1,18 +1,20 @@
 import 'dart:async';
 import 'dart:io';
+import 'dart:typed_data';
 import 'package:audioplayers/audioplayers.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
+import 'package:timezone/data/latest_all.dart' as tz;
 import 'package:timezone/timezone.dart' as tz;
 import '../models/alarm_model.dart';
 import 'hive_service.dart';
 
 /// AlarmService
 /// Service manajemen alarm Solo Leveling System dengan dukungan:
-/// - Pengaturan Jam & Menit
+/// - Pengaturan Jam & Menit via Hive Persistence
 /// - Ringtone MP3 Lokal Kustom dari Penyimpanan HP / Default System WAV
 /// - Kontrol Intensitas Volume (0% - 100%)
-/// - Mode Looping & Notifikasi Suara Alarm
+/// - Mode Looping & Notifikasi Suara Alarm saat aplikasi terbuka maupun ditutup
 class AlarmService {
   static final AudioPlayer _audioPlayer = AudioPlayer();
   static final FlutterLocalNotificationsPlugin _plugin =
@@ -24,16 +26,37 @@ class AlarmService {
   static VoidCallback? onAlarmStateChanged;
 
   static const int alarmNotifId = 9999;
-  static const String alarmChannelId = 'hunter_alarm_channel';
+  static const String alarmChannelId = 'hunter_alarm_channel_v4';
   static const String alarmChannelName = 'Hunter Awakening Alarm';
   static const String alarmChannelDesc =
-      'Saluran khusus alarm latihan & awakening harian dengan prioritas tertinggi';
+      'Saluran khusus alarm latihan & awakening harian dengan prioritas tertinggi dan suara aktif';
 
   static bool get isRinging => _isRinging;
 
-  /// Inisialisasi Audio Player & Konfigurasi Audio Context Alarm
+  /// Inisialisasi Audio Player & Konfigurasi Audio Context Alarm serta Plugin Notifikasi
   static Future<void> init() async {
     if (_isInitialized) return;
+
+    try {
+      tz.initializeTimeZones();
+    } catch (_) {}
+
+    try {
+      const androidSettings = AndroidInitializationSettings('@mipmap/ic_launcher');
+      const iosSettings = DarwinInitializationSettings(
+        requestAlertPermission: true,
+        requestBadgePermission: true,
+        requestSoundPermission: true,
+      );
+      await _plugin.initialize(
+        settings: const InitializationSettings(android: androidSettings, iOS: iosSettings),
+        onDidReceiveNotificationResponse: (response) {
+          if (response.id == alarmNotifId) {
+            stopAlarm();
+          }
+        },
+      );
+    } catch (_) {}
 
     try {
       final AudioContext audioContext = AudioContext(
@@ -56,14 +79,14 @@ class AlarmService {
 
     _isInitialized = true;
 
-    // Aktifkan timer jika alarm tersimpan dalam keadaan aktif
+    // Aktifkan timer dan jadwal OS jika alarm tersimpan di Hive dalam keadaan aktif
     final alarm = HiveService.getAlarm();
     if (alarm.isEnabled) {
-      scheduleAlarm(alarm);
+      await scheduleAlarm(alarm);
     }
   }
 
-  /// Menjadwalkan alarm berdasarkan konfigurasi jam & menit
+  /// Menjadwalkan alarm berdasarkan konfigurasi jam & menit serta persistensi Hive
   static Future<void> scheduleAlarm(AlarmModel alarm) async {
     await init();
     await HiveService.saveAlarm(alarm);
@@ -83,16 +106,16 @@ class AlarmService {
 
     final diff = scheduled.difference(now);
 
-    // 1. Timer internal aplikasi
+    // 1. Timer internal aplikasi saat aplikasi aktif
     _activeTimer = Timer(diff, () {
       triggerAlarm(alarm: alarm);
     });
 
-    // 2. Exact Alarm Notification
+    // 2. Exact Alarm Notification pada level OS (berfungsi meskipun aplikasi ditutup)
     try {
       final tz.TZDateTime tzScheduled = tz.TZDateTime.from(scheduled, tz.local);
 
-      const androidDetails = AndroidNotificationDetails(
+      final androidDetails = AndroidNotificationDetails(
         alarmChannelId,
         alarmChannelName,
         channelDescription: alarmChannelDesc,
@@ -102,18 +125,23 @@ class AlarmService {
         category: AndroidNotificationCategory.alarm,
         audioAttributesUsage: AudioAttributesUsage.alarm,
         icon: '@mipmap/ic_launcher',
-        color: Color(0xFF00F4FE),
-        playSound: false, // Suara di-handle oleh AudioPlayer dengan volume kustom
-        enableVibration: true,
+        color: const Color(0xFF00F4FE),
+        playSound: true,
+        sound: const RawResourceAndroidNotificationSound('system_alarm'),
+        enableVibration: alarm.vibrate,
+        vibrationPattern: alarm.vibrate
+            ? Int64List.fromList([0, 1000, 500, 1000, 500, 1000])
+            : null,
       );
 
       const iosDetails = DarwinNotificationDetails(
         presentAlert: true,
         presentBadge: true,
-        presentSound: false,
+        presentSound: true,
+        sound: 'system_alarm.wav',
       );
 
-      const notifDetails = NotificationDetails(android: androidDetails, iOS: iosDetails);
+      final notifDetails = NotificationDetails(android: androidDetails, iOS: iosDetails);
 
       await _plugin.zonedSchedule(
         id: alarmNotifId,
@@ -121,7 +149,7 @@ class AlarmService {
         body: '${alarm.label} (${alarm.formattedTime}) - Buka aplikasi untuk mematikan alarm!',
         scheduledDate: tzScheduled,
         notificationDetails: notifDetails,
-        androidScheduleMode: AndroidScheduleMode.exactAllowWhileIdle,
+        androidScheduleMode: AndroidScheduleMode.alarmClock,
         matchDateTimeComponents: DateTimeComponents.time,
       );
     } catch (_) {}

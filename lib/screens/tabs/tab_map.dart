@@ -21,8 +21,8 @@ class TabMap extends StatefulWidget {
 }
 
 class _TabMapState extends State<TabMap> with SingleTickerProviderStateMixin {
-  // 1. Koordinat Target Dungeon Gate (UPN Veteran Yogyakarta)
-  final LatLng _targetGate = const LatLng(-7.7613, 110.4090);
+  // 1. Koordinat Target Dungeon Gate (Disesuaikan ke lokasi Hunter untuk debug testing <= 100m)
+  LatLng _targetGate = const LatLng(-7.7613, 110.4090);
 
   // 2. State Lokasi & GPS
   LatLng? userLocation;
@@ -290,6 +290,10 @@ class _TabMapState extends State<TabMap> with SingleTickerProviderStateMixin {
 
   void _updatePosition(Position pos, {bool moveCamera = false}) {
     final newLocation = LatLng(pos.latitude, pos.longitude);
+
+    // DEBUG MODE: Tempatkan target Gate dungeon di sekitar lokasi Hunter (offset ~15m)
+    // agar jarak berada di dalam radius konfirmasi (<= 100 meter) sesuai permintaan user
+    _targetGate = LatLng(pos.latitude + 0.00012, pos.longitude + 0.00012);
     final calculatedDistance = Geolocator.distanceBetween(
       pos.latitude,
       pos.longitude,
@@ -1060,7 +1064,7 @@ class _TabMapState extends State<TabMap> with SingleTickerProviderStateMixin {
             borderRadius: BorderRadius.circular(4),
           ),
           child: Text(
-            'LAT: -7.7613 // LNG: 110.4090',
+            'LAT: ${_targetGate.latitude.toStringAsFixed(4)} // LNG: ${_targetGate.longitude.toStringAsFixed(4)}',
             style: GoogleFonts.spaceGrotesk(
               fontSize: 7.5,
               fontWeight: FontWeight.w600,
@@ -1351,7 +1355,28 @@ class _TabMapState extends State<TabMap> with SingleTickerProviderStateMixin {
           // Primary Action Button: Klaim Hadiah Dungeon
           InkWell(
             borderRadius: BorderRadius.circular(12),
-            onTap: canClaim ? _claimDungeonReward : null,
+            onTap: canClaim
+                ? _claimDungeonReward
+                : (hasClaimed
+                    ? () {
+                        setState(() {
+                          hasClaimed = false;
+                        });
+                        ScaffoldMessenger.of(context).showSnackBar(
+                          SnackBar(
+                            content: Text(
+                              'Status Dungeon direset untuk pengujian ulang!',
+                              style: GoogleFonts.spaceGrotesk(
+                                color: Colors.white,
+                                fontWeight: FontWeight.w700,
+                              ),
+                            ),
+                            backgroundColor: const Color(0xFF1F1927),
+                            duration: const Duration(seconds: 1),
+                          ),
+                        );
+                      }
+                    : null),
             child: AnimatedContainer(
               duration: const Duration(milliseconds: 300),
               width: double.infinity,
