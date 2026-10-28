@@ -6,13 +6,15 @@ import 'package:google_fonts/google_fonts.dart';
 import 'package:intl/intl.dart';
 import 'package:latlong2/latlong.dart';
 import 'package:hive/hive.dart';
+import '../../models/dungeon_gate_model.dart';
 import '../../services/hive_service.dart';
 import '../../services/supabase_service.dart';
 import '../../widgets/avatar_image.dart';
 
 /// TabMap: Tab 2 - Dungeon Radar LBS (Map UI)
 /// Desain bertema Solo Leveling Monarch System dengan integrasi FlutterMap,
-/// OpenStreetMap Dark Mode Tile Layer, dan real-time GPS tracking via Geolocator.
+/// OpenStreetMap Dark Mode Tile Layer, real-time GPS tracking via Geolocator,
+/// dan rotasi harian lokasi Dungeon Positif (Kampus, Stadion, Taman, Perpustakaan).
 class TabMap extends StatefulWidget {
   const TabMap({super.key});
 
@@ -21,8 +23,10 @@ class TabMap extends StatefulWidget {
 }
 
 class _TabMapState extends State<TabMap> with SingleTickerProviderStateMixin {
-  // 1. Koordinat Target Dungeon Gate (Disesuaikan ke lokasi Hunter untuk debug testing <= 100m)
-  LatLng _targetGate = const LatLng(-7.7613, 110.4090);
+  // 1. Model Dungeon Gate Aktif (Berganti Setiap Hari)
+  late DungeonGateModel _activeGate;
+  late LatLng _targetGate;
+  bool _debugAtUserLocation = false;
 
   // 2. State Lokasi & GPS
   LatLng? userLocation;
@@ -56,10 +60,27 @@ class _TabMapState extends State<TabMap> with SingleTickerProviderStateMixin {
   @override
   void initState() {
     super.initState();
+    _activeGate = DungeonGateModel.getDailyGate();
+    _targetGate = _activeGate.coordinates;
     _loadHunterSession();
+    _checkIfTodayDungeonClaimed();
     _initServerClock();
     _initAnimation();
     _initLocationService();
+  }
+
+  void _checkIfTodayDungeonClaimed() {
+    final session = HiveService.getSession();
+    final userId = session['userId']?.toString() ?? 'anonymous';
+    final claimed = HiveService.isQuestCompletedToday(
+      userId: userId,
+      questId: 'dungeon_${_activeGate.id}',
+    );
+    if (mounted) {
+      setState(() {
+        hasClaimed = claimed;
+      });
+    }
   }
 
   void _initAnimation() {
@@ -291,9 +312,12 @@ class _TabMapState extends State<TabMap> with SingleTickerProviderStateMixin {
   void _updatePosition(Position pos, {bool moveCamera = false}) {
     final newLocation = LatLng(pos.latitude, pos.longitude);
 
-    // DEBUG MODE: Tempatkan target Gate dungeon di sekitar lokasi Hunter (offset ~15m)
-    // agar jarak berada di dalam radius konfirmasi (<= 100 meter) sesuai permintaan user
-    _targetGate = LatLng(pos.latitude + 0.00012, pos.longitude + 0.00012);
+    if (_debugAtUserLocation) {
+      _targetGate = LatLng(pos.latitude + 0.00012, pos.longitude + 0.00012);
+    } else {
+      _targetGate = _activeGate.coordinates;
+    }
+
     final calculatedDistance = Geolocator.distanceBetween(
       pos.latitude,
       pos.longitude,
@@ -331,7 +355,7 @@ class _TabMapState extends State<TabMap> with SingleTickerProviderStateMixin {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
           content: Text(
-            'Radius terlalu jauh! Anda berada ${distance.toStringAsFixed(0)} meter dari Gate (Maks 100m).',
+            'Radius terlalu jauh! Anda berada ${distance >= 1000 ? "${(distance / 1000).toStringAsFixed(1)} KM" : "${distance.toStringAsFixed(0)} M"} dari Gate (Maks 100m).',
             style: GoogleFonts.spaceGrotesk(color: Colors.white, fontWeight: FontWeight.w600),
           ),
           backgroundColor: const Color(0xFF93000A),
@@ -341,15 +365,17 @@ class _TabMapState extends State<TabMap> with SingleTickerProviderStateMixin {
       return;
     }
 
-    final newRank = _calculateRank(_currentExp + 50);
+    final expBonus = _activeGate.expReward;
+    final goldBonus = _activeGate.goldReward;
+    final newRank = _calculateRank(_currentExp + expBonus);
 
     final session = HiveService.getSession();
     final currentGold = (session['gold'] as int?) ?? _gold;
-    final updatedGold = currentGold + 100;
+    final updatedGold = currentGold + goldBonus;
 
     setState(() {
       hasClaimed = true;
-      _currentExp += 50;
+      _currentExp += expBonus;
       _gold = updatedGold;
       _rank = newRank;
     });
@@ -370,6 +396,12 @@ class _TabMapState extends State<TabMap> with SingleTickerProviderStateMixin {
       hp: _currentHp,
     );
 
+    // Tandai status quest selesai untuk dungeon ini pada tanggal hari ini
+    HiveService.saveQuestCompletion(
+      userId: userId,
+      questId: 'dungeon_${_activeGate.id}',
+    );
+
     if (userId != 'anonymous') {
       SupabaseService.updateUserStats(
         userId: userId,
@@ -379,7 +411,7 @@ class _TabMapState extends State<TabMap> with SingleTickerProviderStateMixin {
       );
       SupabaseService.recordQuestCompleted(
         userId: userId,
-        questId: 'dungeon_gate_upn',
+        questId: 'dungeon_${_activeGate.id}',
       );
       final currentCount = HiveService.getQuestsCount() ?? 0;
       HiveService.saveQuestsCount(currentCount + 1);
@@ -393,7 +425,7 @@ class _TabMapState extends State<TabMap> with SingleTickerProviderStateMixin {
             const SizedBox(width: 10),
             Expanded(
               child: Text(
-                'Dungeon Cleared! +50 EXP & +100 Gold Terverifikasi!',
+                'Dungeon Cleared! +$expBonus EXP & +$goldBonus Gold (${_activeGate.name}) Terverifikasi!',
                 style: GoogleFonts.spaceGrotesk(
                   fontWeight: FontWeight.w800,
                   color: Colors.black,
@@ -906,10 +938,423 @@ class _TabMapState extends State<TabMap> with SingleTickerProviderStateMixin {
     );
   }
 
-  /// 4. Map Floating Controls (Recenter & Reset North)
+  /// Modal Daftar Gate Dungeon Positif (Rotasi Harian & Pilihan Lokasi)
+  void _openGateSelectorModal(BuildContext context) {
+    showModalBottomSheet(
+      context: context,
+      isScrollControlled: true,
+      backgroundColor: Colors.transparent,
+      useSafeArea: true,
+      builder: (modalCtx) {
+        final screenHeight = MediaQuery.of(modalCtx).size.height;
+        final dailyGate = DungeonGateModel.getDailyGate();
+
+        return Container(
+          height: screenHeight * 0.82,
+          decoration: BoxDecoration(
+            color: const Color(0xFF110C19),
+            borderRadius: const BorderRadius.only(
+              topLeft: Radius.circular(24),
+              topRight: Radius.circular(24),
+            ),
+            border: Border.all(
+              color: const Color(0xFF00F4FE).withValues(alpha: 0.8),
+              width: 1.5,
+            ),
+            boxShadow: [
+              BoxShadow(
+                color: const Color(0xFF00F4FE).withValues(alpha: 0.25),
+                blurRadius: 24,
+                offset: const Offset(0, -4),
+              ),
+            ],
+          ),
+          child: Column(
+            children: [
+              // Drag Handle
+              Container(
+                margin: const EdgeInsets.only(top: 10, bottom: 8),
+                width: 44,
+                height: 4,
+                decoration: BoxDecoration(
+                  color: const Color(0xFF383241),
+                  borderRadius: BorderRadius.circular(2),
+                ),
+              ),
+
+              // Header
+              Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 18, vertical: 8),
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(
+                          'DUNGEON GATE DIRECTORY',
+                          style: GoogleFonts.orbitron(
+                            fontSize: 14,
+                            fontWeight: FontWeight.w900,
+                            letterSpacing: 1.2,
+                            color: const Color(0xFF00F4FE),
+                          ),
+                        ),
+                        const SizedBox(height: 2),
+                        Text(
+                          'Rotasi Harian Lokasi Positif (Kampus, Stadion, Taman)',
+                          style: GoogleFonts.plusJakartaSans(
+                            fontSize: 10.5,
+                            color: const Color(0xFF9B8BA1),
+                          ),
+                        ),
+                      ],
+                    ),
+                    IconButton(
+                      icon: const Icon(Icons.close_rounded, color: Color(0xFF9B8BA1)),
+                      onPressed: () => Navigator.pop(modalCtx),
+                    ),
+                  ],
+                ),
+              ),
+
+              const Divider(color: Color(0xFF2C1E4E), height: 1),
+
+              // List of Positive Dungeons
+              Expanded(
+                child: ListView.builder(
+                  padding: const EdgeInsets.all(14),
+                  itemCount: DungeonGateModel.positiveDungeons.length,
+                  itemBuilder: (context, index) {
+                    final gate = DungeonGateModel.positiveDungeons[index];
+                    final isSelected = gate.id == _activeGate.id;
+                    final isDaily = gate.id == dailyGate.id;
+
+                    double? distFromUser;
+                    if (userLocation != null) {
+                      distFromUser = Geolocator.distanceBetween(
+                        userLocation!.latitude,
+                        userLocation!.longitude,
+                        gate.latitude,
+                        gate.longitude,
+                      );
+                    }
+
+                    IconData locationIcon = Icons.place_rounded;
+                    if (gate.iconType == 'campus') locationIcon = Icons.school_rounded;
+                    if (gate.iconType == 'stadium') locationIcon = Icons.stadium_rounded;
+                    if (gate.iconType == 'park') locationIcon = Icons.park_rounded;
+                    if (gate.iconType == 'library') locationIcon = Icons.local_library_rounded;
+                    if (gate.iconType == 'sport') locationIcon = Icons.fitness_center_rounded;
+
+                    final isRed = gate.gateType.contains('RED');
+                    final isPurple = gate.gateType.contains('PURPLE');
+                    final gateColor = isRed
+                        ? const Color(0xFFFF2A6D)
+                        : (isPurple ? const Color(0xFFB026FF) : const Color(0xFF00F4FE));
+
+                    return Container(
+                      margin: const EdgeInsets.only(bottom: 12),
+                      decoration: BoxDecoration(
+                        color: isSelected
+                            ? const Color(0xFF1F1927)
+                            : const Color(0xFF150F1F),
+                        borderRadius: BorderRadius.circular(14),
+                        border: Border.all(
+                          color: isSelected
+                              ? const Color(0xFF00F4FE)
+                              : (isDaily
+                                  ? const Color(0xFFB026FF).withValues(alpha: 0.6)
+                                  : const Color(0xFF2C1E4E)),
+                          width: isSelected ? 1.4 : 1.0,
+                        ),
+                        boxShadow: isSelected
+                            ? [
+                                BoxShadow(
+                                  color: const Color(0xFF00F4FE).withValues(alpha: 0.2),
+                                  blurRadius: 12,
+                                ),
+                              ]
+                            : null,
+                      ),
+                      child: InkWell(
+                        borderRadius: BorderRadius.circular(14),
+                        onTap: () {
+                          setState(() {
+                            _activeGate = gate;
+                            _debugAtUserLocation = false;
+                            _targetGate = gate.coordinates;
+                            if (userLocation != null) {
+                              distance = Geolocator.distanceBetween(
+                                userLocation!.latitude,
+                                userLocation!.longitude,
+                                _targetGate.latitude,
+                                _targetGate.longitude,
+                              );
+                            }
+                            _checkIfTodayDungeonClaimed();
+                          });
+                          _mapController.move(_targetGate, 16.5);
+                          Navigator.pop(modalCtx);
+                          ScaffoldMessenger.of(context).showSnackBar(
+                            SnackBar(
+                              content: Text(
+                                'Gate aktif: ${gate.name} (${gate.locationName})',
+                                style: GoogleFonts.spaceGrotesk(
+                                  color: Colors.white,
+                                  fontWeight: FontWeight.w700,
+                                ),
+                              ),
+                              backgroundColor: const Color(0xFF008389),
+                              duration: const Duration(seconds: 2),
+                            ),
+                          );
+                        },
+                        child: Padding(
+                          padding: const EdgeInsets.all(12),
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Row(
+                                children: [
+                                  Container(
+                                    width: 38,
+                                    height: 38,
+                                    decoration: BoxDecoration(
+                                      color: gateColor.withValues(alpha: 0.15),
+                                      borderRadius: BorderRadius.circular(10),
+                                      border: Border.all(color: gateColor.withValues(alpha: 0.4)),
+                                    ),
+                                    child: Icon(locationIcon, color: gateColor, size: 20),
+                                  ),
+                                  const SizedBox(width: 10),
+                                  Expanded(
+                                    child: Column(
+                                      crossAxisAlignment: CrossAxisAlignment.start,
+                                      children: [
+                                        Row(
+                                          children: [
+                                            Expanded(
+                                              child: Text(
+                                                gate.name,
+                                                style: GoogleFonts.spaceGrotesk(
+                                                  fontSize: 12,
+                                                  fontWeight: FontWeight.w800,
+                                                  color: Colors.white,
+                                                ),
+                                                overflow: TextOverflow.ellipsis,
+                                              ),
+                                            ),
+                                            if (isDaily) ...[
+                                              const SizedBox(width: 4),
+                                              Container(
+                                                padding: const EdgeInsets.symmetric(horizontal: 5, vertical: 1.5),
+                                                decoration: BoxDecoration(
+                                                  color: const Color(0xFF00F4FE).withValues(alpha: 0.2),
+                                                  borderRadius: BorderRadius.circular(4),
+                                                  border: Border.all(color: const Color(0xFF00F4FE), width: 0.6),
+                                                ),
+                                                child: Text(
+                                                  'HARI INI',
+                                                  style: GoogleFonts.spaceGrotesk(
+                                                    fontSize: 8,
+                                                    fontWeight: FontWeight.w900,
+                                                    color: const Color(0xFF00F4FE),
+                                                  ),
+                                                ),
+                                              ),
+                                            ],
+                                          ],
+                                        ),
+                                        const SizedBox(height: 2),
+                                        Text(
+                                          gate.locationName,
+                                          style: GoogleFonts.plusJakartaSans(
+                                            fontSize: 10,
+                                            color: const Color(0xFF9B8BA1),
+                                          ),
+                                          overflow: TextOverflow.ellipsis,
+                                        ),
+                                      ],
+                                    ),
+                                  ),
+                                ],
+                              ),
+                              const SizedBox(height: 8),
+                              Container(
+                                padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                                decoration: BoxDecoration(
+                                  color: const Color(0xFF110C19).withValues(alpha: 0.8),
+                                  borderRadius: BorderRadius.circular(6),
+                                ),
+                                child: Row(
+                                  children: [
+                                    const Icon(Icons.eco_rounded, size: 12, color: Color(0xFF00F4FE)),
+                                    const SizedBox(width: 5),
+                                    Expanded(
+                                      child: Text(
+                                        gate.positiveActivity,
+                                        style: GoogleFonts.plusJakartaSans(
+                                          fontSize: 9.5,
+                                          color: const Color(0xFFE9DEF2),
+                                        ),
+                                        maxLines: 1,
+                                        overflow: TextOverflow.ellipsis,
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                              ),
+                              const SizedBox(height: 8),
+                              Row(
+                                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                children: [
+                                  Row(
+                                    children: [
+                                      Container(
+                                        padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
+                                        decoration: BoxDecoration(
+                                          color: gateColor.withValues(alpha: 0.2),
+                                          borderRadius: BorderRadius.circular(4),
+                                        ),
+                                        child: Text(
+                                          '${gate.rank} • ${gate.gateType}',
+                                          style: GoogleFonts.spaceGrotesk(
+                                            fontSize: 8.5,
+                                            fontWeight: FontWeight.w800,
+                                            color: gateColor,
+                                          ),
+                                        ),
+                                      ),
+                                      const SizedBox(width: 6),
+                                      Text(
+                                        '+${gate.expReward} EXP / +${gate.goldReward} G',
+                                        style: GoogleFonts.spaceGrotesk(
+                                          fontSize: 9.5,
+                                          fontWeight: FontWeight.w700,
+                                          color: const Color(0xFFFFD166),
+                                        ),
+                                      ),
+                                    ],
+                                  ),
+                                  if (distFromUser != null)
+                                    Text(
+                                      distFromUser >= 1000
+                                          ? '${(distFromUser / 1000).toStringAsFixed(1)} KM'
+                                          : '${distFromUser.toStringAsFixed(0)} M',
+                                      style: GoogleFonts.spaceGrotesk(
+                                        fontSize: 9.5,
+                                        fontWeight: FontWeight.w700,
+                                        color: const Color(0xFF00F4FE),
+                                      ),
+                                    ),
+                                ],
+                              ),
+                            ],
+                          ),
+                        ),
+                      ),
+                    );
+                  },
+                ),
+              ),
+            ],
+          ),
+        );
+      },
+    );
+  }
+
+  /// 4. Map Floating Controls (Recenter, Reset North, Explorer, Debug)
   Widget _buildMapControls() {
     return Column(
       children: [
+        // Gate Directory Explorer Button
+        InkWell(
+          borderRadius: BorderRadius.circular(10),
+          onTap: () => _openGateSelectorModal(context),
+          child: Container(
+            width: 38,
+            height: 38,
+            decoration: BoxDecoration(
+              color: const Color(0xFF2D2736).withValues(alpha: 0.9),
+              borderRadius: BorderRadius.circular(10),
+              border: Border.all(color: const Color(0xFF00F4FE).withValues(alpha: 0.6), width: 1.0),
+              boxShadow: [
+                BoxShadow(
+                  color: const Color(0xFF00F4FE).withValues(alpha: 0.35),
+                  blurRadius: 10,
+                ),
+              ],
+            ),
+            child: const Icon(Icons.explore_rounded, color: Color(0xFF00F4FE), size: 20),
+          ),
+        ),
+        const SizedBox(height: 8),
+
+        // Debug Proximity Button (Set Gate ke Lokasi Saya)
+        InkWell(
+          borderRadius: BorderRadius.circular(10),
+          onTap: () {
+            setState(() {
+              _debugAtUserLocation = !_debugAtUserLocation;
+              if (userLocation != null) {
+                if (_debugAtUserLocation) {
+                  _targetGate = LatLng(userLocation!.latitude + 0.00012, userLocation!.longitude + 0.00012);
+                } else {
+                  _targetGate = _activeGate.coordinates;
+                }
+                distance = Geolocator.distanceBetween(
+                  userLocation!.latitude,
+                  userLocation!.longitude,
+                  _targetGate.latitude,
+                  _targetGate.longitude,
+                );
+              }
+            });
+            ScaffoldMessenger.of(context).showSnackBar(
+              SnackBar(
+                content: Text(
+                  _debugAtUserLocation
+                      ? '⚡ Mode Debug: Gate dipindahkan ke posisi Anda (~15m) untuk pengujian klaim!'
+                      : '🌐 Mode Normal: Gate dikembalikan ke koordinat ${_activeGate.locationName}',
+                  style: GoogleFonts.spaceGrotesk(color: Colors.white, fontWeight: FontWeight.w700),
+                ),
+                backgroundColor: _debugAtUserLocation ? const Color(0xFF008389) : const Color(0xFF1F1927),
+                duration: const Duration(seconds: 2),
+              ),
+            );
+          },
+          child: Container(
+            width: 38,
+            height: 38,
+            decoration: BoxDecoration(
+              color: _debugAtUserLocation
+                  ? const Color(0xFF00F4FE).withValues(alpha: 0.25)
+                  : const Color(0xFF2D2736).withValues(alpha: 0.9),
+              borderRadius: BorderRadius.circular(10),
+              border: Border.all(
+                color: _debugAtUserLocation ? const Color(0xFF00F4FE) : const Color(0xFFB026FF).withValues(alpha: 0.5),
+                width: 1.0,
+              ),
+              boxShadow: [
+                BoxShadow(
+                  color: _debugAtUserLocation
+                      ? const Color(0xFF00F4FE).withValues(alpha: 0.4)
+                      : const Color(0xFFB026FF).withValues(alpha: 0.2),
+                  blurRadius: 10,
+                ),
+              ],
+            ),
+            child: Icon(
+              _debugAtUserLocation ? Icons.gps_fixed_rounded : Icons.bug_report_rounded,
+              color: _debugAtUserLocation ? const Color(0xFF00F4FE) : const Color(0xFFE5B5FF),
+              size: 19,
+            ),
+          ),
+        ),
+        const SizedBox(height: 8),
+
         // Recenter Button
         InkWell(
           borderRadius: BorderRadius.circular(10),
@@ -973,19 +1418,25 @@ class _TabMapState extends State<TabMap> with SingleTickerProviderStateMixin {
 
   /// Marker Gate Dungeon (Pill + Cyclone Vortex + Lat/Lng)
   Widget _buildGateMarker() {
+    final isRedGate = _activeGate.gateType.contains('RED');
+    final isPurpleGate = _activeGate.gateType.contains('PURPLE');
+    final gateColor = isRedGate
+        ? const Color(0xFFFF2A6D)
+        : (isPurpleGate ? const Color(0xFFB026FF) : const Color(0xFF00F4FE));
+
     return Column(
       mainAxisSize: MainAxisSize.min,
       children: [
-        // Gate Status Pill: RANK E BLUE GATE
+        // Gate Status Pill: RANK & GATE TYPE
         Container(
           padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
           decoration: BoxDecoration(
             color: const Color(0xFF110C19).withValues(alpha: 0.95),
             borderRadius: BorderRadius.circular(20),
-            border: Border.all(color: const Color(0xFF00F4FE), width: 1.0),
+            border: Border.all(color: gateColor, width: 1.0),
             boxShadow: [
               BoxShadow(
-                color: const Color(0xFF00F4FE).withValues(alpha: 0.5),
+                color: gateColor.withValues(alpha: 0.5),
                 blurRadius: 12,
               ),
             ],
@@ -996,19 +1447,19 @@ class _TabMapState extends State<TabMap> with SingleTickerProviderStateMixin {
               Container(
                 width: 5,
                 height: 5,
-                decoration: const BoxDecoration(
+                decoration: BoxDecoration(
                   shape: BoxShape.circle,
-                  color: Color(0xFF00F4FE),
+                  color: gateColor,
                 ),
               ),
               const SizedBox(width: 4),
               Text(
-                'RANK E BLUE GATE',
+                '${_activeGate.rank} ${_activeGate.gateType}',
                 style: GoogleFonts.spaceGrotesk(
                   fontSize: 8.5,
                   fontWeight: FontWeight.w800,
                   letterSpacing: 0.8,
-                  color: const Color(0xFF00F4FE),
+                  color: gateColor,
                 ),
               ),
             ],
@@ -1023,14 +1474,14 @@ class _TabMapState extends State<TabMap> with SingleTickerProviderStateMixin {
           height: 54,
           decoration: BoxDecoration(
             borderRadius: BorderRadius.circular(16),
-            gradient: const LinearGradient(
-              colors: [Color(0xFF00F4FE), Color(0xFFB026FF)],
+            gradient: LinearGradient(
+              colors: [gateColor, const Color(0xFFB026FF)],
               begin: Alignment.topLeft,
               end: Alignment.bottomRight,
             ),
             boxShadow: [
               BoxShadow(
-                color: const Color(0xFF00F4FE).withValues(alpha: 0.6),
+                color: gateColor.withValues(alpha: 0.6),
                 blurRadius: 20,
               ),
             ],
@@ -1044,9 +1495,9 @@ class _TabMapState extends State<TabMap> with SingleTickerProviderStateMixin {
             child: Center(
               child: RotationTransition(
                 turns: _sweepAnimController,
-                child: const Icon(
+                child: Icon(
                   Icons.cyclone_rounded,
-                  color: Color(0xFF00F4FE),
+                  color: gateColor,
                   size: 32,
                 ),
               ),
@@ -1217,28 +1668,31 @@ class _TabMapState extends State<TabMap> with SingleTickerProviderStateMixin {
                           children: [
                             const Icon(Icons.near_me_rounded, color: Color(0xFF00F4FE), size: 16),
                             const SizedBox(width: 6),
-                            Column(
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: [
-                                Text(
-                                  'TARGET LOCK',
-                                  style: GoogleFonts.spaceGrotesk(
-                                    fontSize: 8.5,
-                                    fontWeight: FontWeight.w700,
-                                    letterSpacing: 0.8,
-                                    color: const Color(0xFFDCB8FC),
+                            Expanded(
+                              child: Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  Text(
+                                    'TARGET LOCK',
+                                    style: GoogleFonts.spaceGrotesk(
+                                      fontSize: 8.5,
+                                      fontWeight: FontWeight.w700,
+                                      letterSpacing: 0.8,
+                                      color: const Color(0xFFDCB8FC),
+                                    ),
                                   ),
-                                ),
-                                Text(
-                                  'Area Kampus Terpadu',
-                                  style: GoogleFonts.plusJakartaSans(
-                                    fontSize: 11,
-                                    fontWeight: FontWeight.w700,
-                                    color: const Color(0xFFE9DEF2),
+                                  Text(
+                                    _activeGate.name,
+                                    style: GoogleFonts.plusJakartaSans(
+                                      fontSize: 11,
+                                      fontWeight: FontWeight.w700,
+                                      color: const Color(0xFFE9DEF2),
+                                    ),
+                                    maxLines: 1,
+                                    overflow: TextOverflow.ellipsis,
                                   ),
-                                  overflow: TextOverflow.ellipsis,
-                                ),
-                              ],
+                                ],
+                              ),
                             ),
                           ],
                         ),
@@ -1326,7 +1780,7 @@ class _TabMapState extends State<TabMap> with SingleTickerProviderStateMixin {
                       ),
                       const SizedBox(height: 6),
                       Text(
-                        '+50 EXP',
+                        '+${_activeGate.expReward} EXP',
                         style: GoogleFonts.spaceGrotesk(
                           fontSize: 11,
                           fontWeight: FontWeight.w800,
@@ -1335,7 +1789,7 @@ class _TabMapState extends State<TabMap> with SingleTickerProviderStateMixin {
                         ),
                       ),
                       Text(
-                        '+100 GOLD',
+                        '+${_activeGate.goldReward} GOLD',
                         style: GoogleFonts.spaceGrotesk(
                           fontSize: 11,
                           fontWeight: FontWeight.w800,
@@ -1348,6 +1802,81 @@ class _TabMapState extends State<TabMap> with SingleTickerProviderStateMixin {
                 ),
               ),
             ],
+          ),
+
+          // Positive Activity Banner
+          Container(
+            width: double.infinity,
+            margin: const EdgeInsets.only(top: 10),
+            padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 7),
+            decoration: BoxDecoration(
+              color: const Color(0xFF110C19).withValues(alpha: 0.85),
+              borderRadius: BorderRadius.circular(10),
+              border: Border.all(
+                color: const Color(0xFF00F4FE).withValues(alpha: 0.35),
+                width: 0.8,
+              ),
+            ),
+            child: Row(
+              children: [
+                Container(
+                  padding: const EdgeInsets.all(4),
+                  decoration: BoxDecoration(
+                    color: const Color(0xFF00F4FE).withValues(alpha: 0.15),
+                    borderRadius: BorderRadius.circular(6),
+                  ),
+                  child: const Icon(Icons.volunteer_activism_rounded, size: 14, color: Color(0xFF00F4FE)),
+                ),
+                const SizedBox(width: 8),
+                Expanded(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        'KEGIATAN POSITIF DI LOKASI INI',
+                        style: GoogleFonts.spaceGrotesk(
+                          fontSize: 8.0,
+                          fontWeight: FontWeight.w800,
+                          letterSpacing: 0.8,
+                          color: const Color(0xFF00F4FE),
+                        ),
+                      ),
+                      const SizedBox(height: 1),
+                      Text(
+                        _activeGate.positiveActivity,
+                        style: GoogleFonts.plusJakartaSans(
+                          fontSize: 10,
+                          fontWeight: FontWeight.w600,
+                          color: const Color(0xFFE9DEF2),
+                        ),
+                        maxLines: 1,
+                        overflow: TextOverflow.ellipsis,
+                      ),
+                    ],
+                  ),
+                ),
+                InkWell(
+                  onTap: () => _openGateSelectorModal(context),
+                  borderRadius: BorderRadius.circular(6),
+                  child: Container(
+                    padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 3),
+                    decoration: BoxDecoration(
+                      color: const Color(0xFF2D2736),
+                      borderRadius: BorderRadius.circular(6),
+                      border: Border.all(color: const Color(0xFFB026FF).withValues(alpha: 0.5)),
+                    ),
+                    child: Text(
+                      'PILIH',
+                      style: GoogleFonts.spaceGrotesk(
+                        fontSize: 8.5,
+                        fontWeight: FontWeight.w800,
+                        color: const Color(0xFFE5B5FF),
+                      ),
+                    ),
+                  ),
+                ),
+              ],
+            ),
           ),
 
           const SizedBox(height: 12),

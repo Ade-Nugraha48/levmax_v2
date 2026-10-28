@@ -135,14 +135,23 @@ flowchart TD
 
 ### FASE 4: Eksplorasi Dunia Nyata via LBS (Tab 2 - Map)
 1. **Membuka Tab LBS (`tab_map.dart`):**
-   * Peta berbasis OpenStreetMap (`flutter_map`) muncul secara mulus.
-   * GPS perangkat (`geolocator`) mengambil titik koordinat pengguna saat ini.
-2. **Menemukan Titik "Dungeon Secret Portal":**
-   * Di peta terlihat *Marker* khusus bertema portal dungeon di sekitar area kampus.
-3. **Klaim Hadiah Berbasis Lokasi:**
-   * Pengguna mendekati lokasi fisik hingga jarak kurang dari 100 meter (dihitung otomatis via `Geolocator.distanceBetween`).
-   * Tombol **"Klaim Hadiah Dungeon"** berubah menjadi aktif.
-   * Saat ditekan, pengguna menerima bonus besar: **+50 EXP & +100 Gold** (klaim dibatasi 1x seminggu).
+   * Peta berbasis OpenStreetMap (`flutter_map`) muncul secara mulus dengan tema dark cyberpunk Solo Leveling.
+   * GPS perangkat (`geolocator`) mengambil titik koordinat hunter saat ini secara real-time.
+2. **Rotasi Harian Lokasi Positif (`DungeonGateModel`):**
+   * Setiap hari, Dungeon Gate berpindah secara otomatis ke salah satu titik ruang publik positif di Daerah Istimewa Yogyakarta:
+     1. **Kampus 2 UPN Veteran Yogyakarta (Babarsari):** Riset teknologi di lab, belajar kelompok, & penulisan ilmiah.
+     2. **Stadion Maguwoharjo (Sleman):** Jogging stamina 3 putaran lapangan, sprint, & kebugaran fisik.
+     3. **Embung Tambakboyo (Condongcatur):** Jalan santai keliling danau & relaksasi pernapasan mana.
+     4. **Grhatama Pustaka DIY:** Membaca buku pengembangan diri & literasi akademis.
+     5. **Stadion Atletik & GOR UNY:** Latihan kalistenik push-up/pull-up & peregangan tubuh.
+     6. **Taman Denggung (Sleman):** Rekreasi ruang terbuka hijau & jalan santai positif.
+     7. **Kampus 1 UPN Veteran Yogyakarta (Condongcatur):** Perkuliahan disiplin waktu & kepemimpinan organisasi.
+   * Hunter dapat menekan tombol **Explorer (`Icons.explore_rounded`)** untuk membuka modal direktori seluruh Gate dan memilih gate mana pun secara fleksibel.
+3. **Klaim Hadiah Berbasis Lokasi & Mode Debug:**
+   * Hunter mendekati lokasi fisik hingga jarak <= 100 meter (dihitung via `Geolocator.distanceBetween`).
+   * Disediakan tombol **Debug Proximity (`Icons.gps_fixed_rounded`)** yang memindahkan Gate secara instan ke posisi Hunter (~15m) untuk keperluan pengujian dan verifikasi langsung tanpa harus berpindah tempat.
+   * Tombol **"KLAIM HADIAH DUNGEON"** berubah aktif bercahaya cyan.
+   * Saat ditekan, status dungeon hari ini tersimpan di Hive (`dungeon_<id>`), EXP & Gold bertambah sesuai spesifikasi gate, dan rank dihitung ulang secara real-time.
 
 ---
 

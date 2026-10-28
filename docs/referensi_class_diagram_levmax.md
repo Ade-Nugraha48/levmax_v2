@@ -92,6 +92,20 @@ classDiagram
         +String status
     }
 
+    class DungeonGateModel {
+        +String id
+        +String name
+        +String locationName
+        +double latitude
+        +double longitude
+        +String rank
+        +String gateType
+        +String positiveActivity
+        +int expReward
+        +int goldReward
+        +getDailyGate() DungeonGateModel$
+    }
+
     %% ==========================================
     %% 2. FEATURE MODULES / SCREENS
     %% ==========================================
@@ -196,6 +210,7 @@ classDiagram
     ShopBlockchainScreen o-- TransactionRecord : records
     ProfileModule o-- UserModel : displays profile
     ChatAIModule o-- AIPersona : applies persona
+    DungeonMapScreen o-- DungeonGateModel : tracks active daily gate
 
     %% UI to Services
     AuthModule ..> SupabaseService : verifies credentials
