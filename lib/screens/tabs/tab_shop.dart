@@ -1123,120 +1123,148 @@ class _TabShopState extends State<TabShop> {
 
             // Modal Header
             Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
-                Row(
-                  children: [
-                    Container(
-                      padding: const EdgeInsets.all(6),
-                      decoration: BoxDecoration(
-                        color: const Color(0xFF00F4FE).withValues(alpha: 0.15),
-                        borderRadius: BorderRadius.circular(8),
-                      ),
-                      child: const Icon(Icons.hub_rounded, color: Color(0xFF00F4FE), size: 20),
-                    ),
-                    const SizedBox(width: 10),
-                    Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Text(
-                          'BLOCKCHAIN LEDGER',
-                          style: GoogleFonts.spaceGrotesk(
-                            fontSize: 14,
-                            fontWeight: FontWeight.w900,
-                            letterSpacing: 1.0,
-                            color: const Color(0xFFE9DEF2),
+                Container(
+                  padding: const EdgeInsets.all(7),
+                  decoration: BoxDecoration(
+                    color: const Color(0xFF00F4FE).withValues(alpha: 0.15),
+                    borderRadius: BorderRadius.circular(8),
+                    border: Border.all(color: const Color(0xFF00F4FE).withValues(alpha: 0.3)),
+                  ),
+                  child: const Icon(Icons.hub_rounded, color: Color(0xFF00F4FE), size: 20),
+                ),
+                const SizedBox(width: 10),
+                Expanded(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Row(
+                        children: [
+                          Flexible(
+                            child: Text(
+                              'BLOCKCHAIN LEDGER',
+                              style: GoogleFonts.spaceGrotesk(
+                                fontSize: 13.5,
+                                fontWeight: FontWeight.w900,
+                                letterSpacing: 0.8,
+                                color: const Color(0xFFE9DEF2),
+                              ),
+                              overflow: TextOverflow.ellipsis,
+                            ),
                           ),
+                          const SizedBox(width: 6),
+                          Container(
+                            padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
+                            decoration: BoxDecoration(
+                              color: const Color(0xFF00F4FE).withValues(alpha: 0.15),
+                              borderRadius: BorderRadius.circular(8),
+                              border: Border.all(color: const Color(0xFF00F4FE).withValues(alpha: 0.4)),
+                            ),
+                            child: Text(
+                              '${logs.length} BLOK',
+                              style: GoogleFonts.spaceGrotesk(
+                                fontSize: 9.5,
+                                fontWeight: FontWeight.w800,
+                                color: const Color(0xFF00F4FE),
+                              ),
+                            ),
+                          ),
+                        ],
+                      ),
+                      const SizedBox(height: 2),
+                      Text(
+                        'Ethereum Sepolia Explorer (Full Online)',
+                        style: GoogleFonts.plusJakartaSans(
+                          fontSize: 10.5,
+                          color: const Color(0xFF9B8BA1),
                         ),
+                        overflow: TextOverflow.ellipsis,
+                      ),
+                    ],
+                  ),
+                ),
+                const SizedBox(width: 8),
+                InkWell(
+                  borderRadius: BorderRadius.circular(16),
+                  onTap: () => Navigator.pop(context),
+                  child: Container(
+                    padding: const EdgeInsets.all(5),
+                    decoration: BoxDecoration(
+                      color: const Color(0xFF1E1829),
+                      shape: BoxShape.circle,
+                      border: Border.all(color: const Color(0xFF383241)),
+                    ),
+                    child: const Icon(Icons.close_rounded, size: 16, color: Color(0xFFB5A9C2)),
+                  ),
+                ),
+              ],
+            ),
+            const SizedBox(height: 10),
+
+            // Action Bar: Set Key & Reset
+            Row(
+              children: [
+                Expanded(
+                  child: InkWell(
+                    borderRadius: BorderRadius.circular(8),
+                    onTap: _showPrivateKeyConfigDialog,
+                    child: Container(
+                      padding: const EdgeInsets.symmetric(vertical: 6.5, horizontal: 10),
+                      decoration: BoxDecoration(
+                        color: const Color(0xFFB026FF).withValues(alpha: 0.18),
+                        borderRadius: BorderRadius.circular(8),
+                        border: Border.all(color: const Color(0xFFB026FF).withValues(alpha: 0.45)),
+                      ),
+                      child: Row(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          const Icon(Icons.key_rounded, size: 13, color: Color(0xFFE5B5FF)),
+                          const SizedBox(width: 6),
+                          Text(
+                            'SET PRIVATE KEY',
+                            style: GoogleFonts.spaceGrotesk(
+                              fontSize: 10,
+                              fontWeight: FontWeight.w800,
+                              letterSpacing: 0.5,
+                              color: const Color(0xFFE5B5FF),
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                  ),
+                ),
+                const SizedBox(width: 8),
+                InkWell(
+                  borderRadius: BorderRadius.circular(8),
+                  onTap: () async {
+                    Navigator.pop(context);
+                    await _executeResetPurchases();
+                  },
+                  child: Container(
+                    padding: const EdgeInsets.symmetric(vertical: 6.5, horizontal: 12),
+                    decoration: BoxDecoration(
+                      color: const Color(0xFFFF5252).withValues(alpha: 0.15),
+                      borderRadius: BorderRadius.circular(8),
+                      border: Border.all(color: const Color(0xFFFF5252).withValues(alpha: 0.45)),
+                    ),
+                    child: Row(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        const Icon(Icons.restart_alt_rounded, size: 13, color: Color(0xFFFF8A80)),
+                        const SizedBox(width: 4),
                         Text(
-                          'Ethereum Sepolia Explorer (Full Online)',
-                          style: GoogleFonts.plusJakartaSans(
-                            fontSize: 10.5,
-                            color: const Color(0xFF9B8BA1),
+                          'RESET',
+                          style: GoogleFonts.spaceGrotesk(
+                            fontSize: 10,
+                            fontWeight: FontWeight.w800,
+                            letterSpacing: 0.5,
+                            color: const Color(0xFFFF8A80),
                           ),
                         ),
                       ],
                     ),
-                  ],
-                ),
-                Row(
-                  children: [
-                    InkWell(
-                      borderRadius: BorderRadius.circular(8),
-                      onTap: () async {
-                        Navigator.pop(context);
-                        await _executeResetPurchases();
-                      },
-                      child: Container(
-                        padding: const EdgeInsets.symmetric(horizontal: 7, vertical: 3.5),
-                        margin: const EdgeInsets.only(right: 6),
-                        decoration: BoxDecoration(
-                          color: const Color(0xFFFF5252).withValues(alpha: 0.15),
-                          borderRadius: BorderRadius.circular(8),
-                          border: Border.all(color: const Color(0xFFFF5252).withValues(alpha: 0.4)),
-                        ),
-                        child: Row(
-                          mainAxisSize: MainAxisSize.min,
-                          children: [
-                            const Icon(Icons.restart_alt_rounded, size: 12, color: Color(0xFFFF8A80)),
-                            const SizedBox(width: 3),
-                            Text(
-                              'RESET',
-                              style: GoogleFonts.spaceGrotesk(
-                                fontSize: 9.5,
-                                fontWeight: FontWeight.w800,
-                                color: const Color(0xFFFF8A80),
-                              ),
-                            ),
-                          ],
-                        ),
-                      ),
-                    ),
-                    InkWell(
-                      borderRadius: BorderRadius.circular(8),
-                      onTap: _showPrivateKeyConfigDialog,
-                      child: Container(
-                        padding: const EdgeInsets.symmetric(horizontal: 7, vertical: 3.5),
-                        decoration: BoxDecoration(
-                          color: const Color(0xFFB026FF).withValues(alpha: 0.2),
-                          borderRadius: BorderRadius.circular(8),
-                          border: Border.all(color: const Color(0xFFB026FF).withValues(alpha: 0.5)),
-                        ),
-                        child: Row(
-                          mainAxisSize: MainAxisSize.min,
-                          children: [
-                            const Icon(Icons.key_rounded, size: 12, color: Color(0xFFE5B5FF)),
-                            const SizedBox(width: 4),
-                            Text(
-                              'SET KEY',
-                              style: GoogleFonts.spaceGrotesk(
-                                fontSize: 9.5,
-                                fontWeight: FontWeight.w800,
-                                color: const Color(0xFFE5B5FF),
-                              ),
-                            ),
-                          ],
-                        ),
-                      ),
-                    ),
-                    const SizedBox(width: 6),
-                    Container(
-                      padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
-                      decoration: BoxDecoration(
-                        color: const Color(0xFF00F4FE).withValues(alpha: 0.15),
-                        borderRadius: BorderRadius.circular(12),
-                        border: Border.all(color: const Color(0xFF00F4FE).withValues(alpha: 0.4)),
-                      ),
-                      child: Text(
-                        '${logs.length} BLOK',
-                        style: GoogleFonts.spaceGrotesk(
-                          fontSize: 10,
-                          fontWeight: FontWeight.w800,
-                          color: const Color(0xFF00F4FE),
-                        ),
-                      ),
-                    ),
-                  ],
+                  ),
                 ),
               ],
             ),
@@ -1326,21 +1354,28 @@ class _TabShopState extends State<TabShop> {
                               Row(
                                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                                 children: [
-                                  Row(
-                                    children: [
-                                      const Icon(Icons.token_rounded, color: Color(0xFFFFD166), size: 16),
-                                      const SizedBox(width: 6),
-                                      Text(
-                                        item,
-                                        style: GoogleFonts.spaceGrotesk(
-                                          fontSize: 13,
-                                          fontWeight: FontWeight.w800,
-                                          color: const Color(0xFFE9DEF2),
+                                  Expanded(
+                                    child: Row(
+                                      children: [
+                                        const Icon(Icons.token_rounded, color: Color(0xFFFFD166), size: 16),
+                                        const SizedBox(width: 6),
+                                        Expanded(
+                                          child: Text(
+                                            item,
+                                            style: GoogleFonts.spaceGrotesk(
+                                              fontSize: 13,
+                                              fontWeight: FontWeight.w800,
+                                              color: const Color(0xFFE9DEF2),
+                                            ),
+                                            overflow: TextOverflow.ellipsis,
+                                          ),
                                         ),
-                                      ),
-                                    ],
+                                      ],
+                                    ),
                                   ),
+                                  const SizedBox(width: 8),
                                   Row(
+                                    mainAxisSize: MainAxisSize.min,
                                     children: [
                                       Container(
                                         padding: const EdgeInsets.symmetric(horizontal: 5, vertical: 2),
@@ -2563,28 +2598,34 @@ class _TabShopState extends State<TabShop> {
           child: Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
-              Row(
-                children: [
-                  Container(
-                    width: 32,
-                    height: 32,
-                    decoration: BoxDecoration(
-                      color: const Color(0xFF2D2736),
-                      borderRadius: BorderRadius.circular(8),
+              Expanded(
+                child: Row(
+                  children: [
+                    Container(
+                      width: 32,
+                      height: 32,
+                      decoration: BoxDecoration(
+                        color: const Color(0xFF2D2736),
+                        borderRadius: BorderRadius.circular(8),
+                      ),
+                      child: const Icon(Icons.hub_rounded, size: 18, color: Color(0xFF00F4FE)),
                     ),
-                    child: const Icon(Icons.hub_rounded, size: 18, color: Color(0xFF00F4FE)),
-                  ),
-                  const SizedBox(width: 10),
-                  Text(
-                    'Lihat Log Transaksi Blockchain (Ledger)',
-                    style: GoogleFonts.spaceGrotesk(
-                      fontSize: 11,
-                      fontWeight: FontWeight.w700,
-                      color: const Color(0xFFE9DEF2),
+                    const SizedBox(width: 10),
+                    Expanded(
+                      child: Text(
+                        'Lihat Log Transaksi Blockchain (Ledger)',
+                        style: GoogleFonts.spaceGrotesk(
+                          fontSize: 11,
+                          fontWeight: FontWeight.w700,
+                          color: const Color(0xFFE9DEF2),
+                        ),
+                        overflow: TextOverflow.ellipsis,
+                      ),
                     ),
-                  ),
-                ],
+                  ],
+                ),
               ),
+              const SizedBox(width: 8),
               const Icon(Icons.arrow_forward_rounded, size: 18, color: Color(0xFF00F4FE)),
             ],
           ),
