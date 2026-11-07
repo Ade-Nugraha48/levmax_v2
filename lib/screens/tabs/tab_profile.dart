@@ -258,10 +258,10 @@ class _TabProfileState extends State<TabProfile> {
     final bool? confirm = await showDialog<bool>(
       context: context,
       builder: (ctx) => AlertDialog(
-        backgroundColor: const Color(0xFF140D24),
+        backgroundColor: const Color(0xFF140D24), // [UBAH_WARNA: Dialog Logout Background]
         shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.circular(16),
-          side: const BorderSide(color: Color(0xFFFF4D4D), width: 1.0),
+          side: const BorderSide(color: Color(0xFFFF4D4D), width: 1.0), // [UBAH_WARNA: Dialog Logout Border]
         ),
         title: Row(
           children: [
@@ -291,7 +291,7 @@ class _TabProfileState extends State<TabProfile> {
           ),
           ElevatedButton(
             style: ElevatedButton.styleFrom(
-              backgroundColor: const Color(0xFF93000A),
+              backgroundColor: const Color(0xFF93000A), // [UBAH_WARNA: Tombol Konfirmasi Logout Background]
               foregroundColor: Colors.white,
               shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
             ),
@@ -484,7 +484,7 @@ class _TabProfileState extends State<TabProfile> {
             Container(
               padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
               decoration: BoxDecoration(
-                color: const Color(0xFF2D2736),
+                color: const Color(0xFF2D2736), // [UBAH_WARNA: Header Rank Pill Background]
                 borderRadius: BorderRadius.circular(6),
               ),
               child: Text(
@@ -493,7 +493,7 @@ class _TabProfileState extends State<TabProfile> {
                   fontSize: 10,
                   fontWeight: FontWeight.w800,
                   letterSpacing: 0.8,
-                  color: const Color(0xFF00F4FE),
+                  color: const Color(0xFF00F4FE), // [UBAH_WARNA: Header Rank Pill Teks]
                 ),
               ),
             ),
@@ -528,7 +528,7 @@ class _TabProfileState extends State<TabProfile> {
                   style: GoogleFonts.sora(
                     fontSize: 14,
                     fontWeight: FontWeight.w700,
-                    color: const Color(0xFFE9DEF2),
+                    color: const Color(0xFFE9DEF2), // [UBAH_WARNA: Header Judul Profil]
                   ),
                 ),
               ],
@@ -657,9 +657,9 @@ class _TabProfileState extends State<TabProfile> {
     return Container(
       width: double.infinity,
       decoration: BoxDecoration(
-        color: const Color(0xFF1F1927),
+        color: const Color(0xFF1F1927), // [UBAH_WARNA: Card Hunter ID Background]
         borderRadius: BorderRadius.circular(16),
-        border: Border.all(color: const Color(0xFF2C1E4E), width: 0.8),
+        border: Border.all(color: const Color(0xFF2C1E4E), width: 0.8), // [UBAH_WARNA: Card Hunter ID Border]
         boxShadow: [
           BoxShadow(
             color: const Color(0xFFB026FF).withValues(alpha: 0.15),
@@ -758,7 +758,7 @@ class _TabProfileState extends State<TabProfile> {
                           child: Container(
                             padding: const EdgeInsets.all(5.5),
                             decoration: BoxDecoration(
-                              color: const Color(0xFF00F4FE),
+                              color: const Color(0xFF00F4FE), // [UBAH_WARNA: Tombol Ganti Avatar Mini Background]
                               shape: BoxShape.circle,
                               border: Border.all(
                                 color: const Color(0xFF1F1927),
@@ -794,12 +794,12 @@ class _TabProfileState extends State<TabProfile> {
                       style: GoogleFonts.sora(
                         fontSize: 18,
                         fontWeight: FontWeight.w800,
-                        color: const Color(0xFFE9DEF2),
+                        color: const Color(0xFFE9DEF2), // [UBAH_WARNA: Nama Hunter Profile]
                         letterSpacing: -0.3,
                       ),
                     ),
                     const SizedBox(width: 6),
-                    const Icon(Icons.verified_rounded, size: 18, color: Color(0xFF00F4FE)),
+                    const Icon(Icons.verified_rounded, size: 18, color: Color(0xFF00F4FE)), // [UBAH_WARNA: Ikon Verified Hunter Profile]
                   ],
                 ),
 
@@ -953,9 +953,9 @@ class _TabProfileState extends State<TabProfile> {
                   width: double.infinity,
                   padding: const EdgeInsets.all(10),
                   decoration: BoxDecoration(
-                    color: const Color(0xFF2D2736),
+                    color: const Color(0xFF2D2736), // [UBAH_WARNA: Box Classification Badge Background]
                     borderRadius: BorderRadius.circular(10),
-                    border: Border.all(color: const Color(0xFF383241)),
+                    border: Border.all(color: const Color(0xFF383241)), // [UBAH_WARNA: Box Classification Badge Border]
                   ),
                   child: Row(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -1006,7 +1006,7 @@ class _TabProfileState extends State<TabProfile> {
                           Container(
                             padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
                             decoration: BoxDecoration(
-                              color: const Color(0xFF110C19),
+                              color: const Color(0xFF110C19), // [UBAH_WARNA: Tier Badge World Background]
                               borderRadius: BorderRadius.circular(4),
                             ),
                             child: Text(
@@ -1014,7 +1014,7 @@ class _TabProfileState extends State<TabProfile> {
                               style: GoogleFonts.spaceGrotesk(
                                 fontSize: 8,
                                 fontWeight: FontWeight.w800,
-                                color: const Color(0xFF00F4FE),
+                                color: const Color(0xFF00F4FE), // [UBAH_WARNA: Tier Badge World Teks]
                               ),
                             ),
                           ),
@@ -1090,9 +1090,9 @@ class _TabProfileState extends State<TabProfile> {
           child: Container(
             padding: const EdgeInsets.all(12),
             decoration: BoxDecoration(
-              color: const Color(0xFF1F1927),
+              color: const Color(0xFF1F1927), // [UBAH_WARNA: Card Total Gold Profile Background]
               borderRadius: BorderRadius.circular(14),
-              border: Border.all(color: const Color(0xFF2C1E4E), width: 0.8),
+              border: Border.all(color: const Color(0xFF2C1E4E), width: 0.8), // [UBAH_WARNA: Card Total Gold Profile Border]
             ),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
@@ -1109,7 +1109,7 @@ class _TabProfileState extends State<TabProfile> {
                         color: const Color(0xFFE5B5FF),
                       ),
                     ),
-                    const Icon(Icons.monetization_on_rounded, size: 16, color: Color(0xFFFFD166)),
+                    const Icon(Icons.monetization_on_rounded, size: 16, color: Color(0xFFFFD166)), // [UBAH_WARNA: Ikon Total Gold Profile]
                   ],
                 ),
                 const SizedBox(height: 8),
@@ -1128,7 +1128,7 @@ class _TabProfileState extends State<TabProfile> {
                         style: GoogleFonts.spaceGrotesk(
                           fontSize: 16,
                           fontWeight: FontWeight.w900,
-                          color: const Color(0xFFFFD166),
+                          color: const Color(0xFFFFD166), // [UBAH_WARNA: Teks Nilai Total Gold Profile]
                         ),
                       );
                     },
@@ -1153,9 +1153,9 @@ class _TabProfileState extends State<TabProfile> {
           child: Container(
             padding: const EdgeInsets.all(12),
             decoration: BoxDecoration(
-              color: const Color(0xFF1F1927),
+              color: const Color(0xFF1F1927), // [UBAH_WARNA: Card Quests Done Profile Background]
               borderRadius: BorderRadius.circular(14),
-              border: Border.all(color: const Color(0xFF2C1E4E), width: 0.8),
+              border: Border.all(color: const Color(0xFF2C1E4E), width: 0.8), // [UBAH_WARNA: Card Quests Done Profile Border]
             ),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
@@ -1172,7 +1172,7 @@ class _TabProfileState extends State<TabProfile> {
                         color: const Color(0xFF00F4FE),
                       ),
                     ),
-                    const Icon(Icons.task_alt_rounded, size: 16, color: Color(0xFF00F4FE)),
+                    const Icon(Icons.task_alt_rounded, size: 16, color: Color(0xFF00F4FE)), // [UBAH_WARNA: Ikon Quests Done Profile]
                   ],
                 ),
                 const SizedBox(height: 8),
@@ -1201,7 +1201,7 @@ class _TabProfileState extends State<TabProfile> {
                         style: GoogleFonts.spaceGrotesk(
                           fontSize: 14,
                           fontWeight: FontWeight.w900,
-                          color: const Color(0xFF00F4FE),
+                          color: const Color(0xFF00F4FE), // [UBAH_WARNA: Teks Nilai Quests Done Profile]
                         ),
                       );
                     },
@@ -1881,7 +1881,7 @@ class _TabProfileState extends State<TabProfile> {
                             'Tersimpan di Supabase',
                             style: GoogleFonts.spaceGrotesk(
                               fontSize: 8.5,
-                              color: const Color(0xFF9B8BA1),
+                              color: const Color(0xFF9B8BA1), // [UBAH_WARNA: Label Tipe Penyimpanan Feedback]
                             ),
                           ),
                         ],
@@ -1983,20 +1983,20 @@ class _TabProfileState extends State<TabProfile> {
           // Textarea Form
           Container(
             decoration: BoxDecoration(
-              color: const Color(0xFF110C19),
+              color: const Color(0xFF110C19), // [UBAH_WARNA: Background Input Saran Kesan]
               borderRadius: BorderRadius.circular(10),
-              border: Border.all(color: const Color(0xFF383241)),
+              border: Border.all(color: const Color(0xFF383241)), // [UBAH_WARNA: Border Input Saran Kesan]
             ),
             child: TextField(
               controller: _feedbackController,
               maxLines: 4,
               maxLength: 500,
-              style: GoogleFonts.plusJakartaSans(fontSize: 12, color: const Color(0xFFE9DEF2)),
+              style: GoogleFonts.plusJakartaSans(fontSize: 12, color: const Color(0xFFE9DEF2)), // [UBAH_WARNA: Warna Teks Input Saran Kesan]
               decoration: InputDecoration(
                 hintText: hasExistingFeedback
                     ? 'Tuliskan pembaruan kesan, pesan, atau saran untuk pengampu di sini...'
                     : 'Tuliskan kesan perkuliahan, tantangan Flutter, serta saran pengembangan aplikasi LevMax ke depan...',
-                hintStyle: GoogleFonts.plusJakartaSans(fontSize: 11, color: const Color(0xFF9B8BA1)),
+                hintStyle: GoogleFonts.plusJakartaSans(fontSize: 11, color: const Color(0xFF9B8BA1)), // [UBAH_WARNA: Hint Input Saran Kesan]
                 contentPadding: const EdgeInsets.all(12),
                 border: InputBorder.none,
                 counterText: '', // Kustom counter di bawah
@@ -2074,7 +2074,7 @@ class _TabProfileState extends State<TabProfile> {
                       : Icon(
                           hasExistingFeedback ? Icons.published_with_changes_rounded : Icons.send_rounded,
                           size: 16,
-                          color: Colors.white,
+                          color: Colors.white, // [UBAH_WARNA: Teks Tombol Submit Feedback]
                         ),
                   const SizedBox(width: 8),
                   Text(
@@ -2121,7 +2121,7 @@ class _TabProfileState extends State<TabProfile> {
             child: Row(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
-                const Icon(Icons.power_settings_new_rounded, size: 18, color: Color(0xFFFFB4AB)),
+                const Icon(Icons.power_settings_new_rounded, size: 18, color: Color(0xFFFFB4AB)), // [UBAH_WARNA: Ikon Tombol Logout]
                 const SizedBox(width: 8),
                 Text(
                   'SYSTEM LOGOUT',
@@ -2129,7 +2129,7 @@ class _TabProfileState extends State<TabProfile> {
                     fontSize: 12,
                     fontWeight: FontWeight.w900,
                     letterSpacing: 1.0,
-                    color: const Color(0xFFFFB4AB),
+                    color: const Color(0xFFFFB4AB), // [UBAH_WARNA: Teks Tombol Logout]
                   ),
                 ),
               ],

@@ -189,7 +189,7 @@ class _StudyFocusScreenState extends State<StudyFocusScreen> with SingleTickerPr
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
       decoration: BoxDecoration(
-        color: const Color(0xFF110C19),
+        color: const Color(0xFF110C19), // [UBAH_WARNA: Header Top Bar Study Focus]
         border: const Border(
           bottom: BorderSide(
             color: Color(0xFF2C1E4E),
@@ -215,7 +215,7 @@ class _StudyFocusScreenState extends State<StudyFocusScreen> with SingleTickerPr
               width: 42,
               height: 42,
               decoration: BoxDecoration(
-                color: const Color(0xFF1F1927),
+                color: const Color(0xFF1F1927), // [UBAH_WARNA: Tombol Kembali Study Focus]
                 borderRadius: BorderRadius.circular(12),
                 border: Border.all(
                   color: const Color(0xFF2C1E4E),
@@ -265,7 +265,7 @@ class _StudyFocusScreenState extends State<StudyFocusScreen> with SingleTickerPr
                       fontSize: 16,
                       fontWeight: FontWeight.w900,
                       letterSpacing: 2.2,
-                      color: const Color(0xFF63F7FF),
+                      color: const Color(0xFF63F7FF), // [UBAH_WARNA: Judul Layar Study Focus]
                     ),
                   ),
                 ],
@@ -287,7 +287,7 @@ class _StudyFocusScreenState extends State<StudyFocusScreen> with SingleTickerPr
           Container(
             padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
             decoration: BoxDecoration(
-              color: const Color(0xFF110C19),
+              color: const Color(0xFF110C19), // [UBAH_WARNA: Tombol Ambient Sound Background]
               borderRadius: BorderRadius.circular(20),
               border: Border.all(
                 color: const Color(0xFF00F4FE).withValues(alpha: 0.3),
@@ -348,10 +348,10 @@ class _StudyFocusScreenState extends State<StudyFocusScreen> with SingleTickerPr
       width: double.infinity,
       padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 10),
       decoration: BoxDecoration(
-        color: const Color(0xFF110C19),
+        color: const Color(0xFF110C19), // [UBAH_WARNA: Banner Postur Belajar Background]
         borderRadius: BorderRadius.circular(12),
         border: Border.all(
-          color: const Color(0xFF2C1E4E),
+          color: const Color(0xFF2C1E4E), // [UBAH_WARNA: Banner Postur Belajar Border]
           width: 1.0,
         ),
         boxShadow: [
@@ -373,7 +373,7 @@ class _StudyFocusScreenState extends State<StudyFocusScreen> with SingleTickerPr
             ),
             child: const Icon(
               Icons.psychology_rounded,
-              color: Color(0xFF00F4FE),
+              color: Color(0xFF00F4FE), // [UBAH_WARNA: Ikon Postur Mata Header]
               size: 18,
             ),
           ),
@@ -431,7 +431,7 @@ class _StudyFocusScreenState extends State<StudyFocusScreen> with SingleTickerPr
             height: 268,
             decoration: BoxDecoration(
               shape: BoxShape.circle,
-              color: const Color(0xFF110C19),
+              color: const Color(0xFF110C19), // [UBAH_WARNA: Lingkaran Luar Timer Pomodoro]
               border: Border.all(
                 color: const Color(0xFF2C1E4E),
                 width: 1.0,
@@ -479,7 +479,7 @@ class _StudyFocusScreenState extends State<StudyFocusScreen> with SingleTickerPr
             height: 206,
             decoration: BoxDecoration(
               shape: BoxShape.circle,
-              color: const Color(0xFF1F1927),
+              color: const Color(0xFF1F1927), // [UBAH_WARNA: Piringan Dalam Timer Pomodoro]
               border: Border.all(
                 color: const Color(0xFF383241),
                 width: 1.0,
@@ -511,7 +511,7 @@ class _StudyFocusScreenState extends State<StudyFocusScreen> with SingleTickerPr
                   child: const Center(
                     child: Icon(
                       Icons.auto_stories_rounded,
-                      color: Color(0xFFF4D9FF),
+                      color: Color(0xFFF4D9FF), // [UBAH_WARNA: Teks Target Goal Pomodoro]
                       size: 20,
                     ),
                   ),
@@ -526,7 +526,7 @@ class _StudyFocusScreenState extends State<StudyFocusScreen> with SingleTickerPr
                     fontSize: 38,
                     fontWeight: FontWeight.w700,
                     letterSpacing: -0.5,
-                    color: const Color(0xFFE9DEF2),
+                    color: const Color(0xFFE9DEF2), // [UBAH_WARNA: Angka Jam Digital Pomodoro]
                     shadows: [
                       Shadow(
                         color: const Color(0xFFB026FF).withValues(alpha: 0.75),
@@ -547,7 +547,7 @@ class _StudyFocusScreenState extends State<StudyFocusScreen> with SingleTickerPr
                       height: 6,
                       decoration: BoxDecoration(
                         shape: BoxShape.circle,
-                        color: isRunning ? const Color(0xFF00F4FE) : const Color(0xFFFFAA00),
+                        color: isRunning ? const Color(0xFF00F4FE) : const Color(0xFFFFAA00), // [UBAH_WARNA: Dot Status Timer Berjalan]
                         boxShadow: [
                           BoxShadow(
                             color: isRunning ? const Color(0xFF00F4FE) : const Color(0xFFFFAA00),
@@ -679,7 +679,7 @@ class _StudyFocusScreenState extends State<StudyFocusScreen> with SingleTickerPr
     return Container(
       padding: const EdgeInsets.symmetric(vertical: 12, horizontal: 8),
       decoration: BoxDecoration(
-        color: const Color(0xFF1F1927),
+        color: const Color(0xFF1F1927), // [UBAH_WARNA: Card Ambient Preset Background]
         borderRadius: BorderRadius.circular(12),
         border: Border.all(
           color: const Color(0xFF2C1E4E),
@@ -766,7 +766,7 @@ class _StudyFocusScreenState extends State<StudyFocusScreen> with SingleTickerPr
               children: [
                 Icon(
                   mainBtnIcon,
-                  color: Colors.white,
+                  color: Colors.white, // [UBAH_WARNA: Ikon Tombol Start Timer]
                   size: 22,
                 ),
                 const SizedBox(width: 8),
@@ -776,7 +776,7 @@ class _StudyFocusScreenState extends State<StudyFocusScreen> with SingleTickerPr
                     fontSize: 13,
                     fontWeight: FontWeight.w800,
                     letterSpacing: 1.2,
-                    color: Colors.white,
+                    color: Colors.white, // [UBAH_WARNA: Teks Tombol Start Timer]
                   ),
                 ),
               ],
@@ -794,7 +794,7 @@ class _StudyFocusScreenState extends State<StudyFocusScreen> with SingleTickerPr
             height: 40,
             padding: const EdgeInsets.symmetric(horizontal: 18),
             decoration: BoxDecoration(
-              color: const Color(0xFF93000A).withValues(alpha: 0.28),
+              color: const Color(0xFF93000A).withValues(alpha: 0.28), // [UBAH_WARNA: Tombol Reset Timer Background]
               borderRadius: BorderRadius.circular(8),
               border: Border.all(
                 color: const Color(0xFFFFB4AB).withValues(alpha: 0.25),
@@ -806,7 +806,7 @@ class _StudyFocusScreenState extends State<StudyFocusScreen> with SingleTickerPr
               children: [
                 const Icon(
                   Icons.cancel_rounded,
-                  color: Color(0xFFFFB4AB),
+                  color: Color(0xFFFFB4AB), // [UBAH_WARNA: Ikon Tombol Reset Timer]
                   size: 16,
                 ),
                 const SizedBox(width: 6),
@@ -816,7 +816,7 @@ class _StudyFocusScreenState extends State<StudyFocusScreen> with SingleTickerPr
                     fontSize: 10.5,
                     fontWeight: FontWeight.w700,
                     letterSpacing: 1.0,
-                    color: const Color(0xFFFFB4AB),
+                    color: const Color(0xFFFFB4AB), // [UBAH_WARNA: Teks Tombol Reset Timer]
                   ),
                 ),
               ],

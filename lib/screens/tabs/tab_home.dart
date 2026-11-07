@@ -583,10 +583,10 @@ class _TabHomeState extends State<TabHome> {
       margin: const EdgeInsets.only(top: 2.0),
       padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6.5),
       decoration: BoxDecoration(
-        color: const Color(0xFF140D28),
+        color: const Color(0xFF140D28), // [UBAH_WARNA: Banner Awakening Header Background]
         borderRadius: BorderRadius.circular(24),
         border: Border.all(
-          color: const Color(0xFF2C1E4E),
+          color: const Color(0xFF2C1E4E), // [UBAH_WARNA: Banner Awakening Header Border]
           width: 1.0,
         ),
       ),
@@ -601,7 +601,7 @@ class _TabHomeState extends State<TabHome> {
               height: 7,
               decoration: const BoxDecoration(
                 shape: BoxShape.circle,
-                color: Color(0xFF00F4FE),
+                color: Color(0xFF00F4FE), // [UBAH_WARNA: Dot Status Sistem Header]
                 boxShadow: [
                   BoxShadow(
                     color: Color(0xFF00F4FE),
@@ -622,14 +622,14 @@ class _TabHomeState extends State<TabHome> {
                   TextSpan(
                     text: 'SYSTEM AWAKENING: ',
                     style: TextStyle(
-                      color: Color(0xFF00F4FE),
+                      color: Color(0xFF00F4FE), // [UBAH_WARNA: Teks Tag Hunter Header]
                       fontWeight: FontWeight.w700,
                     ),
                   ),
                   TextSpan(
                     text: 'COMPLETE MIN. 3 DAILY QUESTS TO AVOID PENALTY',
                     style: TextStyle(
-                      color: Color(0xFFE9DEF2),
+                      color: Color(0xFFE9DEF2), // [UBAH_WARNA: Teks Greeting Hunter]
                       fontWeight: FontWeight.w500,
                     ),
                   ),
@@ -650,10 +650,10 @@ class _TabHomeState extends State<TabHome> {
 
     return Container(
       decoration: BoxDecoration(
-        color: const Color(0xFF110C19), // Midnight Abyss Inner Card
+        color: const Color(0xFF110C19), // [UBAH_WARNA: Card Hunter Matrix Background]
         borderRadius: BorderRadius.circular(16),
         border: Border.all(
-          color: const Color(0xFF2C1E4E),
+          color: const Color(0xFF2C1E4E), // [UBAH_WARNA: Card Hunter Matrix Border]
           width: 1.0,
         ),
         boxShadow: [
@@ -679,10 +679,10 @@ class _TabHomeState extends State<TabHome> {
                     width: 50,
                     height: 50,
                     decoration: BoxDecoration(
-                      color: const Color(0xFF1F1927),
+                      color: const Color(0xFF1F1927), // [UBAH_WARNA: Avatar Frame Background]
                       borderRadius: BorderRadius.circular(14),
                       border: Border.all(
-                        color: const Color(0xFF00F4FE).withValues(alpha: 0.6),
+                        color: const Color(0xFF00F4FE).withValues(alpha: 0.6), // [UBAH_WARNA: Avatar Frame Border]
                         width: 1.5,
                       ),
                       boxShadow: [
@@ -713,7 +713,7 @@ class _TabHomeState extends State<TabHome> {
                       height: 18,
                       decoration: BoxDecoration(
                         shape: BoxShape.circle,
-                        color: const Color(0xFF00F4FE),
+                        color: const Color(0xFF00F4FE), // [UBAH_WARNA: Tombol Edit Avatar Background]
                         border: Border.all(
                           color: const Color(0xFF110C19),
                           width: 1.5,
@@ -729,7 +729,7 @@ class _TabHomeState extends State<TabHome> {
                         child: Icon(
                           Icons.bolt_rounded,
                           size: 13,
-                          color: Colors.black,
+                          color: Colors.black, // [UBAH_WARNA: Tombol Edit Avatar Icon]
                         ),
                       ),
                     ),
@@ -754,7 +754,7 @@ class _TabHomeState extends State<TabHome> {
                             style: GoogleFonts.sora(
                               fontSize: 16.5,
                               fontWeight: FontWeight.w700,
-                              color: const Color(0xFFE9DEF2),
+                              color: const Color(0xFFE9DEF2), // [UBAH_WARNA: Teks Nama Hunter]
                             ),
                           ),
                         ),
@@ -762,7 +762,7 @@ class _TabHomeState extends State<TabHome> {
                         const Icon(
                           Icons.verified_rounded,
                           size: 15,
-                          color: Color(0xFF00F4FE),
+                          color: Color(0xFF00F4FE), // [UBAH_WARNA: Ikon Verified Hunter]
                         ),
                       ],
                     ),
@@ -773,7 +773,7 @@ class _TabHomeState extends State<TabHome> {
                         fontSize: 9.0,
                         fontWeight: FontWeight.w600,
                         letterSpacing: 0.8,
-                        color: const Color(0xFF9B8BA1),
+                        color: const Color(0xFF9B8BA1), // [UBAH_WARNA: Teks Subtitle Rank Hunter]
                       ),
                     ),
                   ],
@@ -784,10 +784,10 @@ class _TabHomeState extends State<TabHome> {
               Container(
                 padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
                 decoration: BoxDecoration(
-                  color: const Color(0xFF2D164D),
+                  color: const Color(0xFF2D164D), // [UBAH_WARNA: Badge Rank Hunter Background]
                   borderRadius: BorderRadius.circular(10),
                   border: Border.all(
-                    color: const Color(0xFFB026FF).withValues(alpha: 0.5),
+                    color: const Color(0xFFB026FF).withValues(alpha: 0.5), // [UBAH_WARNA: Badge Rank Hunter Border]
                     width: 1.0,
                   ),
                   boxShadow: [
@@ -803,7 +803,7 @@ class _TabHomeState extends State<TabHome> {
                     const Icon(
                       Icons.military_tech_outlined,
                       size: 14,
-                      color: Color(0xFFE5B5FF),
+                      color: Color(0xFFE5B5FF), // [UBAH_WARNA: Ikon Badge Rank Hunter]
                     ),
                     const SizedBox(width: 4),
                     Text(
@@ -812,7 +812,7 @@ class _TabHomeState extends State<TabHome> {
                         fontSize: 11,
                         fontWeight: FontWeight.w800,
                         letterSpacing: 0.6,
-                        color: const Color(0xFFE5B5FF),
+                        color: const Color(0xFFE5B5FF), // [UBAH_WARNA: Teks Badge Rank Hunter]
                       ),
                     ),
                   ],
@@ -842,7 +842,7 @@ class _TabHomeState extends State<TabHome> {
                     Icon(
                       i <= _currentHp ? Icons.favorite_rounded : Icons.favorite_border_rounded,
                       size: 16,
-                      color: i <= _currentHp ? const Color(0xFFFF5252) : const Color(0xFF5A4A63),
+                      color: i <= _currentHp ? const Color(0xFFFF5252) : const Color(0xFF5A4A63), // [UBAH_WARNA: Ikon HP Heart Hunter]
                     ),
                     const SizedBox(width: 3),
                   ],
@@ -862,10 +862,10 @@ class _TabHomeState extends State<TabHome> {
               Container(
                 padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
                 decoration: BoxDecoration(
-                  color: const Color(0xFF0C242B),
+                  color: const Color(0xFF0C242B), // [UBAH_WARNA: Pill Gold Hunter Background]
                   borderRadius: BorderRadius.circular(20),
                   border: Border.all(
-                    color: const Color(0xFF00F4FE).withValues(alpha: 0.4),
+                    color: const Color(0xFF00F4FE).withValues(alpha: 0.4), // [UBAH_WARNA: Pill Gold Hunter Border]
                   ),
                 ),
                 child: Row(
@@ -874,7 +874,7 @@ class _TabHomeState extends State<TabHome> {
                     const Icon(
                       Icons.hexagon_outlined,
                       size: 13,
-                      color: Color(0xFF00F4FE),
+                      color: Color(0xFF00F4FE), // [UBAH_WARNA: Ikon Pill Gold Hunter]
                     ),
                     const SizedBox(width: 4),
                     Text(
@@ -883,7 +883,7 @@ class _TabHomeState extends State<TabHome> {
                         fontSize: 10.5,
                         fontWeight: FontWeight.w700,
                         letterSpacing: 0.5,
-                        color: const Color(0xFF00F4FE),
+                        color: const Color(0xFF00F4FE), // [UBAH_WARNA: Teks Jumlah Gold Hunter]
                       ),
                     ),
                   ],
@@ -924,7 +924,7 @@ class _TabHomeState extends State<TabHome> {
               Container(
                 height: 6,
                 decoration: BoxDecoration(
-                  color: const Color(0xFF1F1927),
+                  color: const Color(0xFF1F1927), // [UBAH_WARNA: Track EXP Bar Hunter]
                   borderRadius: BorderRadius.circular(3),
                 ),
                 alignment: Alignment.centerLeft,
@@ -938,7 +938,7 @@ class _TabHomeState extends State<TabHome> {
                       borderRadius: BorderRadius.circular(3),
                       boxShadow: [
                         BoxShadow(
-                          color: const Color(0xFF00F4FE).withValues(alpha: 0.5),
+                          color: const Color(0xFF00F4FE).withValues(alpha: 0.5), // [UBAH_WARNA: Glow Fill EXP Bar Hunter]
                           blurRadius: 6,
                         ),
                       ],
@@ -958,10 +958,10 @@ class _TabHomeState extends State<TabHome> {
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 7),
       decoration: BoxDecoration(
-        color: const Color(0xFF110C19),
+        color: const Color(0xFF110C19), // [UBAH_WARNA: Banner Server Time Background]
         borderRadius: BorderRadius.circular(8),
         border: Border.all(
-          color: const Color(0xFF2C1E4E),
+          color: const Color(0xFF2C1E4E), // [UBAH_WARNA: Banner Server Time Border]
           width: 1.0,
         ),
       ),
@@ -973,7 +973,7 @@ class _TabHomeState extends State<TabHome> {
             const Icon(
               Icons.schedule_rounded,
               size: 14,
-              color: Color(0xFF00F4FE),
+              color: Color(0xFF00F4FE), // [UBAH_WARNA: Ikon Dunia Server Time]
             ),
             const SizedBox(width: 5),
             Text(
@@ -1056,7 +1056,7 @@ class _TabHomeState extends State<TabHome> {
               style: GoogleFonts.spaceGrotesk(
                 fontSize: 9.5,
                 fontWeight: FontWeight.w800,
-                color: const Color(0xFF00F4FE),
+                color: const Color(0xFF00F4FE), // [UBAH_WARNA: Teks Jam London Server Time]
               ),
             ),
           ],
@@ -1087,7 +1087,7 @@ class _TabHomeState extends State<TabHome> {
             onChanged: (val) => setState(() {}),
             style: GoogleFonts.plusJakartaSans(
               fontSize: 13,
-              color: const Color(0xFFE9DEF2),
+              color: const Color(0xFFE9DEF2), // [UBAH_WARNA: Warna Teks Input Cari Quest]
             ),
             cursorColor: const Color(0xFFB026FF),
             decoration: InputDecoration(
@@ -1095,11 +1095,11 @@ class _TabHomeState extends State<TabHome> {
               hintText: 'Cari nama quest hunter...',
               hintStyle: GoogleFonts.plusJakartaSans(
                 fontSize: 12.5,
-                color: const Color(0xFF5D5373),
+                color: const Color(0xFF5D5373), // [UBAH_WARNA: Warna Hint Cari Quest]
               ),
               prefixIcon: const Icon(
                 Icons.search_rounded,
-                color: Color(0xFF8B829E),
+                color: Color(0xFF8B829E), // [UBAH_WARNA: Ikon Search Quest]
                 size: 18,
               ),
               suffixIcon: const Icon(
@@ -1134,7 +1134,7 @@ class _TabHomeState extends State<TabHome> {
                   child: Container(
                     padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 7),
                     decoration: BoxDecoration(
-                      color: isSelected ? const Color(0xFFB026FF) : const Color(0xFF1F1927),
+                      color: isSelected ? const Color(0xFFB026FF) : const Color(0xFF1F1927), // [UBAH_WARNA: Background Filter Chip Quest]
                       borderRadius: BorderRadius.circular(8),
                       border: isSelected
                           ? null
@@ -1186,7 +1186,7 @@ class _TabHomeState extends State<TabHome> {
               const Icon(
                 Icons.local_fire_department_rounded,
                 size: 17,
-                color: Color(0xFFFF7A00),
+                color: Color(0xFFFF7A00), // [UBAH_WARNA: Ikon Api Daily Quests Header]
               ),
               const SizedBox(width: 5),
               Flexible(
@@ -1197,7 +1197,7 @@ class _TabHomeState extends State<TabHome> {
                     fontSize: 12,
                     fontWeight: FontWeight.w700,
                     letterSpacing: 0.8,
-                    color: const Color(0xFFE9DEF2),
+                    color: const Color(0xFFE9DEF2), // [UBAH_WARNA: Judul Daily Quests Header]
                   ),
                 ),
               ),
@@ -1468,10 +1468,10 @@ class _TabHomeState extends State<TabHome> {
               onTap: isDone ? null : () => handleQuestAction(q),
               child: Container(
                 decoration: BoxDecoration(
-                  color: isDone ? const Color(0xFF16121D) : const Color(0xFF1F1927),
+                  color: isDone ? const Color(0xFF16121D) : const Color(0xFF1F1927), // [UBAH_WARNA: Background Card Quest]
                   borderRadius: BorderRadius.circular(12),
                   border: Border.all(
-                    color: isDone ? const Color(0xFF2C2436) : const Color(0xFF383241),
+                    color: isDone ? const Color(0xFF2C2436) : const Color(0xFF383241), // [UBAH_WARNA: Border Card Quest]
                     width: 1.0,
                   ),
                   boxShadow: [
@@ -1517,7 +1517,7 @@ class _TabHomeState extends State<TabHome> {
                             style: GoogleFonts.sora(
                               fontSize: 12.8,
                               fontWeight: FontWeight.w700,
-                              color: isDone ? const Color(0xFF7E728C) : const Color(0xFFE9DEF2),
+                              color: isDone ? const Color(0xFF7E728C) : const Color(0xFFE9DEF2), // [UBAH_WARNA: Judul Card Quest]
                             ),
                           ),
                           const SizedBox(height: 4),
@@ -1676,7 +1676,7 @@ class _TabHomeState extends State<TabHome> {
           end: Alignment.bottomRight,
         ),
         border: Border.all(
-          color: const Color(0xFFFF0055).withValues(alpha: 0.8),
+          color: const Color(0xFFFF0055).withValues(alpha: 0.8), // [UBAH_WARNA: Border Tombol Scan Hidden Dungeon]
           width: 1.5,
         ),
         boxShadow: [
@@ -1725,7 +1725,7 @@ class _TabHomeState extends State<TabHome> {
                   ),
                   child: const Icon(
                     Icons.radar_rounded,
-                    color: Colors.white,
+                    color: Colors.white, // [UBAH_WARNA: Ikon Tombol Scan Hidden Dungeon]
                     size: 24,
                   ),
                 ),
@@ -1744,7 +1744,7 @@ class _TabHomeState extends State<TabHome> {
                                 fontSize: 12.5,
                                 fontWeight: FontWeight.w900,
                                 letterSpacing: 0.8,
-                                color: const Color(0xFFFF2A6D),
+                                color: const Color(0xFFFF2A6D), // [UBAH_WARNA: Judul Tombol Scan Hidden Dungeon]
                               ),
                             ),
                           ),
@@ -2041,10 +2041,10 @@ class _TabHomeState extends State<TabHome> {
       child: Container(
         padding: const EdgeInsets.all(12),
         decoration: BoxDecoration(
-          color: const Color(0xFF1F1927),
+          color: const Color(0xFF1F1927), // [UBAH_WARNA: Background Card Nearby Gate]
           borderRadius: BorderRadius.circular(12),
           border: Border.all(
-            color: const Color(0xFF383241),
+            color: const Color(0xFF383241), // [UBAH_WARNA: Border Card Nearby Gate]
             width: 1.0,
           ),
         ),
@@ -2059,7 +2059,7 @@ class _TabHomeState extends State<TabHome> {
                       const Icon(
                         Icons.radar_rounded,
                         size: 14,
-                        color: Color(0xFF00F4FE),
+                        color: Color(0xFF00F4FE), // [UBAH_WARNA: Ikon Radar Nearby Gate]
                       ),
                       const SizedBox(width: 4),
                       Text(
@@ -2098,7 +2098,7 @@ class _TabHomeState extends State<TabHome> {
               width: 96,
               height: 32,
               decoration: BoxDecoration(
-                color: const Color(0xFF00F4FE),
+                color: const Color(0xFF00F4FE), // [UBAH_WARNA: Tombol Enter Gate Background]
                 borderRadius: BorderRadius.circular(8),
                 boxShadow: [
                   BoxShadow(
@@ -2115,7 +2115,7 @@ class _TabHomeState extends State<TabHome> {
                   const Icon(
                     Icons.navigation_rounded,
                     size: 13,
-                    color: Colors.black,
+                    color: Colors.black, // [UBAH_WARNA: Tombol Enter Gate Icon]
                   ),
                   const SizedBox(width: 4),
                   Text(
@@ -2124,7 +2124,7 @@ class _TabHomeState extends State<TabHome> {
                       fontSize: 9.5,
                       fontWeight: FontWeight.w800,
                       letterSpacing: 0.4,
-                      color: Colors.black,
+                      color: Colors.black, // [UBAH_WARNA: Tombol Enter Gate Teks]
                     ),
                   ),
                 ],
@@ -2145,7 +2145,7 @@ class _TabHomeState extends State<TabHome> {
       width: 44,
       height: 44,
       decoration: BoxDecoration(
-        color: const Color(0xFF1F1927),
+        color: const Color(0xFF1F1927), // [UBAH_WARNA: FAB Tombol Alarm Background]
         shape: BoxShape.circle,
         border: Border.all(
           color: isAlarmOn
@@ -3918,7 +3918,7 @@ class _TabHomeState extends State<TabHome> {
       width: 44,
       height: 44,
       decoration: BoxDecoration(
-        color: const Color(0xFFB026FF),
+        color: const Color(0xFFB026FF), // [UBAH_WARNA: FAB Hunter AI Brain Background]
         shape: BoxShape.circle,
         boxShadow: [
           BoxShadow(
@@ -3931,7 +3931,7 @@ class _TabHomeState extends State<TabHome> {
       child: IconButton(
         icon: const Icon(
           Icons.psychology_rounded,
-          color: Colors.white,
+          color: Colors.white, // [UBAH_WARNA: FAB Hunter AI Brain Icon]
           size: 22,
         ),
         onPressed: () {

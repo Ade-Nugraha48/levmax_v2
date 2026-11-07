@@ -110,7 +110,7 @@ class _AvatarAdjustDialogState extends State<AvatarAdjustDialog> {
               children: [
                 Row(
                   children: [
-                    const Icon(Icons.crop_rotate_rounded, color: Color(0xFF00F4FE), size: 18),
+                    const Icon(Icons.crop_rotate_rounded, color: Color(0xFF00F4FE), size: 18), // [UBAH_WARNA: Ikon Header Adjust Avatar]
                     const SizedBox(width: 8),
                     Text(
                       'ADJUST HUNTER AVATAR',
@@ -124,7 +124,7 @@ class _AvatarAdjustDialogState extends State<AvatarAdjustDialog> {
                   ],
                 ),
                 IconButton(
-                  icon: const Icon(Icons.close_rounded, color: Color(0xFF9B8BA1), size: 20),
+                  icon: const Icon(Icons.close_rounded, color: Color(0xFF9B8BA1), size: 20), // [UBAH_WARNA: Ikon Close Dialog]
                   onPressed: () => Navigator.pop(context, null),
                   padding: EdgeInsets.zero,
                   constraints: const BoxConstraints(),
@@ -136,7 +136,7 @@ class _AvatarAdjustDialogState extends State<AvatarAdjustDialog> {
               'Cubit untuk zoom, geser posisi foto, dan sesuaikan dalam frame kotak.',
               style: GoogleFonts.plusJakartaSans(
                 fontSize: 10.5,
-                color: const Color(0xFF9B8BA1),
+                color: const Color(0xFF9B8BA1), // [UBAH_WARNA: Teks Deskripsi Dialog Adjust Avatar]
               ),
               textAlign: TextAlign.center,
             ),
@@ -165,7 +165,7 @@ class _AvatarAdjustDialogState extends State<AvatarAdjustDialog> {
                       child: Container(
                         width: viewportSize,
                         height: viewportSize,
-                        color: const Color(0xFF0A0514),
+                        color: const Color(0xFF0A0514), // [UBAH_WARNA: Latar Belakang Viewport Crop Avatar]
                         child: InteractiveViewer(
                           transformationController: _transformController,
                           minScale: 0.5,
@@ -194,7 +194,7 @@ class _AvatarAdjustDialogState extends State<AvatarAdjustDialog> {
                       decoration: BoxDecoration(
                         borderRadius: BorderRadius.circular(16),
                         border: Border.all(
-                          color: const Color(0xFF00F4FE).withValues(alpha: 0.6),
+                          color: const Color(0xFF00F4FE).withValues(alpha: 0.6), // [UBAH_WARNA: Garis Border Viewport Crop]
                           width: 1.5,
                         ),
                       ),
@@ -209,7 +209,7 @@ class _AvatarAdjustDialogState extends State<AvatarAdjustDialog> {
                               height: 14,
                               decoration: const BoxDecoration(
                                 border: Border(
-                                  top: BorderSide(color: Color(0xFF00F4FE), width: 3),
+                                  top: BorderSide(color: Color(0xFF00F4FE), width: 3), // [UBAH_WARNA: Sudut Retikel Viewport Crop]
                                   left: BorderSide(color: Color(0xFF00F4FE), width: 3),
                                 ),
                               ),
@@ -301,13 +301,13 @@ class _AvatarAdjustDialogState extends State<AvatarAdjustDialog> {
                     onPressed: _isProcessing ? null : () => Navigator.pop(context, null),
                     style: OutlinedButton.styleFrom(
                       padding: const EdgeInsets.symmetric(vertical: 12),
-                      side: const BorderSide(color: Color(0xFF383241)),
+                      side: const BorderSide(color: Color(0xFF383241)), // [UBAH_WARNA: Garis Border Tombol Batal]
                       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
                     ),
                     child: Text(
                       'BATAL',
                       style: GoogleFonts.spaceGrotesk(
-                        color: const Color(0xFF9B8BA1),
+                        color: const Color(0xFF9B8BA1), // [UBAH_WARNA: Teks Tombol Batal Crop]
                         fontWeight: FontWeight.w700,
                         fontSize: 11,
                       ),
@@ -324,7 +324,7 @@ class _AvatarAdjustDialogState extends State<AvatarAdjustDialog> {
                       padding: const EdgeInsets.symmetric(vertical: 12),
                       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
                       elevation: 4,
-                      shadowColor: const Color(0xFF00F4FE).withValues(alpha: 0.5),
+                      shadowColor: const Color(0xFF00F4FE).withValues(alpha: 0.5), // [UBAH_WARNA: Bayangan Tombol Terapkan Crop]
                     ),
                     child: _isProcessing
                         ? const SizedBox(
@@ -335,7 +335,7 @@ class _AvatarAdjustDialogState extends State<AvatarAdjustDialog> {
                         : Text(
                             'TERAPKAN & SIMPAN',
                             style: GoogleFonts.spaceGrotesk(
-                              color: Colors.black,
+                              color: Colors.black, // [UBAH_WARNA: Teks Tombol Terapkan Crop Avatar]
                               fontWeight: FontWeight.w800,
                               fontSize: 11,
                               letterSpacing: 0.6,
@@ -362,21 +362,21 @@ class _AvatarAdjustDialogState extends State<AvatarAdjustDialog> {
       child: Container(
         padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
         decoration: BoxDecoration(
-          color: const Color(0xFF1F1927),
+          color: const Color(0xFF1F1927), // [UBAH_WARNA: Latar Belakang Tool Button Crop]
           borderRadius: BorderRadius.circular(8),
-          border: Border.all(color: const Color(0xFF383241), width: 0.8),
+          border: Border.all(color: const Color(0xFF383241), width: 0.8), // [UBAH_WARNA: Border Tool Button Crop]
         ),
         child: Row(
           mainAxisSize: MainAxisSize.min,
           children: [
-            Icon(icon, size: 15, color: const Color(0xFF00F4FE)),
+            Icon(icon, size: 15, color: const Color(0xFF00F4FE)), // [UBAH_WARNA: Ikon Tool Button Crop]
             const SizedBox(width: 4),
             Text(
               label,
               style: GoogleFonts.spaceGrotesk(
                 fontSize: 9.5,
                 fontWeight: FontWeight.w700,
-                color: const Color(0xFFE9DEF2),
+                color: const Color(0xFFE9DEF2), // [UBAH_WARNA: Teks Tool Button Crop]
               ),
             ),
           ],

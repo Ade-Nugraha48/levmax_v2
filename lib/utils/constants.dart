@@ -369,63 +369,63 @@ class AppTheme {
       ),
       inputDecorationTheme: InputDecorationTheme(
         filled: true,
-        fillColor: AppColors.surface,
+        fillColor: AppColors.surface, // [UBAH_WARNA: GLOBAL - Latar Belakang Input Text Field]
         contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
-        hintStyle: const TextStyle(color: AppColors.textMuted, fontSize: 14),
-        labelStyle: const TextStyle(color: AppColors.textSecondary, fontSize: 14),
-        prefixIconColor: AppColors.textSecondary,
-        suffixIconColor: AppColors.textSecondary,
+        hintStyle: const TextStyle(color: AppColors.textMuted, fontSize: 14), // [UBAH_WARNA: GLOBAL - Teks Hint Input]
+        labelStyle: const TextStyle(color: AppColors.textSecondary, fontSize: 14), // [UBAH_WARNA: GLOBAL - Teks Label Input]
+        prefixIconColor: AppColors.textSecondary, // [UBAH_WARNA: GLOBAL - Ikon Prefix Input]
+        suffixIconColor: AppColors.textSecondary, // [UBAH_WARNA: GLOBAL - Ikon Suffix Input]
         enabledBorder: OutlineInputBorder(
           borderRadius: BorderRadius.circular(AppConstants.radiusMedium),
-          borderSide: const BorderSide(color: AppColors.border, width: 1),
+          borderSide: const BorderSide(color: AppColors.border, width: 1), // [UBAH_WARNA: GLOBAL - Garis Border Input Normal]
         ),
         focusedBorder: OutlineInputBorder(
           borderRadius: BorderRadius.circular(AppConstants.radiusMedium),
-          borderSide: const BorderSide(color: AppColors.neonViolet, width: 1.5),
+          borderSide: const BorderSide(color: AppColors.neonViolet, width: 1.5), // [UBAH_WARNA: GLOBAL - Garis Border Input Fokus]
         ),
         errorBorder: OutlineInputBorder(
           borderRadius: BorderRadius.circular(AppConstants.radiusMedium),
-          borderSide: const BorderSide(color: AppColors.hpRed, width: 1),
+          borderSide: const BorderSide(color: AppColors.hpRed, width: 1), // [UBAH_WARNA: GLOBAL - Garis Border Input Error]
         ),
         focusedErrorBorder: OutlineInputBorder(
           borderRadius: BorderRadius.circular(AppConstants.radiusMedium),
-          borderSide: const BorderSide(color: AppColors.hpRed, width: 1.5),
+          borderSide: const BorderSide(color: AppColors.hpRed, width: 1.5), // [UBAH_WARNA: GLOBAL - Garis Border Input Error Fokus]
         ),
       ),
       bottomNavigationBarTheme: const BottomNavigationBarThemeData(
-        backgroundColor: AppColors.surface,
-        selectedItemColor: AppColors.neonViolet,
-        unselectedItemColor: AppColors.textMuted,
+        backgroundColor: AppColors.surface, // [UBAH_WARNA: GLOBAL - Latar Belakang Bottom Navigation Tema]
+        selectedItemColor: AppColors.neonViolet, // [UBAH_WARNA: GLOBAL - Item Terpilih Bottom Navigation]
+        unselectedItemColor: AppColors.textMuted, // [UBAH_WARNA: GLOBAL - Item Tidak Terpilih Bottom Navigation]
         type: BottomNavigationBarType.fixed,
         elevation: 8,
         selectedLabelStyle: TextStyle(fontSize: 12, fontWeight: FontWeight.w700),
         unselectedLabelStyle: TextStyle(fontSize: 11, fontWeight: FontWeight.w500),
       ),
       snackBarTheme: SnackBarThemeData(
-        backgroundColor: AppColors.surfaceElevated,
+        backgroundColor: AppColors.surfaceElevated, // [UBAH_WARNA: GLOBAL - Latar Belakang SnackBar Toast]
         contentTextStyle: const TextStyle(
-          color: AppColors.textPrimary,
+          color: AppColors.textPrimary, // [UBAH_WARNA: GLOBAL - Teks Pesan SnackBar]
           fontSize: 13,
           fontWeight: FontWeight.w500,
         ),
         shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.circular(AppConstants.radiusMedium),
-          side: const BorderSide(color: AppColors.neonViolet, width: 1),
+          side: const BorderSide(color: AppColors.neonViolet, width: 1), // [UBAH_WARNA: GLOBAL - Garis Border SnackBar]
         ),
         behavior: SnackBarBehavior.floating,
       ),
       dialogTheme: DialogThemeData(
-        backgroundColor: AppColors.surface,
+        backgroundColor: AppColors.surface, // [UBAH_WARNA: GLOBAL - Latar Belakang Modal Dialog]
         elevation: 8,
         shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.circular(AppConstants.radiusLarge),
-          side: const BorderSide(color: AppColors.border, width: 1),
+          side: const BorderSide(color: AppColors.border, width: 1), // [UBAH_WARNA: GLOBAL - Garis Border Modal Dialog]
         ),
         titleTextStyle: AppTextStyles.heading2,
         contentTextStyle: AppTextStyles.body,
       ),
       dividerTheme: const DividerThemeData(
-        color: AppColors.divider,
+        color: AppColors.divider, // [UBAH_WARNA: GLOBAL - Garis Pembatas Divider Tema]
         thickness: 1,
         space: 1,
       ),

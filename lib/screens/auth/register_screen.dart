@@ -248,13 +248,13 @@ class _RegisterScreenState extends State<RegisterScreen> {
             width: 36,
             height: 36,
             decoration: BoxDecoration(
-              color: const Color(0xFF2D2736),
+              color: const Color(0xFF2D2736), // [UBAH_WARNA: Tombol Kembali Background]
               borderRadius: BorderRadius.circular(12),
             ),
             child: const Center(
               child: Icon(
                 Icons.chevron_left_rounded,
-                color: Color(0xFFE5B5FF),
+                color: Color(0xFFE5B5FF), // [UBAH_WARNA: Tombol Kembali Icon]
                 size: 22,
               ),
             ),
@@ -265,7 +265,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
         Container(
           padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4.5),
           decoration: BoxDecoration(
-            color: const Color(0xFF110C19),
+            color: const Color(0xFF110C19), // [UBAH_WARNA: Protocol Header Background]
             borderRadius: BorderRadius.circular(999),
           ),
           child: Row(
@@ -276,7 +276,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
                 height: 6,
                 decoration: const BoxDecoration(
                   shape: BoxShape.circle,
-                  color: Color(0xFF00F4FE),
+                  color: Color(0xFF00F4FE), // [UBAH_WARNA: Protocol Header Status Dot]
                   boxShadow: [
                     BoxShadow(
                       color: Color(0xFF00F4FE),
@@ -293,7 +293,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
                   fontSize: 10,
                   fontWeight: FontWeight.w600,
                   letterSpacing: 1.2,
-                  color: const Color(0xFFE6FEFF),
+                  color: const Color(0xFFE6FEFF), // [UBAH_WARNA: Protocol Header Title]
                 ),
               ),
             ],
@@ -345,8 +345,8 @@ class _RegisterScreenState extends State<RegisterScreen> {
                   height: 64,
                   decoration: BoxDecoration(
                     shape: BoxShape.circle,
-                    color: const Color(0xFF2D2736),
-                    border: Border.all(color: const Color(0xFFB026FF), width: 2.0),
+                    color: const Color(0xFF2D2736), // [UBAH_WARNA: Avatar Circle Background]
+                    border: Border.all(color: const Color(0xFFB026FF), width: 2.0), // [UBAH_WARNA: Avatar Circle Border]
                   ),
                   child: Center(
                     child: Container(
@@ -383,7 +383,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
                     padding: const EdgeInsets.all(4),
                     decoration: BoxDecoration(
                       shape: BoxShape.circle,
-                      color: const Color(0xFFB026FF),
+                      color: const Color(0xFFB026FF), // [UBAH_WARNA: Badge Kamera Background]
                       border: Border.all(color: const Color(0xFF110C19), width: 1.5),
                       boxShadow: [
                         BoxShadow(
@@ -396,7 +396,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
                     child: const Icon(
                       Icons.camera_alt_rounded,
                       size: 11,
-                      color: Colors.white,
+                      color: Colors.white, // [UBAH_WARNA: Badge Kamera Icon]
                     ),
                   ),
                 ),
@@ -411,7 +411,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
             fontSize: 8.5,
             fontWeight: FontWeight.w700,
             letterSpacing: 0.8,
-            color: const Color(0xFFDCB8FC),
+            color: const Color(0xFFDCB8FC), // [UBAH_WARNA: Judul Awaken New Hunter]
           ),
         ),
 
@@ -424,7 +424,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
             fontSize: 10.5,
             fontWeight: FontWeight.w700,
             letterSpacing: 2.0,
-            color: const Color(0xFF00DCE5),
+            color: const Color(0xFF00DCE5), // [UBAH_WARNA: Subtitle System Init]
           ),
         ),
 
@@ -437,7 +437,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
             fontSize: 21,
             fontWeight: FontWeight.w700,
             letterSpacing: 0.4,
-            color: const Color(0xFFE9DEF2),
+            color: const Color(0xFFE9DEF2), // [UBAH_WARNA: Teks Instruksi Registrasi]
           ),
         ),
 
@@ -461,10 +461,10 @@ class _RegisterScreenState extends State<RegisterScreen> {
   Widget _buildTerminalCard() {
     return Container(
       decoration: BoxDecoration(
-        color: const Color(0xFF1F1927),
+        color: const Color(0xFF1F1927), // [UBAH_WARNA: Background Form Card]
         borderRadius: BorderRadius.circular(16),
         border: Border.all(
-          color: const Color(0xFF383241),
+          color: const Color(0xFF383241), // [UBAH_WARNA: Border Form Card]
           width: 1.0,
         ),
         boxShadow: [
@@ -568,7 +568,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
                       ),
                       boxShadow: [
                         BoxShadow(
-                          color: const Color(0xFFB026FF).withValues(alpha: 0.35),
+                          color: const Color(0xFFB026FF).withValues(alpha: 0.35), // [UBAH_WARNA: Glow Tombol Register]
                           blurRadius: 14,
                           offset: const Offset(0, 3),
                         ),
@@ -604,7 +604,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
                                         fontSize: 12.5,
                                         fontWeight: FontWeight.w700,
                                         letterSpacing: 1.0,
-                                        color: Colors.white,
+                                        color: Colors.white, // [UBAH_WARNA: Teks Tombol Register]
                                       ),
                                     ),
                                     const SizedBox(width: 6),
@@ -680,10 +680,10 @@ class _RegisterScreenState extends State<RegisterScreen> {
     return Container(
       height: 44,
       decoration: BoxDecoration(
-        color: const Color(0xFF110C19),
+        color: const Color(0xFF110C19), // [UBAH_WARNA: Background Input Field]
         borderRadius: BorderRadius.circular(10),
         border: Border.all(
-          color: const Color(0xFF383241),
+          color: const Color(0xFF383241), // [UBAH_WARNA: Border Input Field]
           width: 1.0,
         ),
       ),
@@ -692,7 +692,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
         obscureText: isPassword ? isObscured : false,
         style: GoogleFonts.plusJakartaSans(
           fontSize: 13,
-          color: const Color(0xFFE9DEF2),
+          color: const Color(0xFFE9DEF2), // [UBAH_WARNA: Warna Teks Input Field]
         ),
         cursorColor: const Color(0xFFB026FF),
         decoration: InputDecoration(
@@ -704,14 +704,14 @@ class _RegisterScreenState extends State<RegisterScreen> {
           ),
           prefixIcon: Icon(
             prefixIcon,
-            color: const Color(0xFF6E6078),
+            color: const Color(0xFF6E6078), // [UBAH_WARNA: Hint Input Field]
             size: 18,
           ),
           suffixIcon: isPassword
               ? IconButton(
                   icon: Icon(
                     isObscured ? Icons.visibility_outlined : Icons.visibility_off_outlined,
-                    color: const Color(0xFF9B8BA1),
+                    color: const Color(0xFF9B8BA1), // [UBAH_WARNA: Icon Prefix Input Field]
                     size: 18,
                   ),
                   onPressed: onToggleVisibility,
@@ -731,7 +731,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
     return Container(
       padding: const EdgeInsets.all(8),
       decoration: BoxDecoration(
-        color: const Color(0xFF1F1927),
+        color: const Color(0xFF1F1927), // [UBAH_WARNA: Container Biometrik]
         borderRadius: BorderRadius.circular(10),
         border: Border.all(
           color: const Color(0xFF383241),
@@ -755,7 +755,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
               errorBuilder: (context, error, stackTrace) => const Center(
                 child: Icon(
                   Icons.auto_awesome,
-                  color: Color(0xFFB026FF),
+                  color: Color(0xFFB026FF), // [UBAH_WARNA: Ikon Face Biometrik]
                   size: 20,
                 ),
               ),
@@ -775,7 +775,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
                     fontSize: 9.5,
                     fontWeight: FontWeight.w700,
                     letterSpacing: 1.1,
-                    color: const Color(0xFFE5B5FF),
+                    color: const Color(0xFFE5B5FF), // [UBAH_WARNA: Judul Biometrik Enroll]
                   ),
                 ),
                 const SizedBox(height: 1),
@@ -785,7 +785,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
                   overflow: TextOverflow.ellipsis,
                   style: GoogleFonts.plusJakartaSans(
                     fontSize: 10.5,
-                    color: const Color(0xFFD2C1D7),
+                    color: const Color(0xFFD2C1D7), // [UBAH_WARNA: Subtitle Biometrik Enroll]
                   ),
                 ),
               ],
@@ -818,7 +818,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
                 'Sudah punya akun? ',
                 style: GoogleFonts.plusJakartaSans(
                   fontSize: 12,
-                  color: const Color(0xFFD2C1D7),
+                  color: const Color(0xFFD2C1D7), // [UBAH_WARNA: Teks Already Awakened]
                 ),
               ),
               GestureDetector(
@@ -831,7 +831,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
                       style: GoogleFonts.spaceGrotesk(
                         fontSize: 12,
                         fontWeight: FontWeight.w600,
-                        color: const Color(0xFFE6FEFF),
+                        color: const Color(0xFFE6FEFF), // [UBAH_WARNA: Link Login Screen]
                         decoration: TextDecoration.underline,
                         decorationColor: const Color(0xFFE6FEFF),
                       ),

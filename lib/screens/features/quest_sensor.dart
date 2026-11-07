@@ -381,7 +381,7 @@ class _QuestSensorScreenState extends State<QuestSensorScreen> {
               width: 38,
               height: 38,
               decoration: BoxDecoration(
-                color: const Color(0xFF1F1927),
+                color: const Color(0xFF1F1927), // [UBAH_WARNA: Card Header Sensor Cardio Background]
                 borderRadius: BorderRadius.circular(10),
                 border: Border.all(
                   color: const Color(0xFF2C1E4E),
@@ -411,7 +411,7 @@ class _QuestSensorScreenState extends State<QuestSensorScreen> {
                       fontSize: 10,
                       fontWeight: FontWeight.w700,
                       letterSpacing: 1.4,
-                      color: const Color(0xFF00F4FE),
+                      color: const Color(0xFF00F4FE), // [UBAH_WARNA: Ikon Detak Jantung Header]
                     ),
                   ),
                   const SizedBox(width: 4),
@@ -439,7 +439,7 @@ class _QuestSensorScreenState extends State<QuestSensorScreen> {
                   fontSize: 13,
                   fontWeight: FontWeight.w800,
                   letterSpacing: 0.6,
-                  color: Colors.white,
+                  color: Colors.white, // [UBAH_WARNA: Judul Layar Cardio Shake]
                 ),
               ),
             ],
@@ -452,7 +452,7 @@ class _QuestSensorScreenState extends State<QuestSensorScreen> {
               Container(
                 padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
                 decoration: BoxDecoration(
-                  color: const Color(0xFF141E2D),
+                  color: const Color(0xFF141E2D), // [UBAH_WARNA: Badge Sensor Live Background]
                   borderRadius: BorderRadius.circular(8),
                   border: Border.all(
                     color: const Color(0xFF00F4FE).withValues(alpha: 0.7),
@@ -474,7 +474,7 @@ class _QuestSensorScreenState extends State<QuestSensorScreen> {
                         fontSize: 9.5,
                         fontWeight: FontWeight.w800,
                         letterSpacing: 0.5,
-                        color: const Color(0xFF00F4FE),
+                        color: const Color(0xFF00F4FE), // [UBAH_WARNA: Teks Sensor Live Status]
                       ),
                     ),
                   ],
@@ -527,10 +527,10 @@ class _QuestSensorScreenState extends State<QuestSensorScreen> {
         Container(
           padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4.5),
           decoration: BoxDecoration(
-            color: const Color(0xFF1F1927),
+            color: const Color(0xFF1F1927), // [UBAH_WARNA: Card Target Shake Background]
             borderRadius: BorderRadius.circular(6),
             border: Border.all(
-              color: const Color(0xFF00F4FE).withValues(alpha: 0.3),
+              color: const Color(0xFF00F4FE).withValues(alpha: 0.3), // [UBAH_WARNA: Card Target Shake Border]
               width: 1.0,
             ),
             boxShadow: [
@@ -565,7 +565,7 @@ class _QuestSensorScreenState extends State<QuestSensorScreen> {
                   fontSize: 9.5,
                   fontWeight: FontWeight.w700,
                   letterSpacing: 0.6,
-                  color: const Color(0xFF00F4FE),
+                  color: const Color(0xFF00F4FE), // [UBAH_WARNA: Angka Hitungan Shake Utama]
                 ),
               ),
             ],
@@ -610,7 +610,7 @@ class _QuestSensorScreenState extends State<QuestSensorScreen> {
                 fontSize: 10,
                 fontWeight: FontWeight.w700,
                 letterSpacing: 1.5,
-                color: const Color(0xFFB026FF),
+                color: const Color(0xFFB026FF), // [UBAH_WARNA: Angka Target Goal Shake]
               ),
             ),
             const SizedBox(width: 6),
@@ -660,7 +660,7 @@ class _QuestSensorScreenState extends State<QuestSensorScreen> {
             Container(
               padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4.5),
               decoration: BoxDecoration(
-                color: const Color(0xFF110C19),
+                color: const Color(0xFF110C19), // [UBAH_WARNA: Pill Reward Gold Shake Background]
                 borderRadius: BorderRadius.circular(20),
                 border: Border.all(
                   color: const Color(0xFFFFD166).withValues(alpha: 0.3),
@@ -688,7 +688,7 @@ class _QuestSensorScreenState extends State<QuestSensorScreen> {
                       fontSize: 10,
                       fontWeight: FontWeight.w800,
                       letterSpacing: 0.6,
-                      color: const Color(0xFFFFD166),
+                      color: const Color(0xFFFFD166), // [UBAH_WARNA: Teks Nilai Gold Shake]
                     ),
                   ),
                 ],
@@ -779,10 +779,10 @@ class _QuestSensorScreenState extends State<QuestSensorScreen> {
                     width: 46,
                     height: 46,
                     decoration: BoxDecoration(
-                      color: const Color(0xFF16111E),
+                      color: const Color(0xFF16111E), // [UBAH_WARNA: Dial Lingkaran Sensor Viewfinder]
                       borderRadius: BorderRadius.circular(12),
                       border: Border.all(
-                        color: const Color(0xFF00F4FE).withValues(alpha: 0.6),
+                        color: const Color(0xFF00F4FE).withValues(alpha: 0.6), // [UBAH_WARNA: Border Lingkaran Sensor Viewfinder]
                         width: 1.2,
                       ),
                       boxShadow: [
@@ -796,7 +796,7 @@ class _QuestSensorScreenState extends State<QuestSensorScreen> {
                     child: const Center(
                       child: Icon(
                         Icons.vibration_rounded,
-                        color: Color(0xFF00F4FE),
+                        color: Color(0xFF00F4FE), // [UBAH_WARNA: Ikon Lari Sensor Shake]
                         size: 26,
                       ),
                     ),
@@ -813,7 +813,7 @@ class _QuestSensorScreenState extends State<QuestSensorScreen> {
                           style: GoogleFonts.sora(
                             fontSize: 42,
                             fontWeight: FontWeight.w900,
-                            color: Colors.white,
+                            color: Colors.white, // [UBAH_WARNA: Teks Repetisi Sensor Dial]
                             letterSpacing: -1.0,
                           ),
                         ),
@@ -838,7 +838,7 @@ class _QuestSensorScreenState extends State<QuestSensorScreen> {
                       fontSize: 9.5,
                       fontWeight: FontWeight.w800,
                       letterSpacing: 2.2,
-                      color: const Color(0xFF00F4FE),
+                      color: const Color(0xFF00F4FE), // [UBAH_WARNA: Teks Persentase Sensor Dial]
                     ),
                   ),
                 ],
@@ -886,7 +886,7 @@ class _QuestSensorScreenState extends State<QuestSensorScreen> {
           width: 220,
           height: 6,
           decoration: BoxDecoration(
-            color: const Color(0xFF110C19),
+            color: const Color(0xFF110C19), // [UBAH_WARNA: Track Bar Progress Shake]
             borderRadius: BorderRadius.circular(3),
             border: Border.all(
               color: const Color(0xFF2C1E4E),
@@ -920,7 +920,7 @@ class _QuestSensorScreenState extends State<QuestSensorScreen> {
   Widget _buildInstructionBox() {
     return Container(
       decoration: BoxDecoration(
-        color: const Color(0xFF1F1927),
+        color: const Color(0xFF1F1927), // [UBAH_WARNA: Card Telemetri Akselerometer Background]
         borderRadius: BorderRadius.circular(12),
         border: Border.all(
           color: const Color(0xFF383241),
@@ -938,7 +938,7 @@ class _QuestSensorScreenState extends State<QuestSensorScreen> {
             child: Container(
               width: 4,
               decoration: const BoxDecoration(
-                color: Color(0xFF00F4FE),
+                color: Color(0xFF00F4FE), // [UBAH_WARNA: Dot Indikator Akselerometer]
                 boxShadow: [
                   BoxShadow(
                     color: Color(0xFF00F4FE),
@@ -1016,7 +1016,7 @@ class _QuestSensorScreenState extends State<QuestSensorScreen> {
           child: Container(
             padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
             decoration: BoxDecoration(
-              color: const Color(0xFF1F1927),
+              color: const Color(0xFF1F1927), // [UBAH_WARNA: Box Status Intensitas Shake]
               borderRadius: BorderRadius.circular(10),
               border: Border.all(
                 color: _intensityLabel == 'MAKSIMAL'
@@ -1081,7 +1081,7 @@ class _QuestSensorScreenState extends State<QuestSensorScreen> {
           child: Container(
             padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
             decoration: BoxDecoration(
-              color: const Color(0xFF1F1927),
+              color: const Color(0xFF1F1927), // [UBAH_WARNA: Box Sync Rate Shake]
               borderRadius: BorderRadius.circular(10),
               border: Border.all(
                 color: _syncPercent >= 100
@@ -1150,7 +1150,7 @@ class _QuestSensorScreenState extends State<QuestSensorScreen> {
         child: Container(
           height: 50,
           decoration: BoxDecoration(
-            color: const Color(0xFF2D121B), // Translucent red background
+            color: const Color(0xFF2D121B), // [UBAH_WARNA: Tombol Batal Sensor Background]
             borderRadius: BorderRadius.circular(12),
             border: Border.all(
               color: const Color(0xFFFF4D6D).withValues(alpha: 0.35),
@@ -1179,7 +1179,7 @@ class _QuestSensorScreenState extends State<QuestSensorScreen> {
                   fontSize: 12.5,
                   fontWeight: FontWeight.w800,
                   letterSpacing: 1.5,
-                  color: const Color(0xFFFF4D6D),
+                  color: const Color(0xFFFF4D6D), // [UBAH_WARNA: Teks Tombol Batal Sensor]
                   shadows: [
                     Shadow(
                       color: const Color(0xFFFF4D6D).withValues(alpha: 0.5),

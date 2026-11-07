@@ -579,9 +579,9 @@ class _TabMapState extends State<TabMap> with SingleTickerProviderStateMixin {
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
       decoration: BoxDecoration(
-        color: const Color(0xFF110C19).withValues(alpha: 0.95),
+        color: const Color(0xFF110C19).withValues(alpha: 0.95), // [UBAH_WARNA: Background Header Top Bar Peta]
         border: const Border(
-          bottom: BorderSide(color: Color(0xFF2C1E4E), width: 1.0),
+          bottom: BorderSide(color: Color(0xFF2C1E4E), width: 1.0), // [UBAH_WARNA: Border Bottom Header Peta]
         ),
         boxShadow: [
           BoxShadow(
@@ -610,7 +610,7 @@ class _TabMapState extends State<TabMap> with SingleTickerProviderStateMixin {
                           fontSize: 13,
                           fontWeight: FontWeight.w800,
                           letterSpacing: 0.8,
-                          color: const Color(0xFFE9DEF2),
+                          color: const Color(0xFFE9DEF2), // [UBAH_WARNA: Teks Hunter Name Header Peta]
                         ),
                       ),
                       const SizedBox(width: 6),
@@ -636,7 +636,7 @@ class _TabMapState extends State<TabMap> with SingleTickerProviderStateMixin {
                             fontSize: 9,
                             fontWeight: FontWeight.w900,
                             letterSpacing: 0.8,
-                            color: const Color(0xFFE5B5FF),
+                            color: const Color(0xFFE5B5FF), // [UBAH_WARNA: Teks Badge Rank Header Peta]
                           ),
                         ),
                       ),
@@ -651,7 +651,7 @@ class _TabMapState extends State<TabMap> with SingleTickerProviderStateMixin {
                           3,
                           (i) => const Padding(
                             padding: EdgeInsets.only(right: 2.0),
-                            child: Icon(Icons.favorite_rounded, size: 13, color: Color(0xFFFF4D4D)),
+                            child: Icon(Icons.favorite_rounded, size: 13, color: Color(0xFFFF4D4D)), // [UBAH_WARNA: Ikon HP Header Peta]
                           ),
                         ),
                       ),
@@ -668,7 +668,7 @@ class _TabMapState extends State<TabMap> with SingleTickerProviderStateMixin {
                             style: GoogleFonts.spaceGrotesk(
                               fontSize: 11,
                               fontWeight: FontWeight.w700,
-                              color: const Color(0xFFFFD166),
+                              color: const Color(0xFFFFD166), // [UBAH_WARNA: Teks Gold Header Peta]
                             ),
                           ),
                         ],
@@ -774,10 +774,10 @@ class _TabMapState extends State<TabMap> with SingleTickerProviderStateMixin {
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
       decoration: BoxDecoration(
-        color: const Color(0xFF110C19).withValues(alpha: 0.85),
+        color: const Color(0xFF110C19).withValues(alpha: 0.85), // [UBAH_WARNA: Background Radar HUD Peta]
         borderRadius: BorderRadius.circular(12),
         border: Border.all(
-          color: const Color(0xFF00F4FE).withValues(alpha: 0.5),
+          color: const Color(0xFF00F4FE).withValues(alpha: 0.5), // [UBAH_WARNA: Border Radar HUD Peta]
           width: 1.0,
         ),
         boxShadow: [
@@ -798,7 +798,7 @@ class _TabMapState extends State<TabMap> with SingleTickerProviderStateMixin {
                 height: 8,
                 decoration: const BoxDecoration(
                   shape: BoxShape.circle,
-                  color: Color(0xFF00F4FE),
+                  color: Color(0xFF00F4FE), // [UBAH_WARNA: Blip Center Radar Peta]
                   boxShadow: [
                     BoxShadow(
                       color: Color(0xFF00F4FE),
@@ -819,7 +819,7 @@ class _TabMapState extends State<TabMap> with SingleTickerProviderStateMixin {
                       fontSize: 10.5,
                       fontWeight: FontWeight.w800,
                       letterSpacing: 0.8,
-                      color: const Color(0xFF00F4FE),
+                      color: const Color(0xFF00F4FE), // [UBAH_WARNA: Ring Radar Peta]
                       shadows: [
                         Shadow(
                           color: const Color(0xFF00F4FE).withValues(alpha: 0.6),
@@ -834,7 +834,7 @@ class _TabMapState extends State<TabMap> with SingleTickerProviderStateMixin {
                       fontSize: 8,
                       fontWeight: FontWeight.w600,
                       letterSpacing: 0.8,
-                      color: const Color(0xFFDCB8FC),
+                      color: const Color(0xFFDCB8FC), // [UBAH_WARNA: Teks Koordinat Radar Peta]
                     ),
                   ),
                 ],
@@ -849,13 +849,13 @@ class _TabMapState extends State<TabMap> with SingleTickerProviderStateMixin {
             child: Container(
               padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
               decoration: BoxDecoration(
-                color: const Color(0xFF2D2736).withValues(alpha: 0.9),
+                color: const Color(0xFF2D2736).withValues(alpha: 0.9), // [UBAH_WARNA: Pill GPS Accuracy Background]
                 borderRadius: BorderRadius.circular(8),
                 border: Border.all(color: const Color(0xFF383241), width: 0.8),
               ),
               child: Row(
                 children: [
-                  const Icon(Icons.satellite_alt_rounded, size: 13, color: Color(0xFF00F4FE)),
+                  const Icon(Icons.satellite_alt_rounded, size: 13, color: Color(0xFF00F4FE)), // [UBAH_WARNA: Ikon Satelit GPS Peta]
                   const SizedBox(width: 4),
                   Text(
                     _gpsStatus,
@@ -1392,7 +1392,7 @@ class _TabMapState extends State<TabMap> with SingleTickerProviderStateMixin {
             width: 38,
             height: 38,
             decoration: BoxDecoration(
-              color: const Color(0xFF2D2736).withValues(alpha: 0.9),
+              color: const Color(0xFF2D2736).withValues(alpha: 0.9), // [UBAH_WARNA: Pill Jarak Gate Background]
               borderRadius: BorderRadius.circular(10),
               border: Border.all(color: const Color(0xFFB026FF).withValues(alpha: 0.4), width: 0.8),
               boxShadow: [
@@ -1410,7 +1410,7 @@ class _TabMapState extends State<TabMap> with SingleTickerProviderStateMixin {
                   style: GoogleFonts.spaceGrotesk(
                     fontSize: 8,
                     fontWeight: FontWeight.w900,
-                    color: const Color(0xFFFF4D4D),
+                    color: const Color(0xFFFF4D4D), // [UBAH_WARNA: Teks Jarak Gate Peta]
                   ),
                 ),
                 const Icon(Icons.navigation_rounded, color: Color(0xFF9B8BA1), size: 12),
@@ -1582,9 +1582,9 @@ class _TabMapState extends State<TabMap> with SingleTickerProviderStateMixin {
         Container(
           padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 1.5),
           decoration: BoxDecoration(
-            color: const Color(0xFF110C19).withValues(alpha: 0.92),
+            color: const Color(0xFF110C19).withValues(alpha: 0.92), // [UBAH_WARNA: FAB Recenter GPS Background]
             borderRadius: BorderRadius.circular(4),
-            border: Border.all(color: const Color(0xFF00F4FE), width: 0.8),
+            border: Border.all(color: const Color(0xFF00F4FE), width: 0.8), // [UBAH_WARNA: FAB Recenter GPS Border]
             boxShadow: [
               BoxShadow(
                 color: const Color(0xFF00F4FE).withValues(alpha: 0.35),
@@ -1598,7 +1598,7 @@ class _TabMapState extends State<TabMap> with SingleTickerProviderStateMixin {
               fontSize: 8,
               fontWeight: FontWeight.w800,
               letterSpacing: 0.8,
-              color: const Color(0xFF00F4FE),
+              color: const Color(0xFF00F4FE), // [UBAH_WARNA: FAB Recenter GPS Icon]
             ),
           ),
         ),
@@ -1612,7 +1612,7 @@ class _TabMapState extends State<TabMap> with SingleTickerProviderStateMixin {
 
     return Container(
       decoration: BoxDecoration(
-        color: const Color(0xFF1F1927),
+        color: const Color(0xFF1F1927), // [UBAH_WARNA: Bottom Sheet Panel Ekspedisi Background]
         borderRadius: const BorderRadius.only(
           topLeft: Radius.circular(20),
           topRight: Radius.circular(20),
@@ -1663,7 +1663,7 @@ class _TabMapState extends State<TabMap> with SingleTickerProviderStateMixin {
                   child: Container(
                     padding: const EdgeInsets.all(10),
                     decoration: BoxDecoration(
-                      color: const Color(0xFF110C19).withValues(alpha: 0.65),
+                      color: const Color(0xFF110C19).withValues(alpha: 0.65), // [UBAH_WARNA: Card Target Gate Panel]
                       borderRadius: BorderRadius.circular(12),
                       border: Border.all(color: const Color(0xFF2C1E4E), width: 0.8),
                     ),
@@ -1672,7 +1672,7 @@ class _TabMapState extends State<TabMap> with SingleTickerProviderStateMixin {
                       children: [
                         Row(
                           children: [
-                            const Icon(Icons.near_me_rounded, color: Color(0xFF00F4FE), size: 16),
+                            const Icon(Icons.near_me_rounded, color: Color(0xFF00F4FE), size: 16), // [UBAH_WARNA: Ikon Target Gate Panel]
                             const SizedBox(width: 6),
                             Expanded(
                               child: Column(
@@ -1684,7 +1684,7 @@ class _TabMapState extends State<TabMap> with SingleTickerProviderStateMixin {
                                       fontSize: 8.5,
                                       fontWeight: FontWeight.w700,
                                       letterSpacing: 0.8,
-                                      color: const Color(0xFFDCB8FC),
+                                      color: const Color(0xFFDCB8FC), // [UBAH_WARNA: Teks Rank Target Gate Panel]
                                     ),
                                   ),
                                   Text(
@@ -1692,7 +1692,7 @@ class _TabMapState extends State<TabMap> with SingleTickerProviderStateMixin {
                                     style: GoogleFonts.plusJakartaSans(
                                       fontSize: 11,
                                       fontWeight: FontWeight.w700,
-                                      color: const Color(0xFFE9DEF2),
+                                      color: const Color(0xFFE9DEF2), // [UBAH_WARNA: Teks Nama Target Gate Panel]
                                     ),
                                     maxLines: 1,
                                     overflow: TextOverflow.ellipsis,
@@ -1756,7 +1756,7 @@ class _TabMapState extends State<TabMap> with SingleTickerProviderStateMixin {
                 child: Container(
                   padding: const EdgeInsets.all(10),
                   decoration: BoxDecoration(
-                    color: const Color(0xFF110C19).withValues(alpha: 0.65),
+                    color: const Color(0xFF110C19).withValues(alpha: 0.65), // [UBAH_WARNA: Card Mystery Gift Box]
                     borderRadius: BorderRadius.circular(12),
                     border: Border.all(color: const Color(0xFF2C1E4E), width: 0.8),
                     boxShadow: [
@@ -1778,10 +1778,10 @@ class _TabMapState extends State<TabMap> with SingleTickerProviderStateMixin {
                               fontSize: 8.5,
                               fontWeight: FontWeight.w800,
                               letterSpacing: 0.8,
-                              color: const Color(0xFFFFD166),
+                              color: const Color(0xFFFFD166), // [UBAH_WARNA: Teks Judul Mystery Gift]
                             ),
                           ),
-                          const Icon(Icons.stars_rounded, color: Color(0xFFFFD166), size: 16),
+                          const Icon(Icons.stars_rounded, color: Color(0xFFFFD166), size: 16), // [UBAH_WARNA: Ikon Bintang Mystery Gift]
                         ],
                       ),
                       const SizedBox(height: 6),
@@ -1968,7 +1968,7 @@ class _TabMapState extends State<TabMap> with SingleTickerProviderStateMixin {
                       fontSize: 12,
                       fontWeight: FontWeight.w800,
                       letterSpacing: 1.0,
-                      color: hasClaimed
+                      color: hasClaimed // [UBAH_WARNA: Teks Tombol Klaim Mystery Gift]
                           ? const Color(0xFF00F4FE)
                           : (canClaim ? Colors.black : const Color(0xFF7E7287)),
                     ),

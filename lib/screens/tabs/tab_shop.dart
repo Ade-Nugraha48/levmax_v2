@@ -326,12 +326,12 @@ class _TabShopState extends State<TabShop> {
             child: Container(
               padding: const EdgeInsets.fromLTRB(20, 16, 20, 24),
               decoration: BoxDecoration(
-                color: const Color(0xFF140D24),
+                color: const Color(0xFF140D24), // [UBAH_WARNA: Dialog Kalkulator Kurs Background]
                 borderRadius: const BorderRadius.only(
                   topLeft: Radius.circular(24),
                   topRight: Radius.circular(24),
                 ),
-                border: Border.all(color: const Color(0xFF00F4FE).withValues(alpha: 0.5), width: 1.2),
+                border: Border.all(color: const Color(0xFF00F4FE).withValues(alpha: 0.5), width: 1.2), // [UBAH_WARNA: Dialog Kalkulator Kurs Border]
               ),
               child: Column(
                 mainAxisSize: MainAxisSize.min,
@@ -382,7 +382,7 @@ class _TabShopState extends State<TabShop> {
                     keyboardType: TextInputType.number,
                     style: GoogleFonts.orbitron(
                       fontSize: 16,
-                      color: const Color(0xFFFFD166),
+                      color: const Color(0xFFFFD166), // [UBAH_WARNA: Input Nilai Gold Kalkulator]
                       fontWeight: FontWeight.bold,
                     ),
                     decoration: InputDecoration(
@@ -545,9 +545,9 @@ class _TabShopState extends State<TabShop> {
               child: Container(
                 padding: const EdgeInsets.all(20),
                 decoration: BoxDecoration(
-                  color: const Color(0xFF140D24),
+                  color: const Color(0xFF140D24), // [UBAH_WARNA: Dialog Top-Up Gold Background]
                   borderRadius: BorderRadius.circular(20),
-                  border: Border.all(color: const Color(0xFF00F4FE).withValues(alpha: 0.6), width: 1.2),
+                  border: Border.all(color: const Color(0xFF00F4FE).withValues(alpha: 0.6), width: 1.2), // [UBAH_WARNA: Dialog Top-Up Gold Border]
                   boxShadow: [
                     BoxShadow(
                       color: const Color(0xFF00F4FE).withValues(alpha: 0.2),
@@ -718,7 +718,7 @@ class _TabShopState extends State<TabShop> {
                         const SizedBox(width: 8),
                         ElevatedButton(
                           style: ElevatedButton.styleFrom(
-                            backgroundColor: const Color(0xFF00F4FE),
+                            backgroundColor: const Color(0xFF00F4FE), // [UBAH_WARNA: Tombol Top-Up Saldo Confirm]
                             foregroundColor: Colors.black,
                             shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
                           ),
@@ -1667,7 +1667,7 @@ class _TabShopState extends State<TabShop> {
             Container(
               padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
               decoration: BoxDecoration(
-                color: const Color(0xFF2D2736),
+                color: const Color(0xFF2D2736), // [UBAH_WARNA: Pill Rank Header Shop Background]
                 borderRadius: BorderRadius.circular(6),
               ),
               child: Text(
@@ -1676,7 +1676,7 @@ class _TabShopState extends State<TabShop> {
                   fontSize: 10,
                   fontWeight: FontWeight.w800,
                   letterSpacing: 0.8,
-                  color: const Color(0xFF00F4FE),
+                  color: const Color(0xFF00F4FE), // [UBAH_WARNA: Pill Rank Header Shop Teks]
                 ),
               ),
             ),
@@ -1711,7 +1711,7 @@ class _TabShopState extends State<TabShop> {
                   style: GoogleFonts.sora(
                     fontSize: 14,
                     fontWeight: FontWeight.w700,
-                    color: const Color(0xFFE9DEF2),
+                    color: const Color(0xFFE9DEF2), // [UBAH_WARNA: Judul Header Monarch Treasury]
                   ),
                 ),
               ],
@@ -1723,7 +1723,7 @@ class _TabShopState extends State<TabShop> {
             Container(
               padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
               decoration: BoxDecoration(
-                color: const Color(0xFF1F1927),
+                color: const Color(0xFF1F1927), // [UBAH_WARNA: Pill Status DEX Background]
                 borderRadius: BorderRadius.circular(8),
               ),
               child: Row(
@@ -1735,7 +1735,7 @@ class _TabShopState extends State<TabShop> {
                     style: GoogleFonts.spaceGrotesk(
                       fontSize: 11,
                       fontWeight: FontWeight.w700,
-                      color: const Color(0xFFE6FEFF),
+                      color: const Color(0xFFE6FEFF), // [UBAH_WARNA: Pill Status DEX Teks]
                     ),
                   ),
                 ],
@@ -1782,7 +1782,7 @@ class _TabShopState extends State<TabShop> {
         Container(
           padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
           decoration: BoxDecoration(
-            color: const Color(0xFF2D2736),
+            color: const Color(0xFF2D2736), // [UBAH_WARNA: Chip Protokol Live Market Background]
             borderRadius: BorderRadius.circular(20),
             boxShadow: [
               BoxShadow(
@@ -1798,7 +1798,7 @@ class _TabShopState extends State<TabShop> {
                 height: 6,
                 decoration: BoxDecoration(
                   shape: BoxShape.circle,
-                  color: const Color(0xFF00F4FE),
+                  color: const Color(0xFF00F4FE), // [UBAH_WARNA: Dot Indikator Market Live]
                   boxShadow: [
                     BoxShadow(
                       color: const Color(0xFF00F4FE).withValues(alpha: 0.8),
@@ -1823,7 +1823,7 @@ class _TabShopState extends State<TabShop> {
         Container(
           padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
           decoration: BoxDecoration(
-            color: const Color(0xFF2D2736),
+            color: const Color(0xFF2D2736), // [UBAH_WARNA: Chip Vault Balance Background]
             borderRadius: BorderRadius.circular(20),
             boxShadow: [
               BoxShadow(
@@ -1845,7 +1845,7 @@ class _TabShopState extends State<TabShop> {
                     style: GoogleFonts.spaceGrotesk(
                       fontSize: 11,
                       fontWeight: FontWeight.w800,
-                      color: const Color(0xFFFFD166),
+                      color: const Color(0xFFFFD166), // [UBAH_WARNA: Teks Gold Vault Balance]
                       letterSpacing: 0.6,
                     ),
                   );
@@ -1958,9 +1958,9 @@ class _TabShopState extends State<TabShop> {
     return Container(
       padding: const EdgeInsets.all(14),
       decoration: BoxDecoration(
-        color: const Color(0xFF1F1927),
+        color: const Color(0xFF1F1927), // [UBAH_WARNA: Card Kurs Valuasi Background]
         borderRadius: BorderRadius.circular(14),
-        border: Border.all(color: const Color(0xFF2C1E4E), width: 0.8),
+        border: Border.all(color: const Color(0xFF2C1E4E), width: 0.8), // [UBAH_WARNA: Card Kurs Valuasi Border]
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -1970,7 +1970,7 @@ class _TabShopState extends State<TabShop> {
             children: [
               Row(
                 children: [
-                  const Icon(Icons.currency_exchange_rounded, size: 16, color: Color(0xFF00F4FE)),
+                  const Icon(Icons.currency_exchange_rounded, size: 16, color: Color(0xFF00F4FE)), // [UBAH_WARNA: Ikon Kurs Valuasi Header]
                   const SizedBox(width: 6),
                   Text(
                     'KURS VALUASI REAL-TIME',
@@ -1978,7 +1978,7 @@ class _TabShopState extends State<TabShop> {
                       fontSize: 10,
                       fontWeight: FontWeight.w800,
                       letterSpacing: 0.8,
-                      color: const Color(0xFFE9DEF2),
+                      color: const Color(0xFFE9DEF2), // [UBAH_WARNA: Judul Kurs Valuasi Header]
                     ),
                   ),
                 ],
@@ -2054,7 +2054,7 @@ class _TabShopState extends State<TabShop> {
                       style: GoogleFonts.orbitron(
                         fontSize: 14,
                         fontWeight: FontWeight.w900,
-                        color: const Color(0xFF00F4FE),
+                        color: const Color(0xFF00F4FE), // [UBAH_WARNA: Teks Total Wealth Hunter]
                         letterSpacing: 0.5,
                       ),
                     ),
@@ -2065,7 +2065,7 @@ class _TabShopState extends State<TabShop> {
                   child: Container(
                     padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 5),
                     decoration: BoxDecoration(
-                      color: const Color(0xFFB026FF).withValues(alpha: 0.2),
+                      color: const Color(0xFFB026FF).withValues(alpha: 0.2), // [UBAH_WARNA: Tombol Kalkulator Kurs Background]
                       borderRadius: BorderRadius.circular(6),
                       border: Border.all(color: const Color(0xFFB026FF).withValues(alpha: 0.5)),
                     ),
@@ -2078,7 +2078,7 @@ class _TabShopState extends State<TabShop> {
                           style: GoogleFonts.spaceGrotesk(
                             fontSize: 9,
                             fontWeight: FontWeight.w800,
-                            color: const Color(0xFFE5B5FF),
+                            color: const Color(0xFFE5B5FF), // [UBAH_WARNA: Tombol Kalkulator Kurs Teks]
                           ),
                         ),
                       ],
@@ -2242,7 +2242,7 @@ class _TabShopState extends State<TabShop> {
     return Container(
       padding: const EdgeInsets.all(14),
       decoration: BoxDecoration(
-        color: const Color(0xFF1F1927),
+        color: const Color(0xFF1F1927), // [UBAH_WARNA: Card Item Gelar Shop Background]
         borderRadius: BorderRadius.circular(16),
         border: Border.all(
           color: isOwned
@@ -2272,7 +2272,7 @@ class _TabShopState extends State<TabShop> {
                       width: 44,
                       height: 44,
                       decoration: BoxDecoration(
-                        color: const Color(0xFF2D2736),
+                        color: const Color(0xFF2D2736), // [UBAH_WARNA: Well Ikon Item Gelar]
                         borderRadius: BorderRadius.circular(10),
                         border: Border.all(color: rarityColor.withValues(alpha: 0.4)),
                       ),
@@ -2299,7 +2299,7 @@ class _TabShopState extends State<TabShop> {
                             style: GoogleFonts.sora(
                               fontSize: 14,
                               fontWeight: FontWeight.w700,
-                              color: const Color(0xFFE9DEF2),
+                              color: const Color(0xFFE9DEF2), // [UBAH_WARNA: Nama Item Gelar Shop]
                             ),
                             maxLines: 1,
                             overflow: TextOverflow.ellipsis,
@@ -2335,7 +2335,7 @@ class _TabShopState extends State<TabShop> {
                     style: GoogleFonts.spaceGrotesk(
                       fontSize: 11,
                       fontWeight: FontWeight.w800,
-                      color: const Color(0xFFFFD166),
+                      color: const Color(0xFFFFD166), // [UBAH_WARNA: Harga Item Gelar Gold]
                     ),
                   ),
                 ],
@@ -2417,7 +2417,7 @@ class _TabShopState extends State<TabShop> {
                         fontSize: 11,
                         fontWeight: FontWeight.w800,
                         letterSpacing: 0.8,
-                        color: isOwned ? const Color(0xFF00F4FE) : Colors.black,
+                        color: isOwned ? const Color(0xFF00F4FE) : Colors.black, // [UBAH_WARNA: Teks Tombol Beli Gelar]
                       ),
                     ),
                   ],
@@ -2596,7 +2596,7 @@ class _TabShopState extends State<TabShop> {
         padding: const EdgeInsets.all(1.5),
         child: Container(
           decoration: BoxDecoration(
-            color: const Color(0xFF1F1927),
+            color: const Color(0xFF1F1927), // [UBAH_WARNA: Tombol Blockchain Explorer Background]
             borderRadius: BorderRadius.circular(10.5),
           ),
           padding: const EdgeInsets.symmetric(horizontal: 14),
@@ -2613,7 +2613,7 @@ class _TabShopState extends State<TabShop> {
                         color: const Color(0xFF2D2736),
                         borderRadius: BorderRadius.circular(8),
                       ),
-                      child: const Icon(Icons.hub_rounded, size: 18, color: Color(0xFF00F4FE)),
+                      child: const Icon(Icons.hub_rounded, size: 18, color: Color(0xFF00F4FE)), // [UBAH_WARNA: Ikon Tombol Blockchain Explorer]
                     ),
                     const SizedBox(width: 10),
                     Expanded(
@@ -2622,7 +2622,7 @@ class _TabShopState extends State<TabShop> {
                         style: GoogleFonts.spaceGrotesk(
                           fontSize: 11,
                           fontWeight: FontWeight.w700,
-                          color: const Color(0xFFE9DEF2),
+                          color: const Color(0xFFE9DEF2), // [UBAH_WARNA: Teks Tombol Blockchain Explorer]
                         ),
                         overflow: TextOverflow.ellipsis,
                       ),

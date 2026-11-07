@@ -153,7 +153,7 @@ class _MainNavigationState extends State<MainNavigation> {
                       shape: BoxShape.circle,
                       boxShadow: [
                         BoxShadow(
-                          color: const Color(0xFFB026FF).withValues(alpha: 0.65),
+                          color: const Color(0xFFB026FF).withValues(alpha: 0.65), // [UBAH_WARNA: Cahaya Glow Ikon Navigasi Aktif]
                           blurRadius: 14,
                           spreadRadius: 2,
                         ),
@@ -182,7 +182,7 @@ class _MainNavigationState extends State<MainNavigation> {
                 shadows: isSelected
                     ? [
                         Shadow(
-                          color: const Color(0xFFB026FF).withValues(alpha: 0.8),
+                          color: const Color(0xFFB026FF).withValues(alpha: 0.8), // [UBAH_WARNA: Bayangan Teks Navigasi Aktif]
                           blurRadius: 8,
                         ),
                       ]

@@ -752,10 +752,10 @@ class _ChatAiScreenState extends State<ChatAiScreen> {
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
       decoration: BoxDecoration(
-        color: const Color(0xFF110C19),
+        color: const Color(0xFF110C19), // [UBAH_WARNA: Header App Bar Chat AI]
         border: const Border(
           bottom: BorderSide(
-            color: Color(0xFF2C1E4E),
+            color: Color(0xFF2C1E4E), // [UBAH_WARNA: Header App Bar Chat AI Border]
             width: 1.0,
           ),
         ),
@@ -779,7 +779,7 @@ class _ChatAiScreenState extends State<ChatAiScreen> {
                   width: 38,
                   height: 38,
                   decoration: BoxDecoration(
-                    color: const Color(0xFF1F1927),
+                    color: const Color(0xFF1F1927), // [UBAH_WARNA: Tombol Kembali Chat AI]
                     borderRadius: BorderRadius.circular(10),
                     border: Border.all(
                       color: const Color(0xFF2C1E4E),
@@ -808,7 +808,7 @@ class _ChatAiScreenState extends State<ChatAiScreen> {
                           fontSize: 12,
                           fontWeight: FontWeight.w800,
                           letterSpacing: 1.0,
-                          color: const Color(0xFF63F7FF),
+                          color: const Color(0xFF63F7FF), // [UBAH_WARNA: Teks Judul Hunter Assistant]
                         ),
                       ),
                       const SizedBox(width: 6),
@@ -828,7 +828,7 @@ class _ChatAiScreenState extends State<ChatAiScreen> {
                             const Icon(
                               Icons.bolt_rounded,
                               size: 11,
-                              color: Color(0xFF00F4FE),
+                              color: Color(0xFF00F4FE), // [UBAH_WARNA: Dot Online Status Chat AI]
                             ),
                             const SizedBox(width: 2),
                             Text(
@@ -872,7 +872,7 @@ class _ChatAiScreenState extends State<ChatAiScreen> {
                     decoration: BoxDecoration(
                       shape: BoxShape.circle,
                       border: Border.all(
-                        color: const Color(0xFF00F4FE).withValues(alpha: 0.6),
+                        color: const Color(0xFF00F4FE).withValues(alpha: 0.6), // [UBAH_WARNA: Tombol Konfigurasi Persona Background]
                         width: 1.5,
                       ),
                       boxShadow: [
@@ -913,7 +913,7 @@ class _ChatAiScreenState extends State<ChatAiScreen> {
       child: Container(
         padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 7),
         decoration: BoxDecoration(
-          color: const Color(0xFF1F1927),
+          color: const Color(0xFF1F1927), // [UBAH_WARNA: Chip Persona Aktif Background]
           borderRadius: BorderRadius.circular(8),
           border: Border.all(
             color: const Color(0xFF2C1E4E),
@@ -943,7 +943,7 @@ class _ChatAiScreenState extends State<ChatAiScreen> {
                     fontSize: 8.5,
                     fontWeight: FontWeight.w700,
                     letterSpacing: 0.6,
-                    color: const Color(0xFF63F7FF),
+                    color: const Color(0xFF63F7FF), // [UBAH_WARNA: Teks Nama Persona Aktif]
                   ),
                 ),
               ],
@@ -994,7 +994,7 @@ class _ChatAiScreenState extends State<ChatAiScreen> {
             width: 40,
             height: 40,
             decoration: BoxDecoration(
-              color: const Color(0xFF110C19),
+              color: const Color(0xFF110C19), // [UBAH_WARNA: Avatar AI Chat Bubble]
               borderRadius: BorderRadius.circular(10),
               border: Border.all(
                 color: const Color(0xFF00F4FE).withValues(alpha: 0.5),
@@ -1020,7 +1020,7 @@ class _ChatAiScreenState extends State<ChatAiScreen> {
               children: [
                 Container(
                   decoration: BoxDecoration(
-                    color: const Color(0xFF1F1927),
+                    color: const Color(0xFF1F1927), // [UBAH_WARNA: Background Bubble Pesan AI]
                     borderRadius: const BorderRadius.only(
                       topRight: Radius.circular(16),
                       bottomLeft: Radius.circular(16),
@@ -1028,7 +1028,7 @@ class _ChatAiScreenState extends State<ChatAiScreen> {
                       topLeft: Radius.circular(4),
                     ),
                     border: Border.all(
-                      color: const Color(0xFF2C1E4E),
+                      color: const Color(0xFF2C1E4E), // [UBAH_WARNA: Border Bubble Pesan AI]
                       width: 0.8,
                     ),
                     boxShadow: [
@@ -1053,7 +1053,7 @@ class _ChatAiScreenState extends State<ChatAiScreen> {
                           // Garis aksen cyan vertikal di sebelah kiri
                           Container(
                             width: 3.5,
-                            color: const Color(0xFF00F4FE),
+                            color: const Color(0xFF00F4FE), // [UBAH_WARNA: Tag Pengirim Bubble Pesan AI]
                           ),
                           Expanded(
                             child: Padding(
@@ -1152,7 +1152,7 @@ class _ChatAiScreenState extends State<ChatAiScreen> {
               children: [
                 Container(
                   decoration: BoxDecoration(
-                    gradient: const LinearGradient(
+                    gradient: const LinearGradient( // [UBAH_WARNA: Bubble Pesan User Gradien Ungu]
                       colors: [Color(0xFFB026FF), Color(0xFF7000A8)],
                       begin: Alignment.topLeft,
                       end: Alignment.bottomRight,
@@ -1179,7 +1179,7 @@ class _ChatAiScreenState extends State<ChatAiScreen> {
                       p: GoogleFonts.plusJakartaSans(
                         fontSize: 13,
                         height: 1.45,
-                        color: Colors.white,
+                        color: Colors.white, // [UBAH_WARNA: Teks Pesan Bubble User]
                         fontWeight: FontWeight.w500,
                       ),
                       strong: GoogleFonts.plusJakartaSans(
@@ -1235,7 +1235,7 @@ class _ChatAiScreenState extends State<ChatAiScreen> {
                 width: 40,
                 height: 40,
                 decoration: BoxDecoration(
-                  color: const Color(0xFFB026FF),
+                  color: const Color(0xFFB026FF), // [UBAH_WARNA: Avatar User Chat Bubble]
                   borderRadius: BorderRadius.circular(10),
                   boxShadow: [
                     BoxShadow(
@@ -1282,7 +1282,7 @@ class _ChatAiScreenState extends State<ChatAiScreen> {
       fit: BoxFit.cover,
       errorBuilder: (context, error, stackTrace) {
         return Container(
-          color: const Color(0xFF140D28),
+          color: const Color(0xFF140D28), // [UBAH_WARNA: Background Block Code Chat AI]
           child: const Center(
             child: Icon(
               Icons.smart_toy_rounded,
@@ -1307,7 +1307,7 @@ class _ChatAiScreenState extends State<ChatAiScreen> {
         fontSize: 13,
         height: 1.55,
         fontWeight: FontWeight.w800,
-        color: const Color(0xFF00F4FE), // Neon cyan highlight untuk kata berbobot / bold!
+        color: const Color(0xFF00F4FE), // [UBAH_WARNA: Teks Highlight Bold Pesan AI]
       ),
       em: GoogleFonts.plusJakartaSans(
         fontSize: 13,
@@ -1432,7 +1432,7 @@ class _ChatAiScreenState extends State<ChatAiScreen> {
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 8),
       decoration: BoxDecoration(
-        color: const Color(0xFF110C19),
+        color: const Color(0xFF110C19), // [UBAH_WARNA: Container Bar Input Chat AI]
         border: const Border(
           top: BorderSide(
             color: Color(0xFF2C1E4E),
@@ -1455,10 +1455,10 @@ class _ChatAiScreenState extends State<ChatAiScreen> {
             child: Container(
               padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 4),
               decoration: BoxDecoration(
-                color: const Color(0xFF1F1927),
+                color: const Color(0xFF1F1927), // [UBAH_WARNA: Background Box Input Chat AI]
                 borderRadius: BorderRadius.circular(14),
                 border: Border.all(
-                  color: const Color(0xFF383241),
+                  color: const Color(0xFF383241), // [UBAH_WARNA: Border Box Input Chat AI]
                   width: 1.0,
                 ),
               ),
@@ -1487,14 +1487,14 @@ class _ChatAiScreenState extends State<ChatAiScreen> {
                           maxLines: 5,
                           style: GoogleFonts.plusJakartaSans(
                             fontSize: 13,
-                            color: const Color(0xFFE9DEF2),
+                            color: const Color(0xFFE9DEF2), // [UBAH_WARNA: Warna Teks Input Chat AI]
                           ),
                           cursorColor: const Color(0xFF00F4FE),
                           decoration: InputDecoration(
                             hintText: 'Tanyakan strategi pada ${_persona.name}...',
                             hintStyle: GoogleFonts.plusJakartaSans(
                               fontSize: 12,
-                              color: const Color(0xFF5D5373),
+                              color: const Color(0xFF5D5373), // [UBAH_WARNA: Warna Hint Input Chat AI]
                             ),
                             border: InputBorder.none,
                             isDense: true,

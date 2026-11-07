@@ -311,10 +311,10 @@ class _TabGameState extends State<TabGame> with SingleTickerProviderStateMixin {
       context: context,
       barrierDismissible: false,
       builder: (ctx) => Dialog(
-        backgroundColor: const Color(0xFF140D24),
+        backgroundColor: const Color(0xFF140D24), // [UBAH_WARNA: Dialog Menang Background]
         shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.circular(20),
-          side: const BorderSide(color: Color(0xFF00F4FE), width: 1.5),
+          side: const BorderSide(color: Color(0xFF00F4FE), width: 1.5), // [UBAH_WARNA: Dialog Menang Border]
         ),
         child: Padding(
           padding: const EdgeInsets.all(22.0),
@@ -390,7 +390,7 @@ class _TabGameState extends State<TabGame> with SingleTickerProviderStateMixin {
                 height: 46,
                 child: ElevatedButton(
                   style: ElevatedButton.styleFrom(
-                    backgroundColor: const Color(0xFF00F4FE),
+                    backgroundColor: const Color(0xFF00F4FE), // [UBAH_WARNA: Tombol Klaim Hadiah Dialog]
                     foregroundColor: Colors.black,
                     shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
                     elevation: 6,
@@ -418,10 +418,10 @@ class _TabGameState extends State<TabGame> with SingleTickerProviderStateMixin {
       context: context,
       barrierDismissible: false,
       builder: (ctx) => Dialog(
-        backgroundColor: const Color(0xFF140D24),
+        backgroundColor: const Color(0xFF140D24), // [UBAH_WARNA: Dialog Kalah Background]
         shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.circular(20),
-          side: const BorderSide(color: Color(0xFFFF4D4D), width: 1.5),
+          side: const BorderSide(color: Color(0xFFFF4D4D), width: 1.5), // [UBAH_WARNA: Dialog Kalah Border]
         ),
         child: Padding(
           padding: const EdgeInsets.all(22.0),
@@ -490,7 +490,7 @@ class _TabGameState extends State<TabGame> with SingleTickerProviderStateMixin {
                 height: 46,
                 child: ElevatedButton(
                   style: ElevatedButton.styleFrom(
-                    backgroundColor: const Color(0xFFFF4D4D),
+                    backgroundColor: const Color(0xFFFF4D4D), // [UBAH_WARNA: Tombol Coba Lagi Dialog]
                     foregroundColor: Colors.white,
                     shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
                     elevation: 6,
@@ -615,7 +615,7 @@ class _TabGameState extends State<TabGame> with SingleTickerProviderStateMixin {
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 10),
       decoration: BoxDecoration(
-        color: const Color(0xFF110C19).withValues(alpha: 0.95),
+        color: const Color(0xFF110C19).withValues(alpha: 0.95), // [UBAH_WARNA: Background Header Top Bar Game]
         borderRadius: BorderRadius.circular(16),
         border: Border.all(color: const Color(0xFF2C1E4E), width: 0.8),
         boxShadow: [
@@ -792,7 +792,7 @@ class _TabGameState extends State<TabGame> with SingleTickerProviderStateMixin {
         Container(
           padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4.5),
           decoration: BoxDecoration(
-            color: const Color(0xFF2D2736).withValues(alpha: 0.85),
+            color: const Color(0xFF2D2736).withValues(alpha: 0.85), // [UBAH_WARNA: Pill Sensor Gyroscope Background]
             borderRadius: BorderRadius.circular(20),
             boxShadow: [
               BoxShadow(
@@ -808,7 +808,7 @@ class _TabGameState extends State<TabGame> with SingleTickerProviderStateMixin {
                 height: 7,
                 decoration: BoxDecoration(
                   shape: BoxShape.circle,
-                  color: const Color(0xFF00F4FE),
+                  color: const Color(0xFF00F4FE), // [UBAH_WARNA: Dot Status Gyroscope]
                   boxShadow: [
                     BoxShadow(
                       color: const Color(0xFF00F4FE).withValues(alpha: 0.8),
@@ -896,13 +896,13 @@ class _TabGameState extends State<TabGame> with SingleTickerProviderStateMixin {
         Container(
           padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
           decoration: BoxDecoration(
-            color: const Color(0xFF1F1927),
+            color: const Color(0xFF1F1927), // [UBAH_WARNA: Banner Instruksi Mini Game Background]
             borderRadius: BorderRadius.circular(12),
             border: Border.all(color: const Color(0xFFE5B5FF).withValues(alpha: 0.12)),
           ),
           child: Row(
             children: [
-              const Icon(Icons.screen_rotation_rounded, color: Color(0xFF00F4FE), size: 18),
+              const Icon(Icons.screen_rotation_rounded, color: Color(0xFF00F4FE), size: 18), // [UBAH_WARNA: Ikon Rotasi Instruksi]
               const SizedBox(width: 8),
               Expanded(
                 child: RichText(
@@ -949,7 +949,7 @@ class _TabGameState extends State<TabGame> with SingleTickerProviderStateMixin {
           width: arenaSize,
           height: arenaSize,
           decoration: BoxDecoration(
-            color: const Color(0xFF120D24),
+            color: const Color(0xFF120D24), // [UBAH_WARNA: Arena Gyroscope Background]
             borderRadius: BorderRadius.circular(24),
             border: Border.all(
               color: _isInCenter ? const Color(0xFF00F4FE) : const Color(0xFFB026FF).withValues(alpha: 0.35),
@@ -1067,7 +1067,7 @@ class _TabGameState extends State<TabGame> with SingleTickerProviderStateMixin {
       duration: const Duration(milliseconds: 200),
       decoration: BoxDecoration(
         shape: BoxShape.circle,
-        color: _isInCenter
+        color: _isInCenter // [UBAH_WARNA: Lingkaran Safe Zone Target]
             ? const Color(0xFF00F4FE).withValues(alpha: 0.15)
             : const Color(0xFF00F4FE).withValues(alpha: 0.05),
         border: Border.all(
@@ -1122,17 +1122,17 @@ class _TabGameState extends State<TabGame> with SingleTickerProviderStateMixin {
         ),
         boxShadow: [
           BoxShadow(
-            color: const Color(0xFFB026FF).withValues(alpha: 0.8),
+            color: const Color(0xFFB026FF).withValues(alpha: 0.8), // [UBAH_WARNA: Bola Mana Core Glow Ungu]
             blurRadius: 18,
             spreadRadius: 2,
           ),
           BoxShadow(
-            color: const Color(0xFF00F4FE).withValues(alpha: 0.8),
+            color: const Color(0xFF00F4FE).withValues(alpha: 0.8), // [UBAH_WARNA: Bola Mana Core Glow Cyan]
             blurRadius: 24,
             spreadRadius: 4,
           ),
           const BoxShadow(
-            color: Colors.white,
+            color: Colors.white, // [UBAH_WARNA: Bola Mana Core Inti]
             blurRadius: 8,
           ),
         ],
@@ -1165,7 +1165,7 @@ class _TabGameState extends State<TabGame> with SingleTickerProviderStateMixin {
           child: Container(
             padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 8),
             decoration: BoxDecoration(
-              color: const Color(0xFF2D2736).withValues(alpha: 0.7),
+              color: const Color(0xFF2D2736).withValues(alpha: 0.7), // [UBAH_WARNA: Box Pitch Tilt Meter]
               borderRadius: BorderRadius.circular(12),
               border: Border.all(color: const Color(0xFF383241), width: 0.8),
             ),
@@ -1199,7 +1199,7 @@ class _TabGameState extends State<TabGame> with SingleTickerProviderStateMixin {
           child: Container(
             padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 8),
             decoration: BoxDecoration(
-              color: const Color(0xFF2D2736).withValues(alpha: 0.7),
+              color: const Color(0xFF2D2736).withValues(alpha: 0.7), // [UBAH_WARNA: Box Roll Tilt Meter]
               borderRadius: BorderRadius.circular(12),
               border: Border.all(color: const Color(0xFF383241), width: 0.8),
             ),
@@ -1251,7 +1251,7 @@ class _TabGameState extends State<TabGame> with SingleTickerProviderStateMixin {
     return Container(
       padding: const EdgeInsets.all(14),
       decoration: BoxDecoration(
-        color: const Color(0xFF1F1927),
+        color: const Color(0xFF1F1927), // [UBAH_WARNA: Card Status Game Timer Background]
         borderRadius: BorderRadius.circular(14),
         border: Border.all(color: const Color(0xFF2C1E4E), width: 0.8),
         boxShadow: [
@@ -1309,7 +1309,7 @@ class _TabGameState extends State<TabGame> with SingleTickerProviderStateMixin {
                     style: GoogleFonts.spaceGrotesk(
                       fontSize: 28,
                       fontWeight: FontWeight.w900,
-                      color: const Color(0xFFE9DEF2),
+                      color: const Color(0xFFE9DEF2), // [UBAH_WARNA: Teks Display Timer Game]
                       shadows: [
                         Shadow(
                           color: (isGameOver ? const Color(0xFFFF4D4D) : const Color(0xFF00F4FE))
@@ -1353,7 +1353,7 @@ class _TabGameState extends State<TabGame> with SingleTickerProviderStateMixin {
             child: LinearProgressIndicator(
               value: progress,
               minHeight: 8,
-              backgroundColor: const Color(0xFF110C19),
+              backgroundColor: const Color(0xFF110C19), // [UBAH_WARNA: Track Progress Bar Timer]
               valueColor: AlwaysStoppedAnimation<Color>(
                 isGameOver ? const Color(0xFFFF4D4D) : const Color(0xFF00F4FE),
               ),
@@ -1369,10 +1369,10 @@ class _TabGameState extends State<TabGame> with SingleTickerProviderStateMixin {
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 10),
       decoration: BoxDecoration(
-        color: const Color(0xFF1B1406),
+        color: const Color(0xFF1B1406), // [UBAH_WARNA: Card Reward Gold Game Background]
         borderRadius: BorderRadius.circular(14),
         border: Border.all(
-          color: const Color(0xFFFFD166).withValues(alpha: 0.35),
+          color: const Color(0xFFFFD166).withValues(alpha: 0.35), // [UBAH_WARNA: Card Reward Gold Game Border]
           width: 0.8,
         ),
         boxShadow: [
@@ -1408,7 +1408,7 @@ class _TabGameState extends State<TabGame> with SingleTickerProviderStateMixin {
                       fontSize: 11,
                       fontWeight: FontWeight.w800,
                       letterSpacing: 0.8,
-                      color: const Color(0xFFFFD166),
+                      color: const Color(0xFFFFD166), // [UBAH_WARNA: Teks Nilai Reward Gold]
                     ),
                   ),
                   Text(
@@ -1451,7 +1451,7 @@ class _TabGameState extends State<TabGame> with SingleTickerProviderStateMixin {
         padding: const EdgeInsets.symmetric(vertical: 10, horizontal: 16),
         decoration: BoxDecoration(
           borderRadius: BorderRadius.circular(12),
-          color: const Color(0xFF1E1728),
+          color: const Color(0xFF1E1728), // [UBAH_WARNA: Banner Daily Reward Claimed Background]
           border: Border.all(color: const Color(0xFF00F4FE).withValues(alpha: 0.4)),
         ),
         child: Column(
@@ -1574,7 +1574,7 @@ class _TabGameState extends State<TabGame> with SingleTickerProviderStateMixin {
                 fontSize: 12,
                 fontWeight: FontWeight.w800,
                 letterSpacing: 1.0,
-                color: Colors.white,
+                color: Colors.white, // [UBAH_WARNA: Teks Tombol Mainkan Game]
               ),
             ),
           ],

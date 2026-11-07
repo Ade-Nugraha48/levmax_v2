@@ -498,10 +498,10 @@ class _WorkoutHubScreenState extends State<WorkoutHubScreen>
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
       decoration: BoxDecoration(
-        color: const Color(0xFF08050E).withValues(alpha: 0.95),
+        color: const Color(0xFF08050E).withValues(alpha: 0.95), // [UBAH_WARNA: Header Top Bar Workout Hub]
         border: const Border(
           bottom: BorderSide(
-            color: Color(0xFF2C1E4E),
+            color: Color(0xFF2C1E4E), // [UBAH_WARNA: Header Top Bar Workout Hub Border]
             width: 1.0,
           ),
         ),
@@ -519,7 +519,7 @@ class _WorkoutHubScreenState extends State<WorkoutHubScreen>
                     width: 40,
                     height: 40,
                     decoration: BoxDecoration(
-                      color: const Color(0xFF120D24),
+                      color: const Color(0xFF120D24), // [UBAH_WARNA: Tombol Kembali Workout Hub]
                       borderRadius: BorderRadius.circular(12),
                       border: Border.all(
                         color: const Color(0xFF383241),
@@ -569,7 +569,7 @@ class _WorkoutHubScreenState extends State<WorkoutHubScreen>
                                 fontSize: 9.5,
                                 fontWeight: FontWeight.w700,
                                 letterSpacing: 1.2,
-                                color: const Color(0xFF00E5FF),
+                                color: const Color(0xFF00E5FF), // [UBAH_WARNA: Teks Status Header Workout Hub]
                               ),
                             ),
                           ),
@@ -585,7 +585,7 @@ class _WorkoutHubScreenState extends State<WorkoutHubScreen>
                           fontSize: 15,
                           fontWeight: FontWeight.w800,
                           letterSpacing: -0.2,
-                          color: const Color(0xFFE9DEF2),
+                          color: const Color(0xFFE9DEF2), // [UBAH_WARNA: Judul Header Workout Hub]
                         ),
                       ),
                     ],
@@ -656,7 +656,7 @@ class _WorkoutHubScreenState extends State<WorkoutHubScreen>
         Container(
           padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
           decoration: BoxDecoration(
-            color: const Color(0xFF120D24),
+            color: const Color(0xFF120D24), // [UBAH_WARNA: Tombol Reset Workout Hub]
             borderRadius: BorderRadius.circular(20),
             border: Border.all(
               color: const Color(0xFFB026FF).withValues(alpha: 0.4),
@@ -703,10 +703,10 @@ class _WorkoutHubScreenState extends State<WorkoutHubScreen>
   Widget _buildVisualizerBox(WorkoutProtocol protocol) {
     return Container(
       decoration: BoxDecoration(
-        color: const Color(0xFF120D24),
+        color: const Color(0xFF120D24), // [UBAH_WARNA: Card System Quest Workout Background]
         borderRadius: BorderRadius.circular(16),
         border: Border.all(
-          color: const Color(0xFF2C1E4E),
+          color: const Color(0xFF2C1E4E), // [UBAH_WARNA: Card System Quest Workout Border]
           width: 1.0,
         ),
         boxShadow: [
@@ -845,7 +845,7 @@ class _WorkoutHubScreenState extends State<WorkoutHubScreen>
                         child: Container(
                           decoration: BoxDecoration(
                             border: Border.all(
-                              color: const Color(0xFFB026FF),
+                              color: const Color(0xFFB026FF), // [UBAH_WARNA: Judul Misi Workout System]
                               width: 0.8,
                             ),
                             borderRadius: BorderRadius.circular(10),
@@ -908,7 +908,7 @@ class _WorkoutHubScreenState extends State<WorkoutHubScreen>
                               fontSize: 9,
                               fontWeight: FontWeight.w700,
                               letterSpacing: 0.6,
-                              color: const Color(0xFF00E5FF),
+                              color: const Color(0xFF00E5FF), // [UBAH_WARNA: Teks Reward Gold Workout]
                             ),
                           ),
                         ],
@@ -939,7 +939,7 @@ class _WorkoutHubScreenState extends State<WorkoutHubScreen>
                               fontSize: 8.5,
                               fontWeight: FontWeight.w700,
                               letterSpacing: 0.6,
-                              color: const Color(0xFF9B8BA1),
+                              color: const Color(0xFF9B8BA1), // [UBAH_WARNA: Teks Reward EXP Workout]
                             ),
                           ),
                         ],
@@ -1027,7 +1027,7 @@ class _WorkoutHubScreenState extends State<WorkoutHubScreen>
     return Container(
       padding: const EdgeInsets.symmetric(vertical: 8, horizontal: 4),
       decoration: BoxDecoration(
-        color: const Color(0xFF120D24),
+        color: const Color(0xFF120D24), // [UBAH_WARNA: Box Metrik Statistik Workout]
         borderRadius: BorderRadius.circular(12),
         border: Border.all(
           color: const Color(0xFF2C1E4E),
@@ -1059,7 +1059,7 @@ class _WorkoutHubScreenState extends State<WorkoutHubScreen>
               style: GoogleFonts.sora(
                 fontSize: 11.0,
                 fontWeight: FontWeight.w800,
-                color: Colors.white,
+                color: Colors.white, // [UBAH_WARNA: Nilai Angka Metrik Workout]
               ),
             ),
           ),
@@ -1088,7 +1088,7 @@ class _WorkoutHubScreenState extends State<WorkoutHubScreen>
     return Container(
       padding: const EdgeInsets.all(12),
       decoration: BoxDecoration(
-        color: const Color(0xFF120D24),
+        color: const Color(0xFF120D24), // [UBAH_WARNA: Box Peringatan Penalti Workout]
         borderRadius: BorderRadius.circular(14),
         border: Border.all(
           color: const Color(0xFF2C1E4E),
@@ -1247,7 +1247,7 @@ class _WorkoutHubScreenState extends State<WorkoutHubScreen>
     return Container(
       padding: const EdgeInsets.all(12),
       decoration: BoxDecoration(
-        color: const Color(0xFF120D24),
+        color: const Color(0xFF120D24), // [UBAH_WARNA: Box Critical Penalty Notice]
         borderRadius: BorderRadius.circular(14),
         border: Border.all(
           color: const Color(0xFF2C1E4E),
@@ -1383,10 +1383,10 @@ class _WorkoutHubScreenState extends State<WorkoutHubScreen>
     return Container(
       padding: const EdgeInsets.all(12),
       decoration: BoxDecoration(
-        color: const Color(0xFF120D24),
+        color: const Color(0xFF120D24), // [UBAH_WARNA: Card Rutinitas Latihan Background]
         borderRadius: BorderRadius.circular(16),
         border: Border.all(
-          color: const Color(0xFFB026FF).withValues(alpha: 0.4),
+          color: const Color(0xFFB026FF).withValues(alpha: 0.4), // [UBAH_WARNA: Card Rutinitas Latihan Border]
           width: 1.5,
         ),
         boxShadow: [
@@ -1415,7 +1415,7 @@ class _WorkoutHubScreenState extends State<WorkoutHubScreen>
                     style: GoogleFonts.sora(
                       fontSize: 12.5,
                       fontWeight: FontWeight.w800,
-                      color: Colors.white,
+                      color: Colors.white, // [UBAH_WARNA: Judul Rutinitas 4 Latihan Fisik]
                     ),
                   ),
                 ],
@@ -1432,7 +1432,7 @@ class _WorkoutHubScreenState extends State<WorkoutHubScreen>
                     fontSize: 9,
                     fontWeight: FontWeight.w800,
                     letterSpacing: 0.6,
-                    color: const Color(0xFF00E5FF),
+                    color: const Color(0xFF00E5FF), // [UBAH_WARNA: Teks Progress Rutinitas Latihan]
                   ),
                 ),
               ),
@@ -1542,7 +1542,7 @@ class _WorkoutHubScreenState extends State<WorkoutHubScreen>
           Container(
             padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
             decoration: BoxDecoration(
-              color: const Color(0xFF08050E),
+              color: const Color(0xFF08050E), // [UBAH_WARNA: Bottom Bar Item Latihan Fisik]
               borderRadius: BorderRadius.circular(12),
               border: Border.all(
                 color: const Color(0xFF2C1E4E),
@@ -1599,7 +1599,7 @@ class _WorkoutHubScreenState extends State<WorkoutHubScreen>
                         width: 38,
                         height: 38,
                         decoration: BoxDecoration(
-                          color: const Color(0xFF1F1927),
+                          color: const Color(0xFF1F1927), // [UBAH_WARNA: Box Counter Target Repetisi]
                           borderRadius: BorderRadius.circular(10),
                           border: Border.all(
                             color: const Color(0xFF383241),
@@ -1623,7 +1623,7 @@ class _WorkoutHubScreenState extends State<WorkoutHubScreen>
                         width: 38,
                         height: 38,
                         decoration: BoxDecoration(
-                          color: const Color(0xFFB026FF),
+                          color: const Color(0xFFB026FF), // [UBAH_WARNA: Tombol Buka Kamera Deteksi Pose]
                           borderRadius: BorderRadius.circular(10),
                           boxShadow: [
                             BoxShadow(
@@ -1733,7 +1733,7 @@ class _WorkoutHubScreenState extends State<WorkoutHubScreen>
                   color: _isClaimed
                       ? Colors.black
                       : isReady
-                          ? Colors.white
+                          ? Colors.white // [UBAH_WARNA: Ikon Tombol Selesaikan Latihan]
                           : const Color(0xFF9B8BA1),
                 ),
                 const SizedBox(width: 8),
@@ -1748,7 +1748,7 @@ class _WorkoutHubScreenState extends State<WorkoutHubScreen>
                       color: _isClaimed
                           ? Colors.black
                           : isReady
-                              ? Colors.white
+                              ? Colors.white // [UBAH_WARNA: Teks Tombol Selesaikan Latihan]
                               : const Color(0xFF9B8BA1),
                     ),
                   ),

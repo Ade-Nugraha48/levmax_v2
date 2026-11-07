@@ -424,7 +424,7 @@ class _FaceScanDialogState extends State<FaceScanDialog>
                   padding:
                       const EdgeInsets.symmetric(horizontal: 6, vertical: 2.5),
                   decoration: BoxDecoration(
-                    color: const Color(0xFF231D2B),
+                    color: const Color(0xFF231D2B), // [UBAH_WARNA: Badge Mode Kamera Face Scan]
                     borderRadius: BorderRadius.circular(4),
                     border: Border.all(
                         color: currentAccent.withValues(alpha: 0.5)),
@@ -458,7 +458,7 @@ class _FaceScanDialogState extends State<FaceScanDialog>
                     child: Container(
                       width: 220,
                       height: 260,
-                      color: const Color(0xFF0A0612),
+                      color: const Color(0xFF0A0612), // [UBAH_WARNA: Latar Belakang Viewfinder Kamera]
                       child: (_cameraController != null &&
                               _cameraController!.value.isInitialized)
                           ? ClipRect(
@@ -472,7 +472,7 @@ class _FaceScanDialogState extends State<FaceScanDialog>
                           : Center(
                               child: _visualState == _ScannerVisualState.error
                                   ? const Icon(Icons.videocam_off_rounded,
-                                      size: 48, color: Color(0xFFFF5252))
+                                      size: 48, color: Color(0xFFFF5252)) // [UBAH_WARNA: Ikon Kamera Error Face Scan]
                                   : CircularProgressIndicator(
                                       strokeWidth: 2.5,
                                       valueColor: AlwaysStoppedAnimation<Color>(
@@ -616,14 +616,14 @@ class _FaceScanDialogState extends State<FaceScanDialog>
                       width: 220,
                       height: 260,
                       decoration: BoxDecoration(
-                        color: const Color(0xFF00FFA3).withValues(alpha: 0.25),
+                        color: const Color(0xFF00FFA3).withValues(alpha: 0.25), // [UBAH_WARNA: Overlay Sukses Wajah Cocok]
                         borderRadius: BorderRadius.circular(20),
                       ),
                       child: const Center(
                         child: Icon(
                           Icons.verified_rounded,
                           size: 72,
-                          color: Color(0xFF00FFA3),
+                          color: Color(0xFF00FFA3), // [UBAH_WARNA: Ikon Centang Sukses Verifikasi Wajah]
                         ),
                       ),
                     ),
@@ -633,14 +633,14 @@ class _FaceScanDialogState extends State<FaceScanDialog>
                       width: 220,
                       height: 260,
                       decoration: BoxDecoration(
-                        color: const Color(0xFFFF0055).withValues(alpha: 0.3),
+                        color: const Color(0xFFFF0055).withValues(alpha: 0.3), // [UBAH_WARNA: Overlay Gagal Wajah Ditolak]
                         borderRadius: BorderRadius.circular(20),
                       ),
                       child: const Center(
                         child: Icon(
                           Icons.gpp_bad_rounded,
                           size: 72,
-                          color: Color(0xFFFF0055),
+                          color: Color(0xFFFF0055), // [UBAH_WARNA: Ikon Silang Gagal Verifikasi Wajah]
                         ),
                       ),
                     ),
@@ -681,17 +681,17 @@ class _FaceScanDialogState extends State<FaceScanDialog>
               Container(
                 padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
                 decoration: BoxDecoration(
-                  color: const Color(0xFF280B15),
+                  color: const Color(0xFF280B15), // [UBAH_WARNA: Kotak Peringatan Wajah Tidak Cocok]
                   borderRadius: BorderRadius.circular(8),
                   border: Border.all(
-                      color: const Color(0xFFFF0055).withValues(alpha: 0.5)),
+                      color: const Color(0xFFFF0055).withValues(alpha: 0.5)), // [UBAH_WARNA: Border Peringatan Wajah Tidak Cocok]
                 ),
                 child: Text(
                   _errorMessage,
                   textAlign: TextAlign.center,
                   style: GoogleFonts.spaceGrotesk(
                     fontSize: 9.5,
-                    color: const Color(0xFFFFB4AB),
+                    color: const Color(0xFFFFB4AB), // [UBAH_WARNA: Teks Peringatan Wajah Tidak Cocok]
                     fontWeight: FontWeight.w500,
                   ),
                 ),
@@ -708,7 +708,7 @@ class _FaceScanDialogState extends State<FaceScanDialog>
                   Expanded(
                     child: OutlinedButton(
                       style: OutlinedButton.styleFrom(
-                        side: const BorderSide(color: Color(0xFF383241)),
+                        side: const BorderSide(color: Color(0xFF383241)), // [UBAH_WARNA: Garis Border Tombol Batal Face Scan]
                         shape: RoundedRectangleBorder(
                           borderRadius: BorderRadius.circular(10),
                         ),
@@ -719,7 +719,7 @@ class _FaceScanDialogState extends State<FaceScanDialog>
                         style: GoogleFonts.spaceGrotesk(
                           fontSize: 10,
                           fontWeight: FontWeight.w700,
-                          color: const Color(0xFF9B8BA1),
+                          color: const Color(0xFF9B8BA1), // [UBAH_WARNA: Teks Tombol Batal Face Scan]
                         ),
                       ),
                     ),
@@ -728,8 +728,8 @@ class _FaceScanDialogState extends State<FaceScanDialog>
                   Expanded(
                     child: ElevatedButton(
                       style: ElevatedButton.styleFrom(
-                        backgroundColor: currentAccent,
-                        foregroundColor: Colors.black,
+                        backgroundColor: currentAccent, // [UBAH_WARNA: Tombol Tindakan Utama Face Scan (Pindai Ulang)]
+                        foregroundColor: Colors.black, // [UBAH_WARNA: Teks Tombol Tindakan Face Scan]
                         shape: RoundedRectangleBorder(
                           borderRadius: BorderRadius.circular(10),
                         ),
@@ -754,7 +754,7 @@ class _FaceScanDialogState extends State<FaceScanDialog>
                   Expanded(
                     child: OutlinedButton(
                       style: OutlinedButton.styleFrom(
-                        side: const BorderSide(color: Color(0xFF383241)),
+                        side: const BorderSide(color: Color(0xFF383241)), // [UBAH_WARNA: Garis Border Tombol Batalkan Face Scan]
                         shape: RoundedRectangleBorder(
                           borderRadius: BorderRadius.circular(10),
                         ),
@@ -765,7 +765,7 @@ class _FaceScanDialogState extends State<FaceScanDialog>
                         style: GoogleFonts.spaceGrotesk(
                           fontSize: 10,
                           fontWeight: FontWeight.w700,
-                          color: const Color(0xFF9B8BA1),
+                          color: const Color(0xFF9B8BA1), // [UBAH_WARNA: Teks Tombol Batalkan Face Scan]
                         ),
                       ),
                     ),
@@ -775,8 +775,8 @@ class _FaceScanDialogState extends State<FaceScanDialog>
                     Expanded(
                       child: ElevatedButton(
                         style: ElevatedButton.styleFrom(
-                          backgroundColor: currentAccent,
-                          foregroundColor: Colors.black,
+                          backgroundColor: currentAccent, // [UBAH_WARNA: Tombol Rekam Wajah / Pindai Sekarang]
+                          foregroundColor: Colors.black, // [UBAH_WARNA: Teks Tombol Rekam Wajah]
                           shape: RoundedRectangleBorder(
                             borderRadius: BorderRadius.circular(10),
                           ),

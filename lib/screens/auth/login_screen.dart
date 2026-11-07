@@ -389,7 +389,7 @@ class _LoginScreenState extends State<LoginScreen> {
                       Container(
                         padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
                         decoration: BoxDecoration(
-                          color: const Color(0xFF110C19).withValues(alpha: 0.80),
+                          color: const Color(0xFF110C19).withValues(alpha: 0.80), // [UBAH_WARNA: Header System Window Card]
                           borderRadius: BorderRadius.circular(999),
                         ),
                         child: Row(
@@ -400,7 +400,7 @@ class _LoginScreenState extends State<LoginScreen> {
                               height: 6,
                               decoration: const BoxDecoration(
                                 shape: BoxShape.circle,
-                                color: Color(0xFF00F4FE),
+                                color: Color(0xFF00F4FE), // [UBAH_WARNA: Dot Status System Window]
                                 boxShadow: [
                                   BoxShadow(
                                     color: Color(0xFF00F4FE),
@@ -417,7 +417,7 @@ class _LoginScreenState extends State<LoginScreen> {
                                 fontSize: 10,
                                 fontWeight: FontWeight.w500,
                                 letterSpacing: 1.0,
-                                color: const Color(0xFFE6FEFF),
+                                color: const Color(0xFFE6FEFF), // [UBAH_WARNA: Teks Title System Window]
                               ),
                             ),
                           ],
@@ -431,7 +431,7 @@ class _LoginScreenState extends State<LoginScreen> {
                           const Icon(
                             Icons.shield_outlined,
                             size: 15,
-                            color: Color(0xFFE5B5FF),
+                            color: Color(0xFFE5B5FF), // [UBAH_WARNA: Judul Utama LEVMAX]
                           ),
                           const SizedBox(width: 4),
                           Text(
@@ -440,7 +440,7 @@ class _LoginScreenState extends State<LoginScreen> {
                               fontSize: 10,
                               fontWeight: FontWeight.w500,
                               letterSpacing: 0.8,
-                              color: const Color(0xFFD2C1D7),
+                              color: const Color(0xFFD2C1D7), // [UBAH_WARNA: Teks Subtitle Login]
                             ),
                           ),
                         ],
@@ -529,7 +529,7 @@ class _LoginScreenState extends State<LoginScreen> {
                           // Main System Auth Card
                           Container(
                             decoration: BoxDecoration(
-                              color: const Color(0xFF1F1927).withValues(alpha: 0.95),
+                              color: const Color(0xFF1F1927).withValues(alpha: 0.95), // [UBAH_WARNA: Background Card Form Login]
                               borderRadius: BorderRadius.circular(12),
                               boxShadow: [
                                 BoxShadow(
@@ -593,7 +593,7 @@ class _LoginScreenState extends State<LoginScreen> {
                                             style: GoogleFonts.spaceGrotesk(
                                               fontSize: 10,
                                               fontWeight: FontWeight.w600,
-                                              color: const Color(0xFFE5B5FF),
+                                              color: const Color(0xFFE5B5FF), // [UBAH_WARNA: Label Input Username]
                                             ),
                                           ),
                                         ],
@@ -605,13 +605,13 @@ class _LoginScreenState extends State<LoginScreen> {
                                       Container(
                                         height: 42,
                                         decoration: BoxDecoration(
-                                          color: const Color(0xFF110C19),
+                                          color: const Color(0xFF110C19), // [UBAH_WARNA: Background Input Username]
                                           borderRadius: BorderRadius.circular(8),
                                         ),
                                         child: TextField(
                                           controller: _usernameController,
                                           style: GoogleFonts.plusJakartaSans(
-                                            color: const Color(0xFFE9DEF2),
+                                            color: const Color(0xFFE9DEF2), // [UBAH_WARNA: Warna Teks Input Username]
                                             fontSize: 14,
                                           ),
                                           cursorColor: const Color(0xFFB026FF),
@@ -619,12 +619,12 @@ class _LoginScreenState extends State<LoginScreen> {
                                             isDense: true,
                                             hintText: 'Sung Jin-Woo / Codename',
                                             hintStyle: GoogleFonts.plusJakartaSans(
-                                              color: const Color(0xFF9B8BA1).withValues(alpha: 0.40),
+                                              color: const Color(0xFF9B8BA1).withValues(alpha: 0.40), // [UBAH_WARNA: Hint Input Username]
                                               fontSize: 14,
                                             ),
                                             prefixIcon: const Icon(
                                               Icons.person_outline,
-                                              color: Color(0xFF9B8BA1),
+                                              color: Color(0xFF9B8BA1), // [UBAH_WARNA: Ikon Input Username]
                                               size: 18,
                                             ),
                                             border: InputBorder.none,
@@ -667,7 +667,7 @@ class _LoginScreenState extends State<LoginScreen> {
                                               vertical: 2,
                                             ),
                                             decoration: BoxDecoration(
-                                              color: const Color(0xFF2D2736),
+                                              color: const Color(0xFF2D2736), // [UBAH_WARNA: Box Security Cipher]
                                               borderRadius: BorderRadius.circular(4),
                                             ),
                                             child: Row(
@@ -678,7 +678,7 @@ class _LoginScreenState extends State<LoginScreen> {
                                                   height: 4,
                                                   decoration: const BoxDecoration(
                                                     shape: BoxShape.circle,
-                                                    color: Color(0xFF00F4FE),
+                                                    color: Color(0xFF00F4FE), // [UBAH_WARNA: Dot Status SHA-256]
                                                   ),
                                                 ),
                                                 const SizedBox(width: 4),
@@ -688,7 +688,7 @@ class _LoginScreenState extends State<LoginScreen> {
                                                     fontSize: 9,
                                                     fontWeight: FontWeight.w600,
                                                     letterSpacing: 0.8,
-                                                    color: const Color(0xFFE6FEFF),
+                                                    color: const Color(0xFFE6FEFF), // [UBAH_WARNA: Teks Hash SHA-256]
                                                   ),
                                                 ),
                                               ],
@@ -703,14 +703,14 @@ class _LoginScreenState extends State<LoginScreen> {
                                       Container(
                                         height: 42,
                                         decoration: BoxDecoration(
-                                          color: const Color(0xFF110C19),
+                                          color: const Color(0xFF110C19), // [UBAH_WARNA: Background Input Password]
                                           borderRadius: BorderRadius.circular(8),
                                         ),
                                         child: TextField(
                                           controller: _passwordController,
                                           obscureText: _isObscure,
                                           style: GoogleFonts.plusJakartaSans(
-                                            color: const Color(0xFFE9DEF2),
+                                            color: const Color(0xFFE9DEF2), // [UBAH_WARNA: Warna Teks Input Password]
                                             fontSize: 14,
                                             letterSpacing: _isObscure ? 2.0 : 0.5,
                                           ),
@@ -719,13 +719,13 @@ class _LoginScreenState extends State<LoginScreen> {
                                             isDense: true,
                                             hintText: 'Enter Awakened Keyphrase',
                                             hintStyle: GoogleFonts.plusJakartaSans(
-                                              color: const Color(0xFF9B8BA1).withValues(alpha: 0.40),
+                                              color: const Color(0xFF9B8BA1).withValues(alpha: 0.40), // [UBAH_WARNA: Hint Input Password]
                                               fontSize: 14,
                                               letterSpacing: 0,
                                             ),
                                             prefixIcon: const Icon(
                                               Icons.lock_outline,
-                                              color: Color(0xFF9B8BA1),
+                                              color: Color(0xFF9B8BA1), // [UBAH_WARNA: Ikon Input Password]
                                               size: 18,
                                             ),
                                             suffixIcon: GestureDetector(
@@ -738,7 +738,7 @@ class _LoginScreenState extends State<LoginScreen> {
                                                 _isObscure
                                                     ? Icons.visibility_outlined
                                                     : Icons.visibility_off_outlined,
-                                                color: const Color(0xFF9B8BA1),
+                                                color: const Color(0xFF9B8BA1), // [UBAH_WARNA: Ikon Mata Password]
                                                 size: 18,
                                               ),
                                             ),
@@ -770,7 +770,7 @@ class _LoginScreenState extends State<LoginScreen> {
                                                   width: 14,
                                                   height: 14,
                                                   decoration: BoxDecoration(
-                                                    color: _staySynchronized
+                                                    color: _staySynchronized // [UBAH_WARNA: Kotak Checkbox Stay Synchronized]
                                                         ? const Color(0xFFB026FF)
                                                         : const Color(0xFF110C19),
                                                     borderRadius: BorderRadius.circular(3),
@@ -788,7 +788,7 @@ class _LoginScreenState extends State<LoginScreen> {
                                                   'Stay Synchronized',
                                                   style: GoogleFonts.spaceGrotesk(
                                                     fontSize: 10,
-                                                    color: const Color(0xFFD2C1D7),
+                                                    color: const Color(0xFFD2C1D7), // [UBAH_WARNA: Label Stay Synchronized]
                                                   ),
                                                 ),
                                               ],
@@ -810,7 +810,7 @@ class _LoginScreenState extends State<LoginScreen> {
                                               style: GoogleFonts.spaceGrotesk(
                                                 fontSize: 10,
                                                 letterSpacing: 0.6,
-                                                color: const Color(0xFFDCB8FC),
+                                                color: const Color(0xFFDCB8FC), // [UBAH_WARNA: Link Forgot Password]
                                               ),
                                             ),
                                           ),
@@ -836,7 +836,7 @@ class _LoginScreenState extends State<LoginScreen> {
                                           ),
                                           boxShadow: [
                                             BoxShadow(
-                                              color: const Color(0xFFB026FF).withValues(alpha: 0.45),
+                                              color: const Color(0xFFB026FF).withValues(alpha: 0.45), // [UBAH_WARNA: Glow Tombol Awaken]
                                               blurRadius: 24,
                                               spreadRadius: 0,
                                             ),
@@ -890,10 +890,10 @@ class _LoginScreenState extends State<LoginScreen> {
                                         children: [
                                           Container(
                                             height: 1,
-                                            color: const Color(0xFF383241),
+                                            color: const Color(0xFF383241), // [UBAH_WARNA: Garis Pemisah Divider Kiri]
                                           ),
                                           Container(
-                                            color: const Color(0xFF1F1927),
+                                            color: const Color(0xFF1F1927), // [UBAH_WARNA: Garis Pemisah Divider Kanan]
                                             padding: const EdgeInsets.symmetric(
                                               horizontal: 10,
                                               vertical: 2,
@@ -904,7 +904,7 @@ class _LoginScreenState extends State<LoginScreen> {
                                                 fontSize: 10,
                                                 fontWeight: FontWeight.w500,
                                                 letterSpacing: 1.5,
-                                                color: const Color(0xFF9B8BA1),
+                                                color: const Color(0xFF9B8BA1), // [UBAH_WARNA: Teks Pemisah Biometric]
                                               ),
                                             ),
                                           ),
@@ -969,7 +969,7 @@ class _LoginScreenState extends State<LoginScreen> {
                                       'Unregistered Hunter? ',
                                       style: GoogleFonts.spaceGrotesk(
                                         fontSize: 11,
-                                        color: const Color(0xFFD2C1D7),
+                                        color: const Color(0xFFD2C1D7), // [UBAH_WARNA: Teks Belum Punya Akun]
                                       ),
                                     ),
                                     Text(
@@ -977,7 +977,7 @@ class _LoginScreenState extends State<LoginScreen> {
                                       style: GoogleFonts.spaceGrotesk(
                                         fontSize: 11,
                                         fontWeight: FontWeight.w600,
-                                        color: const Color(0xFFE5B5FF),
+                                        color: const Color(0xFFE5B5FF), // [UBAH_WARNA: Link Register Awakened]
                                       ),
                                     ),
                                     const SizedBox(width: 4),
@@ -1043,7 +1043,7 @@ class _LoginScreenState extends State<LoginScreen> {
         child: Container(
           padding: const EdgeInsets.symmetric(vertical: 10, horizontal: 8),
           decoration: BoxDecoration(
-            color: const Color(0xFF110C19),
+            color: const Color(0xFF110C19), // [UBAH_WARNA: Pod Biometrik Outer]
             borderRadius: BorderRadius.circular(8),
             boxShadow: [
               BoxShadow(
@@ -1060,7 +1060,7 @@ class _LoginScreenState extends State<LoginScreen> {
                 height: 40,
                 decoration: BoxDecoration(
                   shape: BoxShape.circle,
-                  color: const Color(0xFF231D2B),
+                  color: const Color(0xFF231D2B), // [UBAH_WARNA: Pod Biometrik Inner]
                   boxShadow: [
                     BoxShadow(
                       color: glowColor.withValues(alpha: 0.35),
@@ -1084,7 +1084,7 @@ class _LoginScreenState extends State<LoginScreen> {
                   fontSize: 10,
                   fontWeight: FontWeight.w600,
                   letterSpacing: 0.8,
-                  color: const Color(0xFFE9DEF2),
+                  color: const Color(0xFFE9DEF2), // [UBAH_WARNA: Judul Pod Biometrik]
                 ),
               ),
               const SizedBox(height: 2),
@@ -1092,7 +1092,7 @@ class _LoginScreenState extends State<LoginScreen> {
                 subtitle,
                 style: GoogleFonts.spaceGrotesk(
                   fontSize: 9,
-                  color: const Color(0xFF9B8BA1),
+                  color: const Color(0xFF9B8BA1), // [UBAH_WARNA: Subtitle Pod Biometrik]
                 ),
               ),
             ],

@@ -141,7 +141,7 @@ class _AppearanceQuestScreenState extends State<AppearanceQuestScreen> {
                 Expanded(
                   child: Container(
                     decoration: BoxDecoration(
-                      color: const Color(0xFF110C19), // Midnight Abyss Inner Card
+                      color: const Color(0xFF110C19), // [UBAH_WARNA: Box System Header Appearance]
                       borderRadius: const BorderRadius.only(
                         topLeft: Radius.circular(24),
                         topRight: Radius.circular(24),
@@ -245,7 +245,7 @@ class _AppearanceQuestScreenState extends State<AppearanceQuestScreen> {
               width: 38,
               height: 38,
               decoration: BoxDecoration(
-                color: const Color(0xFF1F1927),
+                color: const Color(0xFF1F1927), // [UBAH_WARNA: Card Judul Appearance Background]
                 borderRadius: BorderRadius.circular(10),
                 border: Border.all(
                   color: const Color(0xFF2C1E4E),
@@ -275,7 +275,7 @@ class _AppearanceQuestScreenState extends State<AppearanceQuestScreen> {
                       fontSize: 10,
                       fontWeight: FontWeight.w700,
                       letterSpacing: 1.4,
-                      color: const Color(0xFF00F4FE),
+                      color: const Color(0xFF00F4FE), // [UBAH_WARNA: Ikon Night Window Appearance]
                     ),
                   ),
                   const SizedBox(width: 4),
@@ -303,7 +303,7 @@ class _AppearanceQuestScreenState extends State<AppearanceQuestScreen> {
                   fontSize: 13,
                   fontWeight: FontWeight.w800,
                   letterSpacing: 0.6,
-                  color: Colors.white,
+                  color: Colors.white, // [UBAH_WARNA: Teks Judul Appearance Quest]
                 ),
               ),
             ],
@@ -317,7 +317,7 @@ class _AppearanceQuestScreenState extends State<AppearanceQuestScreen> {
               Container(
                 padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
                 decoration: BoxDecoration(
-                  color: const Color(0xFF141E2D),
+                  color: const Color(0xFF141E2D), // [UBAH_WARNA: Badge Waktu Malam Background]
                   borderRadius: BorderRadius.circular(8),
                   border: Border.all(
                     color: const Color(0xFF00F4FE).withValues(alpha: 0.7),
@@ -339,7 +339,7 @@ class _AppearanceQuestScreenState extends State<AppearanceQuestScreen> {
                         fontSize: 9.5,
                         fontWeight: FontWeight.w800,
                         letterSpacing: 0.5,
-                        color: const Color(0xFF00F4FE),
+                        color: const Color(0xFF00F4FE), // [UBAH_WARNA: Teks Status Waktu Malam]
                       ),
                     ),
                   ],
@@ -428,7 +428,7 @@ class _AppearanceQuestScreenState extends State<AppearanceQuestScreen> {
             Container(
               padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
               decoration: BoxDecoration(
-                color: const Color(0xFF1F1927),
+                color: const Color(0xFF1F1927), // [UBAH_WARNA: Card Progress Indicator Background]
                 borderRadius: BorderRadius.circular(6),
                 border: Border.all(
                   color: const Color(0xFF383241),
@@ -457,7 +457,7 @@ class _AppearanceQuestScreenState extends State<AppearanceQuestScreen> {
             fontSize: 22,
             fontWeight: FontWeight.w900,
             letterSpacing: 1.4,
-            color: const Color(0xFF00F4FE),
+            color: const Color(0xFF00F4FE), // [UBAH_WARNA: Fill Bar Progress Appearance]
             shadows: [
               Shadow(
                 color: const Color(0xFF00F4FE).withValues(alpha: 0.8),
@@ -492,7 +492,7 @@ class _AppearanceQuestScreenState extends State<AppearanceQuestScreen> {
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 12),
       decoration: BoxDecoration(
-        color: const Color(0xFF1F1927),
+        color: const Color(0xFF1F1927), // [UBAH_WARNA: Banner Peringatan Waktu 21:00 Background]
         borderRadius: BorderRadius.circular(12),
         border: Border.all(
           color: const Color(0xFF383241),
@@ -507,7 +507,7 @@ class _AppearanceQuestScreenState extends State<AppearanceQuestScreen> {
             child: Icon(
               Icons.auto_awesome,
               size: 18,
-              color: Color(0xFF00F4FE),
+              color: Color(0xFF00F4FE), // [UBAH_WARNA: Ikon Jam Peringatan Waktu]
             ),
           ),
           const SizedBox(width: 10),
@@ -562,7 +562,7 @@ class _AppearanceQuestScreenState extends State<AppearanceQuestScreen> {
     return Container(
       padding: const EdgeInsets.all(12),
       decoration: BoxDecoration(
-        color: const Color(0xFF1F1927),
+        color: const Color(0xFF1F1927), // [UBAH_WARNA: Card Reward Protokol Background]
         borderRadius: BorderRadius.circular(14),
         border: Border.all(
           color: const Color(0xFF383241),
@@ -646,7 +646,7 @@ class _AppearanceQuestScreenState extends State<AppearanceQuestScreen> {
                   style: GoogleFonts.spaceGrotesk(
                     fontSize: 10,
                     fontWeight: FontWeight.w800,
-                    color: const Color(0xFFE5B5FF),
+                    color: const Color(0xFFE5B5FF), // [UBAH_WARNA: Teks Reward EXP Appearance]
                   ),
                 ),
               ),
@@ -666,7 +666,7 @@ class _AppearanceQuestScreenState extends State<AppearanceQuestScreen> {
                   style: GoogleFonts.spaceGrotesk(
                     fontSize: 10,
                     fontWeight: FontWeight.w800,
-                    color: const Color(0xFF00F4FE),
+                    color: const Color(0xFF00F4FE), // [UBAH_WARNA: Teks Reward Gold Appearance]
                   ),
                 ),
               ),
@@ -716,7 +716,7 @@ class _AppearanceQuestScreenState extends State<AppearanceQuestScreen> {
           duration: const Duration(milliseconds: 200),
           padding: const EdgeInsets.all(12),
           decoration: BoxDecoration(
-            color: const Color(0xFF1F1927),
+            color: const Color(0xFF1F1927), // [UBAH_WARNA: Tile Checklist Item Background]
             borderRadius: BorderRadius.circular(14),
             border: Border.all(
               color: isChecked
@@ -763,7 +763,7 @@ class _AppearanceQuestScreenState extends State<AppearanceQuestScreen> {
                   child: Icon(
                     item['icon'] as IconData,
                     size: 22,
-                    color: isChecked ? const Color(0xFF00F4FE) : const Color(0xFF6B6280),
+                    color: isChecked ? const Color(0xFF00F4FE) : const Color(0xFF6B6280), // [UBAH_WARNA: Nomor Langkah Checklist]
                   ),
                 ),
               ),
@@ -799,7 +799,7 @@ class _AppearanceQuestScreenState extends State<AppearanceQuestScreen> {
                         decoration: isChecked ? TextDecoration.lineThrough : null,
                         decorationColor: const Color(0xFF9B8BA1),
                         decorationThickness: 1.8,
-                        color: isChecked
+                        color: isChecked // [UBAH_WARNA: Judul Langkah Checklist]
                             ? const Color(0xFF9B8BA1).withValues(alpha: 0.6)
                             : const Color(0xFFE9DEF2),
                       ),
@@ -834,7 +834,7 @@ class _AppearanceQuestScreenState extends State<AppearanceQuestScreen> {
                 height: 28,
                 decoration: BoxDecoration(
                   borderRadius: BorderRadius.circular(8),
-                  color: isChecked ? const Color(0xFFB026FF) : const Color(0xFF16111E),
+                  color: isChecked ? const Color(0xFFB026FF) : const Color(0xFF16111E), // [UBAH_WARNA: Kotak Checkbox Appearance]
                   border: Border.all(
                     color: isChecked ? const Color(0xFFD8B4F8) : const Color(0xFF383241),
                     width: 1.4,
@@ -853,7 +853,7 @@ class _AppearanceQuestScreenState extends State<AppearanceQuestScreen> {
                   child: Icon(
                     Icons.check_rounded,
                     size: 19,
-                    color: isChecked ? Colors.white : Colors.transparent,
+                    color: isChecked ? Colors.white : Colors.transparent, // [UBAH_WARNA: Ikon Centang Checkbox]
                   ),
                 ),
               ),
@@ -880,7 +880,7 @@ class _AppearanceQuestScreenState extends State<AppearanceQuestScreen> {
             : 16.0,
       ),
       decoration: BoxDecoration(
-        color: const Color(0xFF16111E),
+        color: const Color(0xFF16111E), // [UBAH_WARNA: Bottom Bar CTA Appearance Background]
         border: const Border(
           top: BorderSide(
             color: Color(0xFF24193F),
@@ -967,7 +967,7 @@ class _AppearanceQuestScreenState extends State<AppearanceQuestScreen> {
                       const Icon(
                         Icons.verified_user_rounded,
                         size: 20,
-                        color: Colors.white,
+                        color: Colors.white, // [UBAH_WARNA: Teks Tombol Submit Appearance]
                       ),
                       const SizedBox(width: 8),
                       Text(
