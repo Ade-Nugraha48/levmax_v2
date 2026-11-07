@@ -1,3 +1,7 @@
+/// Berkas: lib/services/s3_storage_service.dart
+/// Deskripsi: Layanan upload dan akses Supabase Storage via protokol AWS S3 API.
+/// Mengimplementasikan enkripsi otorisasi AWS Signature Version 4 (SigV4) murni di Dart.
+
 import 'dart:convert';
 import 'dart:io';
 import 'package:crypto/crypto.dart';
@@ -26,7 +30,7 @@ class S3StorageService {
     return kSigning;
   }
 
-  /// Mengunggah file byte array ke bucket 'Avatar' via protokol S3 PUT
+  // [POIN PRESENTASI]: Upload biner foto profil ke Supabase S3 bucket dengan otorisasi AWS Signature Version 4 (SigV4) murni di Dart
   static Future<String?> uploadFile({
     required String path,
     required Uint8List bytes,
@@ -79,7 +83,7 @@ class S3StorageService {
     }
   }
 
-  /// Menghasilkan URL unduh S3 presigned yang berlaku selama 7 hari (dapat dimuat oleh Image.network)
+  // [POIN PRESENTASI]: Pembuatan Presigned URL bertanda tangan kriptografis untuk memuat foto profil secara aman di widget Image.network
   static String getPresignedDownloadUrl({required String path, int expiresInSeconds = 604800}) {
     final now = DateTime.now().toUtc();
     final amzDate = _formatAmzDate(now);

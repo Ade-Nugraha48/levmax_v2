@@ -1,3 +1,8 @@
+/// Berkas: lib/screens/auth/login_screen.dart
+/// Deskripsi: Layar autentikasi masuk (Login Screen) Hunter bertema Solo Leveling.
+/// Memenuhi Syarat No. 2 (Login enkripsi SHA-256 client-side & sesi Hive) serta
+/// Syarat No. 3 (Login Biometrik: Sidik Jari via local_auth & Pemindai Wajah).
+
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:local_auth/local_auth.dart';
@@ -9,6 +14,7 @@ import '../main_navigation.dart';
 import 'register_screen.dart';
 import '../../widgets/face_scan_dialog.dart';
 
+/// Halaman login Hunter dengan opsi autentikasi manual dan biometrik
 class LoginScreen extends StatefulWidget {
   const LoginScreen({super.key});
 
@@ -39,7 +45,7 @@ class _LoginScreenState extends State<LoginScreen> {
   }
 
 
-  /// Autentikasi biometrik menggunakan local_auth dan kredensial tersimpan
+  // [POIN PRESENTASI]: Login Biometrik: Memeriksa ketersediaan sensor (Fingerprint via local_auth / Face Scan kamera depan) untuk bypass login
   Future<void> _triggerBiometricAuth({String type = 'fingerprint'}) async {
     // a. Cek terlebih dahulu apakah isBiometricEnabled bernilai true di penyimpanan lokal
     final bool isEnabled = HiveService.isBiometricEnabled();
@@ -156,7 +162,7 @@ class _LoginScreenState extends State<LoginScreen> {
     }
   }
 
-  /// Menjalankan login otomatis ke Supabase menggunakan kredensial biometrik
+  // [POIN PRESENTASI]: Eksekusi login otomatis ke Supabase menggunakan kredensial biometrik yang tersimpan di Hive
   Future<void> _performBiometricLogin({
     required String username,
     required String password,
@@ -230,7 +236,7 @@ class _LoginScreenState extends State<LoginScreen> {
     }
   }
 
-  /// Validasi login manual: Hash SHA-256 + Supabase Query + Simpan Hive Session
+  // [POIN PRESENTASI]: Pipeline autentikasi manual: hashing kata sandi SHA-256 client-side -> verifikasi ke Supabase (Non-Firebase) -> penyimpanan sesi lokal ke Hive
   Future<void> _handleLogin() async {
     final username = _usernameController.text.trim();
     final password = _passwordController.text;
@@ -315,7 +321,7 @@ class _LoginScreenState extends State<LoginScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: const Color(0xFF16111E), // Dark Abyss Background
+      backgroundColor: const Color(0xFF16111E), // [UBAH_WARNA: Latar Belakang Layar Login]
       body: SafeArea(
         child: Stack(
           children: [
@@ -821,9 +827,9 @@ class _LoginScreenState extends State<LoginScreen> {
                                           borderRadius: BorderRadius.circular(8),
                                           gradient: const LinearGradient(
                                             colors: [
-                                              Color(0xFF7B2CBF),
-                                              Color(0xFF9D4EDD),
-                                              Color(0xFFB026FF),
+                                              Color(0xFF7B2CBF), // [UBAH_WARNA: Tombol Login Awaken - Gradien Ungu Gelap]
+                                              Color(0xFF9D4EDD), // [UBAH_WARNA: Tombol Login Awaken - Gradien Ungu Sedang]
+                                              Color(0xFFB026FF), // [UBAH_WARNA: Tombol Login Awaken - Gradien Ungu Terang]
                                             ],
                                             begin: Alignment.centerLeft,
                                             end: Alignment.centerRight,
@@ -856,7 +862,7 @@ class _LoginScreenState extends State<LoginScreen> {
                                                       children: [
                                                         const Icon(
                                                           Icons.bolt_rounded,
-                                                          color: Color(0xFF00F4FE),
+                                                          color: Color(0xFF00F4FE), // [UBAH_WARNA: Ikon Tombol Login Awaken]
                                                           size: 18,
                                                         ),
                                                         const SizedBox(width: 8),
@@ -866,7 +872,7 @@ class _LoginScreenState extends State<LoginScreen> {
                                                             fontSize: 13,
                                                             fontWeight: FontWeight.w600,
                                                             letterSpacing: 0.8,
-                                                            color: const Color(0xFFFFFDFF),
+                                                            color: const Color(0xFFFFFDFF), // [UBAH_WARNA: Teks Tombol Login Awaken]
                                                           ),
                                                         ),
                                                       ],

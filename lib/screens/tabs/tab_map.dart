@@ -1,3 +1,8 @@
+/// Berkas: lib/screens/tabs/tab_map.dart
+/// Deskripsi: Layar eksplorasi dunia nyata berbasis Location-Based Service (LBS) dan peta OpenStreetMap.
+/// Mengimplementasikan Syarat Tugas Akhir No. 5: Pelacakan koordinat GPS real-time via Geolocator
+/// dan validasi klaim Dungeon Gate dalam batas radius geofencing < 100 meter.
+
 import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:flutter_map/flutter_map.dart';
@@ -123,7 +128,7 @@ class _TabMapState extends State<TabMap> with SingleTickerProviderStateMixin {
     });
   }
 
-  /// Memulai pemantauan GPS real-time dengan Geolocator
+  // [POIN PRESENTASI]: Pemanfaatan sensor GPS hardware (Geolocator): meminta izin lokasi runtime, memantau satelit, dan melacak koordinat lintang-bujur
   Future<void> _initLocationService() async {
     setState(() {
       _isLocating = true;
@@ -349,6 +354,7 @@ class _TabMapState extends State<TabMap> with SingleTickerProviderStateMixin {
   }
 
   /// Fungsi klaim reward jika hunter berada dalam radius <= 100 meter
+  // [POIN PRESENTASI]: Geofencing LBS: verifikasi jarak radius < 100 meter dari koordinat Dungeon Gate fisik sebelum reward EXP & Gold dapat diklaim
   void _claimDungeonReward() {
     if (hasClaimed) return;
     if (distance > 100) {
@@ -465,7 +471,7 @@ class _TabMapState extends State<TabMap> with SingleTickerProviderStateMixin {
     _rank = session['rank']?.toString() ?? _rank;
 
     return Scaffold(
-      backgroundColor: const Color(0xFF16111E), // Background Solo Leveling Abyss
+      backgroundColor: const Color(0xFF16111E), // [UBAH_WARNA: Latar Belakang Layar Peta LBS Dungeon Radar]
       body: SafeArea(
         child: Column(
           children: [
@@ -1916,7 +1922,7 @@ class _TabMapState extends State<TabMap> with SingleTickerProviderStateMixin {
                     ? null
                     : (canClaim
                         ? const LinearGradient(
-                            colors: [Color(0xFF00F4FE), Color(0xFF00DCE5), Color(0xFF008389)],
+                            colors: [Color(0xFF00F4FE), Color(0xFF00DCE5), Color(0xFF008389)], // [UBAH_WARNA: Tombol Klaim Dungeon Expedition - Gradien Cyan]
                             begin: Alignment.centerLeft,
                             end: Alignment.centerRight,
                           )

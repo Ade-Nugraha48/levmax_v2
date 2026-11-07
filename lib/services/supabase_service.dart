@@ -1,3 +1,8 @@
+/// Berkas: lib/services/supabase_service.dart
+/// Deskripsi: Layanan komunikasi remote database PostgreSQL Supabase (Backend-as-a-Service).
+/// Mengelola registrasi/login akun, sinkronisasi profil, pengunggahan avatar ke S3 Storage,
+/// pengiriman kesan pesan mata kuliah, dan backup data quest harian ke cloud.
+
 import 'dart:io';
 import 'package:flutter/foundation.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
@@ -9,7 +14,7 @@ class SupabaseService {
   /// Mengambil instance SupabaseClient aktif
   static SupabaseClient get client => Supabase.instance.client;
 
-  /// Mengunggah foto profil Hunter ke storage bucket 'Avatar'
+  // [POIN PRESENTASI]: Pengunggahan file avatar profil Hunter ke cloud storage Supabase (S3 Bucket) dengan sistem fallback
   static Future<String?> uploadAvatar(File imageFile, String userId) async {
     try {
       final bytes = await imageFile.readAsBytes();
@@ -73,7 +78,7 @@ class SupabaseService {
     }
   }
 
-  /// Mendaftarkan Hunter baru ke tabel 'users'
+  // [POIN PRESENTASI]: Pendaftaran Hunter baru ke tabel 'users' Supabase dengan password yang telah di-hash SHA-256
   static Future<Map<String, dynamic>?> register({
     required String username,
     required String passwordHash,
@@ -108,7 +113,7 @@ class SupabaseService {
     }
   }
 
-  /// Autentikasi user berdasarkan username dan password_hash di tabel 'users'
+  // [POIN PRESENTASI]: Validasi login akun secara remote dengan membandingkan username & password_hash (Non-Firebase Auth)
   static Future<Map<String, dynamic>?> login({
     required String username,
     required String passwordHash,
@@ -126,7 +131,7 @@ class SupabaseService {
     }
   }
 
-  /// Memperbarui statistik Hunter (EXP, Gold, Rank) pada tabel 'users'
+  // [POIN PRESENTASI]: Sinkronisasi real-time parameter RPG (EXP, Gold, Rank, HP) ke database PostgreSQL Supabase
   static Future<bool> updateUserStats({
     required String userId,
     int? exp,
@@ -150,7 +155,7 @@ class SupabaseService {
     }
   }
 
-  /// Mengirimkan pesan kesan dan pesan mata kuliah ke tabel 'feedbacks'
+  // [POIN PRESENTASI]: Pengiriman kesan & pesan mata kuliah ke tabel 'feedbacks' Supabase (Pemenuhan Syarat Tugas Akhir No. 6)
   static Future<bool> submitFeedback({
     required String userId,
     required String message,

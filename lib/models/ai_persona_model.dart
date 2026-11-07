@@ -1,3 +1,7 @@
+/// Berkas: lib/models/ai_persona_model.dart
+/// Deskripsi: Model representasi persona AI pendamping Hunter (Gemini AI).
+/// Mendukung kustomisasi nama, identitas, nada bicara, dan sifat untuk rekayasa prompt (system prompt).
+
 /// Model data untuk kustomisasi Persona & Identitas AI Guide (Gemini)
 class AIPersona {
   final String name;
@@ -14,7 +18,7 @@ class AIPersona {
     this.avatarPath,
   });
 
-  /// Persona bawaan System Guide Solo Leveling
+  // [POIN PRESENTASI]: Persona default bergaya System Guide Solo Leveling untuk mengarahkan respon Gemini AI secara tematik
   static AIPersona get defaultPersona => const AIPersona(
         name: 'SYSTEM GUIDE',
         identity: 'HUNTER SUPPORT AI',
@@ -40,6 +44,7 @@ class AIPersona {
     );
   }
 
+  // [POIN PRESENTASI]: Konversi data persona ke format Map JSON untuk disimpan persisten di local database Hive
   Map<String, dynamic> toJson() => {
         'name': name,
         'identity': identity,
@@ -48,6 +53,7 @@ class AIPersona {
         'avatarPath': avatarPath,
       };
 
+  // Rekonstruksi objek AIPersona dari format JSON lokal dengan nilai fallback aman
   factory AIPersona.fromJson(Map<String, dynamic> json) {
     return AIPersona(
       name: json['name']?.toString() ?? 'SYSTEM GUIDE',

@@ -1,3 +1,8 @@
+/// Berkas: lib/screens/features/quest_sensor.dart
+/// Deskripsi: Layar verifikasi kebiasaan kardio (Cardio Shake Protocol) berbasis sensor Accelerometer.
+/// Mengimplementasikan Syarat Tugas Akhir No. 8: Menghitung akselerasi gerak fisik, filter delta ambang batas,
+/// dan debounce cooldown hingga target 50 guncangan kardio tercapai.
+
 import 'dart:async';
 import 'dart:math';
 import 'package:flutter/material.dart';
@@ -50,7 +55,7 @@ class _QuestSensorScreenState extends State<QuestSensorScreen> {
     _startCountdownTimer();
   }
 
-  /// Memulai stream sensor accelerometer dengan toleransi threshold & debounce cooldown
+  // [POIN PRESENTASI]: Pemanfaatan sensor Accelerometer hardware: menghitung magnitudo akselerasi total dan memvalidasi guncangan fisik dengan ambang batas delta > 15 m/s² dan debounce 320ms
   void _startAccelerometerSubscription() {
     _accelerometerSubscription = accelerometerEventStream().listen((AccelerometerEvent event) {
       if (_isCompleted) return;
@@ -116,13 +121,7 @@ class _QuestSensorScreenState extends State<QuestSensorScreen> {
     return const Color(0xFF9B8BA1);
   }
 
-  /// Rules Intensitas Dinamis:
-  /// - 'LENGKAP': Target 50 shakes tercapai (sinkronisasi 100%)
-  /// - 'STANDBY': Kondisi awal (0 shakes) belum ada guncangan aktif
-  /// - 'MENURUN': Hunter berhenti bergerak / idle lebih dari 2.5 detik di tengah quest
-  /// - 'MAKSIMAL': Akselerasi guncangan tinggi (G-Force >= 2.4 G)
-  /// - 'OPTIMAL': Ritme akselerasi mantap dan stabil (1.45 G s/d 2.4 G)
-  /// - 'RENDAH': Guncangan perlahan di bawah ambang optimal (< 1.45 G)
+  // [POIN PRESENTASI]: Klasifikasi intensitas gerak real-time berbasis gaya G-Force (STANDBY, RENDAH, OPTIMAL, MAKSIMAL, MENURUN)
   String get _intensityLabel {
     if (_isCompleted || _shakeCount >= _targetShakes) {
       return 'LENGKAP';
@@ -146,17 +145,17 @@ class _QuestSensorScreenState extends State<QuestSensorScreen> {
   Color get _intensityColor {
     switch (_intensityLabel) {
       case 'MAKSIMAL':
-        return const Color(0xFFB026FF); // Ungu neon Solo Leveling
+        return const Color(0xFFB026FF); // [UBAH_WARNA: Intensitas Maksimal Ungu]
       case 'OPTIMAL':
       case 'LENGKAP':
-        return const Color(0xFF00F4FE); // Cyan neon Hunter System
+        return const Color(0xFF00F4FE); // [UBAH_WARNA: Intensitas Optimal / Lengkap Cyan]
       case 'RENDAH':
-        return const Color(0xFFD8B4F8); // Ungu muda
+        return const Color(0xFFD8B4F8); // [UBAH_WARNA: Intensitas Rendah Ungu Muda]
       case 'MENURUN':
-        return const Color(0xFFFF7A85); // Merah warning
+        return const Color(0xFFFF7A85); // [UBAH_WARNA: Intensitas Menurun Merah Warning]
       case 'STANDBY':
       default:
-        return const Color(0xFF9B8BA1); // Abu-abu standby
+        return const Color(0xFF9B8BA1); // [UBAH_WARNA: Intensitas Standby Abu-abu]
     }
   }
 
@@ -179,7 +178,7 @@ class _QuestSensorScreenState extends State<QuestSensorScreen> {
     });
   }
 
-  /// Logika saat target 50 shakes tercapai: hentikan stream, beri reward, dan pop
+  // [POIN PRESENTASI]: Eksekusi reward penyelesaian quest sensor (+20 EXP & +15 Gold) secara atomik ke local storage Hive dan Supabase cloud
   Future<void> _handleProtocolComplete() async {
     _isCompleted = true;
     _accelerometerSubscription?.cancel();
@@ -260,7 +259,7 @@ class _QuestSensorScreenState extends State<QuestSensorScreen> {
     final double progress = (_shakeCount / _targetShakes).clamp(0.0, 1.0);
 
     return Scaffold(
-      backgroundColor: const Color(0xFF16111E), // Background #16111E
+      backgroundColor: const Color(0xFF16111E), // [UBAH_WARNA: Latar Belakang Layar Cardio Shake]
       body: SafeArea(
         bottom: false,
         child: Stack(

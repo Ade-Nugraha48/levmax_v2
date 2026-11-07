@@ -1,3 +1,7 @@
+/// Berkas: lib/models/alarm_model.dart
+/// Deskripsi: Model data konfigurasi Alarm Hunter harian.
+/// Menyimpan jadwal waktu, label notifikasi, file nada dering, volume suara, dan status aktif.
+
 /// Model data untuk Konfigurasi Alarm Sistem Solo Leveling (LevMax)
 class AlarmModel {
   final int id;
@@ -22,7 +26,7 @@ class AlarmModel {
     this.vibrate = true,
   });
 
-  /// Alarm default pukul 06:00 pagi
+  // [POIN PRESENTASI]: Konfigurasi alarm bawaan pukul 06:00 pagi sebagai panggilan latihan harian Hunter
   static AlarmModel get defaultAlarm => const AlarmModel(
         hour: 6,
         minute: 0,
@@ -66,6 +70,7 @@ class AlarmModel {
     );
   }
 
+  // [POIN PRESENTASI]: Konversi data konfigurasi alarm ke JSON untuk disimpan di Hive dan dibaca oleh AlarmService
   Map<String, dynamic> toJson() => {
         'id': id,
         'hour': hour,
@@ -78,6 +83,7 @@ class AlarmModel {
         'vibrate': vibrate,
       };
 
+  // Rekonstruksi model alarm dari penyimpanan lokal Hive
   factory AlarmModel.fromJson(Map<String, dynamic> json) {
     return AlarmModel(
       id: json['id'] as int? ?? 101,

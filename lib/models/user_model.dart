@@ -1,3 +1,8 @@
+/// Berkas: lib/models/user_model.dart
+/// Deskripsi: Model entitas data pengguna (Hunter Profile) pada LevMax.
+/// Menyimpan statistik status RPG: ID akun, username, total EXP, saldo Gold, tingkatan Rank, dan sisa HP.
+
+/// Entitas data profil Hunter dalam sistem gamifikasi LevMax
 class UserModel {
   final String id;
   final String username;
@@ -15,6 +20,7 @@ class UserModel {
     this.hp = 3,
   });
 
+  // [POIN PRESENTASI]: Serialisasi data pengguna menjadi Map key-value untuk dikirim ke backend Supabase atau disimpan di sesi lokal Hive
   Map<String, dynamic> toMap() {
     return {
       'id': id,
@@ -26,6 +32,7 @@ class UserModel {
     };
   }
 
+  // [POIN PRESENTASI]: Deserialisasi data respon database menjadi objek UserModel dengan proteksi fallback nilai bawaan
   factory UserModel.fromMap(Map<String, dynamic> map) {
     return UserModel(
       id: map['id']?.toString() ?? '',

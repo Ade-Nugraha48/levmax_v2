@@ -1,3 +1,7 @@
+/// Berkas: lib/screens/features/workout_hub_screen.dart
+/// Deskripsi: Layar pusat panduan latihan fisik Hunter (Push Up, Pull Up, Sit Up, Squat).
+/// Menampilkan visualizer biomekanik gerak tubuh, checklist akurasi form, pelacak repetisi/set, serta klaim reward EXP & Gold.
+
 import 'dart:math';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
@@ -82,7 +86,7 @@ class _WorkoutHubScreenState extends State<WorkoutHubScreen>
     return clean.isEmpty ? 'F' : clean;
   }
 
-  // 1. Database Protokol Latihan (Translasi Javascript protocolsData dari Stitch HTML)
+  // [POIN PRESENTASI]: Master dataset biomekanik latihan (Push Up, Pull Up, Sit Up, Squat) mencakup target repetisi, set, fokus otot, dan reward
   static final Map<String, WorkoutProtocol> _protocolsData = {
     'pushup': const WorkoutProtocol(
       id: 'pushup',
@@ -345,7 +349,7 @@ class _WorkoutHubScreenState extends State<WorkoutHubScreen>
     });
   }
 
-  /// Menyelesaikan protokol dan mengirim reward ke pemanggil hanya jika rules terpenuhi
+  // [POIN PRESENTASI]: Validasi penyelesaian latihan: memastikan seluruh 3 set dan target repetisi terpenuhi sebelum reward dikirim ke caller
   void _handleCompleteProtocol() {
     final protocol = _currentProtocol;
 
@@ -427,7 +431,7 @@ class _WorkoutHubScreenState extends State<WorkoutHubScreen>
     final protocol = _currentProtocol;
 
     return Scaffold(
-      backgroundColor: const Color(0xFF08050E), // Background #08050E
+      backgroundColor: const Color(0xFF08050E), // [UBAH_WARNA: Latar Belakang Layar Workout Hub]
       body: SafeArea(
         child: Column(
           children: [
@@ -1689,9 +1693,9 @@ class _WorkoutHubScreenState extends State<WorkoutHubScreen>
               ? null
               : const LinearGradient(
                   colors: [
-                    Color(0xFF7000A8),
-                    Color(0xFFB026FF),
-                    Color(0xFF00F4FE),
+                    Color(0xFF7000A8), // [UBAH_WARNA: Tombol Selesaikan Latihan - Ungu Gelap]
+                    Color(0xFFB026FF), // [UBAH_WARNA: Tombol Selesaikan Latihan - Ungu Terang]
+                    Color(0xFF00F4FE), // [UBAH_WARNA: Tombol Selesaikan Latihan - Cyan Aksen]
                   ],
                 ),
           borderRadius: BorderRadius.circular(12),

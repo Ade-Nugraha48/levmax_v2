@@ -1,3 +1,8 @@
+/// Berkas: lib/screens/tabs/tab_game.dart
+/// Deskripsi: Layar Mini Game Mana Core Stabilization (Syarat Tugas Akhir No. 8 & 10).
+/// Menggunakan sensor Gyroscope murni untuk menjaga keseimbangan bola mana di titik tengah arena
+/// dengan proteksi throttling ~30ms dan batas reward sekali per hari waktu server WIB.
+
 import 'dart:async';
 import 'dart:math';
 import 'package:flutter/material.dart';
@@ -152,7 +157,7 @@ class _TabGameState extends State<TabGame> with SingleTickerProviderStateMixin {
     });
   }
 
-  /// 2. Integrasi Gyroscope dengan Sensitivitas Ekstrem (Hardcore Mode)
+  // [POIN PRESENTASI]: Pemanfaatan sensor Gyroscope (rotasi sumbu pitch & roll): memetakan kemiringan fisik ponsel ke koordinat bola dengan pembatas kecepatan render (throttling 30ms)
   void _initGyroscope() {
     try {
       _gyroSubscription = gyroscopeEventStream().listen(
@@ -201,7 +206,7 @@ class _TabGameState extends State<TabGame> with SingleTickerProviderStateMixin {
     }
   }
 
-  /// 3. Logika Deteksi Zona Tengah & Aturan Survival (30 Detik)
+  // [POIN PRESENTASI]: Algoritma deteksi zona target: menghitung jarak Euclidean pusat bola ke titik pusat arena (150, 150) dengan radius toleransi 35px
   void _checkTargetZone() {
     if (!isPlaying) return;
 
@@ -240,7 +245,7 @@ class _TabGameState extends State<TabGame> with SingleTickerProviderStateMixin {
     _showFailedDialog();
   }
 
-  /// Penanganan Kemenangan: Berhasil bertahan 30 detik tanpa keluar target zone
+  // [POIN PRESENTASI]: Eksekusi kemenangan mini game: anugerah +50 Gold dan penguncian tanggal server WIB agar hanya dapat dimainkan 1 kali per hari
   Future<void> _handleGameVictory() async {
     _survivalTimer?.cancel();
     _survivalTimer = null;
@@ -553,7 +558,7 @@ class _TabGameState extends State<TabGame> with SingleTickerProviderStateMixin {
         : (hasPlayedToday ? 1.0 : 0.0);
 
     return Scaffold(
-      backgroundColor: const Color(0xFF16111E),
+      backgroundColor: const Color(0xFF16111E), // [UBAH_WARNA: Latar Belakang Layar Mini Game Mana Core]
       body: SafeArea(
         child: SingleChildScrollView(
           physics: const BouncingScrollPhysics(),
@@ -1538,8 +1543,8 @@ class _TabGameState extends State<TabGame> with SingleTickerProviderStateMixin {
           borderRadius: BorderRadius.circular(12),
           gradient: LinearGradient(
             colors: isGameOver
-                ? [const Color(0xFF93000A), const Color(0xFFFF5449)]
-                : [const Color(0xFF7B2CBF), const Color(0xFFB026FF)],
+                ? [const Color(0xFF93000A), const Color(0xFFFF5449)] // [UBAH_WARNA: Tombol Mini Game Retry - Merah Gagal]
+                : [const Color(0xFF7B2CBF), const Color(0xFFB026FF)], // [UBAH_WARNA: Tombol Mini Game Start - Ungu Aktif]
             begin: Alignment.centerLeft,
             end: Alignment.centerRight,
           ),

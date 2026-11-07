@@ -1,3 +1,8 @@
+/// Berkas: lib/screens/auth/register_screen.dart
+/// Deskripsi: Layar pendaftaran akun baru (Register Screen) Hunter.
+/// Menerapkan hashing password SHA-256 client-side, inisialisasi statistik RPG (Rank F, 0 EXP, 3 HP),
+/// dan pengunggahan opsional foto avatar ke Cloud Storage.
+
 import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
@@ -7,6 +12,7 @@ import '../../services/hive_service.dart';
 import '../../services/supabase_service.dart';
 import '../../utils/constants.dart';
 
+/// Halaman pembuatan akun Hunter baru dalam sistem LevMax
 class RegisterScreen extends StatefulWidget {
   const RegisterScreen({super.key});
 
@@ -33,6 +39,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
     super.dispose();
   }
 
+  // [POIN PRESENTASI]: Mengambil foto profil dari galeri ponsel menggunakan package image_picker dengan kompresi kualitas
   Future<void> _pickAvatar() async {
     try {
       final picker = ImagePicker();
@@ -52,6 +59,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
     }
   }
 
+  // [POIN PRESENTASI]: Registrasi Hunter baru: enkripsi password SHA-256 client-side, insert data awal (Rank F, 0 EXP, 3 HP) ke Supabase, dan upload foto avatar
   Future<void> _handleRegister() async {
     final username = _usernameController.text.trim();
     final password = _passwordController.text;
@@ -152,7 +160,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: const Color(0xFF16111E), // Dark Abyss Surface
+      backgroundColor: const Color(0xFF16111E), // [UBAH_WARNA: Latar Belakang Layar Register]
       body: SafeArea(
         child: Stack(
           children: [
@@ -554,7 +562,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
                     decoration: BoxDecoration(
                       borderRadius: BorderRadius.circular(10),
                       gradient: const LinearGradient(
-                        colors: [Color(0xFF7B2CBF), Color(0xFFB026FF)],
+                        colors: [Color(0xFF7B2CBF), Color(0xFFB026FF)], // [UBAH_WARNA: Tombol Register - Gradien Ungu]
                         begin: Alignment.centerLeft,
                         end: Alignment.centerRight,
                       ),

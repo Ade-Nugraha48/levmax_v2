@@ -1,3 +1,7 @@
+/// Berkas: lib/screens/main_navigation.dart
+/// Deskripsi: Hub navigasi utama aplikasi LevMax (Syarat Tugas Akhir No. 6: Bottom Navigation).
+/// Mengorganisasi 5 tab inti menggunakan IndexedStack untuk mempertahankan state antarmuka.
+
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'tabs/tab_home.dart';
@@ -6,6 +10,7 @@ import 'tabs/tab_game.dart';
 import 'tabs/tab_shop.dart';
 import 'tabs/tab_profile.dart';
 
+/// Container utama yang menampung 5 menu navigasi bawah aplikasi LevMax
 class MainNavigation extends StatefulWidget {
   const MainNavigation({super.key});
 
@@ -24,7 +29,7 @@ class _MainNavigationState extends State<MainNavigation> {
     }
   }
 
-  // 5 Tab Screens disiapkan dengan IndexedStack agar state tidak reload
+  // [POIN PRESENTASI]: 5 Tab Menu Utama: 1. Quests (Habit Tracker), 2. Dungeon (LBS Map), 3. Mana (Gyroscope Balancer), 4. Exchange (Kurs & Blockchain), 5. Status (Profil & Feedback)
   late final List<Widget> _tabs;
 
   @override
@@ -41,20 +46,21 @@ class _MainNavigationState extends State<MainNavigation> {
     ];
   }
 
+  // [POIN PRESENTASI]: Pemanfaatan widget IndexedStack agar seluruh state data, controller sensor, dan peta di setiap tab tidak hilang saat berpindah tab
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: const Color(0xFF16111E), // Deep Abyss Surface
+      backgroundColor: const Color(0xFF16111E), // [UBAH_WARNA: Latar Belakang Scaffold Utama Navigation]
       body: IndexedStack(
         index: _currentIndex,
         children: _tabs,
       ),
       bottomNavigationBar: Container(
         decoration: BoxDecoration(
-          color: const Color(0xFF110C19), // Midnight Abyss Bar (#110C19)
+          color: const Color(0xFF110C19), // [UBAH_WARNA: Latar Belakang Bottom Navigation Bar]
           border: const Border(
             top: BorderSide(
-              color: Color(0xFF2C1E4E),
+              color: Color(0xFF2C1E4E), // [UBAH_WARNA: Garis Border Atas Bottom Navigation Bar]
               width: 1.0,
             ),
           ),
@@ -158,8 +164,8 @@ class _MainNavigationState extends State<MainNavigation> {
                   isSelected ? activeIcon : icon,
                   size: 22,
                   color: isSelected
-                      ? const Color(0xFFE5B5FF)
-                      : const Color(0xFF6E6485),
+                      ? const Color(0xFFE5B5FF) // [UBAH_WARNA: Ikon Menu Navigasi Aktif]
+                      : const Color(0xFF6E6485), // [UBAH_WARNA: Ikon Menu Navigasi Tidak Aktif]
                 ),
               ],
             ),
@@ -171,8 +177,8 @@ class _MainNavigationState extends State<MainNavigation> {
                 fontWeight: isSelected ? FontWeight.w700 : FontWeight.w500,
                 letterSpacing: 0.8,
                 color: isSelected
-                    ? const Color(0xFFE5B5FF)
-                    : const Color(0xFF6E6485),
+                    ? const Color(0xFFE5B5FF) // [UBAH_WARNA: Teks Label Navigasi Aktif]
+                    : const Color(0xFF6E6485), // [UBAH_WARNA: Teks Label Navigasi Tidak Aktif]
                 shadows: isSelected
                     ? [
                         Shadow(

@@ -1,3 +1,7 @@
+/// Berkas: lib/screens/features/appearance_quest_screen.dart
+/// Deskripsi: Layar pelacak kebiasaan perawatan diri & penampilan (Appearance Protocol) Hunter.
+/// Membagi protokol ke dalam 5 fase harian dengan validasi checklist interaktif untuk klaim reward.
+
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import '../../services/hive_service.dart';
@@ -33,7 +37,7 @@ class _AppearanceQuestScreenState extends State<AppearanceQuestScreen> {
   bool isPhase4Done = false;
   bool isPhase5Done = false;
 
-  /// Getter menghitung progress penyelesaian sub-quest secara dinamis
+  // [POIN PRESENTASI]: Evaluasi progres dinamis: menghitung akumulasi checklist sub-quest yang sudah dituntaskan oleh Hunter
   int get completedCount => [
         isPhase1Done,
         isPhase2Done,
@@ -83,6 +87,7 @@ class _AppearanceQuestScreenState extends State<AppearanceQuestScreen> {
     });
   }
 
+  // [POIN PRESENTASI]: Master dataset 5 fase perawatan fisik harian: Pagi, Hidrasi, Tabir Surya UV, Purifikasi Malam, dan Regenerasi
   final List<Map<String, dynamic>> _checklistPhases = [
     {
       'phase': 'FASE I • PAGI',
@@ -122,7 +127,7 @@ class _AppearanceQuestScreenState extends State<AppearanceQuestScreen> {
     final bool isAllCompleted = currentDone == totalCount;
 
     return Scaffold(
-      backgroundColor: const Color(0xFF16111E), // Background #16111E
+      backgroundColor: const Color(0xFF16111E), // [UBAH_WARNA: Latar Belakang Layar Appearance Protocol]
       body: SafeArea(
         bottom: false,
         child: Stack(
@@ -900,12 +905,12 @@ class _AppearanceQuestScreenState extends State<AppearanceQuestScreen> {
               borderRadius: BorderRadius.circular(14),
               gradient: isAllCompleted
                   ? const LinearGradient(
-                      colors: [Color(0xFF7B2CBF), Color(0xFFB026FF)],
+                      colors: [Color(0xFF7B2CBF), Color(0xFFB026FF)], // [UBAH_WARNA: Tombol Selesai Appearance - Ungu Aktif]
                       begin: Alignment.centerLeft,
                       end: Alignment.centerRight,
                     )
                   : const LinearGradient(
-                      colors: [Color(0xFF5A1E8F), Color(0xFF7B2CBF)],
+                      colors: [Color(0xFF5A1E8F), Color(0xFF7B2CBF)], // [UBAH_WARNA: Tombol Selesai Appearance - Ungu Belum Selesai]
                       begin: Alignment.centerLeft,
                       end: Alignment.centerRight,
                     ),

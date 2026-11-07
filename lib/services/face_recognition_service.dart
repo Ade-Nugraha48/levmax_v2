@@ -1,3 +1,8 @@
+/// Berkas: lib/services/face_recognition_service.dart
+/// Deskripsi: Layanan pemrosesan biometrik pengenalan wajah (Face Recognition) di sisi perangkat (on-device).
+/// Menggunakan algoritma Computer Vision: ekstraksi fitur grid 32x32, normalisasi Z-Score,
+/// perceptual Difference Hash (dHash horizontal & vertical), serta kombinasi Cosine Similarity & Hamming Distance.
+
 import 'dart:convert';
 import 'dart:math' as math;
 import 'package:flutter/foundation.dart';
@@ -80,7 +85,7 @@ class FaceRecognitionService {
   /// Ukuran kanonikal grid normalisasi (32x32 = 1024 titik fitur)
   static const int canonicalSize = 32;
 
-  /// Memproses gambar mentah (bytes) dan mengekstrak template fitur wajah
+  // [POIN PRESENTASI]: Pipeline ekstraksi fitur wajah: cropping retikel panduan, konversi grayscale, normalisasi Z-Score luminansi, dan pembuatan dHash (Horizontal & Vertikal)
   static FaceTemplate? extractTemplate(Uint8List imageBytes) {
     try {
       img.Image? original = img.decodeImage(imageBytes);
@@ -191,7 +196,7 @@ class FaceRecognitionService {
     }
   }
 
-  /// Membandingkan template wajah terdaftar dengan template kandidat
+  // [POIN PRESENTASI]: Algoritma verifikasi kecocokan wajah: integrasi 70% Cosine Similarity (korelasi kontur) + 30% Hamming Distance (dHash) dengan ambang batas minimal 70%
   static FaceComparisonResult compareTemplates(
     FaceTemplate enrolled,
     FaceTemplate candidate,

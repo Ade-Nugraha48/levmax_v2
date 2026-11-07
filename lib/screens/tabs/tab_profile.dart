@@ -1,3 +1,7 @@
+/// Berkas: lib/screens/tabs/tab_profile.dart
+/// Deskripsi: Layar profil Hunter, formulir kesan & pesan mata kuliah, konfigurasi biometrik, dan logout.
+/// Mengimplementasikan Syarat Tugas Akhir No. 6: Profil Hunter, sinkronisasi feedback ke Supabase, dan sesi logout Hive.
+
 import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
@@ -164,7 +168,7 @@ class _TabProfileState extends State<TabProfile> {
     super.dispose();
   }
 
-  /// 1. Fungsi Submit Feedback ke Supabase & Update State
+  // [POIN PRESENTASI]: Formulir kesan & pesan mata kuliah: dikirim ke tabel 'feedbacks' Supabase dan disimpan secara offline di Hive
   Future<void> _submitFeedback() async {
     final text = _feedbackController.text.trim();
     if (text.isEmpty) {
@@ -249,7 +253,7 @@ class _TabProfileState extends State<TabProfile> {
     }
   }
 
-  /// 2. Fungsi Logout Aman dengan HiveService.clearSession()
+  // [POIN PRESENTASI]: Pembersihan sesi logout: memanggil HiveService.clearSession() dan menghapus tumpukan rute navigasi untuk kembali ke LoginScreen
   Future<void> _logout() async {
     final bool? confirm = await showDialog<bool>(
       context: context,
@@ -316,7 +320,7 @@ class _TabProfileState extends State<TabProfile> {
     );
   }
 
-  /// 3. Upload & Update Avatar ke Supabase Storage & Hive
+  // [POIN PRESENTASI]: Pipeline update foto profil: pemilihan foto via image_picker, cropping 1:1 di AvatarAdjustDialog, dan upload ke Supabase S3 Storage
   Future<void> _pickAndUploadAvatar() async {
     try {
       final picker = ImagePicker();
@@ -423,7 +427,7 @@ class _TabProfileState extends State<TabProfile> {
     final double expProgress = (_exp / _maxExp).clamp(0.0, 1.0);
 
     return Scaffold(
-      backgroundColor: const Color(0xFF16111E),
+      backgroundColor: const Color(0xFF16111E), // [UBAH_WARNA: Latar Belakang Layar Tab Profile]
       body: SafeArea(
         child: SingleChildScrollView(
           physics: const BouncingScrollPhysics(),
@@ -1681,7 +1685,7 @@ class _TabProfileState extends State<TabProfile> {
                       value: _isFingerprintEnabled,
                       onChanged: _handleToggleFingerprint,
                       activeThumbColor: Colors.white,
-                      activeTrackColor: const Color(0xFFB026FF),
+                      activeTrackColor: const Color(0xFFB026FF), // [UBAH_WARNA: Switch Fingerprint Aktif]
                       inactiveThumbColor: const Color(0xFF9B8BA1),
                       inactiveTrackColor: const Color(0xFF383241),
                     ),
@@ -1752,7 +1756,7 @@ class _TabProfileState extends State<TabProfile> {
                       value: _isFaceScanEnabled,
                       onChanged: _handleToggleFaceScan,
                       activeThumbColor: Colors.white,
-                      activeTrackColor: const Color(0xFF00F4FE),
+                      activeTrackColor: const Color(0xFF00F4FE), // [UBAH_WARNA: Switch Face Scan Aktif]
                       inactiveThumbColor: const Color(0xFF9B8BA1),
                       inactiveTrackColor: const Color(0xFF383241),
                     ),
@@ -2046,7 +2050,7 @@ class _TabProfileState extends State<TabProfile> {
               decoration: BoxDecoration(
                 borderRadius: BorderRadius.circular(10),
                 gradient: const LinearGradient(
-                  colors: [Color(0xFFB026FF), Color(0xFF9200DB)],
+                  colors: [Color(0xFFB026FF), Color(0xFF9200DB)], // [UBAH_WARNA: Tombol Submit Feedback]
                   begin: Alignment.centerLeft,
                   end: Alignment.centerRight,
                 ),
@@ -2104,9 +2108,9 @@ class _TabProfileState extends State<TabProfile> {
             width: double.infinity,
             height: 44,
             decoration: BoxDecoration(
-              color: const Color(0xFF93000A).withValues(alpha: 0.2),
+              color: const Color(0xFF93000A).withValues(alpha: 0.2), // [UBAH_WARNA: Tombol Logout Background]
               borderRadius: BorderRadius.circular(10),
-              border: Border.all(color: const Color(0xFF93000A).withValues(alpha: 0.6)),
+              border: Border.all(color: const Color(0xFF93000A).withValues(alpha: 0.6)), // [UBAH_WARNA: Tombol Logout Border]
               boxShadow: [
                 BoxShadow(
                   color: const Color(0xFF93000A).withValues(alpha: 0.25),

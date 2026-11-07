@@ -1,3 +1,8 @@
+/// Berkas: lib/screens/tabs/tab_home.dart
+/// Deskripsi: Layar beranda utama Hunter (Daily Habit Tracker & Quest Dashboard).
+/// Memenuhi Syarat No. 1 (Gamifikasi Solo Leveling), No. 7 (Jam 4 Zona Waktu), No. 9 (Hidden Quest Gemini AI),
+/// dan No. 11 (Pencarian Live Query & Filter Kategori).
+
 import 'dart:async';
 import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
@@ -19,6 +24,7 @@ import 'package:latlong2/latlong.dart';
 import '../features/workout_hub_screen.dart';
 import '../../widgets/avatar_image.dart';
 
+/// Tab Beranda Utama: Dashboard Quest harian, statistik Hunter, jam 4 zona waktu, dan menu latihan
 class TabHome extends StatefulWidget {
   final VoidCallback? onNavigateToDungeon;
 
@@ -92,7 +98,7 @@ class _TabHomeState extends State<TabHome> {
     }
   }
 
-  /// Melakukan pengecekan pergantian hari & penalti pemotongan HP jika quest hari sebelumnya < 3
+  // [POIN PRESENTASI]: Mekanisme penalti HP: jika login pada hari berbeda dan quest yang diselesaikan kemarin < 3, HP berkurang 1 dan disinkronkan ke Hive & Supabase
   void _checkDailyHpPenalty() {
     final now = DateTime.now();
     final todayDateStr = '${now.year}-${now.month.toString().padLeft(2, '0')}-${now.day.toString().padLeft(2, '0')}';
@@ -297,6 +303,7 @@ class _TabHomeState extends State<TabHome> {
     });
   }
 
+  // [POIN PRESENTASI]: Konversi 4 zona waktu simultan: WIB (UTC+7), WITA (UTC+8), WIT (UTC+9), dan London GMT (UTC+0) yang berdetik setiap detik
   void _updateClock() {
     final now = DateTime.now();
     // Pengecekan otomatis saat pergantian hari melewati pukul 00:00 (Reset Jam 12 Malam)
@@ -500,7 +507,7 @@ class _TabHomeState extends State<TabHome> {
     }
 
     return Scaffold(
-      backgroundColor: const Color(0xFF16111E), // Deep Abyss Surface
+      backgroundColor: const Color(0xFF16111E), // [UBAH_WARNA: Latar Belakang Layar Dashboard Tab Home]
       body: SafeArea(
         child: Stack(
           children: [
@@ -1068,10 +1075,10 @@ class _TabHomeState extends State<TabHome> {
         Container(
           height: 42,
           decoration: BoxDecoration(
-            color: const Color(0xFF110C19),
+            color: const Color(0xFF110C19), // [UBAH_WARNA: Latar Belakang Kolom Pencarian Quest]
             borderRadius: BorderRadius.circular(10),
             border: Border.all(
-              color: const Color(0xFF2C1E4E),
+              color: const Color(0xFF2C1E4E), // [UBAH_WARNA: Garis Border Kolom Pencarian Quest]
               width: 1.0,
             ),
           ),
@@ -1438,6 +1445,7 @@ class _TabHomeState extends State<TabHome> {
 
     // Filter berdasarkan Kategori & Pencarian
     final filteredQuests = quests.where((q) {
+      // [POIN PRESENTASI]: Algoritma filter pencarian ganda: mencocokkan kategori aktif dan substring kata kunci judul/deskripsi quest
       final matchesCategory = _selectedCategory == 'ALL' ||
           q['category'] == _selectedCategory;
       final matchesSearch = searchQuery.isEmpty ||
@@ -1857,7 +1865,7 @@ class _TabHomeState extends State<TabHome> {
     );
 
     try {
-      // 2. Panggil GeminiService.generateHiddenQuest dengan data rank & exp hunter
+      // [POIN PRESENTASI]: Panggilan generative AI Gemini untuk menciptakan narasi Hidden Quest adaptif berdasarkan Rank dan EXP Hunter
       final questText = await GeminiService.generateHiddenQuest(_rank, _currentExp);
 
       // 3. Tutup dialog loading

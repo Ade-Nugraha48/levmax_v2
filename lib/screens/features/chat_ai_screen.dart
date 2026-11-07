@@ -1,3 +1,7 @@
+/// Berkas: lib/screens/features/chat_ai_screen.dart
+/// Deskripsi: Layar percakapan interaktif asisten AI Hunter berbasis Google Gemini LLM.
+/// Mengimplementasikan Syarat Tugas Akhir No. 9: Dialog konsultasi kebugaran dengan personalisasi persona dinamis di Hive.
+
 import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:flutter_markdown/flutter_markdown.dart';
@@ -63,7 +67,7 @@ class _ChatAiScreenState extends State<ChatAiScreen> {
     super.dispose();
   }
 
-  /// Membuka Modal Pengaturan Personifikasi & Profile Picture AI
+  // [POIN PRESENTASI]: Modal kustomisasi personifikasi AI (Nama, Peran, Gaya Bahasa, Sifat, Avatar) yang tersimpan secara lokal di Hive
   void _openPersonaSettingsDialog(BuildContext context) {
     _persona = HiveService.getAIPersona();
     final nameController = TextEditingController(text: _persona.name);
@@ -658,7 +662,7 @@ class _ChatAiScreenState extends State<ChatAiScreen> {
     );
   }
 
-  /// Mengirim pesan ke Gemini AI dan memperbarui riwayat chat
+  // [POIN PRESENTASI]: Mengirimkan input pertanyaan ke Google Gemini API secara asynchronous dan memperbarui UI dengan rendering Markdown
   Future<void> _handleSendMessage() async {
     final String prompt = _textController.text.trim();
     if (prompt.isEmpty || _isLoading) return;
@@ -705,7 +709,7 @@ class _ChatAiScreenState extends State<ChatAiScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: const Color(0xFF110C19), // Dark Surface Background
+      backgroundColor: const Color(0xFF110C19), // [UBAH_WARNA: Latar Belakang Layar Chat AI]
       body: SafeArea(
         child: Column(
           children: [
@@ -1534,7 +1538,7 @@ class _ChatAiScreenState extends State<ChatAiScreen> {
                 width: 44,
                 height: 44,
                 decoration: BoxDecoration(
-                  color: const Color(0xFF00F4FE),
+                  color: const Color(0xFF00F4FE), // [UBAH_WARNA: Tombol Kirim Pesan Chat AI]
                   borderRadius: BorderRadius.circular(12),
                   boxShadow: [
                     BoxShadow(
@@ -1547,7 +1551,7 @@ class _ChatAiScreenState extends State<ChatAiScreen> {
                 child: const Center(
                   child: Icon(
                     Icons.send_rounded,
-                    color: Color(0xFF08050E),
+                    color: Color(0xFF08050E), // [UBAH_WARNA: Ikon Send Pesan Chat AI]
                     size: 20,
                   ),
                 ),

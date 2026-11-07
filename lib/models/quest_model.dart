@@ -1,3 +1,8 @@
+/// Berkas: lib/models/quest_model.dart
+/// Deskripsi: Model entitas Quest Harian Hunter (Misi Kebiasaan Baik).
+/// Mengelompokkan misi ke dalam 4 pilar kategori: WORKOUT, CARDIO, APPEARANCE, dan STUDY beserta reward EXP & Gold.
+
+/// Representasi data misi kebiasaan harian yang harus diselesaikan pengguna
 class QuestModel {
   final String id;
   final String title;
@@ -26,6 +31,7 @@ class QuestModel {
     );
   }
 
+  // [POIN PRESENTASI]: Master dataset quest harian bawaan sistem yang mencakup latihan beban, sensor kardio, checklist grooming, dan timer belajar
   static const List<QuestModel> defaultQuests = [
     QuestModel(
       id: 'pushup',

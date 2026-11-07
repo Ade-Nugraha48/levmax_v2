@@ -1,3 +1,8 @@
+/// Berkas: lib/services/gemini_service.dart
+/// Deskripsi: Layanan integrasi Large Language Model (Google Gemini AI API).
+/// Mengimplementasikan Syarat Tugas Akhir No. 9: Asisten AI konsultasi kebugaran Hunter dengan
+/// kustomisasi System Instruction dan generator otomatis Hidden Quest berbasis prompt engineering.
+
 import 'dart:convert';
 import 'package:google_generative_ai/google_generative_ai.dart';
 import '../models/ai_persona_model.dart';
@@ -15,7 +20,7 @@ class GeminiService {
   static GenerativeModel _model = _createModel('gemini-3.5-flash-lite', _currentPrompt);
   static ChatSession _chatSession = _model.startChat();
 
-  /// Membangun System Instruction dinamis berdasarkan data persona di Hive
+  // [POIN PRESENTASI]: Prompt Engineering: Membangun System Instruction dinamis dari konfigurasi persona di Hive agar gaya respons AI sesuai tema
   static String _buildSystemPrompt([AIPersona? persona]) {
     final p = persona ?? HiveService.getAIPersona();
     return '''
@@ -54,7 +59,7 @@ PANDUAN & ATURAN UTAMA:
     _chatSession = _model.startChat();
   }
 
-  /// Mengirim pesan prompt ke ChatSession Gemini dan mengembalikan respon AI
+  // [POIN PRESENTASI]: Eksekusi API call percakapan multi-turn ke Google Gemini dengan penanganan otomatis fallback model
   static Future<String> sendMessage(String prompt) async {
     try {
       final response = await _chatSession.sendMessage(Content.text(prompt));
@@ -72,7 +77,7 @@ PANDUAN & ATURAN UTAMA:
     }
   }
 
-  /// Menghasilkan misi rahasia (Hidden Quest) dramatis ala Solo Leveling menggunakan Gemini LLM
+  // [POIN PRESENTASI]: Generative AI narasi Hidden Quest adaptif berdasarkan Rank dan EXP pengguna, lengkap dengan skenario darurat Solo Leveling
   static Future<String> generateHiddenQuest(String rank, int exp) async {
     final prompt =
         'Buatkan satu deskripsi misi rahasia (Hidden Quest) bernada dramatis dan epik ala Solo Leveling untuk hunter dengan Rank $rank dan EXP $exp. Maksimal 3 kalimat saja. Berikan judul misi di awal dengan format [JUDUL MISI].';

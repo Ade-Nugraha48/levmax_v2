@@ -1,3 +1,7 @@
+/// Berkas: lib/screens/splash_screen.dart
+/// Deskripsi: Layar pembuka (Awakening Splash Screen) bertema Solo Leveling.
+/// Menampilkan animasi rotasi reaktor mana, simulasi inisialisasi vault kriptografi, dan routing otomatis ke LoginScreen.
+
 import 'dart:math' as math;
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
@@ -45,7 +49,7 @@ class _SplashScreenState extends State<SplashScreen>
     _handleInitializationAndRouting();
   }
 
-  /// Menjalankan sekuens awakening selama 5 detik penuh sebelum navigasi ke LoginScreen
+  // [POIN PRESENTASI]: Sekuens inisialisasi 4-tahap berdurasi 5 detik dengan animasi sinkron sebelum mengarahkan ke LoginScreen
   Future<void> _handleInitializationAndRouting() async {
     _progressController.forward();
 
@@ -103,7 +107,7 @@ class _SplashScreenState extends State<SplashScreen>
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: const Color(0xFF08050E), // Deep Abyss Void
+      backgroundColor: const Color(0xFF08050E), // [UBAH_WARNA: Latar Belakang Layar Splash]
       body: Container(
         width: double.infinity,
         height: double.infinity,
@@ -113,7 +117,7 @@ class _SplashScreenState extends State<SplashScreen>
             center: Alignment(0, -0.25),
             radius: 1.15,
             colors: [
-              Color(0xFF2B1148), // Pendar ungu aura core
+              Color(0xFF2B1148), // [UBAH_WARNA: Aura Ungu Inti Reaktor Splash]
               Color(0xFF120D24), // Midnight abyss
               Color(0xFF08050E), // Deep abyss black
             ],

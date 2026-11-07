@@ -1,3 +1,8 @@
+/// Berkas: lib/screens/tabs/tab_shop.dart
+/// Deskripsi: Layar toko pertukaran Hunter (Exchange Shop & Blockchain Store).
+/// Memenuhi Syarat No. 7 (Live API konversi mata uang IDR, USD, EUR) serta
+/// Syarat No. 13 (Blockchain Ledger transaksi title di Hive & Web3 Ethereum Sepolia).
+
 import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -267,7 +272,7 @@ class _TabShopState extends State<TabShop> {
     }
   }
 
-  /// Mengambil data kurs valuta asing riil secara real-time dari API Open Exchange Rates
+  // [POIN PRESENTASI]: Panggilan REST API Web Service real-time (open.er-api.com) untuk live konversi nilai ekonomi Gold ke IDR, USD, dan EUR
   Future<void> _fetchLiveExchangeRates() async {
     if (_isLoadingRates) return;
     if (mounted) setState(() => _isLoadingRates = true);
@@ -300,7 +305,7 @@ class _TabShopState extends State<TabShop> {
     }
   }
 
-  /// Modal dialog interaktif kalkulator konversi Gold ke Rupiah, Dollar, dan Euro
+  // [POIN PRESENTASI]: Kalkulator konversi kurs interaktif untuk menghitung valuasi saldo Gold Hunter ke mata uang riil (IDR, USD, EUR)
   void _showGoldConverterDialog() {
     int testGold = _gold > 0 ? _gold : 1000;
     final controller = TextEditingController(text: testGold.toString());
@@ -825,7 +830,7 @@ class _TabShopState extends State<TabShop> {
     }
   }
 
-  /// 1. Logika Pembelian Item & Penambahan Blok ke Rantai Blok (Ethereum Sepolia & Local Hive)
+  // [POIN PRESENTASI]: Transaksi pembelian Title: mencatat transaksi on-chain Web3 Ethereum Sepolia serta menyisipkan blok berantai (prev_hash -> current_hash) ke ledger Blockchain Hive
   Future<void> _buyTitle({
     required String itemName,
     required int price,
@@ -1588,7 +1593,7 @@ class _TabShopState extends State<TabShop> {
     _ownedTitles.addAll(HiveService.getOwnedTitles(_userId));
 
     return Scaffold(
-      backgroundColor: const Color(0xFF16111E),
+      backgroundColor: const Color(0xFF16111E), // [UBAH_WARNA: Latar Belakang Layar Tab Shop]
       body: SafeArea(
         child: SingleChildScrollView(
           physics: const BouncingScrollPhysics(),
@@ -2355,7 +2360,7 @@ class _TabShopState extends State<TabShop> {
                 gradient: (isOwned || isLoading)
                     ? null
                     : const LinearGradient(
-                        colors: [Color(0xFF00F4FE), Color(0xFFB026FF)],
+                        colors: [Color(0xFF00F4FE), Color(0xFFB026FF)], // [UBAH_WARNA: Tombol Beli Title - Gradien Cyan Ungu]
                         begin: Alignment.centerLeft,
                         end: Alignment.centerRight,
                       ),

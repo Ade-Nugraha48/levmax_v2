@@ -1,3 +1,7 @@
+/// Berkas: lib/screens/features/study_focus_screen.dart
+/// Deskripsi: Layar pelacak kebiasaan belajar (Study Focus Protocol) 30 menit bergaya Solo Leveling.
+/// Mengimplementasikan Timer Pomodoro terintegrasi dengan sistem timbal balik reward EXP & Gold.
+
 import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
@@ -40,7 +44,7 @@ class _StudyFocusScreenState extends State<StudyFocusScreen> with SingleTickerPr
     super.dispose();
   }
 
-  /// Memulai timer hitung mundur setiap 1 detik
+  // [POIN PRESENTASI]: Timer Pomodoro 30 menit (1800 detik) menggunakan Timer.periodic dengan validasi penyelesaian dan reward +15 EXP & +10 Gold
   void startTimer() {
     if (isRunning) return;
 
@@ -137,7 +141,7 @@ class _StudyFocusScreenState extends State<StudyFocusScreen> with SingleTickerPr
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: const Color(0xFF16111E), // Background Solo Leveling Abyss
+      backgroundColor: const Color(0xFF16111E), // [UBAH_WARNA: Latar Belakang Layar Study Focus]
       body: SafeArea(
         child: Column(
           children: [
@@ -741,8 +745,8 @@ class _StudyFocusScreenState extends State<StudyFocusScreen> with SingleTickerPr
             decoration: BoxDecoration(
               gradient: const LinearGradient(
                 colors: [
-                  Color(0xFFB026FF),
-                  Color(0xFF8A00D4),
+                  Color(0xFFB026FF), // [UBAH_WARNA: Tombol Timer Pomodoro - Ungu Neon]
+                  Color(0xFF8A00D4), // [UBAH_WARNA: Tombol Timer Pomodoro - Ungu Gelap]
                   Color(0xFFB026FF),
                 ],
                 begin: Alignment.centerLeft,

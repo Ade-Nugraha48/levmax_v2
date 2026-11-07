@@ -1,3 +1,7 @@
+/// Berkas: lib/widgets/avatar_image.dart
+/// Deskripsi: Widget penampil avatar profil adaptif untuk ekosistem LevMax.
+/// Secara otomatis mendeteksi sumber gambar (Remote Supabase Storage / File Lokal) dengan mekanisme fallback visual.
+
 import 'dart:io';
 import 'package:flutter/material.dart';
 
@@ -18,6 +22,7 @@ class HunterAvatar extends StatelessWidget {
     this.borderRadius,
   });
 
+  // [POIN PRESENTASI]: Rendering gambar fleksibel yang membedakan URL jaringan (Supabase Storage) dan file sistem lokal dengan graceful fallback
   @override
   Widget build(BuildContext context) {
     if (avatarUrl == null || avatarUrl!.isEmpty) {

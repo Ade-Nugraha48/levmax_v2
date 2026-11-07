@@ -1,3 +1,8 @@
+/// Berkas: lib/services/hive_service.dart
+/// Deskripsi: Layanan manipulasi database lokal Hive (NoSQL Key-Value).
+/// Menangani sesi pengguna, kredensial biometrik, buku besar Blockchain transaksi title,
+/// persona AI, data alarm, dan status penyelesaian quest harian secara offline.
+
 import 'dart:convert';
 import 'package:hive/hive.dart';
 import 'package:levmax_v2/models/ai_persona_model.dart';
@@ -7,16 +12,12 @@ import 'package:levmax_v2/utils/constants.dart';
 /// Service untuk manajemen penyimpanan lokal Hive (Session & Ledger Blockchain).
 /// Sesuai aturan arsitektur: tidak mengandung kode UI dan mengembalikan tipe data standar / Future.
 class HiveService {
-  /// Box untuk menyimpan sesi Hunter
+  // [POIN PRESENTASI]: 3 Box Hive utama: sessionBox (sesi & status), blockchainBox (buku besar transaksi), dan questBox (progress offline)
   static Box get sessionBox => Hive.box(AppConstants.sessionBox);
-
-  /// Box untuk menyimpan riwayat rantai blok (Blockchain)
   static Box get blockchainBox => Hive.box(AppConstants.blockchainBox);
-
-  /// Box untuk menyimpan status penyelesaian quest
   static Box get questBox => Hive.box(AppConstants.questBox);
 
-  /// Menyimpan sesi login Hunter setelah autentikasi berhasil
+  // [POIN PRESENTASI]: Menyimpan data sesi login Hunter secara persisten di Hive agar status autentikasi bertahan saat aplikasi ditutup
   static Future<void> saveSession({
     required String userId,
     required String username,
@@ -106,7 +107,7 @@ class HiveService {
     }
   }
 
-  /// Menyimpan kredensial biometrik pengguna untuk login otomatis
+  // [POIN PRESENTASI]: Menyimpan kredensial biometrik pengguna (fingerprint & face scan) untuk fitur bypass login cepat
   static Future<void> saveBiometricCredentials({
     required String username,
     required String password,
@@ -202,7 +203,7 @@ class HiveService {
     await box.delete('enrolled_face_thumbnail');
   }
 
-  /// Menyimpan transaksi item/title ke ledger blockchain lokal
+  // [POIN PRESENTASI]: Pencatatan data transaksi title ke buku besar blockchain lokal (ledger) dengan chaining hash SHA-256
   static Future<void> saveBlockchainLog({
     required String item,
     required String prevHash,
@@ -231,7 +232,7 @@ class HiveService {
     return logs;
   }
 
-  /// Mengambil hash transaksi terakhir (atau Genesis Hash jika box masih kosong)
+  // [POIN PRESENTASI]: Mengambil hash blok sebelumnya (atau 64-karakter nol untuk Genesis Block) sebagai fondasi rantai integritas SHA-256
   static String getLastBlockHash() {
     final box = blockchainBox;
     if (box.isEmpty) {
@@ -310,7 +311,7 @@ class HiveService {
     return AlarmModel.defaultAlarm;
   }
 
-  /// Menyimpan status penyelesaian quest ke Hive (key: ${userId}_${questId})
+  // [POIN PRESENTASI]: Mencatat waktu penyelesaian quest harian di local storage Hive untuk validasi offline
   static Future<void> saveQuestCompletion({
     required String userId,
     required String questId,

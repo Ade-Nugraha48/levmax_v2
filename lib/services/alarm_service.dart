@@ -1,3 +1,7 @@
+/// Berkas: lib/services/alarm_service.dart
+/// Deskripsi: Layanan manajemen alarm latihan fisik Hunter dan pengingat harian.
+/// Mengatur pemutaran looping audio MP3/WAV, pengaturan volume, dan integrasi notifikasi AlarmClock OS.
+
 import 'dart:async';
 import 'dart:io';
 import 'dart:typed_data';
@@ -86,7 +90,7 @@ class AlarmService {
     }
   }
 
-  /// Menjadwalkan alarm berdasarkan konfigurasi jam & menit serta persistensi Hive
+  // [POIN PRESENTASI]: Penjadwalan alarm dual-layer: Timer lokal untuk mode foreground dan Android Exact AlarmClock saat aplikasi ditutup
   static Future<void> scheduleAlarm(AlarmModel alarm) async {
     await init();
     await HiveService.saveAlarm(alarm);
@@ -155,7 +159,7 @@ class AlarmService {
     } catch (_) {}
   }
 
-  /// Membunyikan alarm (Audio Looping + Volume Kustom + Notifikasi Aktif)
+  // [POIN PRESENTASI]: Eksekusi dering alarm: AudioPlayer berputar looping dengan gain kustom dan notifikasi ongoing (tidak bisa di-swipe)
   static Future<void> triggerAlarm({AlarmModel? alarm}) async {
     await init();
     final targetAlarm = alarm ?? HiveService.getAlarm();
@@ -209,7 +213,7 @@ class AlarmService {
     } catch (_) {}
   }
 
-  /// Mematikan alarm yang sedang berbunyi
+  // [POIN PRESENTASI]: Mematikan pemutaran audio alarm, menghapus notifikasi aktif, dan otomatis menjadwalkan siklus hari berikutnya
   static Future<void> stopAlarm() async {
     _isRinging = false;
     onAlarmStateChanged?.call();

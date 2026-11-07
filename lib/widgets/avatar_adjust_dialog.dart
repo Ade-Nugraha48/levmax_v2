@@ -1,3 +1,7 @@
+/// Berkas: lib/widgets/avatar_adjust_dialog.dart
+/// Deskripsi: Dialog interaktif pengaturan, pemotongan (crop), rotasi, dan zoom foto profil Hunter.
+/// Memanfaatkan RenderRepaintBoundary untuk merender viewport interaktif menjadi gambar resolusi tinggi.
+
 import 'dart:io';
 import 'dart:typed_data';
 import 'dart:ui' as ui;
@@ -43,6 +47,7 @@ class _AvatarAdjustDialogState extends State<AvatarAdjustDialog> {
     });
   }
 
+  // [POIN PRESENTASI]: Merender tampilan kanvas interaktif menjadi bitmap PNG tajam (pixelRatio 2.5x) via RenderRepaintBoundary
   Future<void> _applyCrop() async {
     setState(() => _isProcessing = true);
     try {
@@ -88,11 +93,11 @@ class _AvatarAdjustDialogState extends State<AvatarAdjustDialog> {
     final double viewportSize = (MediaQuery.of(context).size.width - 64).clamp(240.0, 300.0);
 
     return Dialog(
-      backgroundColor: const Color(0xFF140D24),
+      backgroundColor: const Color(0xFF140D24), // [UBAH_WARNA: Latar Belakang Dialog Adjust Avatar]
       insetPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 24),
       shape: RoundedRectangleBorder(
         borderRadius: BorderRadius.circular(20),
-        side: const BorderSide(color: Color(0xFF2C1E4E), width: 1.2),
+        side: const BorderSide(color: Color(0xFF2C1E4E), width: 1.2), // [UBAH_WARNA: Garis Border Dialog Adjust Avatar]
       ),
       child: Padding(
         padding: const EdgeInsets.all(16.0),
@@ -113,7 +118,7 @@ class _AvatarAdjustDialogState extends State<AvatarAdjustDialog> {
                         fontSize: 12.5,
                         fontWeight: FontWeight.w800,
                         letterSpacing: 1.0,
-                        color: const Color(0xFF00F4FE),
+                        color: const Color(0xFF00F4FE), // [UBAH_WARNA: Teks Judul Adjust Avatar]
                       ),
                     ),
                   ],
@@ -315,7 +320,7 @@ class _AvatarAdjustDialogState extends State<AvatarAdjustDialog> {
                   child: ElevatedButton(
                     onPressed: _isProcessing ? null : _applyCrop,
                     style: ElevatedButton.styleFrom(
-                      backgroundColor: const Color(0xFF00F4FE),
+                      backgroundColor: const Color(0xFF00F4FE), // [UBAH_WARNA: Tombol Terapkan & Simpan Crop Avatar]
                       padding: const EdgeInsets.symmetric(vertical: 12),
                       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
                       elevation: 4,

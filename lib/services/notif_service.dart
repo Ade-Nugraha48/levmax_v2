@@ -1,3 +1,8 @@
+/// Berkas: lib/services/notif_service.dart
+/// Deskripsi: Layanan notifikasi lokal (Local Push Notifications) berbasis zona waktu.
+/// Mengimplementasikan Syarat Tugas Akhir No. 12: Pengingat mobile otomatis untuk 5 skenario gamifikasi
+/// (Reset Harian 00:00, Peringatan Jam 14:00, Siklus 3 Jam, Sapaan Persona AI, dan Critical End of Day).
+
 import 'package:flutter/material.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:timezone/data/latest_all.dart' as tz;
@@ -6,12 +11,6 @@ import 'hive_service.dart';
 
 /// NotifService
 /// Service penanganan notifikasi lokal sistem Solo Leveling LevMax.
-/// Mendukung 5 skenario notifikasi:
-/// 1. Quest harian direset (00:00 tengah malam)
-/// 2. Quest/Dungeon/Mini Game belum dijalankan pada hari itu (14:00 siang)
-/// 3. Quest belum dijalankan pada hari itu (dikirim berkala tiap 3 jam server)
-/// 4. [Nama AI Personifikasi] kangen dengan user (19:30 malam)
-/// 5. Ketika server / hari ingin berakhir (23:00 malam)
 class NotifService {
   static final FlutterLocalNotificationsPlugin _plugin =
       FlutterLocalNotificationsPlugin();
@@ -30,7 +29,7 @@ class NotifService {
   static const int idAiMissesUser = 2010;
   static const int idEndOfDayWarning = 2011;
 
-  /// Inisialisasi plugin notifikasi lokal & timezone untuk Android & iOS
+  // [POIN PRESENTASI]: Inisialisasi engine notifikasi lokal, channel beraksen Solo Leveling, serta permintaan izin Android 13+ & Exact Alarm
   static Future<void> init() async {
     if (_isInitialized) return;
 
@@ -132,7 +131,7 @@ class NotifService {
     );
   }
 
-  /// Menjadwalkan notifikasi reset quest harian berulang setiap tengah malam (00:00)
+  // [POIN PRESENTASI]: Skenario 1: Penjadwalan notifikasi reset quest harian berulang setiap tengah malam (00:00) menggunakan timezone lokal
   static Future<void> scheduleDailyResetNotif() async {
     if (!_isInitialized) await init();
 
@@ -201,7 +200,7 @@ class NotifService {
     );
   }
 
-  /// Menjadwalkan pengingat berulang tiap 3 jam waktu server (09:00, 12:00, 15:00, 18:00, 21:00)
+  // [POIN PRESENTASI]: Skenario 3: Penjadwalan pengingat berkala setiap 3 jam (09:00, 12:00, 15:00, 18:00, 21:00) agar user menyelesaikan quest
   static Future<void> schedulePeriodic3HourReminders() async {
     if (!_isInitialized) await init();
 
@@ -245,7 +244,7 @@ class NotifService {
     );
   }
 
-  /// Menjadwalkan notifikasi AI kangen berulang setiap pukul 19:30 malam
+  // [POIN PRESENTASI]: Skenario 4: Personalisasi notifikasi otomatis pada pukul 19:30 malam dengan memanggil nama kustom AI Guide dari Hive
   static Future<void> scheduleAiMissesUserNotif() async {
     if (!_isInitialized) await init();
 
@@ -304,7 +303,7 @@ class NotifService {
   // MASTER AUTOMATED SCHEDULER & CONTROLS
   // ===========================================================================
 
-  /// Mengaktifkan seluruh 5 jadwal notifikasi otomatis di latar belakang
+  // [POIN PRESENTASI]: Master Scheduler: Mengaktifkan seluruh 5 jadwal notifikasi sistem secara simultan ke background OS
   static Future<void> scheduleAllAutomatedNotifications() async {
     if (!_isInitialized) await init();
 

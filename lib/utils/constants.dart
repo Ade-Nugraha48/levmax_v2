@@ -1,66 +1,70 @@
+/// Berkas: lib/utils/constants.dart
+/// Deskripsi: Berisi konstanta global aplikasi, tema visual Solo Leveling, palet warna, tipografi,
+/// serta formula penentuan Rank dan parameter gamifikasi (HP, EXP, Gold, LBS).
+
 import 'package:flutter/material.dart';
 
 /// Palet warna utama LevMax dengan tema visual Solo Leveling (Shadow Monarch System).
 /// Karakteristik visual: Black Deep Void, Shadow Monarch Purple, Neon Violet, dan Indigo Glow.
 class AppColors {
   // Brand & Monarch Glow Colors
-  static const Color primary = Color(0xFF8A2BE2); // Shadow Monarch Purple (BlueViolet)
-  static const Color neonViolet = Color(0xFFB026FF); // Neon Violet Electric Glow
-  static const Color accent = Color(0xFFC084FC); // Light Monarch Lavender
-  static const Color indigoGlow = Color(0xFF160F2C); // Indigo Glow Ambient Base
-  static const Color manaBlue = Color(0xFF38BDF8); // Cyan Mana Glow
+  static const Color primary = Color(0xFF8A2BE2); // [UBAH_WARNA: GLOBAL - Ungu Utama / Primary Brand]
+  static const Color neonViolet = Color(0xFFB026FF); // [UBAH_WARNA: GLOBAL - Ungu Neon / Accent Glow]
+  static const Color accent = Color(0xFFC084FC); // [UBAH_WARNA: GLOBAL - Lavender Aksen]
+  static const Color indigoGlow = Color(0xFF160F2C); // [UBAH_WARNA: GLOBAL - Dasar Indigo Surface]
+  static const Color manaBlue = Color(0xFF38BDF8); // [UBAH_WARNA: GLOBAL - Cyan Biru Mana]
 
   // Stitch Solo Leveling Tokens
-  static const Color abyssBlack = Color(0xFF08050E);
-  static const Color abyssSurface = Color(0xFF0D0818);
-  static const Color cardDark = Color(0xFF120D24);
-  static const Color cardElevated = Color(0xFF191230);
-  static const Color cardGlowBorder = Color(0xFF2C1E4E);
-  static const Color borderHighlight = Color(0xFF8A2BE2);
-  static const Color electricPurple = Color(0xFF8A2BE2);
-  static const Color manaCyan = Color(0xFF00E5FF);
-  static const Color goldAccent = Color(0xFFFFD166);
-  static const Color healthRed = Color(0xFFFF4D6D);
-  static const Color expBarFill = Color(0xFF9D4EDD);
-  static const Color textBrightSilver = Color(0xFFF3EFF5);
-  static const Color textLavender = Color(0xFFD8B4F8);
-  static const Color textDarkHint = Color(0xFF5D5373);
+  static const Color abyssBlack = Color(0xFF08050E); // [UBAH_WARNA: GLOBAL - Latar Belakang Hitam Pekat / Abyss]
+  static const Color abyssSurface = Color(0xFF0D0818); // [UBAH_WARNA: GLOBAL - Latar Surface Gelap]
+  static const Color cardDark = Color(0xFF120D24); // [UBAH_WARNA: GLOBAL - Warna Kartu Gelap]
+  static const Color cardElevated = Color(0xFF191230); // [UBAH_WARNA: GLOBAL - Warna Kartu Terangkat]
+  static const Color cardGlowBorder = Color(0xFF2C1E4E); // [UBAH_WARNA: GLOBAL - Border Kartu Ungu Glow]
+  static const Color borderHighlight = Color(0xFF8A2BE2); // [UBAH_WARNA: GLOBAL - Highlight Border]
+  static const Color electricPurple = Color(0xFF8A2BE2); // [UBAH_WARNA: GLOBAL - Ungu Elektrik]
+  static const Color manaCyan = Color(0xFF00E5FF); // [UBAH_WARNA: GLOBAL - Cyan Terang Mana]
+  static const Color goldAccent = Color(0xFFFFD166); // [UBAH_WARNA: GLOBAL - Emas Cerah]
+  static const Color healthRed = Color(0xFFFF4D6D); // [UBAH_WARNA: GLOBAL - Merah Darah HP]
+  static const Color expBarFill = Color(0xFF9D4EDD); // [UBAH_WARNA: GLOBAL - Warna Isi EXP Bar]
+  static const Color textBrightSilver = Color(0xFFF3EFF5); // [UBAH_WARNA: GLOBAL - Teks Putih Perak]
+  static const Color textLavender = Color(0xFFD8B4F8); // [UBAH_WARNA: GLOBAL - Teks Lavender]
+  static const Color textDarkHint = Color(0xFF5D5373); // [UBAH_WARNA: GLOBAL - Teks Hint Redup]
 
   // Dark Void Backgrounds & Surfaces
-  static const Color background = Color(0xFF0B0713); // Black Deep Void
-  static const Color surface = Color(0xFF160F2C); // Indigo Glow Surface
-  static const Color surfaceElevated = Color(0xFF1E153B); // Elevated Monarch Surface
-  static const Color surfaceHighlight = Color(0xFF2A1C52); // Highlighted Container
+  static const Color background = Color(0xFF0B0713); // [UBAH_WARNA: GLOBAL - Background Utama Aplikasi]
+  static const Color surface = Color(0xFF160F2C); // [UBAH_WARNA: GLOBAL - Surface Kontainer]
+  static const Color surfaceElevated = Color(0xFF1E153B); // [UBAH_WARNA: GLOBAL - Surface Terangkat]
+  static const Color surfaceHighlight = Color(0xFF2A1C52); // [UBAH_WARNA: GLOBAL - Surface Sorotan]
 
   // Borders & Glow Strokes
-  static const Color border = Color(0xFF2E2256); // Subtle Indigo Border
-  static const Color borderGlow = Color(0xFFB026FF); // Active / Focused Neon Glow
-  static const Color divider = Color(0xFF241A42);
+  static const Color border = Color(0xFF2E2256); // [UBAH_WARNA: GLOBAL - Garis Border Default]
+  static const Color borderGlow = Color(0xFFB026FF); // [UBAH_WARNA: GLOBAL - Garis Border Fokus / Glow]
+  static const Color divider = Color(0xFF241A42); // [UBAH_WARNA: GLOBAL - Garis Pembatas Divider]
 
   // Typography Colors
-  static const Color textPrimary = Color(0xFFF8FAFC); // Crisp System White
-  static const Color textSecondary = Color(0xFFA5B4CB); // Muted Indigo Slate
-  static const Color textMuted = Color(0xFF6B7280); // Darker Helper Gray
-  static const Color textDisabled = Color(0xFF4B5563);
+  static const Color textPrimary = Color(0xFFF8FAFC); // [UBAH_WARNA: GLOBAL - Teks Utama Putih]
+  static const Color textSecondary = Color(0xFFA5B4CB); // [UBAH_WARNA: GLOBAL - Teks Sekunder Abu Slate]
+  static const Color textMuted = Color(0xFF6B7280); // [UBAH_WARNA: GLOBAL - Teks Bantuan Muted]
+  static const Color textDisabled = Color(0xFF4B5563); // [UBAH_WARNA: GLOBAL - Teks Nonaktif]
 
   // Status & Mechanics Colors
-  static const Color hpRed = Color(0xFFFF3366); // Health Points / Penalty Crimson
-  static const Color hpRedDark = Color(0xFF990026);
-  static const Color gold = Color(0xFFFFD700); // Hunter Gold
-  static const Color goldDark = Color(0xFFB8860B);
-  static const Color expBar = Color(0xFF8A2BE2); // EXP Progression Purple
-  static const Color expBarGlow = Color(0xFFB026FF);
-  static const Color warning = Color(0xFFF59E0B);
-  static const Color success = Color(0xFF10B981);
+  static const Color hpRed = Color(0xFFFF3366); // [UBAH_WARNA: GLOBAL - Nyawa HP & Warning Merah]
+  static const Color hpRedDark = Color(0xFF990026); // [UBAH_WARNA: GLOBAL - Merah Gelap HP]
+  static const Color gold = Color(0xFFFFD700); // [UBAH_WARNA: GLOBAL - Koin Emas Hunter]
+  static const Color goldDark = Color(0xFFB8860B); // [UBAH_WARNA: GLOBAL - Emas Gelap]
+  static const Color expBar = Color(0xFF8A2BE2); // [UBAH_WARNA: GLOBAL - Batang Progres EXP]
+  static const Color expBarGlow = Color(0xFFB026FF); // [UBAH_WARNA: GLOBAL - Cahaya Glow Bar EXP]
+  static const Color warning = Color(0xFFF59E0B); // [UBAH_WARNA: GLOBAL - Warna Peringatan Warning]
+  static const Color success = Color(0xFF10B981); // [UBAH_WARNA: GLOBAL - Warna Sukses Berhasil]
 
   // Rank Colors (F -> E -> D -> C -> B -> A -> S)
-  static const Color rankF = Color(0xFF9CA3AF); // Gray / Silver
-  static const Color rankE = Color(0xFF10B981); // Emerald Green
-  static const Color rankD = Color(0xFF06B6D4); // Cyan
-  static const Color rankC = Color(0xFF3B82F6); // Royal Blue
-  static const Color rankB = Color(0xFF8B5CF6); // Purple
-  static const Color rankA = Color(0xFFD946EF); // Magenta Pink
-  static const Color rankS = Color(0xFFB026FF); // Sovereign Neon Violet
+  static const Color rankF = Color(0xFF9CA3AF); // [UBAH_WARNA: GLOBAL - Badge Rank F / Silver]
+  static const Color rankE = Color(0xFF10B981); // [UBAH_WARNA: GLOBAL - Badge Rank E / Hijau]
+  static const Color rankD = Color(0xFF06B6D4); // [UBAH_WARNA: GLOBAL - Badge Rank D / Cyan]
+  static const Color rankC = Color(0xFF3B82F6); // [UBAH_WARNA: GLOBAL - Badge Rank C / Biru]
+  static const Color rankB = Color(0xFF8B5CF6); // [UBAH_WARNA: GLOBAL - Badge Rank B / Ungu]
+  static const Color rankA = Color(0xFFD946EF); // [UBAH_WARNA: GLOBAL - Badge Rank A / Magenta]
+  static const Color rankS = Color(0xFFB026FF); // [UBAH_WARNA: GLOBAL - Badge Rank S / Neon Violet]
 
   // Gradients Solo Leveling System
   static const LinearGradient monarchGradient = LinearGradient(
@@ -165,24 +169,24 @@ class AppConstants {
   static const String appName = 'LevMax';
   static const String appTagline = 'The Hunter Awakening System';
 
-  // Hive Box Names
+  // [POIN PRESENTASI]: Nama box penyimpanan lokal Hive (Sesi, Blockchain Ledger, dan Quest)
   static const String sessionBox = 'sessionBox';
   static const String blockchainBox = 'blockchainBox';
   static const String questBox = 'questBox';
 
-  // Game Limits
+  // [POIN PRESENTASI]: Parameter gamifikasi (Batas Max HP = 3, Target Harian = 3 quest, Threshold Gyro = 5s, Radius LBS = 100m)
   static const int maxHp = 3;
   static const int minDailyQuests = 3;
   static const int gyroHoldSeconds = 5;
   static const double portalClaimRadiusMeters = 100.0;
 
-  // Currency Conversions (100 Gold Reference)
+  // [POIN PRESENTASI]: Rasio dasar konversi nilai ekonomi Hunter (100 Gold ke IDR, USD, dan EUR)
   static const int goldReferenceUnit = 100;
   static const int goldToIdrRate = 15000;
   static const double goldToUsdRate = 1.00;
   static const double goldToEurRate = 0.95;
 
-  // Rank Thresholds (EXP)
+  // [POIN PRESENTASI]: Ambang batas (threshold) EXP untuk setiap tingkatan Rank Hunter
   static const int expRankE = 100;
   static const int expRankD = 300;
   static const int expRankC = 600;
@@ -190,7 +194,7 @@ class AppConstants {
   static const int expRankA = 1500;
   static const int expRankS = 2500;
 
-  /// Helper untuk kalkulasi Rank berdasarkan total akumulasi EXP
+  // [POIN PRESENTASI]: Algoritma penentuan Rank Hunter (F -> E -> D -> C -> B -> A -> S) berdasarkan perolehan EXP
   static String calculateRank(int exp) {
     if (exp >= expRankS) return 'S';
     if (exp >= expRankA) return 'A';
@@ -292,48 +296,49 @@ class AppConstants {
 
 /// Konfigurasi ThemeData Resmi LevMax (Solo Leveling Dark-Purple Theme)
 class AppTheme {
+  // [POIN PRESENTASI]: Konfigurasi tema global Material 3 bernuansa Dark-Purple (Shadow Monarch) untuk seluruh aplikasi
   static ThemeData get darkTheme {
     return ThemeData(
       useMaterial3: true,
       brightness: Brightness.dark,
-      scaffoldBackgroundColor: AppColors.background,
-      primaryColor: AppColors.primary,
+      scaffoldBackgroundColor: AppColors.background, // [UBAH_WARNA: GLOBAL - Latar Belakang Scaffold Tema]
+      primaryColor: AppColors.primary, // [UBAH_WARNA: GLOBAL - Warna Primer Utama Tema]
       colorScheme: const ColorScheme.dark(
-        primary: AppColors.primary,
-        onPrimary: Colors.white,
-        secondary: AppColors.neonViolet,
+        primary: AppColors.primary, // [UBAH_WARNA: GLOBAL - Warna Skema Primer]
+        onPrimary: Colors.white, // [UBAH_WARNA: GLOBAL - Teks di Atas Warna Primer]
+        secondary: AppColors.neonViolet, // [UBAH_WARNA: GLOBAL - Warna Sekunder Aksen]
         onSecondary: Colors.white,
-        surface: AppColors.surface,
-        onSurface: AppColors.textPrimary,
-        error: AppColors.hpRed,
+        surface: AppColors.surface, // [UBAH_WARNA: GLOBAL - Permukaan Kartu / Container]
+        onSurface: AppColors.textPrimary, // [UBAH_WARNA: GLOBAL - Teks di Atas Permukaan]
+        error: AppColors.hpRed, // [UBAH_WARNA: GLOBAL - Warna Status Error / HP]
         onError: Colors.white,
       ),
       appBarTheme: const AppBarTheme(
-        backgroundColor: AppColors.background,
+        backgroundColor: AppColors.background, // [UBAH_WARNA: GLOBAL - Latar Belakang AppBar]
         elevation: 0,
         centerTitle: false,
         scrolledUnderElevation: 0,
-        iconTheme: IconThemeData(color: AppColors.textPrimary),
+        iconTheme: IconThemeData(color: AppColors.textPrimary), // [UBAH_WARNA: GLOBAL - Ikon AppBar]
         titleTextStyle: TextStyle(
           fontSize: 18,
           fontWeight: FontWeight.w700,
-          color: AppColors.textPrimary,
+          color: AppColors.textPrimary, // [UBAH_WARNA: GLOBAL - Teks Judul AppBar]
           letterSpacing: 0.5,
         ),
       ),
       cardTheme: CardThemeData(
-        color: AppColors.surface,
+        color: AppColors.surface, // [UBAH_WARNA: GLOBAL - Latar Belakang Card]
         elevation: 0,
         shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.circular(AppConstants.radiusMedium),
-          side: const BorderSide(color: AppColors.border, width: 1),
+          side: const BorderSide(color: AppColors.border, width: 1), // [UBAH_WARNA: GLOBAL - Garis Tepi Card]
         ),
         margin: EdgeInsets.zero,
       ),
       elevatedButtonTheme: ElevatedButtonThemeData(
         style: ElevatedButton.styleFrom(
-          backgroundColor: AppColors.primary,
-          foregroundColor: Colors.white,
+          backgroundColor: AppColors.primary, // [UBAH_WARNA: GLOBAL - Latar Belakang Tombol Elevated]
+          foregroundColor: Colors.white, // [UBAH_WARNA: GLOBAL - Teks Tombol Elevated]
           disabledBackgroundColor: AppColors.surfaceElevated,
           disabledForegroundColor: AppColors.textDisabled,
           elevation: 0,
@@ -350,8 +355,8 @@ class AppTheme {
       ),
       outlinedButtonTheme: OutlinedButtonThemeData(
         style: OutlinedButton.styleFrom(
-          foregroundColor: AppColors.neonViolet,
-          side: const BorderSide(color: AppColors.neonViolet, width: 1.2),
+          foregroundColor: AppColors.neonViolet, // [UBAH_WARNA: GLOBAL - Teks Tombol Outlined]
+          side: const BorderSide(color: AppColors.neonViolet, width: 1.2), // [UBAH_WARNA: GLOBAL - Garis Border Tombol Outlined]
           padding: const EdgeInsets.symmetric(horizontal: 18, vertical: 12),
           shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(AppConstants.radiusMedium),

@@ -1,3 +1,7 @@
+/// Berkas: lib/widgets/face_scan_dialog.dart
+/// Deskripsi: Dialog HUD pemindai biometrik wajah (Face Recognition) bergaya futuristik Solo Leveling.
+/// Memproses live camera feed kamera depan untuk mode Pendaftaran (Enroll) dan Verifikasi Login (Verify).
+
 import 'dart:async';
 import 'package:camera/camera.dart';
 import 'package:flutter/material.dart';
@@ -93,6 +97,7 @@ class _FaceScanDialogState extends State<FaceScanDialog>
     _initCamera();
   }
 
+  // [POIN PRESENTASI]: Inisialisasi controller kamera depan (front lens) untuk memindai wajah secara real-time di dalam retikel HUD
   Future<void> _initCamera() async {
     setState(() {
       _visualState = _ScannerVisualState.initializing;
@@ -172,6 +177,7 @@ class _FaceScanDialogState extends State<FaceScanDialog>
     });
   }
 
+  // [POIN PRESENTASI]: Eksekusi pencocokan biometrik: mengambil frame gambar dan memanggil FaceRecognitionService untuk komparasi dengan template Hive
   Future<void> _executeScan() async {
     if (_cameraController == null ||
         !_cameraController!.value.isInitialized ||
@@ -322,16 +328,16 @@ class _FaceScanDialogState extends State<FaceScanDialog>
   Color get _accentColor {
     switch (_visualState) {
       case _ScannerVisualState.matched:
-        return const Color(0xFF00FFA3); // Neon Green / Mint Hunter
+        return const Color(0xFF00FFA3); // [UBAH_WARNA: Face Scan Status Sukses / Cocok]
       case _ScannerVisualState.mismatched:
-        return const Color(0xFFFF0055); // Crimson Red Alert
+        return const Color(0xFFFF0055); // [UBAH_WARNA: Face Scan Status Gagal / Ditolak]
       case _ScannerVisualState.processing:
-        return const Color(0xFFB026FF); // Neon Purple
+        return const Color(0xFFB026FF); // [UBAH_WARNA: Face Scan Status Memproses]
       case _ScannerVisualState.error:
-        return const Color(0xFFFF5252);
+        return const Color(0xFFFF5252); // [UBAH_WARNA: Face Scan Status Error]
       case _ScannerVisualState.initializing:
       case _ScannerVisualState.scanning:
-        return const Color(0xFF00F4FE); // Neon Cyan
+        return const Color(0xFF00F4FE); // [UBAH_WARNA: Face Scan Retikel Scanning Cyan]
     }
   }
 
@@ -357,10 +363,10 @@ class _FaceScanDialogState extends State<FaceScanDialog>
         width: double.infinity,
         constraints: const BoxConstraints(maxWidth: 360),
         decoration: BoxDecoration(
-          color: const Color(0xFF140D24),
+          color: const Color(0xFF140D24), // [UBAH_WARNA: Latar Belakang Dialog Face Scan]
           borderRadius: BorderRadius.circular(24),
           border: Border.all(
-            color: currentAccent.withValues(alpha: 0.7),
+            color: currentAccent.withValues(alpha: 0.7), // [UBAH_WARNA: Garis Border Dialog Face Scan]
             width: 1.5,
           ),
           boxShadow: [
