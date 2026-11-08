@@ -50,6 +50,7 @@ class _TabGameState extends State<TabGame> with SingleTickerProviderStateMixin {
   bool _isInCenter = true;
 
   // 4. Hunter Session Data dari Hive
+  String _userId = '';
   String _hunterName = 'HUNTER SUNG';
   String _rank = 'RANK S';
   int _currentExp = 150;
@@ -73,7 +74,9 @@ class _TabGameState extends State<TabGame> with SingleTickerProviderStateMixin {
 
   void _loadHunterSession() {
     final session = HiveService.getSession();
+    final uid = session['userId']?.toString() ?? session['username']?.toString() ?? 'anonymous';
     setState(() {
+      _userId = uid;
       _hunterName = session['username']?.toString() ?? 'HUNTER SUNG';
       _rank = session['rank']?.toString() ?? 'RANK S';
       _currentExp = (session['exp'] as int?) ?? 150;
@@ -87,7 +90,10 @@ class _TabGameState extends State<TabGame> with SingleTickerProviderStateMixin {
     final nowUtc = DateTime.now().toUtc();
     final wib = nowUtc.add(const Duration(hours: 7));
     final currentServerDate = DateFormat('yyyy-MM-dd').format(wib);
-    final lastRewardDate = HiveService.getGameRewardDate();
+    final activeUserId = _userId.isNotEmpty
+        ? _userId
+        : (HiveService.getSession()['userId']?.toString() ?? HiveService.getSession()['username']?.toString() ?? 'anonymous');
+    final lastRewardDate = HiveService.getGameRewardDate(activeUserId);
 
     final bool claimedToday = (lastRewardDate == currentServerDate);
     if (hasPlayedToday != claimedToday && mounted) {
@@ -254,8 +260,12 @@ class _TabGameState extends State<TabGame> with SingleTickerProviderStateMixin {
     final wib = nowUtc.add(const Duration(hours: 7));
     final currentServerDate = DateFormat('yyyy-MM-dd').format(wib);
 
-    // Kunci reward harian berdasarkan tanggal server WIB (refresh 00:00 WIB)
-    await HiveService.saveGameRewardDate(currentServerDate);
+    final activeUserId = _userId.isNotEmpty
+        ? _userId
+        : (HiveService.getSession()['userId']?.toString() ?? HiveService.getSession()['username']?.toString() ?? 'anonymous');
+
+    // Kunci reward harian berdasarkan tanggal server WIB terisolasi per Hunter (refresh 00:00 WIB)
+    await HiveService.saveGameRewardDate(currentServerDate, activeUserId);
 
     final session = HiveService.getSession();
     final currentGold = (session['gold'] as int?) ?? _gold;
@@ -546,11 +556,14 @@ class _TabGameState extends State<TabGame> with SingleTickerProviderStateMixin {
     _currentExp = (session['exp'] as int?) ?? _currentExp;
     _rank = session['rank']?.toString() ?? _rank;
 
-    // Sinkronisasi status reward harian dengan tanggal server WIB (refresh 00:00 WIB)
+    // Sinkronisasi status reward harian dengan tanggal server WIB terisolasi per Hunter (refresh 00:00 WIB)
     final nowUtc = DateTime.now().toUtc();
     final wib = nowUtc.add(const Duration(hours: 7));
     final currentServerDate = DateFormat('yyyy-MM-dd').format(wib);
-    final lastRewardDate = HiveService.getGameRewardDate();
+    final activeUserId = _userId.isNotEmpty
+        ? _userId
+        : (session['userId']?.toString() ?? session['username']?.toString() ?? 'anonymous');
+    final lastRewardDate = HiveService.getGameRewardDate(activeUserId);
     hasPlayedToday = (lastRewardDate == currentServerDate);
 
     final double progress = isPlaying

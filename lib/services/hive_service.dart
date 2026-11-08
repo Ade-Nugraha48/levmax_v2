@@ -102,6 +102,7 @@ class HiveService {
     await box.delete('active_password');
     await box.delete('last_login_date');
     await box.delete('completed_quests_today_count');
+    await box.delete('lastGameRewardDate'); // Hapus legacy global key jika ada
     if (clearBiometrics) {
       await clearBiometricCredentials();
     }
@@ -373,16 +374,24 @@ class HiveService {
     }
   }
 
-  /// Menyimpan tanggal terakhir klaim reward mini game (Format: yyyy-MM-dd waktu server WIB)
-  static Future<void> saveGameRewardDate(String serverDate) async {
+  /// Menyimpan tanggal terakhir klaim reward mini game terisolasi per Hunter (Format: yyyy-MM-dd waktu server WIB)
+  static Future<void> saveGameRewardDate(String serverDate, [String? userId]) async {
     final box = sessionBox;
-    await box.put('lastGameRewardDate', serverDate);
+    final uid = (userId != null && userId.isNotEmpty)
+        ? userId
+        : (box.get('userId')?.toString() ?? box.get('username')?.toString() ?? 'anonymous');
+    await box.put('${uid}_lastGameRewardDate', serverDate);
+    // Hapus legacy global key jika ada agar tidak mengunci akun lain di perangkat yang sama
+    await box.delete('lastGameRewardDate');
   }
 
-  /// Menyimpan tanggal terakhir klaim reward mini game dari Hive
-  static String? getGameRewardDate() {
+  /// Mengambil tanggal terakhir klaim reward mini game terisolasi per Hunter dari Hive
+  static String? getGameRewardDate([String? userId]) {
     final box = sessionBox;
-    return box.get('lastGameRewardDate')?.toString();
+    final uid = (userId != null && userId.isNotEmpty)
+        ? userId
+        : (box.get('userId')?.toString() ?? box.get('username')?.toString() ?? 'anonymous');
+    return box.get('${uid}_lastGameRewardDate')?.toString();
   }
 
   /// Menyimpan riwayat kesan & pesan feedback ke Hive

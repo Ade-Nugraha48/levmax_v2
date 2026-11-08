@@ -359,35 +359,35 @@ Jika penguji berkata: *"Coba ubah warna tema aplikasi secara keseluruhan dari Cy
 
 | No | Baris | Tag Pencarian (`Ctrl + F`) | Potongan Kode Asli |
 |:---:|:---:|:---|:---|
-| 1 | `L314` | `// [UBAH_WARNA: Dialog Menang Background]` | `backgroundColor: const Color(0xFF140D24), // [UBAH_WARNA: Dialog Menang Backg...` |
-| 2 | `L317` | `// [UBAH_WARNA: Dialog Menang Border]` | `side: const BorderSide(color: Color(0xFF00F4FE), width: 1.5), // [UBAH_WARNA:...` |
-| 3 | `L393` | `// [UBAH_WARNA: Tombol Klaim Hadiah Dialog]` | `backgroundColor: const Color(0xFF00F4FE), // [UBAH_WARNA: Tombol Klaim Hadiah...` |
-| 4 | `L421` | `// [UBAH_WARNA: Dialog Kalah Background]` | `backgroundColor: const Color(0xFF140D24), // [UBAH_WARNA: Dialog Kalah Backgr...` |
-| 5 | `L424` | `// [UBAH_WARNA: Dialog Kalah Border]` | `side: const BorderSide(color: Color(0xFFFF4D4D), width: 1.5), // [UBAH_WARNA:...` |
-| 6 | `L493` | `// [UBAH_WARNA: Tombol Coba Lagi Dialog]` | `backgroundColor: const Color(0xFFFF4D4D), // [UBAH_WARNA: Tombol Coba Lagi Di...` |
-| 7 | `L561` | `// [UBAH_WARNA: Latar Belakang Layar Mini Game Mana Core]` | `backgroundColor: const Color(0xFF16111E), // [UBAH_WARNA: Latar Belakang Laya...` |
-| 8 | `L618` | `// [UBAH_WARNA: Background Header Top Bar Game]` | `color: const Color(0xFF110C19).withValues(alpha: 0.95), // [UBAH_WARNA: Backg...` |
-| 9 | `L795` | `// [UBAH_WARNA: Pill Sensor Gyroscope Background]` | `color: const Color(0xFF2D2736).withValues(alpha: 0.85), // [UBAH_WARNA: Pill ...` |
-| 10 | `L811` | `// [UBAH_WARNA: Dot Status Gyroscope]` | `color: const Color(0xFF00F4FE), // [UBAH_WARNA: Dot Status Gyroscope]` |
-| 11 | `L899` | `// [UBAH_WARNA: Banner Instruksi Mini Game Background]` | `color: const Color(0xFF1F1927), // [UBAH_WARNA: Banner Instruksi Mini Game Ba...` |
-| 12 | `L905` | `// [UBAH_WARNA: Ikon Rotasi Instruksi]` | `const Icon(Icons.screen_rotation_rounded, color: Color(0xFF00F4FE), size: 18)...` |
-| 13 | `L952` | `// [UBAH_WARNA: Arena Gyroscope Background]` | `color: const Color(0xFF120D24), // [UBAH_WARNA: Arena Gyroscope Background]` |
-| 14 | `L1070` | `// [UBAH_WARNA: Lingkaran Safe Zone Target]` | `color: _isInCenter // [UBAH_WARNA: Lingkaran Safe Zone Target]` |
-| 15 | `L1125` | `// [UBAH_WARNA: Bola Mana Core Glow Ungu]` | `color: const Color(0xFFB026FF).withValues(alpha: 0.8), // [UBAH_WARNA: Bola M...` |
-| 16 | `L1130` | `// [UBAH_WARNA: Bola Mana Core Glow Cyan]` | `color: const Color(0xFF00F4FE).withValues(alpha: 0.8), // [UBAH_WARNA: Bola M...` |
-| 17 | `L1135` | `// [UBAH_WARNA: Bola Mana Core Inti]` | `color: Colors.white, // [UBAH_WARNA: Bola Mana Core Inti]` |
-| 18 | `L1168` | `// [UBAH_WARNA: Box Pitch Tilt Meter]` | `color: const Color(0xFF2D2736).withValues(alpha: 0.7), // [UBAH_WARNA: Box Pi...` |
-| 19 | `L1202` | `// [UBAH_WARNA: Box Roll Tilt Meter]` | `color: const Color(0xFF2D2736).withValues(alpha: 0.7), // [UBAH_WARNA: Box Ro...` |
-| 20 | `L1254` | `// [UBAH_WARNA: Card Status Game Timer Background]` | `color: const Color(0xFF1F1927), // [UBAH_WARNA: Card Status Game Timer Backgr...` |
-| 21 | `L1331` | `// [UBAH_WARNA: Teks Display Timer Game]` | `color: const Color(0xFFE9DEF2), // [UBAH_WARNA: Teks Display Timer Game]` |
-| 22 | `L1375` | `// [UBAH_WARNA: Track Progress Bar Timer]` | `backgroundColor: const Color(0xFF110C19), // [UBAH_WARNA: Track Progress Bar ...` |
-| 23 | `L1391` | `// [UBAH_WARNA: Card Reward Gold Game Background]` | `color: const Color(0xFF1B1406), // [UBAH_WARNA: Card Reward Gold Game Backgro...` |
-| 24 | `L1394` | `// [UBAH_WARNA: Card Reward Gold Game Border]` | `color: const Color(0xFFFFD166).withValues(alpha: 0.35), // [UBAH_WARNA: Card ...` |
-| 25 | `L1430` | `// [UBAH_WARNA: Teks Nilai Reward Gold]` | `color: const Color(0xFFFFD166), // [UBAH_WARNA: Teks Nilai Reward Gold]` |
-| 26 | `L1473` | `// [UBAH_WARNA: Banner Daily Reward Claimed Background]` | `color: const Color(0xFF1E1728), // [UBAH_WARNA: Banner Daily Reward Claimed B...` |
-| 27 | `L1569` | `// [UBAH_WARNA: Tombol Mini Game Retry - Merah Gagal]` | `? [const Color(0xFF93000A), const Color(0xFFFF5449)] // [UBAH_WARNA: Tombol M...` |
-| 28 | `L1570` | `// [UBAH_WARNA: Tombol Mini Game Start - Ungu Aktif]` | `: [const Color(0xFF7B2CBF), const Color(0xFFB026FF)], // [UBAH_WARNA: Tombol ...` |
-| 29 | `L1600` | `// [UBAH_WARNA: Teks Tombol Mainkan Game]` | `color: Colors.white, // [UBAH_WARNA: Teks Tombol Mainkan Game]` |
+| 1 | `L324` | `// [UBAH_WARNA: Dialog Menang Background]` | `backgroundColor: const Color(0xFF140D24), // [UBAH_WARNA: Dialog Menang Backg...` |
+| 2 | `L327` | `// [UBAH_WARNA: Dialog Menang Border]` | `side: const BorderSide(color: Color(0xFF00F4FE), width: 1.5), // [UBAH_WARNA:...` |
+| 3 | `L403` | `// [UBAH_WARNA: Tombol Klaim Hadiah Dialog]` | `backgroundColor: const Color(0xFF00F4FE), // [UBAH_WARNA: Tombol Klaim Hadiah...` |
+| 4 | `L431` | `// [UBAH_WARNA: Dialog Kalah Background]` | `backgroundColor: const Color(0xFF140D24), // [UBAH_WARNA: Dialog Kalah Backgr...` |
+| 5 | `L434` | `// [UBAH_WARNA: Dialog Kalah Border]` | `side: const BorderSide(color: Color(0xFFFF4D4D), width: 1.5), // [UBAH_WARNA:...` |
+| 6 | `L503` | `// [UBAH_WARNA: Tombol Coba Lagi Dialog]` | `backgroundColor: const Color(0xFFFF4D4D), // [UBAH_WARNA: Tombol Coba Lagi Di...` |
+| 7 | `L574` | `// [UBAH_WARNA: Latar Belakang Layar Mini Game Mana Core]` | `backgroundColor: const Color(0xFF16111E), // [UBAH_WARNA: Latar Belakang Laya...` |
+| 8 | `L631` | `// [UBAH_WARNA: Background Header Top Bar Game]` | `color: const Color(0xFF110C19).withValues(alpha: 0.95), // [UBAH_WARNA: Backg...` |
+| 9 | `L808` | `// [UBAH_WARNA: Pill Sensor Gyroscope Background]` | `color: const Color(0xFF2D2736).withValues(alpha: 0.85), // [UBAH_WARNA: Pill ...` |
+| 10 | `L824` | `// [UBAH_WARNA: Dot Status Gyroscope]` | `color: const Color(0xFF00F4FE), // [UBAH_WARNA: Dot Status Gyroscope]` |
+| 11 | `L912` | `// [UBAH_WARNA: Banner Instruksi Mini Game Background]` | `color: const Color(0xFF1F1927), // [UBAH_WARNA: Banner Instruksi Mini Game Ba...` |
+| 12 | `L918` | `// [UBAH_WARNA: Ikon Rotasi Instruksi]` | `const Icon(Icons.screen_rotation_rounded, color: Color(0xFF00F4FE), size: 18)...` |
+| 13 | `L965` | `// [UBAH_WARNA: Arena Gyroscope Background]` | `color: const Color(0xFF120D24), // [UBAH_WARNA: Arena Gyroscope Background]` |
+| 14 | `L1083` | `// [UBAH_WARNA: Lingkaran Safe Zone Target]` | `color: _isInCenter // [UBAH_WARNA: Lingkaran Safe Zone Target]` |
+| 15 | `L1138` | `// [UBAH_WARNA: Bola Mana Core Glow Ungu]` | `color: const Color(0xFFB026FF).withValues(alpha: 0.8), // [UBAH_WARNA: Bola M...` |
+| 16 | `L1143` | `// [UBAH_WARNA: Bola Mana Core Glow Cyan]` | `color: const Color(0xFF00F4FE).withValues(alpha: 0.8), // [UBAH_WARNA: Bola M...` |
+| 17 | `L1148` | `// [UBAH_WARNA: Bola Mana Core Inti]` | `color: Colors.white, // [UBAH_WARNA: Bola Mana Core Inti]` |
+| 18 | `L1181` | `// [UBAH_WARNA: Box Pitch Tilt Meter]` | `color: const Color(0xFF2D2736).withValues(alpha: 0.7), // [UBAH_WARNA: Box Pi...` |
+| 19 | `L1215` | `// [UBAH_WARNA: Box Roll Tilt Meter]` | `color: const Color(0xFF2D2736).withValues(alpha: 0.7), // [UBAH_WARNA: Box Ro...` |
+| 20 | `L1267` | `// [UBAH_WARNA: Card Status Game Timer Background]` | `color: const Color(0xFF1F1927), // [UBAH_WARNA: Card Status Game Timer Backgr...` |
+| 21 | `L1344` | `// [UBAH_WARNA: Teks Display Timer Game]` | `color: const Color(0xFFE9DEF2), // [UBAH_WARNA: Teks Display Timer Game]` |
+| 22 | `L1388` | `// [UBAH_WARNA: Track Progress Bar Timer]` | `backgroundColor: const Color(0xFF110C19), // [UBAH_WARNA: Track Progress Bar ...` |
+| 23 | `L1404` | `// [UBAH_WARNA: Card Reward Gold Game Background]` | `color: const Color(0xFF1B1406), // [UBAH_WARNA: Card Reward Gold Game Backgro...` |
+| 24 | `L1407` | `// [UBAH_WARNA: Card Reward Gold Game Border]` | `color: const Color(0xFFFFD166).withValues(alpha: 0.35), // [UBAH_WARNA: Card ...` |
+| 25 | `L1443` | `// [UBAH_WARNA: Teks Nilai Reward Gold]` | `color: const Color(0xFFFFD166), // [UBAH_WARNA: Teks Nilai Reward Gold]` |
+| 26 | `L1486` | `// [UBAH_WARNA: Banner Daily Reward Claimed Background]` | `color: const Color(0xFF1E1728), // [UBAH_WARNA: Banner Daily Reward Claimed B...` |
+| 27 | `L1582` | `// [UBAH_WARNA: Tombol Mini Game Retry - Merah Gagal]` | `? [const Color(0xFF93000A), const Color(0xFFFF5449)] // [UBAH_WARNA: Tombol M...` |
+| 28 | `L1583` | `// [UBAH_WARNA: Tombol Mini Game Start - Ungu Aktif]` | `: [const Color(0xFF7B2CBF), const Color(0xFFB026FF)], // [UBAH_WARNA: Tombol ...` |
+| 29 | `L1613` | `// [UBAH_WARNA: Teks Tombol Mainkan Game]` | `color: Colors.white, // [UBAH_WARNA: Teks Tombol Mainkan Game]` |
 ---
 
 ### File: `lib/screens/tabs/tab_shop.dart` (Tab 4: Exchange Shop & DEX Token Valuation)
