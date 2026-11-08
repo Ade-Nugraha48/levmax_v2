@@ -503,4 +503,52 @@ class HiveService {
     final key = '${uid}_equipped_title';
     await box.put(key, title);
   }
+
+  // ===========================================================================
+  // BAGIAN: PELACAKAN KUOTA HARIAN HIDDEN QUEST LLM (MAKSIMAL 3X / HARI)
+  // ===========================================================================
+
+  static const int maxHiddenQuestDailyScans = 3;
+
+  /// Mengambil jumlah pemindaian Hidden Quest yang telah dilakukan pada hari aktif (maks 3x/hari)
+  static int getHiddenQuestScanCountToday([String? userId]) {
+    final box = sessionBox;
+    final uid = (userId != null && userId.isNotEmpty)
+        ? userId
+        : (box.get('userId')?.toString() ?? 'anonymous');
+    final today = DateTime.now().toIso8601String().split('T')[0];
+    final storedDate = box.get('${uid}_hidden_quest_scan_date')?.toString();
+    if (storedDate != today) {
+      return 0;
+    }
+    final count = box.get('${uid}_hidden_quest_scan_count');
+    if (count is num) return count.toInt();
+    return 0;
+  }
+
+  /// Menambah 1 hitungan pemindaian Hidden Quest hari ini
+  static Future<int> incrementHiddenQuestScanCount([String? userId]) async {
+    final box = sessionBox;
+    final uid = (userId != null && userId.isNotEmpty)
+        ? userId
+        : (box.get('userId')?.toString() ?? 'anonymous');
+    final today = DateTime.now().toIso8601String().split('T')[0];
+    final storedDate = box.get('${uid}_hidden_quest_scan_date')?.toString();
+    int current = 0;
+    if (storedDate == today) {
+      final val = box.get('${uid}_hidden_quest_scan_count');
+      if (val is num) current = val.toInt();
+    }
+    final next = current + 1;
+    await box.put('${uid}_hidden_quest_scan_date', today);
+    await box.put('${uid}_hidden_quest_scan_count', next);
+    return next;
+  }
+
+  /// Mengambil sisa kuota pemindaian Hidden Quest hari ini
+  static int getRemainingHiddenQuestScans([String? userId]) {
+    final used = getHiddenQuestScanCountToday(userId);
+    final remaining = maxHiddenQuestDailyScans - used;
+    return remaining < 0 ? 0 : remaining;
+  }
 }

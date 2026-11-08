@@ -858,7 +858,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
               Text(
-                'GATE SECURE // RSA-4096',
+                'PROJECT AUTHENTICATION GATE',
                 style: GoogleFonts.spaceGrotesk(
                   fontSize: 9,
                   letterSpacing: 1.2,

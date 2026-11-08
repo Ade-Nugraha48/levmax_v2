@@ -1814,7 +1814,7 @@ class _TabShopState extends State<TabShop> {
               ),
               const SizedBox(width: 6),
               Text(
-                'PROTOCOL: DEX_V2.4',
+                'PROTOCOL: GET YOUR DRIP',
                 style: GoogleFonts.spaceGrotesk(
                   fontSize: 9,
                   fontWeight: FontWeight.w700,

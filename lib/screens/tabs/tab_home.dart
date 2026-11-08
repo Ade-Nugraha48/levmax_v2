@@ -53,6 +53,8 @@ class _TabHomeState extends State<TabHome> {
   final int _maxHp = 3;
   int _gold = 0;
   String? _avatarUrl;
+  String _userId = 'anonymous';
+  int _hiddenQuestScansToday = 0;
 
   // Real-time Server Clock
   Timer? _serverClockTimer;
@@ -295,6 +297,11 @@ class _TabHomeState extends State<TabHome> {
       _currentHp = loadedHp;
     }
     _avatarUrl = session['avatar_url']?.toString();
+    final savedUserId = session['userId']?.toString();
+    if (savedUserId != null && savedUserId.isNotEmpty) {
+      _userId = savedUserId;
+    }
+    _hiddenQuestScansToday = HiveService.getHiddenQuestScanCountToday(_userId);
   }
 
   void _startServerClock() {
@@ -314,6 +321,7 @@ class _TabHomeState extends State<TabHome> {
       _lastMidnightCheck = now;
       _checkDailyHpPenalty();
       _loadLocalQuestStatus();
+      _hiddenQuestScansToday = HiveService.getHiddenQuestScanCountToday(_userId);
     }
 
     final nowUtc = now.toUtc();
@@ -506,6 +514,11 @@ class _TabHomeState extends State<TabHome> {
     if (loadedHp != null) {
       _currentHp = loadedHp;
     }
+    final savedUserId = session['userId']?.toString();
+    if (savedUserId != null && savedUserId.isNotEmpty) {
+      _userId = savedUserId;
+    }
+    _hiddenQuestScansToday = HiveService.getHiddenQuestScanCountToday(_userId);
 
     return Scaffold(
       backgroundColor: const Color(0xFF16111E), // [UBAH_WARNA: Latar Belakang Layar Dashboard Tab Home]
@@ -1761,7 +1774,7 @@ class _TabHomeState extends State<TabHome> {
                               ),
                             ),
                             child: Text(
-                              'SECRET',
+                              'OPTIONAL',
                               style: GoogleFonts.orbitron(
                                 fontSize: 8.5,
                                 fontWeight: FontWeight.w800,
@@ -1769,11 +1782,37 @@ class _TabHomeState extends State<TabHome> {
                               ),
                             ),
                           ),
+                          const SizedBox(width: 5),
+                          Container(
+                            padding: const EdgeInsets.symmetric(horizontal: 5, vertical: 2),
+                            decoration: BoxDecoration(
+                              color: _hiddenQuestScansToday < 3
+                                  ? const Color(0xFF00F4FE).withValues(alpha: 0.15)
+                                  : const Color(0xFFFF0055).withValues(alpha: 0.2),
+                              borderRadius: BorderRadius.circular(4),
+                              border: Border.all(
+                                color: _hiddenQuestScansToday < 3
+                                    ? const Color(0xFF00F4FE).withValues(alpha: 0.6)
+                                    : const Color(0xFFFF0055).withValues(alpha: 0.6),
+                                width: 0.8,
+                              ),
+                            ),
+                            child: Text(
+                              '$_hiddenQuestScansToday/3 HARI INI',
+                              style: GoogleFonts.orbitron(
+                                fontSize: 8.5,
+                                fontWeight: FontWeight.w800,
+                                color: _hiddenQuestScansToday < 3
+                                    ? const Color(0xFF00F4FE)
+                                    : const Color(0xFFFF2A6D),
+                              ),
+                            ),
+                          ),
                         ],
                       ),
                       const SizedBox(height: 3),
                       Text(
-                        'Pindai anomali dimensi & fluktuasi Mana rahasia di sekitar Gate',
+                        'Pindai tantangan rahasia pengembangan diri & mental Hunter (Maks 3x/hari)',
                         style: GoogleFonts.plusJakartaSans(
                           fontSize: 10.5,
                           fontWeight: FontWeight.w500,
@@ -1797,8 +1836,15 @@ class _TabHomeState extends State<TabHome> {
     );
   }
 
-  /// Handler pemindaian hidden dungeon menggunakan Gemini LLM
+  /// Handler pemindaian hidden dungeon menggunakan Gemini LLM (Maksimal 3x Sehari)
   Future<void> _handleScanHiddenDungeon() async {
+    // 0. Pengecekan Batas Pemindaian Harian (Maksimal 3x Sehari)
+    final countToday = HiveService.getHiddenQuestScanCountToday(_userId);
+    if (countToday >= 3) {
+      _showHiddenQuestQuotaExceededDialog();
+      return;
+    }
+
     // 1. Tampilkan dialog loading "Mendeteksi gelombang mana..."
     showDialog(
       context: context,
@@ -1866,19 +1912,27 @@ class _TabHomeState extends State<TabHome> {
     );
 
     try {
-      // [POIN PRESENTASI]: Panggilan generative AI Gemini untuk menciptakan narasi Hidden Quest adaptif berdasarkan Rank dan EXP Hunter
+      // [POIN PRESENTASI]: Panggilan generative AI Gemini untuk menciptakan tantangan opsional Self-Improvement
       final questText = await GeminiService.generateHiddenQuest(_rank, _currentExp);
+
+      // Tingkatkan kuota pemindaian hari ini
+      final nextCount = await HiveService.incrementHiddenQuestScanCount(_userId);
+      if (mounted) {
+        setState(() {
+          _hiddenQuestScansToday = nextCount;
+        });
+      }
 
       // 3. Tutup dialog loading
       if (!mounted) return;
       Navigator.of(context, rootNavigator: true).pop();
 
       // 4. Tampilkan AlertDialog hasil generate LLM bergaya Solo Leveling
-      _showHiddenQuestResultDialog(questText);
+      _showHiddenQuestResultDialog(questText, currentScan: nextCount);
     } catch (e) {
       if (!mounted) return;
       Navigator.of(context, rootNavigator: true).pop();
-      _showHiddenQuestResultDialog('Gagal memindai gelombang mana: $e');
+      _showHiddenQuestResultDialog('Gagal memindai gelombang mana: $e', currentScan: countToday);
     }
   }
 
@@ -1954,7 +2008,7 @@ class _TabHomeState extends State<TabHome> {
   }
 
   /// Menampilkan dialog hasil generate Hidden Quest dari Gemini LLM
-  void _showHiddenQuestResultDialog(String questText) {
+  void _showHiddenQuestResultDialog(String questText, {int currentScan = 1}) {
     showDialog(
       context: context,
       builder: (dialogCtx) {
@@ -2019,7 +2073,7 @@ class _TabHomeState extends State<TabHome> {
                             ),
                           ),
                           Text(
-                            'Sistem Peringatan Gerbang Rahasia (Double Dungeon)',
+                            'Tantangan Opsional Self-Improvement • Kuota Hari Ini: $currentScan/3',
                             style: GoogleFonts.plusJakartaSans(
                               fontSize: 10,
                               fontWeight: FontWeight.w600,
@@ -2088,6 +2142,121 @@ class _TabHomeState extends State<TabHome> {
                           ),
                         ),
                       ],
+                    ),
+                  ),
+                ),
+              ],
+            ),
+          ),
+        );
+      },
+    );
+  }
+
+  /// Menampilkan dialog peringatan ketika batas pemindaian harian tercapai (3/3)
+  void _showHiddenQuestQuotaExceededDialog() {
+    showDialog(
+      context: context,
+      builder: (ctx) {
+        return Dialog(
+          backgroundColor: Colors.transparent,
+          insetPadding: const EdgeInsets.symmetric(horizontal: 24, vertical: 24),
+          child: Container(
+            padding: const EdgeInsets.all(22),
+            decoration: BoxDecoration(
+              color: const Color(0xFF140D22),
+              borderRadius: BorderRadius.circular(22),
+              border: Border.all(
+                color: const Color(0xFFFF2A6D),
+                width: 1.8,
+              ),
+              boxShadow: [
+                BoxShadow(
+                  color: const Color(0xFFFF0055).withValues(alpha: 0.35),
+                  blurRadius: 28,
+                  spreadRadius: 2,
+                ),
+              ],
+            ),
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                Container(
+                  padding: const EdgeInsets.all(12),
+                  decoration: BoxDecoration(
+                    color: const Color(0xFFFF0055).withValues(alpha: 0.15),
+                    shape: BoxShape.circle,
+                    border: Border.all(
+                      color: const Color(0xFFFF0055).withValues(alpha: 0.6),
+                    ),
+                  ),
+                  child: const Icon(
+                    Icons.lock_clock_rounded,
+                    color: Color(0xFFFF2A6D),
+                    size: 32,
+                  ),
+                ),
+                const SizedBox(height: 16),
+                Text(
+                  'SYSTEM COOLDOWN ACTIVE',
+                  style: GoogleFonts.orbitron(
+                    fontSize: 13.5,
+                    fontWeight: FontWeight.w900,
+                    letterSpacing: 1.0,
+                    color: const Color(0xFFFF2A6D),
+                  ),
+                ),
+                const SizedBox(height: 6),
+                Text(
+                  'Batas Pemindaian Harian Tercapai (3/3)',
+                  style: GoogleFonts.plusJakartaSans(
+                    fontSize: 11,
+                    fontWeight: FontWeight.w700,
+                    color: const Color(0xFFE5B5FF),
+                  ),
+                ),
+                const SizedBox(height: 14),
+                Container(
+                  padding: const EdgeInsets.all(14),
+                  decoration: BoxDecoration(
+                    color: const Color(0xFF1B112B),
+                    borderRadius: BorderRadius.circular(12),
+                    border: Border.all(
+                      color: const Color(0xFF2C1E4E),
+                    ),
+                  ),
+                  child: Text(
+                    'Kapasitas pemindaian gerbang rahasia telah mencapai batas maksimal 3 kali untuk hari ini.\n\n'
+                    'Gelombang Mana Sistem sedang dalam fase stabilisasi (cooldown). Frekuensi pemindaian akan di-reset otomatis setiap pukul 00:00 WIB (Reset Server).\n\n'
+                    'Fokuslah menyelesaikan Main Quest harian dan quest latihan aktif Anda terlebih dahulu, Hunter!',
+                    style: GoogleFonts.plusJakartaSans(
+                      fontSize: 11.5,
+                      height: 1.55,
+                      color: const Color(0xFFD4C8E2),
+                    ),
+                  ),
+                ),
+                const SizedBox(height: 18),
+                SizedBox(
+                  width: double.infinity,
+                  height: 44,
+                  child: ElevatedButton(
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: const Color(0xFF28071E),
+                      foregroundColor: const Color(0xFFFF80AB),
+                      side: const BorderSide(color: Color(0xFFFF0055), width: 1.2),
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(12),
+                      ),
+                    ),
+                    onPressed: () => Navigator.of(ctx).pop(),
+                    child: Text(
+                      'MENGERTI (COOLDOWN)',
+                      style: GoogleFonts.orbitron(
+                        fontSize: 12,
+                        fontWeight: FontWeight.w800,
+                        letterSpacing: 1.0,
+                      ),
                     ),
                   ),
                 ),
