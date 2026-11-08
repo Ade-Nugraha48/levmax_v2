@@ -554,7 +554,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
                   const SizedBox(height: 5),
                   _buildTextField(
                     controller: _usernameController,
-                    hint: 'e.g. SungJinwoo_99',
+                    hint: 'Your Username',
                     prefixIcon: Icons.fingerprint_rounded,
                   ),
 

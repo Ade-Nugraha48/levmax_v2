@@ -673,7 +673,7 @@ class _LoginScreenState extends State<LoginScreen> {
                                           cursorColor: const Color(0xFFB026FF),
                                           decoration: InputDecoration(
                                             isDense: true,
-                                            hintText: 'Sung Jin-Woo / Codename',
+                                            hintText: 'Your Username',
                                             hintStyle:
                                                 GoogleFonts.plusJakartaSans(
                                                   color: const Color(0xFF9B8BA1)
