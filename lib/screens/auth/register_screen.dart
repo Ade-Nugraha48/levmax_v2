@@ -876,7 +876,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
               ),
               const SizedBox(width: 6),
               Text(
-                'VER 4.12.0',
+                'V2.0',
                 style: GoogleFonts.spaceGrotesk(
                   fontSize: 9,
                   letterSpacing: 1.2,

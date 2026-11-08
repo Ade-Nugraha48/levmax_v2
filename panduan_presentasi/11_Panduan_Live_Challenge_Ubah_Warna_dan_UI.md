@@ -289,39 +289,39 @@ Jika penguji berkata: *"Coba ubah warna tema aplikasi secara keseluruhan dari Cy
 | 18 | `L820` | `// [UBAH_WARNA: Ikon Badge Rank Hunter]` | `color: Color(0xFFE5B5FF), // [UBAH_WARNA: Ikon Badge Rank Hunter]` |
 | 19 | `L829` | `// [UBAH_WARNA: Teks Badge Rank Hunter]` | `color: const Color(0xFFE5B5FF), // [UBAH_WARNA: Teks Badge Rank Hunter]` |
 | 20 | `L859` | `// [UBAH_WARNA: Ikon HP Heart Hunter]` | `color: i <= _currentHp ? const Color(0xFFFF5252) : const Color(0xFF5A4A63), /...` |
-| 21 | `L879` | `// [UBAH_WARNA: Pill Gold Hunter Background]` | `color: const Color(0xFF0C242B), // [UBAH_WARNA: Pill Gold Hunter Background]` |
-| 22 | `L882` | `// [UBAH_WARNA: Pill Gold Hunter Border]` | `color: const Color(0xFF00F4FE).withValues(alpha: 0.4), // [UBAH_WARNA: Pill G...` |
-| 23 | `L891` | `// [UBAH_WARNA: Ikon Pill Gold Hunter]` | `color: Color(0xFF00F4FE), // [UBAH_WARNA: Ikon Pill Gold Hunter]` |
-| 24 | `L900` | `// [UBAH_WARNA: Teks Jumlah Gold Hunter]` | `color: const Color(0xFF00F4FE), // [UBAH_WARNA: Teks Jumlah Gold Hunter]` |
-| 25 | `L941` | `// [UBAH_WARNA: Track EXP Bar Hunter]` | `color: const Color(0xFF1F1927), // [UBAH_WARNA: Track EXP Bar Hunter]` |
-| 26 | `L955` | `// [UBAH_WARNA: Glow Fill EXP Bar Hunter]` | `color: const Color(0xFF00F4FE).withValues(alpha: 0.5), // [UBAH_WARNA: Glow F...` |
-| 27 | `L975` | `// [UBAH_WARNA: Banner Server Time Background]` | `color: const Color(0xFF110C19), // [UBAH_WARNA: Banner Server Time Background]` |
-| 28 | `L978` | `// [UBAH_WARNA: Banner Server Time Border]` | `color: const Color(0xFF2C1E4E), // [UBAH_WARNA: Banner Server Time Border]` |
-| 29 | `L990` | `// [UBAH_WARNA: Ikon Dunia Server Time]` | `color: Color(0xFF00F4FE), // [UBAH_WARNA: Ikon Dunia Server Time]` |
-| 30 | `L1073` | `// [UBAH_WARNA: Teks Jam London Server Time]` | `color: const Color(0xFF00F4FE), // [UBAH_WARNA: Teks Jam London Server Time]` |
-| 31 | `L1092` | `// [UBAH_WARNA: Latar Belakang Kolom Pencarian Quest]` | `color: const Color(0xFF110C19), // [UBAH_WARNA: Latar Belakang Kolom Pencaria...` |
-| 32 | `L1095` | `// [UBAH_WARNA: Garis Border Kolom Pencarian Quest]` | `color: const Color(0xFF2C1E4E), // [UBAH_WARNA: Garis Border Kolom Pencarian ...` |
-| 33 | `L1104` | `// [UBAH_WARNA: Warna Teks Input Cari Quest]` | `color: const Color(0xFFE9DEF2), // [UBAH_WARNA: Warna Teks Input Cari Quest]` |
-| 34 | `L1112` | `// [UBAH_WARNA: Warna Hint Cari Quest]` | `color: const Color(0xFF5D5373), // [UBAH_WARNA: Warna Hint Cari Quest]` |
-| 35 | `L1116` | `// [UBAH_WARNA: Ikon Search Quest]` | `color: Color(0xFF8B829E), // [UBAH_WARNA: Ikon Search Quest]` |
-| 36 | `L1151` | `// [UBAH_WARNA: Background Filter Chip Quest]` | `color: isSelected ? const Color(0xFFB026FF) : const Color(0xFF1F1927), // [UB...` |
-| 37 | `L1203` | `// [UBAH_WARNA: Ikon Api Daily Quests Header]` | `color: Color(0xFFFF7A00), // [UBAH_WARNA: Ikon Api Daily Quests Header]` |
-| 38 | `L1214` | `// [UBAH_WARNA: Judul Daily Quests Header]` | `color: const Color(0xFFE9DEF2), // [UBAH_WARNA: Judul Daily Quests Header]` |
-| 39 | `L1485` | `// [UBAH_WARNA: Background Card Quest]` | `color: isDone ? const Color(0xFF16121D) : const Color(0xFF1F1927), // [UBAH_W...` |
-| 40 | `L1488` | `// [UBAH_WARNA: Border Card Quest]` | `color: isDone ? const Color(0xFF2C2436) : const Color(0xFF383241), // [UBAH_W...` |
-| 41 | `L1534` | `// [UBAH_WARNA: Judul Card Quest]` | `color: isDone ? const Color(0xFF7E728C) : const Color(0xFFE9DEF2), // [UBAH_W...` |
-| 42 | `L1693` | `// [UBAH_WARNA: Border Tombol Scan Hidden Dungeon]` | `color: const Color(0xFFFF0055).withValues(alpha: 0.8), // [UBAH_WARNA: Border...` |
-| 43 | `L1742` | `// [UBAH_WARNA: Ikon Tombol Scan Hidden Dungeon]` | `color: Colors.white, // [UBAH_WARNA: Ikon Tombol Scan Hidden Dungeon]` |
-| 44 | `L1761` | `// [UBAH_WARNA: Judul Tombol Scan Hidden Dungeon]` | `color: const Color(0xFFFF2A6D), // [UBAH_WARNA: Judul Tombol Scan Hidden Dung...` |
-| 45 | `L2281` | `// [UBAH_WARNA: Background Card Nearby Gate]` | `color: const Color(0xFF1F1927), // [UBAH_WARNA: Background Card Nearby Gate]` |
-| 46 | `L2284` | `// [UBAH_WARNA: Border Card Nearby Gate]` | `color: const Color(0xFF383241), // [UBAH_WARNA: Border Card Nearby Gate]` |
-| 47 | `L2299` | `// [UBAH_WARNA: Ikon Radar Nearby Gate]` | `color: Color(0xFF00F4FE), // [UBAH_WARNA: Ikon Radar Nearby Gate]` |
-| 48 | `L2338` | `// [UBAH_WARNA: Tombol Enter Gate Background]` | `color: const Color(0xFF00F4FE), // [UBAH_WARNA: Tombol Enter Gate Background]` |
-| 49 | `L2355` | `// [UBAH_WARNA: Tombol Enter Gate Icon]` | `color: Colors.black, // [UBAH_WARNA: Tombol Enter Gate Icon]` |
-| 50 | `L2364` | `// [UBAH_WARNA: Tombol Enter Gate Teks]` | `color: Colors.black, // [UBAH_WARNA: Tombol Enter Gate Teks]` |
-| 51 | `L2385` | `// [UBAH_WARNA: FAB Tombol Alarm Background]` | `color: const Color(0xFF1F1927), // [UBAH_WARNA: FAB Tombol Alarm Background]` |
-| 52 | `L4158` | `// [UBAH_WARNA: FAB Hunter AI Brain Background]` | `color: const Color(0xFFB026FF), // [UBAH_WARNA: FAB Hunter AI Brain Background]` |
-| 53 | `L4171` | `// [UBAH_WARNA: FAB Hunter AI Brain Icon]` | `color: Colors.white, // [UBAH_WARNA: FAB Hunter AI Brain Icon]` |
+| 21 | `L879` | `// [UBAH_WARNA: Pill Gold Hunter Background]` | `color: const Color(0xFF261D0C), // [UBAH_WARNA: Pill Gold Hunter Background]` |
+| 22 | `L882` | `// [UBAH_WARNA: Pill Gold Hunter Border]` | `color: const Color(0xFFFFD166).withValues(alpha: 0.5), // [UBAH_WARNA: Pill G...` |
+| 23 | `L892` | `// [UBAH_WARNA: Ikon Pill Gold Hunter]` | `color: Color(0xFFFFD166), // [UBAH_WARNA: Ikon Pill Gold Hunter]` |
+| 24 | `L905` | `// [UBAH_WARNA: Teks Jumlah Gold Hunter]` | `color: const Color(0xFFFFD166), // [UBAH_WARNA: Teks Jumlah Gold Hunter]` |
+| 25 | `L948` | `// [UBAH_WARNA: Track EXP Bar Hunter]` | `color: const Color(0xFF1F1927), // [UBAH_WARNA: Track EXP Bar Hunter]` |
+| 26 | `L962` | `// [UBAH_WARNA: Glow Fill EXP Bar Hunter]` | `color: const Color(0xFF00F4FE).withValues(alpha: 0.5), // [UBAH_WARNA: Glow F...` |
+| 27 | `L982` | `// [UBAH_WARNA: Banner Server Time Background]` | `color: const Color(0xFF110C19), // [UBAH_WARNA: Banner Server Time Background]` |
+| 28 | `L985` | `// [UBAH_WARNA: Banner Server Time Border]` | `color: const Color(0xFF2C1E4E), // [UBAH_WARNA: Banner Server Time Border]` |
+| 29 | `L997` | `// [UBAH_WARNA: Ikon Dunia Server Time]` | `color: Color(0xFF00F4FE), // [UBAH_WARNA: Ikon Dunia Server Time]` |
+| 30 | `L1080` | `// [UBAH_WARNA: Teks Jam London Server Time]` | `color: const Color(0xFF00F4FE), // [UBAH_WARNA: Teks Jam London Server Time]` |
+| 31 | `L1099` | `// [UBAH_WARNA: Latar Belakang Kolom Pencarian Quest]` | `color: const Color(0xFF110C19), // [UBAH_WARNA: Latar Belakang Kolom Pencaria...` |
+| 32 | `L1102` | `// [UBAH_WARNA: Garis Border Kolom Pencarian Quest]` | `color: const Color(0xFF2C1E4E), // [UBAH_WARNA: Garis Border Kolom Pencarian ...` |
+| 33 | `L1111` | `// [UBAH_WARNA: Warna Teks Input Cari Quest]` | `color: const Color(0xFFE9DEF2), // [UBAH_WARNA: Warna Teks Input Cari Quest]` |
+| 34 | `L1119` | `// [UBAH_WARNA: Warna Hint Cari Quest]` | `color: const Color(0xFF5D5373), // [UBAH_WARNA: Warna Hint Cari Quest]` |
+| 35 | `L1123` | `// [UBAH_WARNA: Ikon Search Quest]` | `color: Color(0xFF8B829E), // [UBAH_WARNA: Ikon Search Quest]` |
+| 36 | `L1158` | `// [UBAH_WARNA: Background Filter Chip Quest]` | `color: isSelected ? const Color(0xFFB026FF) : const Color(0xFF1F1927), // [UB...` |
+| 37 | `L1210` | `// [UBAH_WARNA: Ikon Api Daily Quests Header]` | `color: Color(0xFFFF7A00), // [UBAH_WARNA: Ikon Api Daily Quests Header]` |
+| 38 | `L1221` | `// [UBAH_WARNA: Judul Daily Quests Header]` | `color: const Color(0xFFE9DEF2), // [UBAH_WARNA: Judul Daily Quests Header]` |
+| 39 | `L1492` | `// [UBAH_WARNA: Background Card Quest]` | `color: isDone ? const Color(0xFF16121D) : const Color(0xFF1F1927), // [UBAH_W...` |
+| 40 | `L1495` | `// [UBAH_WARNA: Border Card Quest]` | `color: isDone ? const Color(0xFF2C2436) : const Color(0xFF383241), // [UBAH_W...` |
+| 41 | `L1541` | `// [UBAH_WARNA: Judul Card Quest]` | `color: isDone ? const Color(0xFF7E728C) : const Color(0xFFE9DEF2), // [UBAH_W...` |
+| 42 | `L1700` | `// [UBAH_WARNA: Border Tombol Scan Hidden Dungeon]` | `color: const Color(0xFFFF0055).withValues(alpha: 0.8), // [UBAH_WARNA: Border...` |
+| 43 | `L1749` | `// [UBAH_WARNA: Ikon Tombol Scan Hidden Dungeon]` | `color: Colors.white, // [UBAH_WARNA: Ikon Tombol Scan Hidden Dungeon]` |
+| 44 | `L1768` | `// [UBAH_WARNA: Judul Tombol Scan Hidden Dungeon]` | `color: const Color(0xFFFF2A6D), // [UBAH_WARNA: Judul Tombol Scan Hidden Dung...` |
+| 45 | `L2288` | `// [UBAH_WARNA: Background Card Nearby Gate]` | `color: const Color(0xFF1F1927), // [UBAH_WARNA: Background Card Nearby Gate]` |
+| 46 | `L2291` | `// [UBAH_WARNA: Border Card Nearby Gate]` | `color: const Color(0xFF383241), // [UBAH_WARNA: Border Card Nearby Gate]` |
+| 47 | `L2306` | `// [UBAH_WARNA: Ikon Radar Nearby Gate]` | `color: Color(0xFF00F4FE), // [UBAH_WARNA: Ikon Radar Nearby Gate]` |
+| 48 | `L2345` | `// [UBAH_WARNA: Tombol Enter Gate Background]` | `color: const Color(0xFF00F4FE), // [UBAH_WARNA: Tombol Enter Gate Background]` |
+| 49 | `L2362` | `// [UBAH_WARNA: Tombol Enter Gate Icon]` | `color: Colors.black, // [UBAH_WARNA: Tombol Enter Gate Icon]` |
+| 50 | `L2371` | `// [UBAH_WARNA: Tombol Enter Gate Teks]` | `color: Colors.black, // [UBAH_WARNA: Tombol Enter Gate Teks]` |
+| 51 | `L2392` | `// [UBAH_WARNA: FAB Tombol Alarm Background]` | `color: const Color(0xFF1F1927), // [UBAH_WARNA: FAB Tombol Alarm Background]` |
+| 52 | `L4165` | `// [UBAH_WARNA: FAB Hunter AI Brain Background]` | `color: const Color(0xFFB026FF), // [UBAH_WARNA: FAB Hunter AI Brain Background]` |
+| 53 | `L4178` | `// [UBAH_WARNA: FAB Hunter AI Brain Icon]` | `color: Colors.white, // [UBAH_WARNA: FAB Hunter AI Brain Icon]` |
 
 ---
 

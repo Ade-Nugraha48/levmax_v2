@@ -122,3 +122,4 @@ Jika jaringan internet terputus atau kuota API Google Gemini habis, `GeminiServi
 
 > **Penguji:** *"Bagaimana sistem memastikan jam reset kuota tidak bisa dimanipulasi dengan mudah?"*  
 > **Jawaban:** *"Pengecekan kuota diikat langsung ke kunci tanggal ISO-8601 (`YYYY-MM-DD`). Selain itu, aplikasi memiliki sinkronisasi jam multi-zona (WIB, WITA, WIT, GMT) yang berdetik secara real-time dan mengecek pergantian hari secara otomatis di background."*
+

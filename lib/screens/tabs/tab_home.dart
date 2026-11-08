@@ -9,7 +9,7 @@ import 'package:flutter_markdown/flutter_markdown.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:intl/intl.dart';
-import 'package:hive/hive.dart';
+import 'package:hive_flutter/hive_flutter.dart';
 import '../../models/alarm_model.dart';
 import '../../services/alarm_service.dart';
 import '../../services/hive_service.dart';
@@ -876,29 +876,36 @@ class _TabHomeState extends State<TabHome> {
               Container(
                 padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
                 decoration: BoxDecoration(
-                  color: const Color(0xFF0C242B), // [UBAH_WARNA: Pill Gold Hunter Background]
+                  color: const Color(0xFF261D0C), // [UBAH_WARNA: Pill Gold Hunter Background]
                   borderRadius: BorderRadius.circular(20),
                   border: Border.all(
-                    color: const Color(0xFF00F4FE).withValues(alpha: 0.4), // [UBAH_WARNA: Pill Gold Hunter Border]
+                    color: const Color(0xFFFFD166).withValues(alpha: 0.5), // [UBAH_WARNA: Pill Gold Hunter Border]
+                    width: 1.0,
                   ),
                 ),
                 child: Row(
                   mainAxisSize: MainAxisSize.min,
                   children: [
                     const Icon(
-                      Icons.hexagon_outlined,
+                      Icons.monetization_on_rounded,
                       size: 13,
-                      color: Color(0xFF00F4FE), // [UBAH_WARNA: Ikon Pill Gold Hunter]
+                      color: Color(0xFFFFD166), // [UBAH_WARNA: Ikon Pill Gold Hunter]
                     ),
                     const SizedBox(width: 4),
-                    Text(
-                      '$_gold GOLD',
-                      style: GoogleFonts.spaceGrotesk(
-                        fontSize: 10.5,
-                        fontWeight: FontWeight.w700,
-                        letterSpacing: 0.5,
-                        color: const Color(0xFF00F4FE), // [UBAH_WARNA: Teks Jumlah Gold Hunter]
-                      ),
+                    ValueListenableBuilder<Box>(
+                      valueListenable: Hive.box('sessionBox').listenable(keys: ['gold']),
+                      builder: (context, box, _) {
+                        final currentGold = (box.get('gold', defaultValue: _gold) as num).toInt();
+                        return Text(
+                          '$currentGold GOLD',
+                          style: GoogleFonts.spaceGrotesk(
+                            fontSize: 10.5,
+                            fontWeight: FontWeight.w700,
+                            letterSpacing: 0.5,
+                            color: const Color(0xFFFFD166), // [UBAH_WARNA: Teks Jumlah Gold Hunter]
+                          ),
+                        );
+                      },
                     ),
                   ],
                 ),
@@ -1598,7 +1605,7 @@ class _TabHomeState extends State<TabHome> {
                               style: GoogleFonts.spaceGrotesk(
                                 fontSize: 9.5,
                                 fontWeight: FontWeight.w700,
-                                color: isDone ? const Color(0xFF4A6870) : const Color(0xFF00F4FE),
+                                color: isDone ? const Color(0xFF6E5821) : const Color(0xFFFFD166),
                               ),
                             ),
                           ],
