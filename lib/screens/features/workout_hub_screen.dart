@@ -1400,28 +1400,35 @@ class _WorkoutHubScreenState extends State<WorkoutHubScreen>
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
-              Row(
-                children: [
-                  const Icon(
-                    Icons.fact_check_rounded,
-                    size: 17,
-                    color: Color(0xFFE5B5FF),
-                  ),
-                  const SizedBox(width: 6),
-                  Text(
-                    'Self-Report Session Log',
-                    style: GoogleFonts.sora(
-                      fontSize: 12.5,
-                      fontWeight: FontWeight.w800,
-                      color: Colors.white, // [UBAH_WARNA: Judul Rutinitas 4 Latihan Fisik]
+              Expanded(
+                child: Row(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    const Icon(
+                      Icons.fact_check_rounded,
+                      size: 16,
+                      color: Color(0xFFE5B5FF),
                     ),
-                  ),
-                ],
+                    const SizedBox(width: 5),
+                    Flexible(
+                      child: Text(
+                        'Self-Report Session Log',
+                        maxLines: 1,
+                        overflow: TextOverflow.ellipsis,
+                        style: GoogleFonts.sora(
+                          fontSize: 12,
+                          fontWeight: FontWeight.w800,
+                          color: Colors.white, // [UBAH_WARNA: Judul Rutinitas 4 Latihan Fisik]
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
               ),
+              const SizedBox(width: 6),
               Container(
-                padding: const EdgeInsets.symmetric(horizontal: 7, vertical: 2.5),
+                padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2.5),
                 decoration: BoxDecoration(
                   color: const Color(0xFF1F1927),
                   borderRadius: BorderRadius.circular(6),
@@ -1429,9 +1436,9 @@ class _WorkoutHubScreenState extends State<WorkoutHubScreen>
                 child: Text(
                   '$_currentReps / ${protocol.targetReps} REPS LOGGED',
                   style: GoogleFonts.spaceGrotesk(
-                    fontSize: 9,
+                    fontSize: 8.5,
                     fontWeight: FontWeight.w800,
-                    letterSpacing: 0.6,
+                    letterSpacing: 0.3,
                     color: const Color(0xFF00E5FF), // [UBAH_WARNA: Teks Progress Rutinitas Latihan]
                   ),
                 ),

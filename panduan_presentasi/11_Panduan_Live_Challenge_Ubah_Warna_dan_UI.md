@@ -129,8 +129,8 @@ Jika penguji berkata: *"Coba ubah warna tema aplikasi secara keseluruhan dari Cy
 
 | No | Baris | Tag Pencarian (`Ctrl + F`) | Potongan Kode Asli |
 |:---:|:---:|:---|:---|
-| 1 | `L48` | `// [UBAH_WARNA: Konfigurasi Tema Utama Aplikasi]` | `theme: AppTheme.darkTheme, // [UBAH_WARNA: Konfigurasi Tema Utama Aplikasi]` |
-| 2 | `L49` | `// [UBAH_WARNA: Mode Tema Global (Dark Mode)]` | `themeMode: ThemeMode.dark, // [UBAH_WARNA: Mode Tema Global (Dark Mode)]` |
+| 1 | `L49` | `// [UBAH_WARNA: Konfigurasi Tema Utama Aplikasi]` | `AppTheme.darkTheme, // [UBAH_WARNA: Konfigurasi Tema Utama Aplikasi]` |
+| 2 | `L50` | `// [UBAH_WARNA: Mode Tema Global (Dark Mode)]` | `themeMode: ThemeMode.dark, // [UBAH_WARNA: Mode Tema Global (Dark Mode)]` |
 
 ---
 
@@ -139,28 +139,28 @@ Jika penguji berkata: *"Coba ubah warna tema aplikasi secara keseluruhan dari Cy
 
 | No | Baris | Tag Pencarian (`Ctrl + F`) | Potongan Kode Asli |
 |:---:|:---:|:---|:---|
-| 1 | `L28` | `// [UBAH_WARNA: Indikator Status RPC Splash]` | `Color _rpcColor = const Color(0xFF00F0FF); // [UBAH_WARNA: Indikator Status R...` |
-| 2 | `L110` | `// [UBAH_WARNA: Latar Belakang Layar Splash]` | `backgroundColor: const Color(0xFF08050E), // [UBAH_WARNA: Latar Belakang Laya...` |
-| 3 | `L120` | `// [UBAH_WARNA: Aura Ungu Inti Reaktor Splash]` | `Color(0xFF2B1148), // [UBAH_WARNA: Aura Ungu Inti Reaktor Splash]` |
-| 4 | `L169` | `// [UBAH_WARNA: Kartu Bar Atas Splash]` | `color: const Color(0xFF0F091A).withValues(alpha: 0.85), // [UBAH_WARNA: Kartu...` |
-| 5 | `L172` | `// [UBAH_WARNA: Border Kartu Bar Atas Splash]` | `color: const Color(0xFF2C1E4E), // [UBAH_WARNA: Border Kartu Bar Atas Splash]` |
-| 6 | `L194` | `// [UBAH_WARNA: Titik Status Dot Bar Atas Splash]` | `color: Color(0xFF00F0FF), // [UBAH_WARNA: Titik Status Dot Bar Atas Splash]` |
-| 7 | `L211` | `// [UBAH_WARNA: Teks Label Bar Atas Splash]` | `color: const Color(0xFFCBD5E1), // [UBAH_WARNA: Teks Label Bar Atas Splash]` |
-| 8 | `L303` | `// [UBAH_WARNA: Teks Header Status Sinkronisasi]` | `color: const Color(0xFFD8B4F8), // [UBAH_WARNA: Teks Header Status Sinkronisasi]` |
-| 9 | `L343` | `// [UBAH_WARNA: Teks Judul Status Sinkronisasi Splash]` | `color: const Color(0xFFD8B4F8), // [UBAH_WARNA: Teks Judul Status Sinkronisas...` |
-| 10 | `L358` | `// [UBAH_WARNA: Teks Subjudul Status Sinkronisasi Splash]` | `color: const Color(0xFF8B829E), // [UBAH_WARNA: Teks Subjudul Status Sinkroni...` |
-| 11 | `L378` | `// [UBAH_WARNA: Latar Belakang Progress Bar]` | `color: const Color(0xFF140D24), // [UBAH_WARNA: Latar Belakang Progress Bar]` |
-| 12 | `L381` | `// [UBAH_WARNA: Garis Border Progress Bar]` | `color: const Color(0xFF2C1E4E), // [UBAH_WARNA: Garis Border Progress Bar]` |
-| 13 | `L393` | `// [UBAH_WARNA: Gradien Progress Bar Ungu]` | `Color(0xFFB026FF), // [UBAH_WARNA: Gradien Progress Bar Ungu]` |
-| 14 | `L394` | `// [UBAH_WARNA: Gradien Progress Bar Cyan]` | `Color(0xFF00F0FF), // [UBAH_WARNA: Gradien Progress Bar Cyan]` |
-| 15 | `L400` | `// [UBAH_WARNA: Cahaya Glow Progress Bar]` | `color: Color(0xFF00F0FF), // [UBAH_WARNA: Cahaya Glow Progress Bar]` |
-| 16 | `L418` | `// [UBAH_WARNA: Teks Persentase Progress Bar]` | `color: const Color(0xFF00F0FF), // [UBAH_WARNA: Teks Persentase Progress Bar]` |
-| 17 | `L595` | `// [UBAH_WARNA: Kotak Status Konsol Bawah Splash]` | `color: const Color(0xFF0D0818).withValues(alpha: 0.9), // [UBAH_WARNA: Kotak ...` |
-| 18 | `L598` | `// [UBAH_WARNA: Border Konsol Bawah Splash]` | `color: const Color(0xFF2C1E4E), // [UBAH_WARNA: Border Konsol Bawah Splash]` |
-| 19 | `L620` | `// [UBAH_WARNA: Titik Status Dot Konsol Bawah]` | `color: Color(0xFFB026FF), // [UBAH_WARNA: Titik Status Dot Konsol Bawah]` |
-| 20 | `L636` | `// [UBAH_WARNA: Teks Label Konsol Bawah]` | `color: const Color(0xFFCBD5E1), // [UBAH_WARNA: Teks Label Konsol Bawah]` |
-| 21 | `L654` | `// [UBAH_WARNA: Status Sensor Biometrik Hijau]` | `color: Color(0xFF00FF88), // [UBAH_WARNA: Status Sensor Biometrik Hijau]` |
-| 22 | `L677` | `// [UBAH_WARNA: Teks Versi Footer Splash]` | `color: const Color(0xFF6E6485), // [UBAH_WARNA: Teks Versi Footer Splash]` |
+| 1 | `L33` | `// [UBAH_WARNA: Indikator Status RPC Splash]` | `); // [UBAH_WARNA: Indikator Status RPC Splash]` |
+| 2 | `L119` | `// [UBAH_WARNA: Latar Belakang Layar Splash]` | `), // [UBAH_WARNA: Latar Belakang Layar Splash]` |
+| 3 | `L129` | `// [UBAH_WARNA: Aura Ungu Inti Reaktor Splash]` | `Color(0xFF2B1148), // [UBAH_WARNA: Aura Ungu Inti Reaktor Splash]` |
+| 4 | `L179` | `// [UBAH_WARNA: Kartu Bar Atas Splash]` | `.withValues(alpha: 0.85), // [UBAH_WARNA: Kartu Bar Atas Splash]` |
+| 5 | `L184` | `// [UBAH_WARNA: Border Kartu Bar Atas Splash]` | `), // [UBAH_WARNA: Border Kartu Bar Atas Splash]` |
+| 6 | `L208` | `// [UBAH_WARNA: Titik Status Dot Bar Atas Splash]` | `), // [UBAH_WARNA: Titik Status Dot Bar Atas Splash]` |
+| 7 | `L227` | `// [UBAH_WARNA: Teks Label Bar Atas Splash]` | `), // [UBAH_WARNA: Teks Label Bar Atas Splash]` |
+| 8 | `L316` | `// [UBAH_WARNA: Teks Header Status Sinkronisasi]` | `), // [UBAH_WARNA: Teks Header Status Sinkronisasi]` |
+| 9 | `L358` | `// [UBAH_WARNA: Teks Judul Status Sinkronisasi Splash]` | `), // [UBAH_WARNA: Teks Judul Status Sinkronisasi Splash]` |
+| 10 | `L375` | `// [UBAH_WARNA: Teks Subjudul Status Sinkronisasi Splash]` | `), // [UBAH_WARNA: Teks Subjudul Status Sinkronisasi Splash]` |
+| 11 | `L397` | `// [UBAH_WARNA: Latar Belakang Progress Bar]` | `), // [UBAH_WARNA: Latar Belakang Progress Bar]` |
+| 12 | `L402` | `// [UBAH_WARNA: Garis Border Progress Bar]` | `), // [UBAH_WARNA: Garis Border Progress Bar]` |
+| 13 | `L416` | `// [UBAH_WARNA: Gradien Progress Bar Ungu]` | `), // [UBAH_WARNA: Gradien Progress Bar Ungu]` |
+| 14 | `L419` | `// [UBAH_WARNA: Gradien Progress Bar Cyan]` | `), // [UBAH_WARNA: Gradien Progress Bar Cyan]` |
+| 15 | `L427` | `// [UBAH_WARNA: Cahaya Glow Progress Bar]` | `), // [UBAH_WARNA: Cahaya Glow Progress Bar]` |
+| 16 | `L447` | `// [UBAH_WARNA: Teks Persentase Progress Bar]` | `), // [UBAH_WARNA: Teks Persentase Progress Bar]` |
+| 17 | `L624` | `// [UBAH_WARNA: Kotak Status Konsol Bawah Splash]` | `), // [UBAH_WARNA: Kotak Status Konsol Bawah Splash]` |
+| 18 | `L629` | `// [UBAH_WARNA: Border Konsol Bawah Splash]` | `), // [UBAH_WARNA: Border Konsol Bawah Splash]` |
+| 19 | `L653` | `// [UBAH_WARNA: Titik Status Dot Konsol Bawah]` | `), // [UBAH_WARNA: Titik Status Dot Konsol Bawah]` |
+| 20 | `L671` | `// [UBAH_WARNA: Teks Label Konsol Bawah]` | `), // [UBAH_WARNA: Teks Label Konsol Bawah]` |
+| 21 | `L691` | `// [UBAH_WARNA: Status Sensor Biometrik Hijau]` | `), // [UBAH_WARNA: Status Sensor Biometrik Hijau]` |
+| 22 | `L716` | `// [UBAH_WARNA: Teks Versi Footer Splash]` | `), // [UBAH_WARNA: Teks Versi Footer Splash]` |
 
 ---
 
@@ -169,44 +169,44 @@ Jika penguji berkata: *"Coba ubah warna tema aplikasi secara keseluruhan dari Cy
 
 | No | Baris | Tag Pencarian (`Ctrl + F`) | Potongan Kode Asli |
 |:---:|:---:|:---|:---|
-| 1 | `L324` | `// [UBAH_WARNA: Latar Belakang Layar Login]` | `backgroundColor: const Color(0xFF16111E), // [UBAH_WARNA: Latar Belakang Laya...` |
-| 2 | `L392` | `// [UBAH_WARNA: Header System Window Card]` | `color: const Color(0xFF110C19).withValues(alpha: 0.80), // [UBAH_WARNA: Heade...` |
-| 3 | `L403` | `// [UBAH_WARNA: Dot Status System Window]` | `color: Color(0xFF00F4FE), // [UBAH_WARNA: Dot Status System Window]` |
-| 4 | `L420` | `// [UBAH_WARNA: Teks Title System Window]` | `color: const Color(0xFFE6FEFF), // [UBAH_WARNA: Teks Title System Window]` |
-| 5 | `L434` | `// [UBAH_WARNA: Judul Utama LEVMAX]` | `color: Color(0xFFE5B5FF), // [UBAH_WARNA: Judul Utama LEVMAX]` |
-| 6 | `L443` | `// [UBAH_WARNA: Teks Subtitle Login]` | `color: const Color(0xFFD2C1D7), // [UBAH_WARNA: Teks Subtitle Login]` |
-| 7 | `L532` | `// [UBAH_WARNA: Background Card Form Login]` | `color: const Color(0xFF1F1927).withValues(alpha: 0.95), // [UBAH_WARNA: Backg...` |
-| 8 | `L596` | `// [UBAH_WARNA: Label Input Username]` | `color: const Color(0xFFE5B5FF), // [UBAH_WARNA: Label Input Username]` |
-| 9 | `L608` | `// [UBAH_WARNA: Background Input Username]` | `color: const Color(0xFF110C19), // [UBAH_WARNA: Background Input Username]` |
-| 10 | `L614` | `// [UBAH_WARNA: Warna Teks Input Username]` | `color: const Color(0xFFE9DEF2), // [UBAH_WARNA: Warna Teks Input Username]` |
-| 11 | `L622` | `// [UBAH_WARNA: Hint Input Username]` | `color: const Color(0xFF9B8BA1).withValues(alpha: 0.40), // [UBAH_WARNA: Hint ...` |
-| 12 | `L627` | `// [UBAH_WARNA: Ikon Input Username]` | `color: Color(0xFF9B8BA1), // [UBAH_WARNA: Ikon Input Username]` |
-| 13 | `L670` | `// [UBAH_WARNA: Box Security Cipher]` | `color: const Color(0xFF2D2736), // [UBAH_WARNA: Box Security Cipher]` |
-| 14 | `L681` | `// [UBAH_WARNA: Dot Status SHA-256]` | `color: Color(0xFF00F4FE), // [UBAH_WARNA: Dot Status SHA-256]` |
-| 15 | `L691` | `// [UBAH_WARNA: Teks Hash SHA-256]` | `color: const Color(0xFFE6FEFF), // [UBAH_WARNA: Teks Hash SHA-256]` |
-| 16 | `L706` | `// [UBAH_WARNA: Background Input Password]` | `color: const Color(0xFF110C19), // [UBAH_WARNA: Background Input Password]` |
-| 17 | `L713` | `// [UBAH_WARNA: Warna Teks Input Password]` | `color: const Color(0xFFE9DEF2), // [UBAH_WARNA: Warna Teks Input Password]` |
-| 18 | `L722` | `// [UBAH_WARNA: Hint Input Password]` | `color: const Color(0xFF9B8BA1).withValues(alpha: 0.40), // [UBAH_WARNA: Hint ...` |
-| 19 | `L728` | `// [UBAH_WARNA: Ikon Input Password]` | `color: Color(0xFF9B8BA1), // [UBAH_WARNA: Ikon Input Password]` |
-| 20 | `L741` | `// [UBAH_WARNA: Ikon Mata Password]` | `color: const Color(0xFF9B8BA1), // [UBAH_WARNA: Ikon Mata Password]` |
-| 21 | `L773` | `// [UBAH_WARNA: Kotak Checkbox Stay Synchronized]` | `color: _staySynchronized // [UBAH_WARNA: Kotak Checkbox Stay Synchronized]` |
-| 22 | `L791` | `// [UBAH_WARNA: Label Stay Synchronized]` | `color: const Color(0xFFD2C1D7), // [UBAH_WARNA: Label Stay Synchronized]` |
-| 23 | `L813` | `// [UBAH_WARNA: Link Forgot Password]` | `color: const Color(0xFFDCB8FC), // [UBAH_WARNA: Link Forgot Password]` |
-| 24 | `L830` | `// [UBAH_WARNA: Tombol Login Awaken - Gradien Ungu Gelap]` | `Color(0xFF7B2CBF), // [UBAH_WARNA: Tombol Login Awaken - Gradien Ungu Gelap]` |
-| 25 | `L831` | `// [UBAH_WARNA: Tombol Login Awaken - Gradien Ungu Sedang]` | `Color(0xFF9D4EDD), // [UBAH_WARNA: Tombol Login Awaken - Gradien Ungu Sedang]` |
-| 26 | `L832` | `// [UBAH_WARNA: Tombol Login Awaken - Gradien Ungu Terang]` | `Color(0xFFB026FF), // [UBAH_WARNA: Tombol Login Awaken - Gradien Ungu Terang]` |
-| 27 | `L839` | `// [UBAH_WARNA: Glow Tombol Awaken]` | `color: const Color(0xFFB026FF).withValues(alpha: 0.45), // [UBAH_WARNA: Glow ...` |
-| 28 | `L865` | `// [UBAH_WARNA: Ikon Tombol Login Awaken]` | `color: Color(0xFF00F4FE), // [UBAH_WARNA: Ikon Tombol Login Awaken]` |
-| 29 | `L875` | `// [UBAH_WARNA: Teks Tombol Login Awaken]` | `color: const Color(0xFFFFFDFF), // [UBAH_WARNA: Teks Tombol Login Awaken]` |
-| 30 | `L893` | `// [UBAH_WARNA: Garis Pemisah Divider Kiri]` | `color: const Color(0xFF383241), // [UBAH_WARNA: Garis Pemisah Divider Kiri]` |
-| 31 | `L896` | `// [UBAH_WARNA: Garis Pemisah Divider Kanan]` | `color: const Color(0xFF1F1927), // [UBAH_WARNA: Garis Pemisah Divider Kanan]` |
-| 32 | `L907` | `// [UBAH_WARNA: Teks Pemisah Biometric]` | `color: const Color(0xFF9B8BA1), // [UBAH_WARNA: Teks Pemisah Biometric]` |
-| 33 | `L972` | `// [UBAH_WARNA: Teks Belum Punya Akun]` | `color: const Color(0xFFD2C1D7), // [UBAH_WARNA: Teks Belum Punya Akun]` |
-| 34 | `L980` | `// [UBAH_WARNA: Link Register Awakened]` | `color: const Color(0xFFE5B5FF), // [UBAH_WARNA: Link Register Awakened]` |
-| 35 | `L1046` | `// [UBAH_WARNA: Pod Biometrik Outer]` | `color: const Color(0xFF110C19), // [UBAH_WARNA: Pod Biometrik Outer]` |
-| 36 | `L1063` | `// [UBAH_WARNA: Pod Biometrik Inner]` | `color: const Color(0xFF231D2B), // [UBAH_WARNA: Pod Biometrik Inner]` |
-| 37 | `L1087` | `// [UBAH_WARNA: Judul Pod Biometrik]` | `color: const Color(0xFFE9DEF2), // [UBAH_WARNA: Judul Pod Biometrik]` |
-| 38 | `L1095` | `// [UBAH_WARNA: Subtitle Pod Biometrik]` | `color: const Color(0xFF9B8BA1), // [UBAH_WARNA: Subtitle Pod Biometrik]` |
+| 1 | `L345` | `// [UBAH_WARNA: Latar Belakang Layar Login]` | `), // [UBAH_WARNA: Latar Belakang Layar Login]` |
+| 2 | `L421` | `// [UBAH_WARNA: Header System Window Card]` | `), // [UBAH_WARNA: Header System Window Card]` |
+| 3 | `L434` | `// [UBAH_WARNA: Dot Status System Window]` | `), // [UBAH_WARNA: Dot Status System Window]` |
+| 4 | `L453` | `// [UBAH_WARNA: Teks Title System Window]` | `), // [UBAH_WARNA: Teks Title System Window]` |
+| 5 | `L469` | `// [UBAH_WARNA: Judul Utama LEVMAX]` | `), // [UBAH_WARNA: Judul Utama LEVMAX]` |
+| 6 | `L480` | `// [UBAH_WARNA: Teks Subtitle Login]` | `), // [UBAH_WARNA: Teks Subtitle Login]` |
+| 7 | `L581` | `// [UBAH_WARNA: Background Card Form Login]` | `), // [UBAH_WARNA: Background Card Form Login]` |
+| 8 | `L650` | `// [UBAH_WARNA: Label Input Username]` | `color: const Color(0xFFE5B5FF), // [UBAH_WARNA: Label Input Username]` |
+| 9 | `L662` | `// [UBAH_WARNA: Background Input Username]` | `color: const Color(0xFF110C19), // [UBAH_WARNA: Background Input Username]` |
+| 10 | `L670` | `// [UBAH_WARNA: Warna Teks Input Username]` | `color: const Color(0xFFE9DEF2), // [UBAH_WARNA: Warna Teks Input Username]` |
+| 11 | `L680` | `// [UBAH_WARNA: Hint Input Username]` | `.withValues(alpha: 0.40), // [UBAH_WARNA: Hint Input Username]` |
+| 12 | `L685` | `// [UBAH_WARNA: Ikon Input Username]` | `color: Color(0xFF9B8BA1), // [UBAH_WARNA: Ikon Input Username]` |
+| 13 | `L732` | `// [UBAH_WARNA: Box Security Cipher]` | `color: const Color(0xFF2D2736), // [UBAH_WARNA: Box Security Cipher]` |
+| 14 | `L745` | `// [UBAH_WARNA: Dot Status SHA-256]` | `color: Color(0xFF00F4FE), // [UBAH_WARNA: Dot Status SHA-256]` |
+| 15 | `L759` | `// [UBAH_WARNA: Teks Hash SHA-256]` | `), // [UBAH_WARNA: Teks Hash SHA-256]` |
+| 16 | `L774` | `// [UBAH_WARNA: Background Input Password]` | `color: const Color(0xFF110C19), // [UBAH_WARNA: Background Input Password]` |
+| 17 | `L783` | `// [UBAH_WARNA: Warna Teks Input Password]` | `color: const Color(0xFFE9DEF2), // [UBAH_WARNA: Warna Teks Input Password]` |
+| 18 | `L797` | `// [UBAH_WARNA: Hint Input Password]` | `.withValues(alpha: 0.40), // [UBAH_WARNA: Hint Input Password]` |
+| 19 | `L803` | `// [UBAH_WARNA: Ikon Input Password]` | `color: Color(0xFF9B8BA1), // [UBAH_WARNA: Ikon Input Password]` |
+| 20 | `L817` | `// [UBAH_WARNA: Ikon Mata Password]` | `color: const Color(0xFF9B8BA1), // [UBAH_WARNA: Ikon Mata Password]` |
+| 21 | `L853` | `// [UBAH_WARNA: Kotak Checkbox Stay Synchronized]` | `_staySynchronized // [UBAH_WARNA: Kotak Checkbox Stay Synchronized]` |
+| 22 | `L881` | `// [UBAH_WARNA: Label Stay Synchronized]` | `), // [UBAH_WARNA: Label Stay Synchronized]` |
+| 23 | `L906` | `// [UBAH_WARNA: Link Forgot Password]` | `color: const Color(0xFFDCB8FC), // [UBAH_WARNA: Link Forgot Password]` |
+| 24 | `L925` | `// [UBAH_WARNA: Tombol Login Awaken - Gradien Ungu Gelap]` | `Color(0xFF7B2CBF), // [UBAH_WARNA: Tombol Login Awaken - Gradien Ungu Gelap]` |
+| 25 | `L926` | `// [UBAH_WARNA: Tombol Login Awaken - Gradien Ungu Sedang]` | `Color(0xFF9D4EDD), // [UBAH_WARNA: Tombol Login Awaken - Gradien Ungu Sedang]` |
+| 26 | `L927` | `// [UBAH_WARNA: Tombol Login Awaken - Gradien Ungu Terang]` | `Color(0xFFB026FF), // [UBAH_WARNA: Tombol Login Awaken - Gradien Ungu Terang]` |
+| 27 | `L935` | `// [UBAH_WARNA: Glow Tombol Awaken]` | `.withValues(alpha: 0.45), // [UBAH_WARNA: Glow Tombol Awaken]` |
+| 28 | `L970` | `// [UBAH_WARNA: Ikon Tombol Login Awaken]` | `), // [UBAH_WARNA: Ikon Tombol Login Awaken]` |
+| 29 | `L989` | `// [UBAH_WARNA: Teks Tombol Login Awaken]` | `), // [UBAH_WARNA: Teks Tombol Login Awaken]` |
+| 30 | `L1007` | `// [UBAH_WARNA: Garis Pemisah Divider Kiri]` | `color: const Color(0xFF383241), // [UBAH_WARNA: Garis Pemisah Divider Kiri]` |
+| 31 | `L1010` | `// [UBAH_WARNA: Garis Pemisah Divider Kanan]` | `color: const Color(0xFF1F1927), // [UBAH_WARNA: Garis Pemisah Divider Kanan]` |
+| 32 | `L1021` | `// [UBAH_WARNA: Teks Pemisah Biometric]` | `color: const Color(0xFF9B8BA1), // [UBAH_WARNA: Teks Pemisah Biometric]` |
+| 33 | `L1102` | `// [UBAH_WARNA: Teks Belum Punya Akun]` | `color: const Color(0xFFD2C1D7), // [UBAH_WARNA: Teks Belum Punya Akun]` |
+| 34 | `L1110` | `// [UBAH_WARNA: Link Register Awakened]` | `color: const Color(0xFFE5B5FF), // [UBAH_WARNA: Link Register Awakened]` |
+| 35 | `L1176` | `// [UBAH_WARNA: Pod Biometrik Outer]` | `color: const Color(0xFF110C19), // [UBAH_WARNA: Pod Biometrik Outer]` |
+| 36 | `L1195` | `// [UBAH_WARNA: Pod Biometrik Inner]` | `), // [UBAH_WARNA: Pod Biometrik Inner]` |
+| 37 | `L1215` | `// [UBAH_WARNA: Judul Pod Biometrik]` | `), // [UBAH_WARNA: Judul Pod Biometrik]` |
+| 38 | `L1225` | `// [UBAH_WARNA: Subtitle Pod Biometrik]` | `), // [UBAH_WARNA: Subtitle Pod Biometrik]` |
 
 ---
 
@@ -215,35 +215,35 @@ Jika penguji berkata: *"Coba ubah warna tema aplikasi secara keseluruhan dari Cy
 
 | No | Baris | Tag Pencarian (`Ctrl + F`) | Potongan Kode Asli |
 |:---:|:---:|:---|:---|
-| 1 | `L163` | `// [UBAH_WARNA: Latar Belakang Layar Register]` | `backgroundColor: const Color(0xFF16111E), // [UBAH_WARNA: Latar Belakang Laya...` |
-| 2 | `L251` | `// [UBAH_WARNA: Tombol Kembali Background]` | `color: const Color(0xFF2D2736), // [UBAH_WARNA: Tombol Kembali Background]` |
-| 3 | `L257` | `// [UBAH_WARNA: Tombol Kembali Icon]` | `color: Color(0xFFE5B5FF), // [UBAH_WARNA: Tombol Kembali Icon]` |
-| 4 | `L268` | `// [UBAH_WARNA: Protocol Header Background]` | `color: const Color(0xFF110C19), // [UBAH_WARNA: Protocol Header Background]` |
-| 5 | `L279` | `// [UBAH_WARNA: Protocol Header Status Dot]` | `color: Color(0xFF00F4FE), // [UBAH_WARNA: Protocol Header Status Dot]` |
-| 6 | `L296` | `// [UBAH_WARNA: Protocol Header Title]` | `color: const Color(0xFFE6FEFF), // [UBAH_WARNA: Protocol Header Title]` |
-| 7 | `L348` | `// [UBAH_WARNA: Avatar Circle Background]` | `color: const Color(0xFF2D2736), // [UBAH_WARNA: Avatar Circle Background]` |
-| 8 | `L349` | `// [UBAH_WARNA: Avatar Circle Border]` | `border: Border.all(color: const Color(0xFFB026FF), width: 2.0), // [UBAH_WARN...` |
-| 9 | `L386` | `// [UBAH_WARNA: Badge Kamera Background]` | `color: const Color(0xFFB026FF), // [UBAH_WARNA: Badge Kamera Background]` |
-| 10 | `L399` | `// [UBAH_WARNA: Badge Kamera Icon]` | `color: Colors.white, // [UBAH_WARNA: Badge Kamera Icon]` |
-| 11 | `L414` | `// [UBAH_WARNA: Judul Awaken New Hunter]` | `color: const Color(0xFFDCB8FC), // [UBAH_WARNA: Judul Awaken New Hunter]` |
-| 12 | `L427` | `// [UBAH_WARNA: Subtitle System Init]` | `color: const Color(0xFF00DCE5), // [UBAH_WARNA: Subtitle System Init]` |
-| 13 | `L440` | `// [UBAH_WARNA: Teks Instruksi Registrasi]` | `color: const Color(0xFFE9DEF2), // [UBAH_WARNA: Teks Instruksi Registrasi]` |
-| 14 | `L464` | `// [UBAH_WARNA: Background Form Card]` | `color: const Color(0xFF1F1927), // [UBAH_WARNA: Background Form Card]` |
-| 15 | `L467` | `// [UBAH_WARNA: Border Form Card]` | `color: const Color(0xFF383241), // [UBAH_WARNA: Border Form Card]` |
-| 16 | `L565` | `// [UBAH_WARNA: Tombol Register - Gradien Ungu]` | `colors: [Color(0xFF7B2CBF), Color(0xFFB026FF)], // [UBAH_WARNA: Tombol Regist...` |
-| 17 | `L571` | `// [UBAH_WARNA: Glow Tombol Register]` | `color: const Color(0xFFB026FF).withValues(alpha: 0.35), // [UBAH_WARNA: Glow ...` |
-| 18 | `L607` | `// [UBAH_WARNA: Teks Tombol Register]` | `color: Colors.white, // [UBAH_WARNA: Teks Tombol Register]` |
-| 19 | `L683` | `// [UBAH_WARNA: Background Input Field]` | `color: const Color(0xFF110C19), // [UBAH_WARNA: Background Input Field]` |
-| 20 | `L686` | `// [UBAH_WARNA: Border Input Field]` | `color: const Color(0xFF383241), // [UBAH_WARNA: Border Input Field]` |
-| 21 | `L695` | `// [UBAH_WARNA: Warna Teks Input Field]` | `color: const Color(0xFFE9DEF2), // [UBAH_WARNA: Warna Teks Input Field]` |
-| 22 | `L707` | `// [UBAH_WARNA: Hint Input Field]` | `color: const Color(0xFF6E6078), // [UBAH_WARNA: Hint Input Field]` |
-| 23 | `L714` | `// [UBAH_WARNA: Icon Prefix Input Field]` | `color: const Color(0xFF9B8BA1), // [UBAH_WARNA: Icon Prefix Input Field]` |
-| 24 | `L734` | `// [UBAH_WARNA: Container Biometrik]` | `color: const Color(0xFF1F1927), // [UBAH_WARNA: Container Biometrik]` |
-| 25 | `L758` | `// [UBAH_WARNA: Ikon Face Biometrik]` | `color: Color(0xFFB026FF), // [UBAH_WARNA: Ikon Face Biometrik]` |
-| 26 | `L778` | `// [UBAH_WARNA: Judul Biometrik Enroll]` | `color: const Color(0xFFE5B5FF), // [UBAH_WARNA: Judul Biometrik Enroll]` |
-| 27 | `L788` | `// [UBAH_WARNA: Subtitle Biometrik Enroll]` | `color: const Color(0xFFD2C1D7), // [UBAH_WARNA: Subtitle Biometrik Enroll]` |
-| 28 | `L821` | `// [UBAH_WARNA: Teks Already Awakened]` | `color: const Color(0xFFD2C1D7), // [UBAH_WARNA: Teks Already Awakened]` |
-| 29 | `L834` | `// [UBAH_WARNA: Link Login Screen]` | `color: const Color(0xFFE6FEFF), // [UBAH_WARNA: Link Login Screen]` |
+| 1 | `L178` | `// [UBAH_WARNA: Latar Belakang Layar Register]` | `), // [UBAH_WARNA: Latar Belakang Layar Register]` |
+| 2 | `L271` | `// [UBAH_WARNA: Tombol Kembali Background]` | `), // [UBAH_WARNA: Tombol Kembali Background]` |
+| 3 | `L277` | `// [UBAH_WARNA: Tombol Kembali Icon]` | `color: Color(0xFFE5B5FF), // [UBAH_WARNA: Tombol Kembali Icon]` |
+| 4 | `L290` | `// [UBAH_WARNA: Protocol Header Background]` | `), // [UBAH_WARNA: Protocol Header Background]` |
+| 5 | `L303` | `// [UBAH_WARNA: Protocol Header Status Dot]` | `), // [UBAH_WARNA: Protocol Header Status Dot]` |
+| 6 | `L322` | `// [UBAH_WARNA: Protocol Header Title]` | `), // [UBAH_WARNA: Protocol Header Title]` |
+| 7 | `L376` | `// [UBAH_WARNA: Avatar Circle Background]` | `), // [UBAH_WARNA: Avatar Circle Background]` |
+| 8 | `L380` | `// [UBAH_WARNA: Avatar Circle Border]` | `), // [UBAH_WARNA: Avatar Circle Border]` |
+| 9 | `L419` | `// [UBAH_WARNA: Badge Kamera Background]` | `), // [UBAH_WARNA: Badge Kamera Background]` |
+| 10 | `L435` | `// [UBAH_WARNA: Badge Kamera Icon]` | `color: Colors.white, // [UBAH_WARNA: Badge Kamera Icon]` |
+| 11 | `L454` | `// [UBAH_WARNA: Judul Awaken New Hunter]` | `), // [UBAH_WARNA: Judul Awaken New Hunter]` |
+| 12 | `L469` | `// [UBAH_WARNA: Subtitle System Init]` | `), // [UBAH_WARNA: Subtitle System Init]` |
+| 13 | `L484` | `// [UBAH_WARNA: Teks Instruksi Registrasi]` | `), // [UBAH_WARNA: Teks Instruksi Registrasi]` |
+| 14 | `L508` | `// [UBAH_WARNA: Background Form Card]` | `color: const Color(0xFF1F1927), // [UBAH_WARNA: Background Form Card]` |
+| 15 | `L511` | `// [UBAH_WARNA: Border Form Card]` | `color: const Color(0xFF383241), // [UBAH_WARNA: Border Form Card]` |
+| 16 | `L614` | `// [UBAH_WARNA: Tombol Register - Gradien Ungu]` | `], // [UBAH_WARNA: Tombol Register - Gradien Ungu]` |
+| 17 | `L622` | `// [UBAH_WARNA: Glow Tombol Register]` | `), // [UBAH_WARNA: Glow Tombol Register]` |
+| 18 | `L658` | `// [UBAH_WARNA: Teks Tombol Register]` | `color: Colors.white, // [UBAH_WARNA: Teks Tombol Register]` |
+| 19 | `L734` | `// [UBAH_WARNA: Background Input Field]` | `color: const Color(0xFF110C19), // [UBAH_WARNA: Background Input Field]` |
+| 20 | `L737` | `// [UBAH_WARNA: Border Input Field]` | `color: const Color(0xFF383241), // [UBAH_WARNA: Border Input Field]` |
+| 21 | `L748` | `// [UBAH_WARNA: Warna Teks Input Field]` | `), // [UBAH_WARNA: Warna Teks Input Field]` |
+| 22 | `L760` | `// [UBAH_WARNA: Hint Input Field]` | `color: const Color(0xFF6E6078), // [UBAH_WARNA: Hint Input Field]` |
+| 23 | `L771` | `// [UBAH_WARNA: Icon Prefix Input Field]` | `), // [UBAH_WARNA: Icon Prefix Input Field]` |
+| 24 | `L792` | `// [UBAH_WARNA: Container Biometrik]` | `color: const Color(0xFF1F1927), // [UBAH_WARNA: Container Biometrik]` |
+| 25 | `L813` | `// [UBAH_WARNA: Ikon Face Biometrik]` | `color: Color(0xFFB026FF), // [UBAH_WARNA: Ikon Face Biometrik]` |
+| 26 | `L835` | `// [UBAH_WARNA: Judul Biometrik Enroll]` | `), // [UBAH_WARNA: Judul Biometrik Enroll]` |
+| 27 | `L847` | `// [UBAH_WARNA: Subtitle Biometrik Enroll]` | `), // [UBAH_WARNA: Subtitle Biometrik Enroll]` |
+| 28 | `L878` | `// [UBAH_WARNA: Teks Already Awakened]` | `), // [UBAH_WARNA: Teks Already Awakened]` |
+| 29 | `L893` | `// [UBAH_WARNA: Link Login Screen]` | `), // [UBAH_WARNA: Link Login Screen]` |
 
 ---
 
@@ -269,59 +269,59 @@ Jika penguji berkata: *"Coba ubah warna tema aplikasi secara keseluruhan dari Cy
 
 | No | Baris | Tag Pencarian (`Ctrl + F`) | Potongan Kode Asli |
 |:---:|:---:|:---|:---|
-| 1 | `L524` | `// [UBAH_WARNA: Latar Belakang Layar Dashboard Tab Home]` | `backgroundColor: const Color(0xFF16111E), // [UBAH_WARNA: Latar Belakang Laya...` |
-| 2 | `L600` | `// [UBAH_WARNA: Banner Awakening Header Background]` | `color: const Color(0xFF140D28), // [UBAH_WARNA: Banner Awakening Header Backg...` |
-| 3 | `L603` | `// [UBAH_WARNA: Banner Awakening Header Border]` | `color: const Color(0xFF2C1E4E), // [UBAH_WARNA: Banner Awakening Header Border]` |
-| 4 | `L618` | `// [UBAH_WARNA: Dot Status Sistem Header]` | `color: Color(0xFF00F4FE), // [UBAH_WARNA: Dot Status Sistem Header]` |
-| 5 | `L639` | `// [UBAH_WARNA: Teks Tag Hunter Header]` | `color: Color(0xFF00F4FE), // [UBAH_WARNA: Teks Tag Hunter Header]` |
-| 6 | `L646` | `// [UBAH_WARNA: Teks Greeting Hunter]` | `color: Color(0xFFE9DEF2), // [UBAH_WARNA: Teks Greeting Hunter]` |
-| 7 | `L667` | `// [UBAH_WARNA: Card Hunter Matrix Background]` | `color: const Color(0xFF110C19), // [UBAH_WARNA: Card Hunter Matrix Background]` |
-| 8 | `L670` | `// [UBAH_WARNA: Card Hunter Matrix Border]` | `color: const Color(0xFF2C1E4E), // [UBAH_WARNA: Card Hunter Matrix Border]` |
-| 9 | `L696` | `// [UBAH_WARNA: Avatar Frame Background]` | `color: const Color(0xFF1F1927), // [UBAH_WARNA: Avatar Frame Background]` |
-| 10 | `L699` | `// [UBAH_WARNA: Avatar Frame Border]` | `color: const Color(0xFF00F4FE).withValues(alpha: 0.6), // [UBAH_WARNA: Avatar...` |
-| 11 | `L730` | `// [UBAH_WARNA: Tombol Edit Avatar Background]` | `color: const Color(0xFF00F4FE), // [UBAH_WARNA: Tombol Edit Avatar Background]` |
-| 12 | `L746` | `// [UBAH_WARNA: Tombol Edit Avatar Icon]` | `color: Colors.black, // [UBAH_WARNA: Tombol Edit Avatar Icon]` |
-| 13 | `L771` | `// [UBAH_WARNA: Teks Nama Hunter]` | `color: const Color(0xFFE9DEF2), // [UBAH_WARNA: Teks Nama Hunter]` |
-| 14 | `L779` | `// [UBAH_WARNA: Ikon Verified Hunter]` | `color: Color(0xFF00F4FE), // [UBAH_WARNA: Ikon Verified Hunter]` |
-| 15 | `L790` | `// [UBAH_WARNA: Teks Subtitle Rank Hunter]` | `color: const Color(0xFF9B8BA1), // [UBAH_WARNA: Teks Subtitle Rank Hunter]` |
-| 16 | `L801` | `// [UBAH_WARNA: Badge Rank Hunter Background]` | `color: const Color(0xFF2D164D), // [UBAH_WARNA: Badge Rank Hunter Background]` |
-| 17 | `L804` | `// [UBAH_WARNA: Badge Rank Hunter Border]` | `color: const Color(0xFFB026FF).withValues(alpha: 0.5), // [UBAH_WARNA: Badge ...` |
-| 18 | `L820` | `// [UBAH_WARNA: Ikon Badge Rank Hunter]` | `color: Color(0xFFE5B5FF), // [UBAH_WARNA: Ikon Badge Rank Hunter]` |
-| 19 | `L829` | `// [UBAH_WARNA: Teks Badge Rank Hunter]` | `color: const Color(0xFFE5B5FF), // [UBAH_WARNA: Teks Badge Rank Hunter]` |
-| 20 | `L859` | `// [UBAH_WARNA: Ikon HP Heart Hunter]` | `color: i <= _currentHp ? const Color(0xFFFF5252) : const Color(0xFF5A4A63), /...` |
-| 21 | `L879` | `// [UBAH_WARNA: Pill Gold Hunter Background]` | `color: const Color(0xFF261D0C), // [UBAH_WARNA: Pill Gold Hunter Background]` |
-| 22 | `L882` | `// [UBAH_WARNA: Pill Gold Hunter Border]` | `color: const Color(0xFFFFD166).withValues(alpha: 0.5), // [UBAH_WARNA: Pill G...` |
-| 23 | `L892` | `// [UBAH_WARNA: Ikon Pill Gold Hunter]` | `color: Color(0xFFFFD166), // [UBAH_WARNA: Ikon Pill Gold Hunter]` |
-| 24 | `L905` | `// [UBAH_WARNA: Teks Jumlah Gold Hunter]` | `color: const Color(0xFFFFD166), // [UBAH_WARNA: Teks Jumlah Gold Hunter]` |
-| 25 | `L948` | `// [UBAH_WARNA: Track EXP Bar Hunter]` | `color: const Color(0xFF1F1927), // [UBAH_WARNA: Track EXP Bar Hunter]` |
-| 26 | `L962` | `// [UBAH_WARNA: Glow Fill EXP Bar Hunter]` | `color: const Color(0xFF00F4FE).withValues(alpha: 0.5), // [UBAH_WARNA: Glow F...` |
-| 27 | `L982` | `// [UBAH_WARNA: Banner Server Time Background]` | `color: const Color(0xFF110C19), // [UBAH_WARNA: Banner Server Time Background]` |
-| 28 | `L985` | `// [UBAH_WARNA: Banner Server Time Border]` | `color: const Color(0xFF2C1E4E), // [UBAH_WARNA: Banner Server Time Border]` |
-| 29 | `L997` | `// [UBAH_WARNA: Ikon Dunia Server Time]` | `color: Color(0xFF00F4FE), // [UBAH_WARNA: Ikon Dunia Server Time]` |
-| 30 | `L1080` | `// [UBAH_WARNA: Teks Jam London Server Time]` | `color: const Color(0xFF00F4FE), // [UBAH_WARNA: Teks Jam London Server Time]` |
-| 31 | `L1099` | `// [UBAH_WARNA: Latar Belakang Kolom Pencarian Quest]` | `color: const Color(0xFF110C19), // [UBAH_WARNA: Latar Belakang Kolom Pencaria...` |
-| 32 | `L1102` | `// [UBAH_WARNA: Garis Border Kolom Pencarian Quest]` | `color: const Color(0xFF2C1E4E), // [UBAH_WARNA: Garis Border Kolom Pencarian ...` |
-| 33 | `L1111` | `// [UBAH_WARNA: Warna Teks Input Cari Quest]` | `color: const Color(0xFFE9DEF2), // [UBAH_WARNA: Warna Teks Input Cari Quest]` |
-| 34 | `L1119` | `// [UBAH_WARNA: Warna Hint Cari Quest]` | `color: const Color(0xFF5D5373), // [UBAH_WARNA: Warna Hint Cari Quest]` |
-| 35 | `L1123` | `// [UBAH_WARNA: Ikon Search Quest]` | `color: Color(0xFF8B829E), // [UBAH_WARNA: Ikon Search Quest]` |
-| 36 | `L1158` | `// [UBAH_WARNA: Background Filter Chip Quest]` | `color: isSelected ? const Color(0xFFB026FF) : const Color(0xFF1F1927), // [UB...` |
-| 37 | `L1210` | `// [UBAH_WARNA: Ikon Api Daily Quests Header]` | `color: Color(0xFFFF7A00), // [UBAH_WARNA: Ikon Api Daily Quests Header]` |
-| 38 | `L1221` | `// [UBAH_WARNA: Judul Daily Quests Header]` | `color: const Color(0xFFE9DEF2), // [UBAH_WARNA: Judul Daily Quests Header]` |
-| 39 | `L1492` | `// [UBAH_WARNA: Background Card Quest]` | `color: isDone ? const Color(0xFF16121D) : const Color(0xFF1F1927), // [UBAH_W...` |
-| 40 | `L1495` | `// [UBAH_WARNA: Border Card Quest]` | `color: isDone ? const Color(0xFF2C2436) : const Color(0xFF383241), // [UBAH_W...` |
-| 41 | `L1541` | `// [UBAH_WARNA: Judul Card Quest]` | `color: isDone ? const Color(0xFF7E728C) : const Color(0xFFE9DEF2), // [UBAH_W...` |
-| 42 | `L1700` | `// [UBAH_WARNA: Border Tombol Scan Hidden Dungeon]` | `color: const Color(0xFFFF0055).withValues(alpha: 0.8), // [UBAH_WARNA: Border...` |
-| 43 | `L1749` | `// [UBAH_WARNA: Ikon Tombol Scan Hidden Dungeon]` | `color: Colors.white, // [UBAH_WARNA: Ikon Tombol Scan Hidden Dungeon]` |
-| 44 | `L1768` | `// [UBAH_WARNA: Judul Tombol Scan Hidden Dungeon]` | `color: const Color(0xFFFF2A6D), // [UBAH_WARNA: Judul Tombol Scan Hidden Dung...` |
-| 45 | `L2288` | `// [UBAH_WARNA: Background Card Nearby Gate]` | `color: const Color(0xFF1F1927), // [UBAH_WARNA: Background Card Nearby Gate]` |
-| 46 | `L2291` | `// [UBAH_WARNA: Border Card Nearby Gate]` | `color: const Color(0xFF383241), // [UBAH_WARNA: Border Card Nearby Gate]` |
-| 47 | `L2306` | `// [UBAH_WARNA: Ikon Radar Nearby Gate]` | `color: Color(0xFF00F4FE), // [UBAH_WARNA: Ikon Radar Nearby Gate]` |
-| 48 | `L2345` | `// [UBAH_WARNA: Tombol Enter Gate Background]` | `color: const Color(0xFF00F4FE), // [UBAH_WARNA: Tombol Enter Gate Background]` |
-| 49 | `L2362` | `// [UBAH_WARNA: Tombol Enter Gate Icon]` | `color: Colors.black, // [UBAH_WARNA: Tombol Enter Gate Icon]` |
-| 50 | `L2371` | `// [UBAH_WARNA: Tombol Enter Gate Teks]` | `color: Colors.black, // [UBAH_WARNA: Tombol Enter Gate Teks]` |
-| 51 | `L2392` | `// [UBAH_WARNA: FAB Tombol Alarm Background]` | `color: const Color(0xFF1F1927), // [UBAH_WARNA: FAB Tombol Alarm Background]` |
-| 52 | `L4165` | `// [UBAH_WARNA: FAB Hunter AI Brain Background]` | `color: const Color(0xFFB026FF), // [UBAH_WARNA: FAB Hunter AI Brain Background]` |
-| 53 | `L4178` | `// [UBAH_WARNA: FAB Hunter AI Brain Icon]` | `color: Colors.white, // [UBAH_WARNA: FAB Hunter AI Brain Icon]` |
+| 1 | `L549` | `// [UBAH_WARNA: Latar Belakang Layar Dashboard Tab Home]` | `), // [UBAH_WARNA: Latar Belakang Layar Dashboard Tab Home]` |
+| 2 | `L619` | `// [UBAH_WARNA: Banner Awakening Header Background]` | `), // [UBAH_WARNA: Banner Awakening Header Background]` |
+| 3 | `L624` | `// [UBAH_WARNA: Banner Awakening Header Border]` | `), // [UBAH_WARNA: Banner Awakening Header Border]` |
+| 4 | `L641` | `// [UBAH_WARNA: Dot Status Sistem Header]` | `), // [UBAH_WARNA: Dot Status Sistem Header]` |
+| 5 | `L664` | `// [UBAH_WARNA: Teks Tag Hunter Header]` | `), // [UBAH_WARNA: Teks Tag Hunter Header]` |
+| 6 | `L673` | `// [UBAH_WARNA: Teks Greeting Hunter]` | `), // [UBAH_WARNA: Teks Greeting Hunter]` |
+| 7 | `L696` | `// [UBAH_WARNA: Card Hunter Matrix Background]` | `), // [UBAH_WARNA: Card Hunter Matrix Background]` |
+| 8 | `L701` | `// [UBAH_WARNA: Card Hunter Matrix Border]` | `), // [UBAH_WARNA: Card Hunter Matrix Border]` |
+| 9 | `L729` | `// [UBAH_WARNA: Avatar Frame Background]` | `), // [UBAH_WARNA: Avatar Frame Background]` |
+| 10 | `L734` | `// [UBAH_WARNA: Avatar Frame Border]` | `), // [UBAH_WARNA: Avatar Frame Border]` |
+| 11 | `L768` | `// [UBAH_WARNA: Tombol Edit Avatar Background]` | `), // [UBAH_WARNA: Tombol Edit Avatar Background]` |
+| 12 | `L782` | `// [UBAH_WARNA: Tombol Edit Avatar Icon]` | `.black, // [UBAH_WARNA: Tombol Edit Avatar Icon]` |
+| 13 | `L809` | `// [UBAH_WARNA: Teks Nama Hunter]` | `), // [UBAH_WARNA: Teks Nama Hunter]` |
+| 14 | `L819` | `// [UBAH_WARNA: Ikon Verified Hunter]` | `), // [UBAH_WARNA: Ikon Verified Hunter]` |
+| 15 | `L832` | `// [UBAH_WARNA: Teks Subtitle Rank Hunter]` | `), // [UBAH_WARNA: Teks Subtitle Rank Hunter]` |
+| 16 | `L848` | `// [UBAH_WARNA: Badge Rank Hunter Background]` | `), // [UBAH_WARNA: Badge Rank Hunter Background]` |
+| 17 | `L853` | `// [UBAH_WARNA: Badge Rank Hunter Border]` | `), // [UBAH_WARNA: Badge Rank Hunter Border]` |
+| 18 | `L871` | `// [UBAH_WARNA: Ikon Badge Rank Hunter]` | `), // [UBAH_WARNA: Ikon Badge Rank Hunter]` |
+| 19 | `L882` | `// [UBAH_WARNA: Teks Badge Rank Hunter]` | `), // [UBAH_WARNA: Teks Badge Rank Hunter]` |
+| 20 | `L918` | `// [UBAH_WARNA: Ikon HP Heart Hunter]` | `), // [UBAH_WARNA: Ikon HP Heart Hunter]` |
+| 21 | `L943` | `// [UBAH_WARNA: Pill Gold Hunter Background]` | `), // [UBAH_WARNA: Pill Gold Hunter Background]` |
+| 22 | `L948` | `// [UBAH_WARNA: Pill Gold Hunter Border]` | `), // [UBAH_WARNA: Pill Gold Hunter Border]` |
+| 23 | `L960` | `// [UBAH_WARNA: Ikon Pill Gold Hunter]` | `), // [UBAH_WARNA: Ikon Pill Gold Hunter]` |
+| 24 | `L979` | `// [UBAH_WARNA: Teks Jumlah Gold Hunter]` | `), // [UBAH_WARNA: Teks Jumlah Gold Hunter]` |
+| 25 | `L1024` | `// [UBAH_WARNA: Track EXP Bar Hunter]` | `), // [UBAH_WARNA: Track EXP Bar Hunter]` |
+| 26 | `L1040` | `// [UBAH_WARNA: Glow Fill EXP Bar Hunter]` | `), // [UBAH_WARNA: Glow Fill EXP Bar Hunter]` |
+| 27 | `L1062` | `// [UBAH_WARNA: Banner Server Time Background]` | `), // [UBAH_WARNA: Banner Server Time Background]` |
+| 28 | `L1067` | `// [UBAH_WARNA: Banner Server Time Border]` | `), // [UBAH_WARNA: Banner Server Time Border]` |
+| 29 | `L1079` | `// [UBAH_WARNA: Ikon Dunia Server Time]` | `color: Color(0xFF00F4FE), // [UBAH_WARNA: Ikon Dunia Server Time]` |
+| 30 | `L1164` | `// [UBAH_WARNA: Teks Jam London Server Time]` | `), // [UBAH_WARNA: Teks Jam London Server Time]` |
+| 31 | `L1185` | `// [UBAH_WARNA: Latar Belakang Kolom Pencarian Quest]` | `), // [UBAH_WARNA: Latar Belakang Kolom Pencarian Quest]` |
+| 32 | `L1190` | `// [UBAH_WARNA: Garis Border Kolom Pencarian Quest]` | `), // [UBAH_WARNA: Garis Border Kolom Pencarian Quest]` |
+| 33 | `L1201` | `// [UBAH_WARNA: Warna Teks Input Cari Quest]` | `), // [UBAH_WARNA: Warna Teks Input Cari Quest]` |
+| 34 | `L1211` | `// [UBAH_WARNA: Warna Hint Cari Quest]` | `), // [UBAH_WARNA: Warna Hint Cari Quest]` |
+| 35 | `L1215` | `// [UBAH_WARNA: Ikon Search Quest]` | `color: Color(0xFF8B829E), // [UBAH_WARNA: Ikon Search Quest]` |
+| 36 | `L1260` | `// [UBAH_WARNA: Background Filter Chip Quest]` | `), // [UBAH_WARNA: Background Filter Chip Quest]` |
+| 37 | `L1317` | `// [UBAH_WARNA: Ikon Api Daily Quests Header]` | `), // [UBAH_WARNA: Ikon Api Daily Quests Header]` |
+| 38 | `L1330` | `// [UBAH_WARNA: Judul Daily Quests Header]` | `), // [UBAH_WARNA: Judul Daily Quests Header]` |
+| 39 | `L1605` | `// [UBAH_WARNA: Background Card Quest]` | `), // [UBAH_WARNA: Background Card Quest]` |
+| 40 | `L1612` | `// [UBAH_WARNA: Border Card Quest]` | `), // [UBAH_WARNA: Border Card Quest]` |
+| 41 | `L1669` | `// [UBAH_WARNA: Judul Card Quest]` | `), // [UBAH_WARNA: Judul Card Quest]` |
+| 42 | `L1849` | `// [UBAH_WARNA: Border Tombol Scan Hidden Dungeon]` | `), // [UBAH_WARNA: Border Tombol Scan Hidden Dungeon]` |
+| 43 | `L1896` | `// [UBAH_WARNA: Ikon Tombol Scan Hidden Dungeon]` | `.white, // [UBAH_WARNA: Ikon Tombol Scan Hidden Dungeon]` |
+| 44 | `L1915` | `// [UBAH_WARNA: Judul Tombol Scan Hidden Dungeon]` | `color: const Color(0xFFFF2A6D), // [UBAH_WARNA: Judul Tombol Scan Hidden Dung...` |
+| 45 | `L2465` | `// [UBAH_WARNA: Background Card Nearby Gate]` | `), // [UBAH_WARNA: Background Card Nearby Gate]` |
+| 46 | `L2470` | `// [UBAH_WARNA: Border Card Nearby Gate]` | `), // [UBAH_WARNA: Border Card Nearby Gate]` |
+| 47 | `L2487` | `// [UBAH_WARNA: Ikon Radar Nearby Gate]` | `), // [UBAH_WARNA: Ikon Radar Nearby Gate]` |
+| 48 | `L2528` | `// [UBAH_WARNA: Tombol Enter Gate Background]` | `), // [UBAH_WARNA: Tombol Enter Gate Background]` |
+| 49 | `L2545` | `// [UBAH_WARNA: Tombol Enter Gate Icon]` | `color: Colors.black, // [UBAH_WARNA: Tombol Enter Gate Icon]` |
+| 50 | `L2555` | `// [UBAH_WARNA: Tombol Enter Gate Teks]` | `Colors.black, // [UBAH_WARNA: Tombol Enter Gate Teks]` |
+| 51 | `L2578` | `// [UBAH_WARNA: FAB Tombol Alarm Background]` | `), // [UBAH_WARNA: FAB Tombol Alarm Background]` |
+| 52 | `L4639` | `// [UBAH_WARNA: FAB Hunter AI Brain Background]` | `), // [UBAH_WARNA: FAB Hunter AI Brain Background]` |
+| 53 | `L4652` | `// [UBAH_WARNA: FAB Hunter AI Brain Icon]` | `color: Colors.white, // [UBAH_WARNA: FAB Hunter AI Brain Icon]` |
 
 ---
 
@@ -442,43 +442,43 @@ Jika penguji berkata: *"Coba ubah warna tema aplikasi secara keseluruhan dari Cy
 
 | No | Baris | Tag Pencarian (`Ctrl + F`) | Potongan Kode Asli |
 |:---:|:---:|:---|:---|
-| 1 | `L279` | `// [UBAH_WARNA: Dialog Logout Background]` | `backgroundColor: const Color(0xFF140D24), // [UBAH_WARNA: Dialog Logout Backg...` |
-| 2 | `L282` | `// [UBAH_WARNA: Dialog Logout Border]` | `side: const BorderSide(color: Color(0xFFFF4D4D), width: 1.0), // [UBAH_WARNA:...` |
-| 3 | `L312` | `// [UBAH_WARNA: Tombol Konfirmasi Logout Background]` | `backgroundColor: const Color(0xFF93000A), // [UBAH_WARNA: Tombol Konfirmasi L...` |
-| 4 | `L448` | `// [UBAH_WARNA: Latar Belakang Layar Tab Profile]` | `backgroundColor: const Color(0xFF16111E), // [UBAH_WARNA: Latar Belakang Laya...` |
-| 5 | `L505` | `// [UBAH_WARNA: Header Rank Pill Background]` | `color: const Color(0xFF2D2736), // [UBAH_WARNA: Header Rank Pill Background]` |
-| 6 | `L514` | `// [UBAH_WARNA: Header Rank Pill Teks]` | `color: const Color(0xFF00F4FE), // [UBAH_WARNA: Header Rank Pill Teks]` |
-| 7 | `L549` | `// [UBAH_WARNA: Header Judul Profil]` | `color: const Color(0xFFE9DEF2), // [UBAH_WARNA: Header Judul Profil]` |
-| 8 | `L659` | `// [UBAH_WARNA: Card Hunter ID Background]` | `color: const Color(0xFF1F1927), // [UBAH_WARNA: Card Hunter ID Background]` |
-| 9 | `L661` | `// [UBAH_WARNA: Card Hunter ID Border]` | `border: Border.all(color: const Color(0xFF2C1E4E), width: 0.8), // [UBAH_WARN...` |
-| 10 | `L760` | `// [UBAH_WARNA: Tombol Ganti Avatar Mini Background]` | `color: const Color(0xFF00F4FE), // [UBAH_WARNA: Tombol Ganti Avatar Mini Back...` |
-| 11 | `L796` | `// [UBAH_WARNA: Nama Hunter Profile]` | `color: const Color(0xFFE9DEF2), // [UBAH_WARNA: Nama Hunter Profile]` |
-| 12 | `L801` | `// [UBAH_WARNA: Ikon Verified Hunter Profile]` | `const Icon(Icons.verified_rounded, size: 18, color: Color(0xFF00F4FE)), // [U...` |
-| 13 | `L955` | `// [UBAH_WARNA: Box Classification Badge Background]` | `color: const Color(0xFF2D2736), // [UBAH_WARNA: Box Classification Badge Back...` |
-| 14 | `L957` | `// [UBAH_WARNA: Box Classification Badge Border]` | `border: Border.all(color: const Color(0xFF383241)), // [UBAH_WARNA: Box Class...` |
-| 15 | `L1008` | `// [UBAH_WARNA: Tier Badge World Background]` | `color: const Color(0xFF110C19), // [UBAH_WARNA: Tier Badge World Background]` |
-| 16 | `L1016` | `// [UBAH_WARNA: Tier Badge World Teks]` | `color: const Color(0xFF00F4FE), // [UBAH_WARNA: Tier Badge World Teks]` |
-| 17 | `L1092` | `// [UBAH_WARNA: Card Total Gold Profile Background]` | `color: const Color(0xFF1F1927), // [UBAH_WARNA: Card Total Gold Profile Backg...` |
-| 18 | `L1094` | `// [UBAH_WARNA: Card Total Gold Profile Border]` | `border: Border.all(color: const Color(0xFF2C1E4E), width: 0.8), // [UBAH_WARN...` |
-| 19 | `L1111` | `// [UBAH_WARNA: Ikon Total Gold Profile]` | `const Icon(Icons.monetization_on_rounded, size: 16, color: Color(0xFFFFD166))...` |
-| 20 | `L1130` | `// [UBAH_WARNA: Teks Nilai Total Gold Profile]` | `color: const Color(0xFFFFD166), // [UBAH_WARNA: Teks Nilai Total Gold Profile]` |
-| 21 | `L1155` | `// [UBAH_WARNA: Card Quests Done Profile Background]` | `color: const Color(0xFF1F1927), // [UBAH_WARNA: Card Quests Done Profile Back...` |
-| 22 | `L1157` | `// [UBAH_WARNA: Card Quests Done Profile Border]` | `border: Border.all(color: const Color(0xFF2C1E4E), width: 0.8), // [UBAH_WARN...` |
-| 23 | `L1174` | `// [UBAH_WARNA: Ikon Quests Done Profile]` | `const Icon(Icons.task_alt_rounded, size: 16, color: Color(0xFF00F4FE)), // [U...` |
-| 24 | `L1203` | `// [UBAH_WARNA: Teks Nilai Quests Done Profile]` | `color: const Color(0xFF00F4FE), // [UBAH_WARNA: Teks Nilai Quests Done Profile]` |
-| 25 | `L1687` | `// [UBAH_WARNA: Switch Fingerprint Aktif]` | `activeTrackColor: const Color(0xFFB026FF), // [UBAH_WARNA: Switch Fingerprint...` |
-| 26 | `L1758` | `// [UBAH_WARNA: Switch Face Scan Aktif]` | `activeTrackColor: const Color(0xFF00F4FE), // [UBAH_WARNA: Switch Face Scan A...` |
-| 27 | `L1883` | `// [UBAH_WARNA: Label Tipe Penyimpanan Feedback]` | `color: const Color(0xFF9B8BA1), // [UBAH_WARNA: Label Tipe Penyimpanan Feedback]` |
-| 28 | `L1985` | `// [UBAH_WARNA: Background Input Saran Kesan]` | `color: const Color(0xFF110C19), // [UBAH_WARNA: Background Input Saran Kesan]` |
-| 29 | `L1987` | `// [UBAH_WARNA: Border Input Saran Kesan]` | `border: Border.all(color: const Color(0xFF383241)), // [UBAH_WARNA: Border In...` |
-| 30 | `L1993` | `// [UBAH_WARNA: Warna Teks Input Saran Kesan]` | `style: GoogleFonts.plusJakartaSans(fontSize: 12, color: const Color(0xFFE9DEF...` |
-| 31 | `L1998` | `// [UBAH_WARNA: Hint Input Saran Kesan]` | `hintStyle: GoogleFonts.plusJakartaSans(fontSize: 11, color: const Color(0xFF9...` |
-| 32 | `L2052` | `// [UBAH_WARNA: Tombol Submit Feedback]` | `colors: [Color(0xFFB026FF), Color(0xFF9200DB)], // [UBAH_WARNA: Tombol Submit...` |
-| 33 | `L2076` | `// [UBAH_WARNA: Teks Tombol Submit Feedback]` | `color: Colors.white, // [UBAH_WARNA: Teks Tombol Submit Feedback]` |
-| 34 | `L2110` | `// [UBAH_WARNA: Tombol Logout Background]` | `color: const Color(0xFF93000A).withValues(alpha: 0.2), // [UBAH_WARNA: Tombol...` |
-| 35 | `L2112` | `// [UBAH_WARNA: Tombol Logout Border]` | `border: Border.all(color: const Color(0xFF93000A).withValues(alpha: 0.6)), //...` |
-| 36 | `L2123` | `// [UBAH_WARNA: Ikon Tombol Logout]` | `const Icon(Icons.power_settings_new_rounded, size: 18, color: Color(0xFFFFB4A...` |
-| 37 | `L2131` | `// [UBAH_WARNA: Teks Tombol Logout]` | `color: const Color(0xFFFFB4AB), // [UBAH_WARNA: Teks Tombol Logout]` |
+| 1 | `L304` | `// [UBAH_WARNA: Dialog Logout Background]` | `), // [UBAH_WARNA: Dialog Logout Background]` |
+| 2 | `L310` | `// [UBAH_WARNA: Dialog Logout Border]` | `), // [UBAH_WARNA: Dialog Logout Border]` |
+| 3 | `L352` | `// [UBAH_WARNA: Tombol Konfirmasi Logout Background]` | `), // [UBAH_WARNA: Tombol Konfirmasi Logout Background]` |
+| 4 | `L502` | `// [UBAH_WARNA: Latar Belakang Layar Tab Profile]` | `), // [UBAH_WARNA: Latar Belakang Layar Tab Profile]` |
+| 5 | `L561` | `// [UBAH_WARNA: Header Rank Pill Background]` | `), // [UBAH_WARNA: Header Rank Pill Background]` |
+| 6 | `L572` | `// [UBAH_WARNA: Header Rank Pill Teks]` | `), // [UBAH_WARNA: Header Rank Pill Teks]` |
+| 7 | `L609` | `// [UBAH_WARNA: Header Judul Profil]` | `), // [UBAH_WARNA: Header Judul Profil]` |
+| 8 | `L726` | `// [UBAH_WARNA: Card Hunter ID Background]` | `), // [UBAH_WARNA: Card Hunter ID Background]` |
+| 9 | `L731` | `// [UBAH_WARNA: Card Hunter ID Border]` | `), // [UBAH_WARNA: Card Hunter ID Border]` |
+| 10 | `L836` | `// [UBAH_WARNA: Tombol Ganti Avatar Mini Background]` | `color: const Color(0xFF00F4FE), // [UBAH_WARNA: Tombol Ganti Avatar Mini Back...` |
+| 11 | `L875` | `// [UBAH_WARNA: Nama Hunter Profile]` | `), // [UBAH_WARNA: Nama Hunter Profile]` |
+| 12 | `L884` | `// [UBAH_WARNA: Ikon Verified Hunter Profile]` | `), // [UBAH_WARNA: Ikon Verified Hunter Profile]` |
+| 13 | `L1064` | `// [UBAH_WARNA: Box Classification Badge Background]` | `), // [UBAH_WARNA: Box Classification Badge Background]` |
+| 14 | `L1068` | `// [UBAH_WARNA: Box Classification Badge Border]` | `), // [UBAH_WARNA: Box Classification Badge Border]` |
+| 15 | `L1125` | `// [UBAH_WARNA: Tier Badge World Background]` | `), // [UBAH_WARNA: Tier Badge World Background]` |
+| 16 | `L1135` | `// [UBAH_WARNA: Tier Badge World Teks]` | `), // [UBAH_WARNA: Tier Badge World Teks]` |
+| 17 | `L1215` | `// [UBAH_WARNA: Card Total Gold Profile Background]` | `), // [UBAH_WARNA: Card Total Gold Profile Background]` |
+| 18 | `L1220` | `// [UBAH_WARNA: Card Total Gold Profile Border]` | `), // [UBAH_WARNA: Card Total Gold Profile Border]` |
+| 19 | `L1241` | `// [UBAH_WARNA: Ikon Total Gold Profile]` | `), // [UBAH_WARNA: Ikon Total Gold Profile]` |
+| 20 | `L1267` | `// [UBAH_WARNA: Teks Nilai Total Gold Profile]` | `), // [UBAH_WARNA: Teks Nilai Total Gold Profile]` |
+| 21 | `L1294` | `// [UBAH_WARNA: Card Quests Done Profile Background]` | `), // [UBAH_WARNA: Card Quests Done Profile Background]` |
+| 22 | `L1299` | `// [UBAH_WARNA: Card Quests Done Profile Border]` | `), // [UBAH_WARNA: Card Quests Done Profile Border]` |
+| 23 | `L1320` | `// [UBAH_WARNA: Ikon Quests Done Profile]` | `), // [UBAH_WARNA: Ikon Quests Done Profile]` |
+| 24 | `L1363` | `// [UBAH_WARNA: Teks Nilai Quests Done Profile]` | `), // [UBAH_WARNA: Teks Nilai Quests Done Profile]` |
+| 25 | `L1900` | `// [UBAH_WARNA: Switch Fingerprint Aktif]` | `), // [UBAH_WARNA: Switch Fingerprint Aktif]` |
+| 26 | `L1979` | `// [UBAH_WARNA: Switch Face Scan Aktif]` | `), // [UBAH_WARNA: Switch Face Scan Aktif]` |
+| 27 | `L2120` | `// [UBAH_WARNA: Label Tipe Penyimpanan Feedback]` | `color: const Color(0xFF9B8BA1), // [UBAH_WARNA: Label Tipe Penyimpanan Feedback]` |
+| 28 | `L2234` | `// [UBAH_WARNA: Background Input Saran Kesan]` | `), // [UBAH_WARNA: Background Input Saran Kesan]` |
+| 29 | `L2238` | `// [UBAH_WARNA: Border Input Saran Kesan]` | `), // [UBAH_WARNA: Border Input Saran Kesan]` |
+| 30 | `L2247` | `// [UBAH_WARNA: Warna Teks Input Saran Kesan]` | `), // [UBAH_WARNA: Warna Teks Input Saran Kesan]` |
+| 31 | `L2255` | `// [UBAH_WARNA: Hint Input Saran Kesan]` | `), // [UBAH_WARNA: Hint Input Saran Kesan]` |
+| 32 | `L2318` | `// [UBAH_WARNA: Tombol Submit Feedback]` | `], // [UBAH_WARNA: Tombol Submit Feedback]` |
+| 33 | `L2347` | `// [UBAH_WARNA: Teks Tombol Submit Feedback]` | `color: Colors.white, // [UBAH_WARNA: Teks Tombol Submit Feedback]` |
+| 34 | `L2385` | `// [UBAH_WARNA: Tombol Logout Background]` | `), // [UBAH_WARNA: Tombol Logout Background]` |
+| 35 | `L2389` | `// [UBAH_WARNA: Tombol Logout Border]` | `), // [UBAH_WARNA: Tombol Logout Border]` |
+| 36 | `L2404` | `// [UBAH_WARNA: Ikon Tombol Logout]` | `), // [UBAH_WARNA: Ikon Tombol Logout]` |
+| 37 | `L2414` | `// [UBAH_WARNA: Teks Tombol Logout]` | `), // [UBAH_WARNA: Teks Tombol Logout]` |
 
 ---
 
@@ -536,16 +536,16 @@ Jika penguji berkata: *"Coba ubah warna tema aplikasi secara keseluruhan dari Cy
 | 16 | `L1250` | `// [UBAH_WARNA: Box Critical Penalty Notice]` | `color: const Color(0xFF120D24), // [UBAH_WARNA: Box Critical Penalty Notice]` |
 | 17 | `L1386` | `// [UBAH_WARNA: Card Rutinitas Latihan Background]` | `color: const Color(0xFF120D24), // [UBAH_WARNA: Card Rutinitas Latihan Backgr...` |
 | 18 | `L1389` | `// [UBAH_WARNA: Card Rutinitas Latihan Border]` | `color: const Color(0xFFB026FF).withValues(alpha: 0.4), // [UBAH_WARNA: Card R...` |
-| 19 | `L1418` | `// [UBAH_WARNA: Judul Rutinitas 4 Latihan Fisik]` | `color: Colors.white, // [UBAH_WARNA: Judul Rutinitas 4 Latihan Fisik]` |
-| 20 | `L1435` | `// [UBAH_WARNA: Teks Progress Rutinitas Latihan]` | `color: const Color(0xFF00E5FF), // [UBAH_WARNA: Teks Progress Rutinitas Latihan]` |
-| 21 | `L1545` | `// [UBAH_WARNA: Bottom Bar Item Latihan Fisik]` | `color: const Color(0xFF08050E), // [UBAH_WARNA: Bottom Bar Item Latihan Fisik]` |
-| 22 | `L1602` | `// [UBAH_WARNA: Box Counter Target Repetisi]` | `color: const Color(0xFF1F1927), // [UBAH_WARNA: Box Counter Target Repetisi]` |
-| 23 | `L1626` | `// [UBAH_WARNA: Tombol Buka Kamera Deteksi Pose]` | `color: const Color(0xFFB026FF), // [UBAH_WARNA: Tombol Buka Kamera Deteksi Pose]` |
-| 24 | `L1696` | `// [UBAH_WARNA: Tombol Selesaikan Latihan - Ungu Gelap]` | `Color(0xFF7000A8), // [UBAH_WARNA: Tombol Selesaikan Latihan - Ungu Gelap]` |
-| 25 | `L1697` | `// [UBAH_WARNA: Tombol Selesaikan Latihan - Ungu Terang]` | `Color(0xFFB026FF), // [UBAH_WARNA: Tombol Selesaikan Latihan - Ungu Terang]` |
-| 26 | `L1698` | `// [UBAH_WARNA: Tombol Selesaikan Latihan - Cyan Aksen]` | `Color(0xFF00F4FE), // [UBAH_WARNA: Tombol Selesaikan Latihan - Cyan Aksen]` |
-| 27 | `L1736` | `// [UBAH_WARNA: Ikon Tombol Selesaikan Latihan]` | `? Colors.white // [UBAH_WARNA: Ikon Tombol Selesaikan Latihan]` |
-| 28 | `L1751` | `// [UBAH_WARNA: Teks Tombol Selesaikan Latihan]` | `? Colors.white // [UBAH_WARNA: Teks Tombol Selesaikan Latihan]` |
+| 19 | `L1422` | `// [UBAH_WARNA: Judul Rutinitas 4 Latihan Fisik]` | `color: Colors.white, // [UBAH_WARNA: Judul Rutinitas 4 Latihan Fisik]` |
+| 20 | `L1442` | `// [UBAH_WARNA: Teks Progress Rutinitas Latihan]` | `color: const Color(0xFF00E5FF), // [UBAH_WARNA: Teks Progress Rutinitas Latihan]` |
+| 21 | `L1552` | `// [UBAH_WARNA: Bottom Bar Item Latihan Fisik]` | `color: const Color(0xFF08050E), // [UBAH_WARNA: Bottom Bar Item Latihan Fisik]` |
+| 22 | `L1609` | `// [UBAH_WARNA: Box Counter Target Repetisi]` | `color: const Color(0xFF1F1927), // [UBAH_WARNA: Box Counter Target Repetisi]` |
+| 23 | `L1633` | `// [UBAH_WARNA: Tombol Buka Kamera Deteksi Pose]` | `color: const Color(0xFFB026FF), // [UBAH_WARNA: Tombol Buka Kamera Deteksi Pose]` |
+| 24 | `L1703` | `// [UBAH_WARNA: Tombol Selesaikan Latihan - Ungu Gelap]` | `Color(0xFF7000A8), // [UBAH_WARNA: Tombol Selesaikan Latihan - Ungu Gelap]` |
+| 25 | `L1704` | `// [UBAH_WARNA: Tombol Selesaikan Latihan - Ungu Terang]` | `Color(0xFFB026FF), // [UBAH_WARNA: Tombol Selesaikan Latihan - Ungu Terang]` |
+| 26 | `L1705` | `// [UBAH_WARNA: Tombol Selesaikan Latihan - Cyan Aksen]` | `Color(0xFF00F4FE), // [UBAH_WARNA: Tombol Selesaikan Latihan - Cyan Aksen]` |
+| 27 | `L1743` | `// [UBAH_WARNA: Ikon Tombol Selesaikan Latihan]` | `? Colors.white // [UBAH_WARNA: Ikon Tombol Selesaikan Latihan]` |
+| 28 | `L1758` | `// [UBAH_WARNA: Teks Tombol Selesaikan Latihan]` | `? Colors.white // [UBAH_WARNA: Teks Tombol Selesaikan Latihan]` |
 
 ---
 
