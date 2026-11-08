@@ -150,6 +150,24 @@ class _TabProfileState extends State<TabProfile> {
         }
       }
     } catch (_) {}
+
+    // 3. Sinkronisasi data profil Hunter (avatar_url) dari tabel 'users' Supabase
+    try {
+      final userProfile = await SupabaseService.getUserProfile(_userId, username: _username);
+      if (userProfile != null) {
+        final remoteAvatar = userProfile['avatar_url']?.toString();
+        if (remoteAvatar != null && remoteAvatar.isNotEmpty) {
+          await HiveService.saveAvatarUrl(remoteAvatar);
+          if (mounted) {
+            setState(() {
+              _avatarUrl = remoteAvatar;
+            });
+          }
+        }
+      }
+    } catch (e) {
+      debugPrint('Sync user profile di tab profile gagal: $e');
+    }
   }
 
   String _formatFeedbackDate(String? isoString) {
@@ -535,31 +553,11 @@ class _TabProfileState extends State<TabProfile> {
             ),
           ],
         ),
-        Row(
-          children: [
-            Container(
-              padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
-              decoration: BoxDecoration(
-                color: const Color(0xFF1F1927),
-                borderRadius: BorderRadius.circular(8),
-              ),
-              child: Row(
-                children: [
-                  const Icon(Icons.bolt_rounded, size: 14, color: Color(0xFFE6FEFF)),
-                  const SizedBox(width: 3),
-                  Text(
-                    '100%',
-                    style: GoogleFonts.spaceGrotesk(
-                      fontSize: 11,
-                      fontWeight: FontWeight.w700,
-                      color: const Color(0xFFE6FEFF),
-                    ),
-                  ),
-                ],
-              ),
-            ),
-            const SizedBox(width: 8),
-            Container(
+        ValueListenableBuilder<Box>(
+          valueListenable: Hive.box('sessionBox').listenable(keys: ['avatar_url']),
+          builder: (context, box, _) {
+            final avatarUrl = box.get('avatar_url')?.toString() ?? _avatarUrl;
+            return Container(
               width: 32,
               height: 32,
               decoration: BoxDecoration(
@@ -572,15 +570,16 @@ class _TabProfileState extends State<TabProfile> {
                   ),
                 ],
               ),
+              clipBehavior: Clip.antiAlias,
               child: HunterAvatar(
-                avatarUrl: _avatarUrl,
+                avatarUrl: avatarUrl,
                 size: 32,
                 fallback: const Center(
                   child: Icon(Icons.person, size: 18, color: Colors.white),
                 ),
               ),
-            ),
-          ],
+            );
+          },
         ),
       ],
     );

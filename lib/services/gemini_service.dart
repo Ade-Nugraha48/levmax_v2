@@ -80,7 +80,11 @@ PANDUAN & ATURAN UTAMA:
   // [POIN PRESENTASI]: Generative AI narasi Hidden Quest adaptif berdasarkan Rank dan EXP pengguna, lengkap dengan skenario darurat Solo Leveling
   static Future<String> generateHiddenQuest(String rank, int exp) async {
     final prompt =
-        'Buatkan satu deskripsi misi rahasia (Hidden Quest) bernada dramatis dan epik ala Solo Leveling untuk hunter dengan Rank $rank dan EXP $exp. Maksimal 3 kalimat saja. Berikan judul misi di awal dengan format [JUDUL MISI].';
+        'Buatkan satu deskripsi misi rahasia (Hidden Quest) bernada dramatis dan epik ala Solo Leveling untuk Hunter Rank $rank (EXP: $exp).\n'
+        'WAJIB ikuti format penulisan standar berikut:\n'
+        '[JUDUL MISI: NAMA MISI]\n\n'
+        '**Peringatan Sistem:** (Tuliskan narasi ancaman/situasi darurat dalam 1-2 kalimat dramatis)\n\n'
+        '**Persyaratan Mutlak:** (Sebutkan target latihan fisik dengan format cetak miring untuk istilah asing seperti *Push-up*, *Sit-up*, *Squat*, *Pull-up* beserta jumlah repetisinya)';
 
     try {
       final response = await _model.generateContent([Content.text(prompt)]);
@@ -101,10 +105,10 @@ PANDUAN & ATURAN UTAMA:
       } catch (_) {}
 
       // Fallback naratif darurat Solo Leveling jika koneksi gagal atau kuota terlampaui
-      return '[PENALTY ZONE: THE SHADOW TRIAL]\n'
-          'Peringatan Darurat: Gelombang Mana abnormal terdeteksi di koordinat terlarang! '
-          'Sebagai Hunter $rank dengan $exp EXP, Anda diperintahkan menembus kabut abyss dan memusnahkan Shadow Monarch Minion sebelum gerbang dimensional runtuh. '
-          'Selesaikan quest ini sekarang atau bersiaplah menghadapi penalti mutlak dari Sang Sistem!';
+      return '[PENALTY ZONE: THE SHADOW TRIAL]\n\n'
+          '**Peringatan Sistem:** Gelombang Mana abnormal terdeteksi di koordinat terlarang! '
+          'Sebagai Hunter $rank dengan $exp EXP, Anda diperintahkan menembus kabut abyss dan memusnahkan Shadow Monarch Minion sebelum gerbang dimensional runtuh.\n\n'
+          '**Persyaratan Mutlak:** Selesaikan *Push-up* 100 repetisi, *Sit-up* 100 repetisi, dan *Squat* 100 repetisi sekarang atau bersiaplah menghadapi eliminasi mutlak dari Sang Sistem!';
     }
   }
 }

@@ -78,6 +78,24 @@ class SupabaseService {
     }
   }
 
+  /// Mengambil profil Hunter dari tabel 'users' Supabase (avatar_url, username, rank, exp, gold, hp)
+  static Future<Map<String, dynamic>?> getUserProfile(String userId, {String? username}) async {
+    try {
+      if (userId.isNotEmpty && userId != 'anonymous') {
+        final res = await client.from('users').select().eq('id', userId).maybeSingle();
+        if (res != null) return res;
+      }
+      if (username != null && username.isNotEmpty) {
+        final res = await client.from('users').select().eq('username', username).maybeSingle();
+        if (res != null) return res;
+      }
+      return null;
+    } catch (e) {
+      debugPrint('Gagal mengambil user profile dari database: $e');
+      return null;
+    }
+  }
+
   // [POIN PRESENTASI]: Pendaftaran Hunter baru ke tabel 'users' Supabase dengan password yang telah di-hash SHA-256
   static Future<Map<String, dynamic>?> register({
     required String username,

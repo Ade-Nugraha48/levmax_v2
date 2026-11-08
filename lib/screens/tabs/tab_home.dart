@@ -5,6 +5,7 @@
 
 import 'dart:async';
 import 'package:file_picker/file_picker.dart';
+import 'package:flutter_markdown/flutter_markdown.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:intl/intl.dart';
@@ -1881,6 +1882,77 @@ class _TabHomeState extends State<TabHome> {
     }
   }
 
+  /// Helper untuk merapikan teks markdown dari Gemini AI (membersihkan format simbol dan judul)
+  String _formatQuestMarkdown(String raw) {
+    String text = raw.trim();
+
+    // Ubah format [JUDUL MISI: ...] di awal teks menjadi Heading H3 Markdown yang tegas
+    text = text.replaceAllMapped(
+      RegExp(r'^\s*\[([^\]]+)\]\s*', multiLine: false),
+      (m) => '### ⚔️ ${m.group(1)?.trim()}\n\n',
+    );
+
+    // Standarisasi tanda titik dua pada label tebal (**Label:**) agar rapi tanpa spasi ganjil
+    text = text.replaceAllMapped(
+      RegExp(r'\*\*([^*:]+?)\s*(?::\*\*|\*\*\s*:)\s*'),
+      (m) => '**${m.group(1)?.trim()}:** ',
+    );
+
+    // Rapikan jeda paragraf berlebih
+    text = text.replaceAll(RegExp(r'\n{3,}'), '\n\n');
+
+    return text;
+  }
+
+  /// StyleSheet Markdown bertema Solo Leveling HUD agar teks terbaca rapi dan berkelas
+  MarkdownStyleSheet _buildHiddenQuestMarkdownStyleSheet() {
+    return MarkdownStyleSheet(
+      p: GoogleFonts.plusJakartaSans(
+        fontSize: 12.8,
+        height: 1.6,
+        fontWeight: FontWeight.w500,
+        color: const Color(0xFFF3EFF5),
+      ),
+      strong: GoogleFonts.spaceGrotesk(
+        fontSize: 13.2,
+        height: 1.6,
+        fontWeight: FontWeight.w800,
+        color: const Color(0xFF00F4FE), // Neon cyan highlight untuk keyword penting
+      ),
+      em: GoogleFonts.plusJakartaSans(
+        fontSize: 12.8,
+        height: 1.6,
+        fontStyle: FontStyle.italic,
+        fontWeight: FontWeight.w600,
+        color: const Color(0xFFE5B5FF), // Lilac purple untuk istilah latihan fisik
+      ),
+      h1: GoogleFonts.orbitron(
+        fontSize: 14.5,
+        fontWeight: FontWeight.w800,
+        letterSpacing: 0.8,
+        color: const Color(0xFFFF2A6D),
+      ),
+      h2: GoogleFonts.orbitron(
+        fontSize: 14,
+        fontWeight: FontWeight.w800,
+        letterSpacing: 0.8,
+        color: const Color(0xFFFF2A6D),
+      ),
+      h3: GoogleFonts.orbitron(
+        fontSize: 13,
+        fontWeight: FontWeight.w800,
+        letterSpacing: 0.6,
+        color: const Color(0xFFFF2A6D),
+      ),
+      listBullet: GoogleFonts.spaceGrotesk(
+        fontSize: 13,
+        fontWeight: FontWeight.w800,
+        color: const Color(0xFFFF0055),
+      ),
+      blockSpacing: 10.0,
+    );
+  }
+
   /// Menampilkan dialog hasil generate Hidden Quest dari Gemini LLM
   void _showHiddenQuestResultDialog(String questText) {
     showDialog(
@@ -1966,8 +2038,8 @@ class _TabHomeState extends State<TabHome> {
 
                 // Quest Content Container
                 Container(
-                  constraints: const BoxConstraints(maxHeight: 280),
-                  padding: const EdgeInsets.all(14),
+                  constraints: const BoxConstraints(maxHeight: 340),
+                  padding: const EdgeInsets.all(16),
                   decoration: BoxDecoration(
                     color: const Color(0xFF1B112B),
                     borderRadius: BorderRadius.circular(14),
@@ -1978,14 +2050,10 @@ class _TabHomeState extends State<TabHome> {
                   ),
                   child: SingleChildScrollView(
                     physics: const BouncingScrollPhysics(),
-                    child: Text(
-                      questText,
-                      style: GoogleFonts.spaceGrotesk(
-                        fontSize: 13,
-                        height: 1.5,
-                        fontWeight: FontWeight.w600,
-                        color: const Color(0xFFF3EFF5),
-                      ),
+                    child: MarkdownBody(
+                      data: _formatQuestMarkdown(questText),
+                      selectable: true,
+                      styleSheet: _buildHiddenQuestMarkdownStyleSheet(),
                     ),
                   ),
                 ),

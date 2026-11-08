@@ -34,6 +34,7 @@ class _TabShopState extends State<TabShop> {
   int _gold = 650;
   int _exp = 150;
   int _hp = 3;
+  String? _avatarUrl;
 
   // Real-time Forex Valuation State (Live API)
   bool _isLoadingRates = false;
@@ -160,6 +161,7 @@ class _TabShopState extends State<TabShop> {
     super.initState();
     _loadSessionAndLedger();
     _fetchLiveExchangeRates();
+    _syncAvatarFromDatabase();
   }
 
   void _loadSessionAndLedger() {
@@ -178,6 +180,7 @@ class _TabShopState extends State<TabShop> {
       _gold = (session['gold'] as int?) ?? 650;
       _exp = (session['exp'] as int?) ?? 150;
       _hp = (session['hp'] as int?) ?? 3;
+      _avatarUrl = session['avatar_url']?.toString();
 
       _ownedTitles.clear();
       _ownedTitles.addAll(HiveService.getOwnedTitles(_userId));
@@ -212,6 +215,31 @@ class _TabShopState extends State<TabShop> {
         });
       }
     });
+  }
+
+  /// Sinkronisasi avatar_url Hunter dari database Supabase jika belum terisi atau diperbarui
+  Future<void> _syncAvatarFromDatabase() async {
+    final session = HiveService.getSession();
+    final uid = session['userId']?.toString() ?? _userId;
+    final uname = session['username']?.toString() ?? _username;
+    if (uid == 'anonymous' && (uname.isEmpty || uname == 'HUNTER SUNG')) return;
+
+    try {
+      final userProfile = await SupabaseService.getUserProfile(uid, username: uname);
+      if (userProfile != null) {
+        final remoteAvatar = userProfile['avatar_url']?.toString();
+        if (remoteAvatar != null && remoteAvatar.isNotEmpty) {
+          await HiveService.saveAvatarUrl(remoteAvatar);
+          if (mounted) {
+            setState(() {
+              _avatarUrl = remoteAvatar;
+            });
+          }
+        }
+      }
+    } catch (e) {
+      debugPrint('Sync avatar dari database gagal di tab shop: $e');
+    }
   }
 
   /// Mereset seluruh kepemilikan item/title yang dibeli dan riwayat blockchain
@@ -1589,6 +1617,7 @@ class _TabShopState extends State<TabShop> {
     _exp = (session['exp'] as int?) ?? _exp;
     _rank = session['rank']?.toString() ?? _rank;
     _hp = (session['hp'] as int?) ?? _hp;
+    _avatarUrl = session['avatar_url']?.toString() ?? _avatarUrl;
     _ownedTitles.clear();
     _ownedTitles.addAll(HiveService.getOwnedTitles(_userId));
 
@@ -1718,57 +1747,33 @@ class _TabShopState extends State<TabShop> {
             ),
           ],
         ),
-        Row(
-          children: [
-            Container(
-              padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+        ValueListenableBuilder<Box>(
+          valueListenable: Hive.box('sessionBox').listenable(keys: ['avatar_url']),
+          builder: (context, box, _) {
+            final avatarUrl = box.get('avatar_url')?.toString() ?? _avatarUrl;
+            return Container(
+              width: 32,
+              height: 32,
               decoration: BoxDecoration(
-                color: const Color(0xFF1F1927), // [UBAH_WARNA: Pill Status DEX Background]
-                borderRadius: BorderRadius.circular(8),
-              ),
-              child: Row(
-                children: [
-                  const Icon(Icons.bolt_rounded, size: 14, color: Color(0xFFE6FEFF)),
-                  const SizedBox(width: 3),
-                  Text(
-                    '100%',
-                    style: GoogleFonts.spaceGrotesk(
-                      fontSize: 11,
-                      fontWeight: FontWeight.w700,
-                      color: const Color(0xFFE6FEFF), // [UBAH_WARNA: Pill Status DEX Teks]
-                    ),
+                shape: BoxShape.circle,
+                color: const Color(0xFFB026FF),
+                boxShadow: [
+                  BoxShadow(
+                    color: const Color(0xFFB026FF).withValues(alpha: 0.5),
+                    blurRadius: 10,
                   ),
                 ],
               ),
-            ),
-            const SizedBox(width: 8),
-            Builder(
-              builder: (context) {
-                final avatarUrl = HiveService.getSession()['avatar_url']?.toString();
-                return Container(
-                  width: 32,
-                  height: 32,
-                  decoration: BoxDecoration(
-                    shape: BoxShape.circle,
-                    color: const Color(0xFFB026FF),
-                    boxShadow: [
-                      BoxShadow(
-                        color: const Color(0xFFB026FF).withValues(alpha: 0.5),
-                        blurRadius: 10,
-                      ),
-                    ],
-                  ),
-                  child: HunterAvatar(
-                    avatarUrl: avatarUrl,
-                    size: 32,
-                    fallback: const Center(
-                      child: Icon(Icons.person, size: 18, color: Colors.white),
-                    ),
-                  ),
-                );
-              },
-            ),
-          ],
+              clipBehavior: Clip.antiAlias,
+              child: HunterAvatar(
+                avatarUrl: avatarUrl,
+                size: 32,
+                fallback: const Center(
+                  child: Icon(Icons.person, size: 18, color: Colors.white),
+                ),
+              ),
+            );
+          },
         ),
       ],
     );

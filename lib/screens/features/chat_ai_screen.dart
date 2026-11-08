@@ -127,53 +127,58 @@ class _ChatAiScreenState extends State<ChatAiScreen> {
 
                     // Header Bar
                   Padding(
-                    padding: const EdgeInsets.symmetric(horizontal: 18, vertical: 8),
+                    padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
                     child: Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
-                        Row(
-                          children: [
-                            Container(
-                              padding: const EdgeInsets.all(6),
-                              decoration: BoxDecoration(
-                                color: const Color(0xFF00F4FE).withValues(alpha: 0.15),
-                                borderRadius: BorderRadius.circular(8),
-                                border: Border.all(
-                                  color: const Color(0xFF00F4FE).withValues(alpha: 0.4),
-                                ),
-                              ),
-                              child: const Icon(
-                                Icons.psychology_rounded,
-                                color: Color(0xFF00F4FE),
-                                size: 18,
-                              ),
+                        Container(
+                          padding: const EdgeInsets.all(6),
+                          decoration: BoxDecoration(
+                            color: const Color(0xFF00F4FE).withValues(alpha: 0.15),
+                            borderRadius: BorderRadius.circular(8),
+                            border: Border.all(
+                              color: const Color(0xFF00F4FE).withValues(alpha: 0.4),
                             ),
-                            const SizedBox(width: 10),
-                            Column(
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: [
-                                Text(
-                                  'AI PERSONA & AVATAR SETTINGS',
-                                  style: GoogleFonts.spaceGrotesk(
-                                    fontSize: 12.5,
-                                    fontWeight: FontWeight.w800,
-                                    letterSpacing: 0.8,
-                                    color: const Color(0xFF00F4FE),
-                                  ),
-                                ),
-                                Text(
-                                  'Kustomisasi Nama, Peran, Gaya Bahasa & Sifat AI',
-                                  style: GoogleFonts.plusJakartaSans(
-                                    fontSize: 10,
-                                    fontWeight: FontWeight.w500,
-                                    color: const Color(0xFF9B8BA1),
-                                  ),
-                                ),
-                              ],
-                            ),
-                          ],
+                          ),
+                          child: const Icon(
+                            Icons.psychology_rounded,
+                            color: Color(0xFF00F4FE),
+                            size: 18,
+                          ),
                         ),
+                        const SizedBox(width: 10),
+                        Expanded(
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            mainAxisSize: MainAxisSize.min,
+                            children: [
+                              Text(
+                                'AI PERSONA & AVATAR SETTINGS',
+                                maxLines: 1,
+                                overflow: TextOverflow.ellipsis,
+                                style: GoogleFonts.spaceGrotesk(
+                                  fontSize: 12.0,
+                                  fontWeight: FontWeight.w800,
+                                  letterSpacing: 0.5,
+                                  color: const Color(0xFF00F4FE),
+                                ),
+                              ),
+                              Text(
+                                'Kustomisasi Nama, Peran, Gaya Bahasa & Sifat AI',
+                                maxLines: 1,
+                                overflow: TextOverflow.ellipsis,
+                                style: GoogleFonts.plusJakartaSans(
+                                  fontSize: 9.5,
+                                  fontWeight: FontWeight.w500,
+                                  color: const Color(0xFF9B8BA1),
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
+                        const SizedBox(width: 4),
                         IconButton(
+                          padding: EdgeInsets.zero,
+                          constraints: const BoxConstraints(),
                           icon: const Icon(Icons.close_rounded, color: Color(0xFF9B8BA1), size: 20),
                           onPressed: () => Navigator.pop(sheetContext),
                         ),

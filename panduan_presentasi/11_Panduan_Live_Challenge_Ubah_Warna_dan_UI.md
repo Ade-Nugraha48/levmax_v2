@@ -1,7 +1,7 @@
 # PANDUAN LIVE CHALLENGE: UBAH WARNA & KOMPONEN UI LEVMAX
 **Dokumen:** `11_Panduan_Live_Challenge_Ubah_Warna_dan_UI.md`  
 **Tujuan:** Panduan taktis dan cepat saat sesi live challenge presentasi/UAS jika dosen penguji meminta perubahan warna (AppBar, Background Scaffold, Tombol Utama, Teks Judul, Card, Dialog, atau Icon) secara langsung.  
-**Total Penanda:** 529 penanda `// [UBAH_WARNA: ...]` di 18 file UI aplikasi.
+**Total Penanda:** 527 penanda `// [UBAH_WARNA: ...]` di 18 file UI aplikasi.
 
 ---
 
@@ -122,7 +122,9 @@ Jika penguji berkata: *"Coba ubah warna tema aplikasi secara keseluruhan dari Cy
 
 ---
 
-### File: `lib/main.dart` (Root Application Theme)
+## 4. DAFTAR LENGKAP LOKASI UBAH WARNA PER FILE UI (SCREEN & WIDGET)
+
+### File: `lib/main.dart` (Theme Root / MaterialApp Configuration)
 **Total Penanda:** 2 titik visual
 
 | No | Baris | Tag Pencarian (`Ctrl + F`) | Potongan Kode Asli |
@@ -132,26 +134,7 @@ Jika penguji berkata: *"Coba ubah warna tema aplikasi secara keseluruhan dari Cy
 
 ---
 
-## 4. NAVIGASI UTAMA & SPLASH SCREEN
-
-### File: `lib/screens/main_navigation.dart` (Bottom Navigation Bar & Frame HUD)
-**Total Penanda:** 9 titik visual
-
-| No | Baris | Tag Pencarian (`Ctrl + F`) | Potongan Kode Asli |
-|:---:|:---:|:---|:---|
-| 1 | `L53` | `// [UBAH_WARNA: Latar Belakang Scaffold Utama Navigation]` | `backgroundColor: const Color(0xFF16111E), // [UBAH_WARNA: Latar Belakang Scaf...` |
-| 2 | `L60` | `// [UBAH_WARNA: Latar Belakang Bottom Navigation Bar]` | `color: const Color(0xFF110C19), // [UBAH_WARNA: Latar Belakang Bottom Navigat...` |
-| 3 | `L63` | `// [UBAH_WARNA: Garis Border Atas Bottom Navigation Bar]` | `color: Color(0xFF2C1E4E), // [UBAH_WARNA: Garis Border Atas Bottom Navigation...` |
-| 4 | `L156` | `// [UBAH_WARNA: Cahaya Glow Ikon Navigasi Aktif]` | `color: const Color(0xFFB026FF).withValues(alpha: 0.65), // [UBAH_WARNA: Cahay...` |
-| 5 | `L167` | `// [UBAH_WARNA: Ikon Menu Navigasi Aktif]` | `? const Color(0xFFE5B5FF) // [UBAH_WARNA: Ikon Menu Navigasi Aktif]` |
-| 6 | `L168` | `// [UBAH_WARNA: Ikon Menu Navigasi Tidak Aktif]` | `: const Color(0xFF6E6485), // [UBAH_WARNA: Ikon Menu Navigasi Tidak Aktif]` |
-| 7 | `L180` | `// [UBAH_WARNA: Teks Label Navigasi Aktif]` | `? const Color(0xFFE5B5FF) // [UBAH_WARNA: Teks Label Navigasi Aktif]` |
-| 8 | `L181` | `// [UBAH_WARNA: Teks Label Navigasi Tidak Aktif]` | `: const Color(0xFF6E6485), // [UBAH_WARNA: Teks Label Navigasi Tidak Aktif]` |
-| 9 | `L185` | `// [UBAH_WARNA: Bayangan Teks Navigasi Aktif]` | `color: const Color(0xFFB026FF).withValues(alpha: 0.8), // [UBAH_WARNA: Bayang...` |
-
----
-
-### File: `lib/screens/splash_screen.dart` (Splash Screen & Initial Awakening Reactor)
+### File: `lib/screens/splash_screen.dart` (Splash Screen & System Booting)
 **Total Penanda:** 22 titik visual
 
 | No | Baris | Tag Pencarian (`Ctrl + F`) | Potongan Kode Asli |
@@ -181,9 +164,7 @@ Jika penguji berkata: *"Coba ubah warna tema aplikasi secara keseluruhan dari Cy
 
 ---
 
-## 5. AUTENTIKASI & IDENTITAS HUNTER
-
-### File: `lib/screens/auth/login_screen.dart` (Layar Login Hunter)
+### File: `lib/screens/auth/login_screen.dart` (Login Hunter (Password & Biometrics))
 **Total Penanda:** 38 titik visual
 
 | No | Baris | Tag Pencarian (`Ctrl + F`) | Potongan Kode Asli |
@@ -229,7 +210,7 @@ Jika penguji berkata: *"Coba ubah warna tema aplikasi secara keseluruhan dari Cy
 
 ---
 
-### File: `lib/screens/auth/register_screen.dart` (Layar Registrasi Hunter)
+### File: `lib/screens/auth/register_screen.dart` (Registrasi Hunter Baru & Avatar Upload)
 **Total Penanda:** 29 titik visual
 
 | No | Baris | Tag Pencarian (`Ctrl + F`) | Potongan Kode Asli |
@@ -266,70 +247,85 @@ Jika penguji berkata: *"Coba ubah warna tema aplikasi secara keseluruhan dari Cy
 
 ---
 
-## 6. LIMA TAB UTAMA DASHBOARD SOLO LEVELING
+### File: `lib/screens/main_navigation.dart` (Bottom Navigation Bar Utama)
+**Total Penanda:** 9 titik visual
 
-### File: `lib/screens/tabs/tab_home.dart` (Tab 1: Home Dashboard Matrix & Daily Quests)
+| No | Baris | Tag Pencarian (`Ctrl + F`) | Potongan Kode Asli |
+|:---:|:---:|:---|:---|
+| 1 | `L53` | `// [UBAH_WARNA: Latar Belakang Scaffold Utama Navigation]` | `backgroundColor: const Color(0xFF16111E), // [UBAH_WARNA: Latar Belakang Scaf...` |
+| 2 | `L60` | `// [UBAH_WARNA: Latar Belakang Bottom Navigation Bar]` | `color: const Color(0xFF110C19), // [UBAH_WARNA: Latar Belakang Bottom Navigat...` |
+| 3 | `L63` | `// [UBAH_WARNA: Garis Border Atas Bottom Navigation Bar]` | `color: Color(0xFF2C1E4E), // [UBAH_WARNA: Garis Border Atas Bottom Navigation...` |
+| 4 | `L156` | `// [UBAH_WARNA: Cahaya Glow Ikon Navigasi Aktif]` | `color: const Color(0xFFB026FF).withValues(alpha: 0.65), // [UBAH_WARNA: Cahay...` |
+| 5 | `L167` | `// [UBAH_WARNA: Ikon Menu Navigasi Aktif]` | `? const Color(0xFFE5B5FF) // [UBAH_WARNA: Ikon Menu Navigasi Aktif]` |
+| 6 | `L168` | `// [UBAH_WARNA: Ikon Menu Navigasi Tidak Aktif]` | `: const Color(0xFF6E6485), // [UBAH_WARNA: Ikon Menu Navigasi Tidak Aktif]` |
+| 7 | `L180` | `// [UBAH_WARNA: Teks Label Navigasi Aktif]` | `? const Color(0xFFE5B5FF) // [UBAH_WARNA: Teks Label Navigasi Aktif]` |
+| 8 | `L181` | `// [UBAH_WARNA: Teks Label Navigasi Tidak Aktif]` | `: const Color(0xFF6E6485), // [UBAH_WARNA: Teks Label Navigasi Tidak Aktif]` |
+| 9 | `L185` | `// [UBAH_WARNA: Bayangan Teks Navigasi Aktif]` | `color: const Color(0xFFB026FF).withValues(alpha: 0.8), // [UBAH_WARNA: Bayang...` |
+
+---
+
+### File: `lib/screens/tabs/tab_home.dart` (Tab 1: Quests & Daily Status HUD)
 **Total Penanda:** 53 titik visual
 
 | No | Baris | Tag Pencarian (`Ctrl + F`) | Potongan Kode Asli |
 |:---:|:---:|:---|:---|
-| 1 | `L510` | `// [UBAH_WARNA: Latar Belakang Layar Dashboard Tab Home]` | `backgroundColor: const Color(0xFF16111E), // [UBAH_WARNA: Latar Belakang Laya...` |
-| 2 | `L586` | `// [UBAH_WARNA: Banner Awakening Header Background]` | `color: const Color(0xFF140D28), // [UBAH_WARNA: Banner Awakening Header Backg...` |
-| 3 | `L589` | `// [UBAH_WARNA: Banner Awakening Header Border]` | `color: const Color(0xFF2C1E4E), // [UBAH_WARNA: Banner Awakening Header Border]` |
-| 4 | `L604` | `// [UBAH_WARNA: Dot Status Sistem Header]` | `color: Color(0xFF00F4FE), // [UBAH_WARNA: Dot Status Sistem Header]` |
-| 5 | `L625` | `// [UBAH_WARNA: Teks Tag Hunter Header]` | `color: Color(0xFF00F4FE), // [UBAH_WARNA: Teks Tag Hunter Header]` |
-| 6 | `L632` | `// [UBAH_WARNA: Teks Greeting Hunter]` | `color: Color(0xFFE9DEF2), // [UBAH_WARNA: Teks Greeting Hunter]` |
-| 7 | `L653` | `// [UBAH_WARNA: Card Hunter Matrix Background]` | `color: const Color(0xFF110C19), // [UBAH_WARNA: Card Hunter Matrix Background]` |
-| 8 | `L656` | `// [UBAH_WARNA: Card Hunter Matrix Border]` | `color: const Color(0xFF2C1E4E), // [UBAH_WARNA: Card Hunter Matrix Border]` |
-| 9 | `L682` | `// [UBAH_WARNA: Avatar Frame Background]` | `color: const Color(0xFF1F1927), // [UBAH_WARNA: Avatar Frame Background]` |
-| 10 | `L685` | `// [UBAH_WARNA: Avatar Frame Border]` | `color: const Color(0xFF00F4FE).withValues(alpha: 0.6), // [UBAH_WARNA: Avatar...` |
-| 11 | `L716` | `// [UBAH_WARNA: Tombol Edit Avatar Background]` | `color: const Color(0xFF00F4FE), // [UBAH_WARNA: Tombol Edit Avatar Background]` |
-| 12 | `L732` | `// [UBAH_WARNA: Tombol Edit Avatar Icon]` | `color: Colors.black, // [UBAH_WARNA: Tombol Edit Avatar Icon]` |
-| 13 | `L757` | `// [UBAH_WARNA: Teks Nama Hunter]` | `color: const Color(0xFFE9DEF2), // [UBAH_WARNA: Teks Nama Hunter]` |
-| 14 | `L765` | `// [UBAH_WARNA: Ikon Verified Hunter]` | `color: Color(0xFF00F4FE), // [UBAH_WARNA: Ikon Verified Hunter]` |
-| 15 | `L776` | `// [UBAH_WARNA: Teks Subtitle Rank Hunter]` | `color: const Color(0xFF9B8BA1), // [UBAH_WARNA: Teks Subtitle Rank Hunter]` |
-| 16 | `L787` | `// [UBAH_WARNA: Badge Rank Hunter Background]` | `color: const Color(0xFF2D164D), // [UBAH_WARNA: Badge Rank Hunter Background]` |
-| 17 | `L790` | `// [UBAH_WARNA: Badge Rank Hunter Border]` | `color: const Color(0xFFB026FF).withValues(alpha: 0.5), // [UBAH_WARNA: Badge ...` |
-| 18 | `L806` | `// [UBAH_WARNA: Ikon Badge Rank Hunter]` | `color: Color(0xFFE5B5FF), // [UBAH_WARNA: Ikon Badge Rank Hunter]` |
-| 19 | `L815` | `// [UBAH_WARNA: Teks Badge Rank Hunter]` | `color: const Color(0xFFE5B5FF), // [UBAH_WARNA: Teks Badge Rank Hunter]` |
-| 20 | `L845` | `// [UBAH_WARNA: Ikon HP Heart Hunter]` | `color: i <= _currentHp ? const Color(0xFFFF5252) : const Color(0xFF5A4A63), /...` |
-| 21 | `L865` | `// [UBAH_WARNA: Pill Gold Hunter Background]` | `color: const Color(0xFF0C242B), // [UBAH_WARNA: Pill Gold Hunter Background]` |
-| 22 | `L868` | `// [UBAH_WARNA: Pill Gold Hunter Border]` | `color: const Color(0xFF00F4FE).withValues(alpha: 0.4), // [UBAH_WARNA: Pill G...` |
-| 23 | `L877` | `// [UBAH_WARNA: Ikon Pill Gold Hunter]` | `color: Color(0xFF00F4FE), // [UBAH_WARNA: Ikon Pill Gold Hunter]` |
-| 24 | `L886` | `// [UBAH_WARNA: Teks Jumlah Gold Hunter]` | `color: const Color(0xFF00F4FE), // [UBAH_WARNA: Teks Jumlah Gold Hunter]` |
-| 25 | `L927` | `// [UBAH_WARNA: Track EXP Bar Hunter]` | `color: const Color(0xFF1F1927), // [UBAH_WARNA: Track EXP Bar Hunter]` |
-| 26 | `L941` | `// [UBAH_WARNA: Glow Fill EXP Bar Hunter]` | `color: const Color(0xFF00F4FE).withValues(alpha: 0.5), // [UBAH_WARNA: Glow F...` |
-| 27 | `L961` | `// [UBAH_WARNA: Banner Server Time Background]` | `color: const Color(0xFF110C19), // [UBAH_WARNA: Banner Server Time Background]` |
-| 28 | `L964` | `// [UBAH_WARNA: Banner Server Time Border]` | `color: const Color(0xFF2C1E4E), // [UBAH_WARNA: Banner Server Time Border]` |
-| 29 | `L976` | `// [UBAH_WARNA: Ikon Dunia Server Time]` | `color: Color(0xFF00F4FE), // [UBAH_WARNA: Ikon Dunia Server Time]` |
-| 30 | `L1059` | `// [UBAH_WARNA: Teks Jam London Server Time]` | `color: const Color(0xFF00F4FE), // [UBAH_WARNA: Teks Jam London Server Time]` |
-| 31 | `L1078` | `// [UBAH_WARNA: Latar Belakang Kolom Pencarian Quest]` | `color: const Color(0xFF110C19), // [UBAH_WARNA: Latar Belakang Kolom Pencaria...` |
-| 32 | `L1081` | `// [UBAH_WARNA: Garis Border Kolom Pencarian Quest]` | `color: const Color(0xFF2C1E4E), // [UBAH_WARNA: Garis Border Kolom Pencarian ...` |
-| 33 | `L1090` | `// [UBAH_WARNA: Warna Teks Input Cari Quest]` | `color: const Color(0xFFE9DEF2), // [UBAH_WARNA: Warna Teks Input Cari Quest]` |
-| 34 | `L1098` | `// [UBAH_WARNA: Warna Hint Cari Quest]` | `color: const Color(0xFF5D5373), // [UBAH_WARNA: Warna Hint Cari Quest]` |
-| 35 | `L1102` | `// [UBAH_WARNA: Ikon Search Quest]` | `color: Color(0xFF8B829E), // [UBAH_WARNA: Ikon Search Quest]` |
-| 36 | `L1137` | `// [UBAH_WARNA: Background Filter Chip Quest]` | `color: isSelected ? const Color(0xFFB026FF) : const Color(0xFF1F1927), // [UB...` |
-| 37 | `L1189` | `// [UBAH_WARNA: Ikon Api Daily Quests Header]` | `color: Color(0xFFFF7A00), // [UBAH_WARNA: Ikon Api Daily Quests Header]` |
-| 38 | `L1200` | `// [UBAH_WARNA: Judul Daily Quests Header]` | `color: const Color(0xFFE9DEF2), // [UBAH_WARNA: Judul Daily Quests Header]` |
-| 39 | `L1471` | `// [UBAH_WARNA: Background Card Quest]` | `color: isDone ? const Color(0xFF16121D) : const Color(0xFF1F1927), // [UBAH_W...` |
-| 40 | `L1474` | `// [UBAH_WARNA: Border Card Quest]` | `color: isDone ? const Color(0xFF2C2436) : const Color(0xFF383241), // [UBAH_W...` |
-| 41 | `L1520` | `// [UBAH_WARNA: Judul Card Quest]` | `color: isDone ? const Color(0xFF7E728C) : const Color(0xFFE9DEF2), // [UBAH_W...` |
-| 42 | `L1679` | `// [UBAH_WARNA: Border Tombol Scan Hidden Dungeon]` | `color: const Color(0xFFFF0055).withValues(alpha: 0.8), // [UBAH_WARNA: Border...` |
-| 43 | `L1728` | `// [UBAH_WARNA: Ikon Tombol Scan Hidden Dungeon]` | `color: Colors.white, // [UBAH_WARNA: Ikon Tombol Scan Hidden Dungeon]` |
-| 44 | `L1747` | `// [UBAH_WARNA: Judul Tombol Scan Hidden Dungeon]` | `color: const Color(0xFFFF2A6D), // [UBAH_WARNA: Judul Tombol Scan Hidden Dung...` |
-| 45 | `L2044` | `// [UBAH_WARNA: Background Card Nearby Gate]` | `color: const Color(0xFF1F1927), // [UBAH_WARNA: Background Card Nearby Gate]` |
-| 46 | `L2047` | `// [UBAH_WARNA: Border Card Nearby Gate]` | `color: const Color(0xFF383241), // [UBAH_WARNA: Border Card Nearby Gate]` |
-| 47 | `L2062` | `// [UBAH_WARNA: Ikon Radar Nearby Gate]` | `color: Color(0xFF00F4FE), // [UBAH_WARNA: Ikon Radar Nearby Gate]` |
-| 48 | `L2101` | `// [UBAH_WARNA: Tombol Enter Gate Background]` | `color: const Color(0xFF00F4FE), // [UBAH_WARNA: Tombol Enter Gate Background]` |
-| 49 | `L2118` | `// [UBAH_WARNA: Tombol Enter Gate Icon]` | `color: Colors.black, // [UBAH_WARNA: Tombol Enter Gate Icon]` |
-| 50 | `L2127` | `// [UBAH_WARNA: Tombol Enter Gate Teks]` | `color: Colors.black, // [UBAH_WARNA: Tombol Enter Gate Teks]` |
-| 51 | `L2148` | `// [UBAH_WARNA: FAB Tombol Alarm Background]` | `color: const Color(0xFF1F1927), // [UBAH_WARNA: FAB Tombol Alarm Background]` |
-| 52 | `L3921` | `// [UBAH_WARNA: FAB Hunter AI Brain Background]` | `color: const Color(0xFFB026FF), // [UBAH_WARNA: FAB Hunter AI Brain Background]` |
-| 53 | `L3934` | `// [UBAH_WARNA: FAB Hunter AI Brain Icon]` | `color: Colors.white, // [UBAH_WARNA: FAB Hunter AI Brain Icon]` |
+| 1 | `L511` | `// [UBAH_WARNA: Latar Belakang Layar Dashboard Tab Home]` | `backgroundColor: const Color(0xFF16111E), // [UBAH_WARNA: Latar Belakang Laya...` |
+| 2 | `L587` | `// [UBAH_WARNA: Banner Awakening Header Background]` | `color: const Color(0xFF140D28), // [UBAH_WARNA: Banner Awakening Header Backg...` |
+| 3 | `L590` | `// [UBAH_WARNA: Banner Awakening Header Border]` | `color: const Color(0xFF2C1E4E), // [UBAH_WARNA: Banner Awakening Header Border]` |
+| 4 | `L605` | `// [UBAH_WARNA: Dot Status Sistem Header]` | `color: Color(0xFF00F4FE), // [UBAH_WARNA: Dot Status Sistem Header]` |
+| 5 | `L626` | `// [UBAH_WARNA: Teks Tag Hunter Header]` | `color: Color(0xFF00F4FE), // [UBAH_WARNA: Teks Tag Hunter Header]` |
+| 6 | `L633` | `// [UBAH_WARNA: Teks Greeting Hunter]` | `color: Color(0xFFE9DEF2), // [UBAH_WARNA: Teks Greeting Hunter]` |
+| 7 | `L654` | `// [UBAH_WARNA: Card Hunter Matrix Background]` | `color: const Color(0xFF110C19), // [UBAH_WARNA: Card Hunter Matrix Background]` |
+| 8 | `L657` | `// [UBAH_WARNA: Card Hunter Matrix Border]` | `color: const Color(0xFF2C1E4E), // [UBAH_WARNA: Card Hunter Matrix Border]` |
+| 9 | `L683` | `// [UBAH_WARNA: Avatar Frame Background]` | `color: const Color(0xFF1F1927), // [UBAH_WARNA: Avatar Frame Background]` |
+| 10 | `L686` | `// [UBAH_WARNA: Avatar Frame Border]` | `color: const Color(0xFF00F4FE).withValues(alpha: 0.6), // [UBAH_WARNA: Avatar...` |
+| 11 | `L717` | `// [UBAH_WARNA: Tombol Edit Avatar Background]` | `color: const Color(0xFF00F4FE), // [UBAH_WARNA: Tombol Edit Avatar Background]` |
+| 12 | `L733` | `// [UBAH_WARNA: Tombol Edit Avatar Icon]` | `color: Colors.black, // [UBAH_WARNA: Tombol Edit Avatar Icon]` |
+| 13 | `L758` | `// [UBAH_WARNA: Teks Nama Hunter]` | `color: const Color(0xFFE9DEF2), // [UBAH_WARNA: Teks Nama Hunter]` |
+| 14 | `L766` | `// [UBAH_WARNA: Ikon Verified Hunter]` | `color: Color(0xFF00F4FE), // [UBAH_WARNA: Ikon Verified Hunter]` |
+| 15 | `L777` | `// [UBAH_WARNA: Teks Subtitle Rank Hunter]` | `color: const Color(0xFF9B8BA1), // [UBAH_WARNA: Teks Subtitle Rank Hunter]` |
+| 16 | `L788` | `// [UBAH_WARNA: Badge Rank Hunter Background]` | `color: const Color(0xFF2D164D), // [UBAH_WARNA: Badge Rank Hunter Background]` |
+| 17 | `L791` | `// [UBAH_WARNA: Badge Rank Hunter Border]` | `color: const Color(0xFFB026FF).withValues(alpha: 0.5), // [UBAH_WARNA: Badge ...` |
+| 18 | `L807` | `// [UBAH_WARNA: Ikon Badge Rank Hunter]` | `color: Color(0xFFE5B5FF), // [UBAH_WARNA: Ikon Badge Rank Hunter]` |
+| 19 | `L816` | `// [UBAH_WARNA: Teks Badge Rank Hunter]` | `color: const Color(0xFFE5B5FF), // [UBAH_WARNA: Teks Badge Rank Hunter]` |
+| 20 | `L846` | `// [UBAH_WARNA: Ikon HP Heart Hunter]` | `color: i <= _currentHp ? const Color(0xFFFF5252) : const Color(0xFF5A4A63), /...` |
+| 21 | `L866` | `// [UBAH_WARNA: Pill Gold Hunter Background]` | `color: const Color(0xFF0C242B), // [UBAH_WARNA: Pill Gold Hunter Background]` |
+| 22 | `L869` | `// [UBAH_WARNA: Pill Gold Hunter Border]` | `color: const Color(0xFF00F4FE).withValues(alpha: 0.4), // [UBAH_WARNA: Pill G...` |
+| 23 | `L878` | `// [UBAH_WARNA: Ikon Pill Gold Hunter]` | `color: Color(0xFF00F4FE), // [UBAH_WARNA: Ikon Pill Gold Hunter]` |
+| 24 | `L887` | `// [UBAH_WARNA: Teks Jumlah Gold Hunter]` | `color: const Color(0xFF00F4FE), // [UBAH_WARNA: Teks Jumlah Gold Hunter]` |
+| 25 | `L928` | `// [UBAH_WARNA: Track EXP Bar Hunter]` | `color: const Color(0xFF1F1927), // [UBAH_WARNA: Track EXP Bar Hunter]` |
+| 26 | `L942` | `// [UBAH_WARNA: Glow Fill EXP Bar Hunter]` | `color: const Color(0xFF00F4FE).withValues(alpha: 0.5), // [UBAH_WARNA: Glow F...` |
+| 27 | `L962` | `// [UBAH_WARNA: Banner Server Time Background]` | `color: const Color(0xFF110C19), // [UBAH_WARNA: Banner Server Time Background]` |
+| 28 | `L965` | `// [UBAH_WARNA: Banner Server Time Border]` | `color: const Color(0xFF2C1E4E), // [UBAH_WARNA: Banner Server Time Border]` |
+| 29 | `L977` | `// [UBAH_WARNA: Ikon Dunia Server Time]` | `color: Color(0xFF00F4FE), // [UBAH_WARNA: Ikon Dunia Server Time]` |
+| 30 | `L1060` | `// [UBAH_WARNA: Teks Jam London Server Time]` | `color: const Color(0xFF00F4FE), // [UBAH_WARNA: Teks Jam London Server Time]` |
+| 31 | `L1079` | `// [UBAH_WARNA: Latar Belakang Kolom Pencarian Quest]` | `color: const Color(0xFF110C19), // [UBAH_WARNA: Latar Belakang Kolom Pencaria...` |
+| 32 | `L1082` | `// [UBAH_WARNA: Garis Border Kolom Pencarian Quest]` | `color: const Color(0xFF2C1E4E), // [UBAH_WARNA: Garis Border Kolom Pencarian ...` |
+| 33 | `L1091` | `// [UBAH_WARNA: Warna Teks Input Cari Quest]` | `color: const Color(0xFFE9DEF2), // [UBAH_WARNA: Warna Teks Input Cari Quest]` |
+| 34 | `L1099` | `// [UBAH_WARNA: Warna Hint Cari Quest]` | `color: const Color(0xFF5D5373), // [UBAH_WARNA: Warna Hint Cari Quest]` |
+| 35 | `L1103` | `// [UBAH_WARNA: Ikon Search Quest]` | `color: Color(0xFF8B829E), // [UBAH_WARNA: Ikon Search Quest]` |
+| 36 | `L1138` | `// [UBAH_WARNA: Background Filter Chip Quest]` | `color: isSelected ? const Color(0xFFB026FF) : const Color(0xFF1F1927), // [UB...` |
+| 37 | `L1190` | `// [UBAH_WARNA: Ikon Api Daily Quests Header]` | `color: Color(0xFFFF7A00), // [UBAH_WARNA: Ikon Api Daily Quests Header]` |
+| 38 | `L1201` | `// [UBAH_WARNA: Judul Daily Quests Header]` | `color: const Color(0xFFE9DEF2), // [UBAH_WARNA: Judul Daily Quests Header]` |
+| 39 | `L1472` | `// [UBAH_WARNA: Background Card Quest]` | `color: isDone ? const Color(0xFF16121D) : const Color(0xFF1F1927), // [UBAH_W...` |
+| 40 | `L1475` | `// [UBAH_WARNA: Border Card Quest]` | `color: isDone ? const Color(0xFF2C2436) : const Color(0xFF383241), // [UBAH_W...` |
+| 41 | `L1521` | `// [UBAH_WARNA: Judul Card Quest]` | `color: isDone ? const Color(0xFF7E728C) : const Color(0xFFE9DEF2), // [UBAH_W...` |
+| 42 | `L1680` | `// [UBAH_WARNA: Border Tombol Scan Hidden Dungeon]` | `color: const Color(0xFFFF0055).withValues(alpha: 0.8), // [UBAH_WARNA: Border...` |
+| 43 | `L1729` | `// [UBAH_WARNA: Ikon Tombol Scan Hidden Dungeon]` | `color: Colors.white, // [UBAH_WARNA: Ikon Tombol Scan Hidden Dungeon]` |
+| 44 | `L1748` | `// [UBAH_WARNA: Judul Tombol Scan Hidden Dungeon]` | `color: const Color(0xFFFF2A6D), // [UBAH_WARNA: Judul Tombol Scan Hidden Dung...` |
+| 45 | `L2112` | `// [UBAH_WARNA: Background Card Nearby Gate]` | `color: const Color(0xFF1F1927), // [UBAH_WARNA: Background Card Nearby Gate]` |
+| 46 | `L2115` | `// [UBAH_WARNA: Border Card Nearby Gate]` | `color: const Color(0xFF383241), // [UBAH_WARNA: Border Card Nearby Gate]` |
+| 47 | `L2130` | `// [UBAH_WARNA: Ikon Radar Nearby Gate]` | `color: Color(0xFF00F4FE), // [UBAH_WARNA: Ikon Radar Nearby Gate]` |
+| 48 | `L2169` | `// [UBAH_WARNA: Tombol Enter Gate Background]` | `color: const Color(0xFF00F4FE), // [UBAH_WARNA: Tombol Enter Gate Background]` |
+| 49 | `L2186` | `// [UBAH_WARNA: Tombol Enter Gate Icon]` | `color: Colors.black, // [UBAH_WARNA: Tombol Enter Gate Icon]` |
+| 50 | `L2195` | `// [UBAH_WARNA: Tombol Enter Gate Teks]` | `color: Colors.black, // [UBAH_WARNA: Tombol Enter Gate Teks]` |
+| 51 | `L2216` | `// [UBAH_WARNA: FAB Tombol Alarm Background]` | `color: const Color(0xFF1F1927), // [UBAH_WARNA: FAB Tombol Alarm Background]` |
+| 52 | `L3989` | `// [UBAH_WARNA: FAB Hunter AI Brain Background]` | `color: const Color(0xFFB026FF), // [UBAH_WARNA: FAB Hunter AI Brain Background]` |
+| 53 | `L4002` | `// [UBAH_WARNA: FAB Hunter AI Brain Icon]` | `color: Colors.white, // [UBAH_WARNA: FAB Hunter AI Brain Icon]` |
 
 ---
 
-### File: `lib/screens/tabs/tab_map.dart` (Tab 2: LBS Map & Radar Gate)
+### File: `lib/screens/tabs/tab_map.dart` (Tab 2: Dungeon Radar & Mystery Gate (LBS))
 **Total Penanda:** 29 titik visual
 
 | No | Baris | Tag Pencarian (`Ctrl + F`) | Potongan Kode Asli |
@@ -366,7 +362,7 @@ Jika penguji berkata: *"Coba ubah warna tema aplikasi secara keseluruhan dari Cy
 
 ---
 
-### File: `lib/screens/tabs/tab_game.dart` (Tab 3: Gyroscope Mana Core Mini Game)
+### File: `lib/screens/tabs/tab_game.dart` (Tab 3: Mana Core & Gyroscope Calibration Minigame)
 **Total Penanda:** 29 titik visual
 
 | No | Baris | Tag Pencarian (`Ctrl + F`) | Potongan Kode Asli |
@@ -403,94 +399,90 @@ Jika penguji berkata: *"Coba ubah warna tema aplikasi secara keseluruhan dari Cy
 
 ---
 
-### File: `lib/screens/tabs/tab_shop.dart` (Tab 4: Monarch Treasury & DEX Valuation)
-**Total Penanda:** 32 titik visual
+### File: `lib/screens/tabs/tab_shop.dart` (Tab 4: Exchange Shop & DEX Token Valuation)
+**Total Penanda:** 30 titik visual
 
 | No | Baris | Tag Pencarian (`Ctrl + F`) | Potongan Kode Asli |
 |:---:|:---:|:---|:---|
-| 1 | `L329` | `// [UBAH_WARNA: Dialog Kalkulator Kurs Background]` | `color: const Color(0xFF140D24), // [UBAH_WARNA: Dialog Kalkulator Kurs Backgr...` |
-| 2 | `L334` | `// [UBAH_WARNA: Dialog Kalkulator Kurs Border]` | `border: Border.all(color: const Color(0xFF00F4FE).withValues(alpha: 0.5), wid...` |
-| 3 | `L385` | `// [UBAH_WARNA: Input Nilai Gold Kalkulator]` | `color: const Color(0xFFFFD166), // [UBAH_WARNA: Input Nilai Gold Kalkulator]` |
-| 4 | `L548` | `// [UBAH_WARNA: Dialog Top-Up Gold Background]` | `color: const Color(0xFF140D24), // [UBAH_WARNA: Dialog Top-Up Gold Background]` |
-| 5 | `L550` | `// [UBAH_WARNA: Dialog Top-Up Gold Border]` | `border: Border.all(color: const Color(0xFF00F4FE).withValues(alpha: 0.6), wid...` |
-| 6 | `L721` | `// [UBAH_WARNA: Tombol Top-Up Saldo Confirm]` | `backgroundColor: const Color(0xFF00F4FE), // [UBAH_WARNA: Tombol Top-Up Saldo...` |
-| 7 | `L1596` | `// [UBAH_WARNA: Latar Belakang Layar Tab Shop]` | `backgroundColor: const Color(0xFF16111E), // [UBAH_WARNA: Latar Belakang Laya...` |
-| 8 | `L1670` | `// [UBAH_WARNA: Pill Rank Header Shop Background]` | `color: const Color(0xFF2D2736), // [UBAH_WARNA: Pill Rank Header Shop Backgro...` |
-| 9 | `L1679` | `// [UBAH_WARNA: Pill Rank Header Shop Teks]` | `color: const Color(0xFF00F4FE), // [UBAH_WARNA: Pill Rank Header Shop Teks]` |
-| 10 | `L1714` | `// [UBAH_WARNA: Judul Header Monarch Treasury]` | `color: const Color(0xFFE9DEF2), // [UBAH_WARNA: Judul Header Monarch Treasury]` |
-| 11 | `L1726` | `// [UBAH_WARNA: Pill Status DEX Background]` | `color: const Color(0xFF1F1927), // [UBAH_WARNA: Pill Status DEX Background]` |
-| 12 | `L1738` | `// [UBAH_WARNA: Pill Status DEX Teks]` | `color: const Color(0xFFE6FEFF), // [UBAH_WARNA: Pill Status DEX Teks]` |
-| 13 | `L1785` | `// [UBAH_WARNA: Chip Protokol Live Market Background]` | `color: const Color(0xFF2D2736), // [UBAH_WARNA: Chip Protokol Live Market Bac...` |
-| 14 | `L1801` | `// [UBAH_WARNA: Dot Indikator Market Live]` | `color: const Color(0xFF00F4FE), // [UBAH_WARNA: Dot Indikator Market Live]` |
-| 15 | `L1826` | `// [UBAH_WARNA: Chip Vault Balance Background]` | `color: const Color(0xFF2D2736), // [UBAH_WARNA: Chip Vault Balance Background]` |
-| 16 | `L1848` | `// [UBAH_WARNA: Teks Gold Vault Balance]` | `color: const Color(0xFFFFD166), // [UBAH_WARNA: Teks Gold Vault Balance]` |
-| 17 | `L1961` | `// [UBAH_WARNA: Card Kurs Valuasi Background]` | `color: const Color(0xFF1F1927), // [UBAH_WARNA: Card Kurs Valuasi Background]` |
-| 18 | `L1963` | `// [UBAH_WARNA: Card Kurs Valuasi Border]` | `border: Border.all(color: const Color(0xFF2C1E4E), width: 0.8), // [UBAH_WARN...` |
-| 19 | `L1973` | `// [UBAH_WARNA: Ikon Kurs Valuasi Header]` | `const Icon(Icons.currency_exchange_rounded, size: 16, color: Color(0xFF00F4FE...` |
-| 20 | `L1981` | `// [UBAH_WARNA: Judul Kurs Valuasi Header]` | `color: const Color(0xFFE9DEF2), // [UBAH_WARNA: Judul Kurs Valuasi Header]` |
-| 21 | `L2057` | `// [UBAH_WARNA: Teks Total Wealth Hunter]` | `color: const Color(0xFF00F4FE), // [UBAH_WARNA: Teks Total Wealth Hunter]` |
-| 22 | `L2068` | `// [UBAH_WARNA: Tombol Kalkulator Kurs Background]` | `color: const Color(0xFFB026FF).withValues(alpha: 0.2), // [UBAH_WARNA: Tombol...` |
-| 23 | `L2081` | `// [UBAH_WARNA: Tombol Kalkulator Kurs Teks]` | `color: const Color(0xFFE5B5FF), // [UBAH_WARNA: Tombol Kalkulator Kurs Teks]` |
-| 24 | `L2245` | `// [UBAH_WARNA: Card Item Gelar Shop Background]` | `color: const Color(0xFF1F1927), // [UBAH_WARNA: Card Item Gelar Shop Background]` |
-| 25 | `L2275` | `// [UBAH_WARNA: Well Ikon Item Gelar]` | `color: const Color(0xFF2D2736), // [UBAH_WARNA: Well Ikon Item Gelar]` |
-| 26 | `L2302` | `// [UBAH_WARNA: Nama Item Gelar Shop]` | `color: const Color(0xFFE9DEF2), // [UBAH_WARNA: Nama Item Gelar Shop]` |
-| 27 | `L2338` | `// [UBAH_WARNA: Harga Item Gelar Gold]` | `color: const Color(0xFFFFD166), // [UBAH_WARNA: Harga Item Gelar Gold]` |
-| 28 | `L2363` | `// [UBAH_WARNA: Tombol Beli Title - Gradien Cyan Ungu]` | `colors: [Color(0xFF00F4FE), Color(0xFFB026FF)], // [UBAH_WARNA: Tombol Beli T...` |
-| 29 | `L2420` | `// [UBAH_WARNA: Teks Tombol Beli Gelar]` | `color: isOwned ? const Color(0xFF00F4FE) : Colors.black, // [UBAH_WARNA: Teks...` |
-| 30 | `L2599` | `// [UBAH_WARNA: Tombol Blockchain Explorer Background]` | `color: const Color(0xFF1F1927), // [UBAH_WARNA: Tombol Blockchain Explorer Ba...` |
-| 31 | `L2616` | `// [UBAH_WARNA: Ikon Tombol Blockchain Explorer]` | `child: const Icon(Icons.hub_rounded, size: 18, color: Color(0xFF00F4FE)), // ...` |
-| 32 | `L2625` | `// [UBAH_WARNA: Teks Tombol Blockchain Explorer]` | `color: const Color(0xFFE9DEF2), // [UBAH_WARNA: Teks Tombol Blockchain Explorer]` |
+| 1 | `L357` | `// [UBAH_WARNA: Dialog Kalkulator Kurs Background]` | `color: const Color(0xFF140D24), // [UBAH_WARNA: Dialog Kalkulator Kurs Backgr...` |
+| 2 | `L362` | `// [UBAH_WARNA: Dialog Kalkulator Kurs Border]` | `border: Border.all(color: const Color(0xFF00F4FE).withValues(alpha: 0.5), wid...` |
+| 3 | `L413` | `// [UBAH_WARNA: Input Nilai Gold Kalkulator]` | `color: const Color(0xFFFFD166), // [UBAH_WARNA: Input Nilai Gold Kalkulator]` |
+| 4 | `L576` | `// [UBAH_WARNA: Dialog Top-Up Gold Background]` | `color: const Color(0xFF140D24), // [UBAH_WARNA: Dialog Top-Up Gold Background]` |
+| 5 | `L578` | `// [UBAH_WARNA: Dialog Top-Up Gold Border]` | `border: Border.all(color: const Color(0xFF00F4FE).withValues(alpha: 0.6), wid...` |
+| 6 | `L749` | `// [UBAH_WARNA: Tombol Top-Up Saldo Confirm]` | `backgroundColor: const Color(0xFF00F4FE), // [UBAH_WARNA: Tombol Top-Up Saldo...` |
+| 7 | `L1625` | `// [UBAH_WARNA: Latar Belakang Layar Tab Shop]` | `backgroundColor: const Color(0xFF16111E), // [UBAH_WARNA: Latar Belakang Laya...` |
+| 8 | `L1699` | `// [UBAH_WARNA: Pill Rank Header Shop Background]` | `color: const Color(0xFF2D2736), // [UBAH_WARNA: Pill Rank Header Shop Backgro...` |
+| 9 | `L1708` | `// [UBAH_WARNA: Pill Rank Header Shop Teks]` | `color: const Color(0xFF00F4FE), // [UBAH_WARNA: Pill Rank Header Shop Teks]` |
+| 10 | `L1743` | `// [UBAH_WARNA: Judul Header Monarch Treasury]` | `color: const Color(0xFFE9DEF2), // [UBAH_WARNA: Judul Header Monarch Treasury]` |
+| 11 | `L1790` | `// [UBAH_WARNA: Chip Protokol Live Market Background]` | `color: const Color(0xFF2D2736), // [UBAH_WARNA: Chip Protokol Live Market Bac...` |
+| 12 | `L1806` | `// [UBAH_WARNA: Dot Indikator Market Live]` | `color: const Color(0xFF00F4FE), // [UBAH_WARNA: Dot Indikator Market Live]` |
+| 13 | `L1831` | `// [UBAH_WARNA: Chip Vault Balance Background]` | `color: const Color(0xFF2D2736), // [UBAH_WARNA: Chip Vault Balance Background]` |
+| 14 | `L1853` | `// [UBAH_WARNA: Teks Gold Vault Balance]` | `color: const Color(0xFFFFD166), // [UBAH_WARNA: Teks Gold Vault Balance]` |
+| 15 | `L1966` | `// [UBAH_WARNA: Card Kurs Valuasi Background]` | `color: const Color(0xFF1F1927), // [UBAH_WARNA: Card Kurs Valuasi Background]` |
+| 16 | `L1968` | `// [UBAH_WARNA: Card Kurs Valuasi Border]` | `border: Border.all(color: const Color(0xFF2C1E4E), width: 0.8), // [UBAH_WARN...` |
+| 17 | `L1978` | `// [UBAH_WARNA: Ikon Kurs Valuasi Header]` | `const Icon(Icons.currency_exchange_rounded, size: 16, color: Color(0xFF00F4FE...` |
+| 18 | `L1986` | `// [UBAH_WARNA: Judul Kurs Valuasi Header]` | `color: const Color(0xFFE9DEF2), // [UBAH_WARNA: Judul Kurs Valuasi Header]` |
+| 19 | `L2062` | `// [UBAH_WARNA: Teks Total Wealth Hunter]` | `color: const Color(0xFF00F4FE), // [UBAH_WARNA: Teks Total Wealth Hunter]` |
+| 20 | `L2073` | `// [UBAH_WARNA: Tombol Kalkulator Kurs Background]` | `color: const Color(0xFFB026FF).withValues(alpha: 0.2), // [UBAH_WARNA: Tombol...` |
+| 21 | `L2086` | `// [UBAH_WARNA: Tombol Kalkulator Kurs Teks]` | `color: const Color(0xFFE5B5FF), // [UBAH_WARNA: Tombol Kalkulator Kurs Teks]` |
+| 22 | `L2250` | `// [UBAH_WARNA: Card Item Gelar Shop Background]` | `color: const Color(0xFF1F1927), // [UBAH_WARNA: Card Item Gelar Shop Background]` |
+| 23 | `L2280` | `// [UBAH_WARNA: Well Ikon Item Gelar]` | `color: const Color(0xFF2D2736), // [UBAH_WARNA: Well Ikon Item Gelar]` |
+| 24 | `L2307` | `// [UBAH_WARNA: Nama Item Gelar Shop]` | `color: const Color(0xFFE9DEF2), // [UBAH_WARNA: Nama Item Gelar Shop]` |
+| 25 | `L2343` | `// [UBAH_WARNA: Harga Item Gelar Gold]` | `color: const Color(0xFFFFD166), // [UBAH_WARNA: Harga Item Gelar Gold]` |
+| 26 | `L2368` | `// [UBAH_WARNA: Tombol Beli Title - Gradien Cyan Ungu]` | `colors: [Color(0xFF00F4FE), Color(0xFFB026FF)], // [UBAH_WARNA: Tombol Beli T...` |
+| 27 | `L2425` | `// [UBAH_WARNA: Teks Tombol Beli Gelar]` | `color: isOwned ? const Color(0xFF00F4FE) : Colors.black, // [UBAH_WARNA: Teks...` |
+| 28 | `L2604` | `// [UBAH_WARNA: Tombol Blockchain Explorer Background]` | `color: const Color(0xFF1F1927), // [UBAH_WARNA: Tombol Blockchain Explorer Ba...` |
+| 29 | `L2621` | `// [UBAH_WARNA: Ikon Tombol Blockchain Explorer]` | `child: const Icon(Icons.hub_rounded, size: 18, color: Color(0xFF00F4FE)), // ...` |
+| 30 | `L2630` | `// [UBAH_WARNA: Teks Tombol Blockchain Explorer]` | `color: const Color(0xFFE9DEF2), // [UBAH_WARNA: Teks Tombol Blockchain Explorer]` |
 
 ---
 
-### File: `lib/screens/tabs/tab_profile.dart` (Tab 5: Hunter Profile & Course Feedback Form)
+### File: `lib/screens/tabs/tab_profile.dart` (Tab 5: Hunter Status & Kesan Pesan)
 **Total Penanda:** 37 titik visual
 
 | No | Baris | Tag Pencarian (`Ctrl + F`) | Potongan Kode Asli |
 |:---:|:---:|:---|:---|
-| 1 | `L261` | `// [UBAH_WARNA: Dialog Logout Background]` | `backgroundColor: const Color(0xFF140D24), // [UBAH_WARNA: Dialog Logout Backg...` |
-| 2 | `L264` | `// [UBAH_WARNA: Dialog Logout Border]` | `side: const BorderSide(color: Color(0xFFFF4D4D), width: 1.0), // [UBAH_WARNA:...` |
-| 3 | `L294` | `// [UBAH_WARNA: Tombol Konfirmasi Logout Background]` | `backgroundColor: const Color(0xFF93000A), // [UBAH_WARNA: Tombol Konfirmasi L...` |
-| 4 | `L430` | `// [UBAH_WARNA: Latar Belakang Layar Tab Profile]` | `backgroundColor: const Color(0xFF16111E), // [UBAH_WARNA: Latar Belakang Laya...` |
-| 5 | `L487` | `// [UBAH_WARNA: Header Rank Pill Background]` | `color: const Color(0xFF2D2736), // [UBAH_WARNA: Header Rank Pill Background]` |
-| 6 | `L496` | `// [UBAH_WARNA: Header Rank Pill Teks]` | `color: const Color(0xFF00F4FE), // [UBAH_WARNA: Header Rank Pill Teks]` |
-| 7 | `L531` | `// [UBAH_WARNA: Header Judul Profil]` | `color: const Color(0xFFE9DEF2), // [UBAH_WARNA: Header Judul Profil]` |
-| 8 | `L660` | `// [UBAH_WARNA: Card Hunter ID Background]` | `color: const Color(0xFF1F1927), // [UBAH_WARNA: Card Hunter ID Background]` |
-| 9 | `L662` | `// [UBAH_WARNA: Card Hunter ID Border]` | `border: Border.all(color: const Color(0xFF2C1E4E), width: 0.8), // [UBAH_WARN...` |
-| 10 | `L761` | `// [UBAH_WARNA: Tombol Ganti Avatar Mini Background]` | `color: const Color(0xFF00F4FE), // [UBAH_WARNA: Tombol Ganti Avatar Mini Back...` |
-| 11 | `L797` | `// [UBAH_WARNA: Nama Hunter Profile]` | `color: const Color(0xFFE9DEF2), // [UBAH_WARNA: Nama Hunter Profile]` |
-| 12 | `L802` | `// [UBAH_WARNA: Ikon Verified Hunter Profile]` | `const Icon(Icons.verified_rounded, size: 18, color: Color(0xFF00F4FE)), // [U...` |
-| 13 | `L956` | `// [UBAH_WARNA: Box Classification Badge Background]` | `color: const Color(0xFF2D2736), // [UBAH_WARNA: Box Classification Badge Back...` |
-| 14 | `L958` | `// [UBAH_WARNA: Box Classification Badge Border]` | `border: Border.all(color: const Color(0xFF383241)), // [UBAH_WARNA: Box Class...` |
-| 15 | `L1009` | `// [UBAH_WARNA: Tier Badge World Background]` | `color: const Color(0xFF110C19), // [UBAH_WARNA: Tier Badge World Background]` |
-| 16 | `L1017` | `// [UBAH_WARNA: Tier Badge World Teks]` | `color: const Color(0xFF00F4FE), // [UBAH_WARNA: Tier Badge World Teks]` |
-| 17 | `L1093` | `// [UBAH_WARNA: Card Total Gold Profile Background]` | `color: const Color(0xFF1F1927), // [UBAH_WARNA: Card Total Gold Profile Backg...` |
-| 18 | `L1095` | `// [UBAH_WARNA: Card Total Gold Profile Border]` | `border: Border.all(color: const Color(0xFF2C1E4E), width: 0.8), // [UBAH_WARN...` |
-| 19 | `L1112` | `// [UBAH_WARNA: Ikon Total Gold Profile]` | `const Icon(Icons.monetization_on_rounded, size: 16, color: Color(0xFFFFD166))...` |
-| 20 | `L1131` | `// [UBAH_WARNA: Teks Nilai Total Gold Profile]` | `color: const Color(0xFFFFD166), // [UBAH_WARNA: Teks Nilai Total Gold Profile]` |
-| 21 | `L1156` | `// [UBAH_WARNA: Card Quests Done Profile Background]` | `color: const Color(0xFF1F1927), // [UBAH_WARNA: Card Quests Done Profile Back...` |
-| 22 | `L1158` | `// [UBAH_WARNA: Card Quests Done Profile Border]` | `border: Border.all(color: const Color(0xFF2C1E4E), width: 0.8), // [UBAH_WARN...` |
-| 23 | `L1175` | `// [UBAH_WARNA: Ikon Quests Done Profile]` | `const Icon(Icons.task_alt_rounded, size: 16, color: Color(0xFF00F4FE)), // [U...` |
-| 24 | `L1204` | `// [UBAH_WARNA: Teks Nilai Quests Done Profile]` | `color: const Color(0xFF00F4FE), // [UBAH_WARNA: Teks Nilai Quests Done Profile]` |
-| 25 | `L1688` | `// [UBAH_WARNA: Switch Fingerprint Aktif]` | `activeTrackColor: const Color(0xFFB026FF), // [UBAH_WARNA: Switch Fingerprint...` |
-| 26 | `L1759` | `// [UBAH_WARNA: Switch Face Scan Aktif]` | `activeTrackColor: const Color(0xFF00F4FE), // [UBAH_WARNA: Switch Face Scan A...` |
-| 27 | `L1884` | `// [UBAH_WARNA: Label Tipe Penyimpanan Feedback]` | `color: const Color(0xFF9B8BA1), // [UBAH_WARNA: Label Tipe Penyimpanan Feedback]` |
-| 28 | `L1986` | `// [UBAH_WARNA: Background Input Saran Kesan]` | `color: const Color(0xFF110C19), // [UBAH_WARNA: Background Input Saran Kesan]` |
-| 29 | `L1988` | `// [UBAH_WARNA: Border Input Saran Kesan]` | `border: Border.all(color: const Color(0xFF383241)), // [UBAH_WARNA: Border In...` |
-| 30 | `L1994` | `// [UBAH_WARNA: Warna Teks Input Saran Kesan]` | `style: GoogleFonts.plusJakartaSans(fontSize: 12, color: const Color(0xFFE9DEF...` |
-| 31 | `L1999` | `// [UBAH_WARNA: Hint Input Saran Kesan]` | `hintStyle: GoogleFonts.plusJakartaSans(fontSize: 11, color: const Color(0xFF9...` |
-| 32 | `L2053` | `// [UBAH_WARNA: Tombol Submit Feedback]` | `colors: [Color(0xFFB026FF), Color(0xFF9200DB)], // [UBAH_WARNA: Tombol Submit...` |
-| 33 | `L2077` | `// [UBAH_WARNA: Teks Tombol Submit Feedback]` | `color: Colors.white, // [UBAH_WARNA: Teks Tombol Submit Feedback]` |
-| 34 | `L2111` | `// [UBAH_WARNA: Tombol Logout Background]` | `color: const Color(0xFF93000A).withValues(alpha: 0.2), // [UBAH_WARNA: Tombol...` |
-| 35 | `L2113` | `// [UBAH_WARNA: Tombol Logout Border]` | `border: Border.all(color: const Color(0xFF93000A).withValues(alpha: 0.6)), //...` |
-| 36 | `L2124` | `// [UBAH_WARNA: Ikon Tombol Logout]` | `const Icon(Icons.power_settings_new_rounded, size: 18, color: Color(0xFFFFB4A...` |
-| 37 | `L2132` | `// [UBAH_WARNA: Teks Tombol Logout]` | `color: const Color(0xFFFFB4AB), // [UBAH_WARNA: Teks Tombol Logout]` |
+| 1 | `L279` | `// [UBAH_WARNA: Dialog Logout Background]` | `backgroundColor: const Color(0xFF140D24), // [UBAH_WARNA: Dialog Logout Backg...` |
+| 2 | `L282` | `// [UBAH_WARNA: Dialog Logout Border]` | `side: const BorderSide(color: Color(0xFFFF4D4D), width: 1.0), // [UBAH_WARNA:...` |
+| 3 | `L312` | `// [UBAH_WARNA: Tombol Konfirmasi Logout Background]` | `backgroundColor: const Color(0xFF93000A), // [UBAH_WARNA: Tombol Konfirmasi L...` |
+| 4 | `L448` | `// [UBAH_WARNA: Latar Belakang Layar Tab Profile]` | `backgroundColor: const Color(0xFF16111E), // [UBAH_WARNA: Latar Belakang Laya...` |
+| 5 | `L505` | `// [UBAH_WARNA: Header Rank Pill Background]` | `color: const Color(0xFF2D2736), // [UBAH_WARNA: Header Rank Pill Background]` |
+| 6 | `L514` | `// [UBAH_WARNA: Header Rank Pill Teks]` | `color: const Color(0xFF00F4FE), // [UBAH_WARNA: Header Rank Pill Teks]` |
+| 7 | `L549` | `// [UBAH_WARNA: Header Judul Profil]` | `color: const Color(0xFFE9DEF2), // [UBAH_WARNA: Header Judul Profil]` |
+| 8 | `L659` | `// [UBAH_WARNA: Card Hunter ID Background]` | `color: const Color(0xFF1F1927), // [UBAH_WARNA: Card Hunter ID Background]` |
+| 9 | `L661` | `// [UBAH_WARNA: Card Hunter ID Border]` | `border: Border.all(color: const Color(0xFF2C1E4E), width: 0.8), // [UBAH_WARN...` |
+| 10 | `L760` | `// [UBAH_WARNA: Tombol Ganti Avatar Mini Background]` | `color: const Color(0xFF00F4FE), // [UBAH_WARNA: Tombol Ganti Avatar Mini Back...` |
+| 11 | `L796` | `// [UBAH_WARNA: Nama Hunter Profile]` | `color: const Color(0xFFE9DEF2), // [UBAH_WARNA: Nama Hunter Profile]` |
+| 12 | `L801` | `// [UBAH_WARNA: Ikon Verified Hunter Profile]` | `const Icon(Icons.verified_rounded, size: 18, color: Color(0xFF00F4FE)), // [U...` |
+| 13 | `L955` | `// [UBAH_WARNA: Box Classification Badge Background]` | `color: const Color(0xFF2D2736), // [UBAH_WARNA: Box Classification Badge Back...` |
+| 14 | `L957` | `// [UBAH_WARNA: Box Classification Badge Border]` | `border: Border.all(color: const Color(0xFF383241)), // [UBAH_WARNA: Box Class...` |
+| 15 | `L1008` | `// [UBAH_WARNA: Tier Badge World Background]` | `color: const Color(0xFF110C19), // [UBAH_WARNA: Tier Badge World Background]` |
+| 16 | `L1016` | `// [UBAH_WARNA: Tier Badge World Teks]` | `color: const Color(0xFF00F4FE), // [UBAH_WARNA: Tier Badge World Teks]` |
+| 17 | `L1092` | `// [UBAH_WARNA: Card Total Gold Profile Background]` | `color: const Color(0xFF1F1927), // [UBAH_WARNA: Card Total Gold Profile Backg...` |
+| 18 | `L1094` | `// [UBAH_WARNA: Card Total Gold Profile Border]` | `border: Border.all(color: const Color(0xFF2C1E4E), width: 0.8), // [UBAH_WARN...` |
+| 19 | `L1111` | `// [UBAH_WARNA: Ikon Total Gold Profile]` | `const Icon(Icons.monetization_on_rounded, size: 16, color: Color(0xFFFFD166))...` |
+| 20 | `L1130` | `// [UBAH_WARNA: Teks Nilai Total Gold Profile]` | `color: const Color(0xFFFFD166), // [UBAH_WARNA: Teks Nilai Total Gold Profile]` |
+| 21 | `L1155` | `// [UBAH_WARNA: Card Quests Done Profile Background]` | `color: const Color(0xFF1F1927), // [UBAH_WARNA: Card Quests Done Profile Back...` |
+| 22 | `L1157` | `// [UBAH_WARNA: Card Quests Done Profile Border]` | `border: Border.all(color: const Color(0xFF2C1E4E), width: 0.8), // [UBAH_WARN...` |
+| 23 | `L1174` | `// [UBAH_WARNA: Ikon Quests Done Profile]` | `const Icon(Icons.task_alt_rounded, size: 16, color: Color(0xFF00F4FE)), // [U...` |
+| 24 | `L1203` | `// [UBAH_WARNA: Teks Nilai Quests Done Profile]` | `color: const Color(0xFF00F4FE), // [UBAH_WARNA: Teks Nilai Quests Done Profile]` |
+| 25 | `L1687` | `// [UBAH_WARNA: Switch Fingerprint Aktif]` | `activeTrackColor: const Color(0xFFB026FF), // [UBAH_WARNA: Switch Fingerprint...` |
+| 26 | `L1758` | `// [UBAH_WARNA: Switch Face Scan Aktif]` | `activeTrackColor: const Color(0xFF00F4FE), // [UBAH_WARNA: Switch Face Scan A...` |
+| 27 | `L1883` | `// [UBAH_WARNA: Label Tipe Penyimpanan Feedback]` | `color: const Color(0xFF9B8BA1), // [UBAH_WARNA: Label Tipe Penyimpanan Feedback]` |
+| 28 | `L1985` | `// [UBAH_WARNA: Background Input Saran Kesan]` | `color: const Color(0xFF110C19), // [UBAH_WARNA: Background Input Saran Kesan]` |
+| 29 | `L1987` | `// [UBAH_WARNA: Border Input Saran Kesan]` | `border: Border.all(color: const Color(0xFF383241)), // [UBAH_WARNA: Border In...` |
+| 30 | `L1993` | `// [UBAH_WARNA: Warna Teks Input Saran Kesan]` | `style: GoogleFonts.plusJakartaSans(fontSize: 12, color: const Color(0xFFE9DEF...` |
+| 31 | `L1998` | `// [UBAH_WARNA: Hint Input Saran Kesan]` | `hintStyle: GoogleFonts.plusJakartaSans(fontSize: 11, color: const Color(0xFF9...` |
+| 32 | `L2052` | `// [UBAH_WARNA: Tombol Submit Feedback]` | `colors: [Color(0xFFB026FF), Color(0xFF9200DB)], // [UBAH_WARNA: Tombol Submit...` |
+| 33 | `L2076` | `// [UBAH_WARNA: Teks Tombol Submit Feedback]` | `color: Colors.white, // [UBAH_WARNA: Teks Tombol Submit Feedback]` |
+| 34 | `L2110` | `// [UBAH_WARNA: Tombol Logout Background]` | `color: const Color(0xFF93000A).withValues(alpha: 0.2), // [UBAH_WARNA: Tombol...` |
+| 35 | `L2112` | `// [UBAH_WARNA: Tombol Logout Border]` | `border: Border.all(color: const Color(0xFF93000A).withValues(alpha: 0.6)), //...` |
+| 36 | `L2123` | `// [UBAH_WARNA: Ikon Tombol Logout]` | `const Icon(Icons.power_settings_new_rounded, size: 18, color: Color(0xFFFFB4A...` |
+| 37 | `L2131` | `// [UBAH_WARNA: Teks Tombol Logout]` | `color: const Color(0xFFFFB4AB), // [UBAH_WARNA: Teks Tombol Logout]` |
 
 ---
 
-## 7. FITUR SPESIFIK & SENSOR PROTOKOL
-
-### File: `lib/screens/features/appearance_quest_screen.dart` (Appearance Quest (21:00 Night Skincare Routine))
+### File: `lib/screens/features/appearance_quest_screen.dart` (Appearance / Skincare Quest Time-Locked)
 **Total Penanda:** 23 titik visual
 
 | No | Baris | Tag Pencarian (`Ctrl + F`) | Potongan Kode Asli |
@@ -521,40 +513,43 @@ Jika penguji berkata: *"Coba ubah warna tema aplikasi secara keseluruhan dari Cy
 
 ---
 
-### File: `lib/screens/features/chat_ai_screen.dart` (Hunter AI Chat Assistant (Gemini 2.5 Flash))
-**Total Penanda:** 25 titik visual
+### File: `lib/screens/features/workout_hub_screen.dart` (Workout Hub / Camera ML-Kit Pose Detection)
+**Total Penanda:** 28 titik visual
 
 | No | Baris | Tag Pencarian (`Ctrl + F`) | Potongan Kode Asli |
 |:---:|:---:|:---|:---|
-| 1 | `L712` | `// [UBAH_WARNA: Latar Belakang Layar Chat AI]` | `backgroundColor: const Color(0xFF110C19), // [UBAH_WARNA: Latar Belakang Laya...` |
-| 2 | `L755` | `// [UBAH_WARNA: Header App Bar Chat AI]` | `color: const Color(0xFF110C19), // [UBAH_WARNA: Header App Bar Chat AI]` |
-| 3 | `L758` | `// [UBAH_WARNA: Header App Bar Chat AI Border]` | `color: Color(0xFF2C1E4E), // [UBAH_WARNA: Header App Bar Chat AI Border]` |
-| 4 | `L782` | `// [UBAH_WARNA: Tombol Kembali Chat AI]` | `color: const Color(0xFF1F1927), // [UBAH_WARNA: Tombol Kembali Chat AI]` |
-| 5 | `L811` | `// [UBAH_WARNA: Teks Judul Hunter Assistant]` | `color: const Color(0xFF63F7FF), // [UBAH_WARNA: Teks Judul Hunter Assistant]` |
-| 6 | `L831` | `// [UBAH_WARNA: Dot Online Status Chat AI]` | `color: Color(0xFF00F4FE), // [UBAH_WARNA: Dot Online Status Chat AI]` |
-| 7 | `L875` | `// [UBAH_WARNA: Tombol Konfigurasi Persona Background]` | `color: const Color(0xFF00F4FE).withValues(alpha: 0.6), // [UBAH_WARNA: Tombol...` |
-| 8 | `L916` | `// [UBAH_WARNA: Chip Persona Aktif Background]` | `color: const Color(0xFF1F1927), // [UBAH_WARNA: Chip Persona Aktif Background]` |
-| 9 | `L946` | `// [UBAH_WARNA: Teks Nama Persona Aktif]` | `color: const Color(0xFF63F7FF), // [UBAH_WARNA: Teks Nama Persona Aktif]` |
-| 10 | `L997` | `// [UBAH_WARNA: Avatar AI Chat Bubble]` | `color: const Color(0xFF110C19), // [UBAH_WARNA: Avatar AI Chat Bubble]` |
-| 11 | `L1023` | `// [UBAH_WARNA: Background Bubble Pesan AI]` | `color: const Color(0xFF1F1927), // [UBAH_WARNA: Background Bubble Pesan AI]` |
-| 12 | `L1031` | `// [UBAH_WARNA: Border Bubble Pesan AI]` | `color: const Color(0xFF2C1E4E), // [UBAH_WARNA: Border Bubble Pesan AI]` |
-| 13 | `L1056` | `// [UBAH_WARNA: Tag Pengirim Bubble Pesan AI]` | `color: const Color(0xFF00F4FE), // [UBAH_WARNA: Tag Pengirim Bubble Pesan AI]` |
-| 14 | `L1155` | `// [UBAH_WARNA: Bubble Pesan User Gradien Ungu]` | `gradient: const LinearGradient( // [UBAH_WARNA: Bubble Pesan User Gradien Ungu]` |
-| 15 | `L1182` | `// [UBAH_WARNA: Teks Pesan Bubble User]` | `color: Colors.white, // [UBAH_WARNA: Teks Pesan Bubble User]` |
-| 16 | `L1238` | `// [UBAH_WARNA: Avatar User Chat Bubble]` | `color: const Color(0xFFB026FF), // [UBAH_WARNA: Avatar User Chat Bubble]` |
-| 17 | `L1285` | `// [UBAH_WARNA: Background Block Code Chat AI]` | `color: const Color(0xFF140D28), // [UBAH_WARNA: Background Block Code Chat AI]` |
-| 18 | `L1310` | `// [UBAH_WARNA: Teks Highlight Bold Pesan AI]` | `color: const Color(0xFF00F4FE), // [UBAH_WARNA: Teks Highlight Bold Pesan AI]` |
-| 19 | `L1435` | `// [UBAH_WARNA: Container Bar Input Chat AI]` | `color: const Color(0xFF110C19), // [UBAH_WARNA: Container Bar Input Chat AI]` |
-| 20 | `L1458` | `// [UBAH_WARNA: Background Box Input Chat AI]` | `color: const Color(0xFF1F1927), // [UBAH_WARNA: Background Box Input Chat AI]` |
-| 21 | `L1461` | `// [UBAH_WARNA: Border Box Input Chat AI]` | `color: const Color(0xFF383241), // [UBAH_WARNA: Border Box Input Chat AI]` |
-| 22 | `L1490` | `// [UBAH_WARNA: Warna Teks Input Chat AI]` | `color: const Color(0xFFE9DEF2), // [UBAH_WARNA: Warna Teks Input Chat AI]` |
-| 23 | `L1497` | `// [UBAH_WARNA: Warna Hint Input Chat AI]` | `color: const Color(0xFF5D5373), // [UBAH_WARNA: Warna Hint Input Chat AI]` |
-| 24 | `L1541` | `// [UBAH_WARNA: Tombol Kirim Pesan Chat AI]` | `color: const Color(0xFF00F4FE), // [UBAH_WARNA: Tombol Kirim Pesan Chat AI]` |
-| 25 | `L1554` | `// [UBAH_WARNA: Ikon Send Pesan Chat AI]` | `color: Color(0xFF08050E), // [UBAH_WARNA: Ikon Send Pesan Chat AI]` |
+| 1 | `L434` | `// [UBAH_WARNA: Latar Belakang Layar Workout Hub]` | `backgroundColor: const Color(0xFF08050E), // [UBAH_WARNA: Latar Belakang Laya...` |
+| 2 | `L501` | `// [UBAH_WARNA: Header Top Bar Workout Hub]` | `color: const Color(0xFF08050E).withValues(alpha: 0.95), // [UBAH_WARNA: Heade...` |
+| 3 | `L504` | `// [UBAH_WARNA: Header Top Bar Workout Hub Border]` | `color: Color(0xFF2C1E4E), // [UBAH_WARNA: Header Top Bar Workout Hub Border]` |
+| 4 | `L522` | `// [UBAH_WARNA: Tombol Kembali Workout Hub]` | `color: const Color(0xFF120D24), // [UBAH_WARNA: Tombol Kembali Workout Hub]` |
+| 5 | `L572` | `// [UBAH_WARNA: Teks Status Header Workout Hub]` | `color: const Color(0xFF00E5FF), // [UBAH_WARNA: Teks Status Header Workout Hub]` |
+| 6 | `L588` | `// [UBAH_WARNA: Judul Header Workout Hub]` | `color: const Color(0xFFE9DEF2), // [UBAH_WARNA: Judul Header Workout Hub]` |
+| 7 | `L659` | `// [UBAH_WARNA: Tombol Reset Workout Hub]` | `color: const Color(0xFF120D24), // [UBAH_WARNA: Tombol Reset Workout Hub]` |
+| 8 | `L706` | `// [UBAH_WARNA: Card System Quest Workout Background]` | `color: const Color(0xFF120D24), // [UBAH_WARNA: Card System Quest Workout Bac...` |
+| 9 | `L709` | `// [UBAH_WARNA: Card System Quest Workout Border]` | `color: const Color(0xFF2C1E4E), // [UBAH_WARNA: Card System Quest Workout Bor...` |
+| 10 | `L848` | `// [UBAH_WARNA: Judul Misi Workout System]` | `color: const Color(0xFFB026FF), // [UBAH_WARNA: Judul Misi Workout System]` |
+| 11 | `L911` | `// [UBAH_WARNA: Teks Reward Gold Workout]` | `color: const Color(0xFF00E5FF), // [UBAH_WARNA: Teks Reward Gold Workout]` |
+| 12 | `L942` | `// [UBAH_WARNA: Teks Reward EXP Workout]` | `color: const Color(0xFF9B8BA1), // [UBAH_WARNA: Teks Reward EXP Workout]` |
+| 13 | `L1030` | `// [UBAH_WARNA: Box Metrik Statistik Workout]` | `color: const Color(0xFF120D24), // [UBAH_WARNA: Box Metrik Statistik Workout]` |
+| 14 | `L1062` | `// [UBAH_WARNA: Nilai Angka Metrik Workout]` | `color: Colors.white, // [UBAH_WARNA: Nilai Angka Metrik Workout]` |
+| 15 | `L1091` | `// [UBAH_WARNA: Box Peringatan Penalti Workout]` | `color: const Color(0xFF120D24), // [UBAH_WARNA: Box Peringatan Penalti Workout]` |
+| 16 | `L1250` | `// [UBAH_WARNA: Box Critical Penalty Notice]` | `color: const Color(0xFF120D24), // [UBAH_WARNA: Box Critical Penalty Notice]` |
+| 17 | `L1386` | `// [UBAH_WARNA: Card Rutinitas Latihan Background]` | `color: const Color(0xFF120D24), // [UBAH_WARNA: Card Rutinitas Latihan Backgr...` |
+| 18 | `L1389` | `// [UBAH_WARNA: Card Rutinitas Latihan Border]` | `color: const Color(0xFFB026FF).withValues(alpha: 0.4), // [UBAH_WARNA: Card R...` |
+| 19 | `L1418` | `// [UBAH_WARNA: Judul Rutinitas 4 Latihan Fisik]` | `color: Colors.white, // [UBAH_WARNA: Judul Rutinitas 4 Latihan Fisik]` |
+| 20 | `L1435` | `// [UBAH_WARNA: Teks Progress Rutinitas Latihan]` | `color: const Color(0xFF00E5FF), // [UBAH_WARNA: Teks Progress Rutinitas Latihan]` |
+| 21 | `L1545` | `// [UBAH_WARNA: Bottom Bar Item Latihan Fisik]` | `color: const Color(0xFF08050E), // [UBAH_WARNA: Bottom Bar Item Latihan Fisik]` |
+| 22 | `L1602` | `// [UBAH_WARNA: Box Counter Target Repetisi]` | `color: const Color(0xFF1F1927), // [UBAH_WARNA: Box Counter Target Repetisi]` |
+| 23 | `L1626` | `// [UBAH_WARNA: Tombol Buka Kamera Deteksi Pose]` | `color: const Color(0xFFB026FF), // [UBAH_WARNA: Tombol Buka Kamera Deteksi Pose]` |
+| 24 | `L1696` | `// [UBAH_WARNA: Tombol Selesaikan Latihan - Ungu Gelap]` | `Color(0xFF7000A8), // [UBAH_WARNA: Tombol Selesaikan Latihan - Ungu Gelap]` |
+| 25 | `L1697` | `// [UBAH_WARNA: Tombol Selesaikan Latihan - Ungu Terang]` | `Color(0xFFB026FF), // [UBAH_WARNA: Tombol Selesaikan Latihan - Ungu Terang]` |
+| 26 | `L1698` | `// [UBAH_WARNA: Tombol Selesaikan Latihan - Cyan Aksen]` | `Color(0xFF00F4FE), // [UBAH_WARNA: Tombol Selesaikan Latihan - Cyan Aksen]` |
+| 27 | `L1736` | `// [UBAH_WARNA: Ikon Tombol Selesaikan Latihan]` | `? Colors.white // [UBAH_WARNA: Ikon Tombol Selesaikan Latihan]` |
+| 28 | `L1751` | `// [UBAH_WARNA: Teks Tombol Selesaikan Latihan]` | `? Colors.white // [UBAH_WARNA: Teks Tombol Selesaikan Latihan]` |
 
 ---
 
-### File: `lib/screens/features/quest_sensor.dart` (Cardio Shake Exercise (Accelerometer Sensor))
+### File: `lib/screens/features/quest_sensor.dart` (Sensor Calibration & Accelerometer HUD)
 **Total Penanda:** 29 titik visual
 
 | No | Baris | Tag Pencarian (`Ctrl + F`) | Potongan Kode Asli |
@@ -591,7 +586,7 @@ Jika penguji berkata: *"Coba ubah warna tema aplikasi secara keseluruhan dari Cy
 
 ---
 
-### File: `lib/screens/features/study_focus_screen.dart` (Pomodoro Study Focus (Sensor Postur Belajar))
+### File: `lib/screens/features/study_focus_screen.dart` (Study Focus / Pomodoro Hunter Timer)
 **Total Penanda:** 21 titik visual
 
 | No | Baris | Tag Pencarian (`Ctrl + F`) | Potongan Kode Asli |
@@ -620,45 +615,40 @@ Jika penguji berkata: *"Coba ubah warna tema aplikasi secara keseluruhan dari Cy
 
 ---
 
-### File: `lib/screens/features/workout_hub_screen.dart` (Workout Hub 4 Latihan Fisik (Pose Detection Gateway))
-**Total Penanda:** 28 titik visual
+### File: `lib/screens/features/chat_ai_screen.dart` (System Guide AI & Chat Assistant)
+**Total Penanda:** 25 titik visual
 
 | No | Baris | Tag Pencarian (`Ctrl + F`) | Potongan Kode Asli |
 |:---:|:---:|:---|:---|
-| 1 | `L434` | `// [UBAH_WARNA: Latar Belakang Layar Workout Hub]` | `backgroundColor: const Color(0xFF08050E), // [UBAH_WARNA: Latar Belakang Laya...` |
-| 2 | `L501` | `// [UBAH_WARNA: Header Top Bar Workout Hub]` | `color: const Color(0xFF08050E).withValues(alpha: 0.95), // [UBAH_WARNA: Heade...` |
-| 3 | `L504` | `// [UBAH_WARNA: Header Top Bar Workout Hub Border]` | `color: Color(0xFF2C1E4E), // [UBAH_WARNA: Header Top Bar Workout Hub Border]` |
-| 4 | `L522` | `// [UBAH_WARNA: Tombol Kembali Workout Hub]` | `color: const Color(0xFF120D24), // [UBAH_WARNA: Tombol Kembali Workout Hub]` |
-| 5 | `L572` | `// [UBAH_WARNA: Teks Status Header Workout Hub]` | `color: const Color(0xFF00E5FF), // [UBAH_WARNA: Teks Status Header Workout Hub]` |
-| 6 | `L588` | `// [UBAH_WARNA: Judul Header Workout Hub]` | `color: const Color(0xFFE9DEF2), // [UBAH_WARNA: Judul Header Workout Hub]` |
-| 7 | `L659` | `// [UBAH_WARNA: Tombol Reset Workout Hub]` | `color: const Color(0xFF120D24), // [UBAH_WARNA: Tombol Reset Workout Hub]` |
-| 8 | `L706` | `// [UBAH_WARNA: Card System Quest Workout Background]` | `color: const Color(0xFF120D24), // [UBAH_WARNA: Card System Quest Workout Bac...` |
-| 9 | `L709` | `// [UBAH_WARNA: Card System Quest Workout Border]` | `color: const Color(0xFF2C1E4E), // [UBAH_WARNA: Card System Quest Workout Bor...` |
-| 10 | `L848` | `// [UBAH_WARNA: Judul Misi Workout System]` | `color: const Color(0xFFB026FF), // [UBAH_WARNA: Judul Misi Workout System]` |
-| 11 | `L911` | `// [UBAH_WARNA: Teks Reward Gold Workout]` | `color: const Color(0xFF00E5FF), // [UBAH_WARNA: Teks Reward Gold Workout]` |
-| 12 | `L942` | `// [UBAH_WARNA: Teks Reward EXP Workout]` | `color: const Color(0xFF9B8BA1), // [UBAH_WARNA: Teks Reward EXP Workout]` |
-| 13 | `L1030` | `// [UBAH_WARNA: Box Metrik Statistik Workout]` | `color: const Color(0xFF120D24), // [UBAH_WARNA: Box Metrik Statistik Workout]` |
-| 14 | `L1062` | `// [UBAH_WARNA: Nilai Angka Metrik Workout]` | `color: Colors.white, // [UBAH_WARNA: Nilai Angka Metrik Workout]` |
-| 15 | `L1091` | `// [UBAH_WARNA: Box Peringatan Penalti Workout]` | `color: const Color(0xFF120D24), // [UBAH_WARNA: Box Peringatan Penalti Workout]` |
-| 16 | `L1250` | `// [UBAH_WARNA: Box Critical Penalty Notice]` | `color: const Color(0xFF120D24), // [UBAH_WARNA: Box Critical Penalty Notice]` |
-| 17 | `L1386` | `// [UBAH_WARNA: Card Rutinitas Latihan Background]` | `color: const Color(0xFF120D24), // [UBAH_WARNA: Card Rutinitas Latihan Backgr...` |
-| 18 | `L1389` | `// [UBAH_WARNA: Card Rutinitas Latihan Border]` | `color: const Color(0xFFB026FF).withValues(alpha: 0.4), // [UBAH_WARNA: Card R...` |
-| 19 | `L1418` | `// [UBAH_WARNA: Judul Rutinitas 4 Latihan Fisik]` | `color: Colors.white, // [UBAH_WARNA: Judul Rutinitas 4 Latihan Fisik]` |
-| 20 | `L1435` | `// [UBAH_WARNA: Teks Progress Rutinitas Latihan]` | `color: const Color(0xFF00E5FF), // [UBAH_WARNA: Teks Progress Rutinitas Latihan]` |
-| 21 | `L1545` | `// [UBAH_WARNA: Bottom Bar Item Latihan Fisik]` | `color: const Color(0xFF08050E), // [UBAH_WARNA: Bottom Bar Item Latihan Fisik]` |
-| 22 | `L1602` | `// [UBAH_WARNA: Box Counter Target Repetisi]` | `color: const Color(0xFF1F1927), // [UBAH_WARNA: Box Counter Target Repetisi]` |
-| 23 | `L1626` | `// [UBAH_WARNA: Tombol Buka Kamera Deteksi Pose]` | `color: const Color(0xFFB026FF), // [UBAH_WARNA: Tombol Buka Kamera Deteksi Pose]` |
-| 24 | `L1696` | `// [UBAH_WARNA: Tombol Selesaikan Latihan - Ungu Gelap]` | `Color(0xFF7000A8), // [UBAH_WARNA: Tombol Selesaikan Latihan - Ungu Gelap]` |
-| 25 | `L1697` | `// [UBAH_WARNA: Tombol Selesaikan Latihan - Ungu Terang]` | `Color(0xFFB026FF), // [UBAH_WARNA: Tombol Selesaikan Latihan - Ungu Terang]` |
-| 26 | `L1698` | `// [UBAH_WARNA: Tombol Selesaikan Latihan - Cyan Aksen]` | `Color(0xFF00F4FE), // [UBAH_WARNA: Tombol Selesaikan Latihan - Cyan Aksen]` |
-| 27 | `L1736` | `// [UBAH_WARNA: Ikon Tombol Selesaikan Latihan]` | `? Colors.white // [UBAH_WARNA: Ikon Tombol Selesaikan Latihan]` |
-| 28 | `L1751` | `// [UBAH_WARNA: Teks Tombol Selesaikan Latihan]` | `? Colors.white // [UBAH_WARNA: Teks Tombol Selesaikan Latihan]` |
+| 1 | `L717` | `// [UBAH_WARNA: Latar Belakang Layar Chat AI]` | `backgroundColor: const Color(0xFF110C19), // [UBAH_WARNA: Latar Belakang Laya...` |
+| 2 | `L760` | `// [UBAH_WARNA: Header App Bar Chat AI]` | `color: const Color(0xFF110C19), // [UBAH_WARNA: Header App Bar Chat AI]` |
+| 3 | `L763` | `// [UBAH_WARNA: Header App Bar Chat AI Border]` | `color: Color(0xFF2C1E4E), // [UBAH_WARNA: Header App Bar Chat AI Border]` |
+| 4 | `L787` | `// [UBAH_WARNA: Tombol Kembali Chat AI]` | `color: const Color(0xFF1F1927), // [UBAH_WARNA: Tombol Kembali Chat AI]` |
+| 5 | `L816` | `// [UBAH_WARNA: Teks Judul Hunter Assistant]` | `color: const Color(0xFF63F7FF), // [UBAH_WARNA: Teks Judul Hunter Assistant]` |
+| 6 | `L836` | `// [UBAH_WARNA: Dot Online Status Chat AI]` | `color: Color(0xFF00F4FE), // [UBAH_WARNA: Dot Online Status Chat AI]` |
+| 7 | `L880` | `// [UBAH_WARNA: Tombol Konfigurasi Persona Background]` | `color: const Color(0xFF00F4FE).withValues(alpha: 0.6), // [UBAH_WARNA: Tombol...` |
+| 8 | `L921` | `// [UBAH_WARNA: Chip Persona Aktif Background]` | `color: const Color(0xFF1F1927), // [UBAH_WARNA: Chip Persona Aktif Background]` |
+| 9 | `L951` | `// [UBAH_WARNA: Teks Nama Persona Aktif]` | `color: const Color(0xFF63F7FF), // [UBAH_WARNA: Teks Nama Persona Aktif]` |
+| 10 | `L1002` | `// [UBAH_WARNA: Avatar AI Chat Bubble]` | `color: const Color(0xFF110C19), // [UBAH_WARNA: Avatar AI Chat Bubble]` |
+| 11 | `L1028` | `// [UBAH_WARNA: Background Bubble Pesan AI]` | `color: const Color(0xFF1F1927), // [UBAH_WARNA: Background Bubble Pesan AI]` |
+| 12 | `L1036` | `// [UBAH_WARNA: Border Bubble Pesan AI]` | `color: const Color(0xFF2C1E4E), // [UBAH_WARNA: Border Bubble Pesan AI]` |
+| 13 | `L1061` | `// [UBAH_WARNA: Tag Pengirim Bubble Pesan AI]` | `color: const Color(0xFF00F4FE), // [UBAH_WARNA: Tag Pengirim Bubble Pesan AI]` |
+| 14 | `L1160` | `// [UBAH_WARNA: Bubble Pesan User Gradien Ungu]` | `gradient: const LinearGradient( // [UBAH_WARNA: Bubble Pesan User Gradien Ungu]` |
+| 15 | `L1187` | `// [UBAH_WARNA: Teks Pesan Bubble User]` | `color: Colors.white, // [UBAH_WARNA: Teks Pesan Bubble User]` |
+| 16 | `L1243` | `// [UBAH_WARNA: Avatar User Chat Bubble]` | `color: const Color(0xFFB026FF), // [UBAH_WARNA: Avatar User Chat Bubble]` |
+| 17 | `L1290` | `// [UBAH_WARNA: Background Block Code Chat AI]` | `color: const Color(0xFF140D28), // [UBAH_WARNA: Background Block Code Chat AI]` |
+| 18 | `L1315` | `// [UBAH_WARNA: Teks Highlight Bold Pesan AI]` | `color: const Color(0xFF00F4FE), // [UBAH_WARNA: Teks Highlight Bold Pesan AI]` |
+| 19 | `L1440` | `// [UBAH_WARNA: Container Bar Input Chat AI]` | `color: const Color(0xFF110C19), // [UBAH_WARNA: Container Bar Input Chat AI]` |
+| 20 | `L1463` | `// [UBAH_WARNA: Background Box Input Chat AI]` | `color: const Color(0xFF1F1927), // [UBAH_WARNA: Background Box Input Chat AI]` |
+| 21 | `L1466` | `// [UBAH_WARNA: Border Box Input Chat AI]` | `color: const Color(0xFF383241), // [UBAH_WARNA: Border Box Input Chat AI]` |
+| 22 | `L1495` | `// [UBAH_WARNA: Warna Teks Input Chat AI]` | `color: const Color(0xFFE9DEF2), // [UBAH_WARNA: Warna Teks Input Chat AI]` |
+| 23 | `L1502` | `// [UBAH_WARNA: Warna Hint Input Chat AI]` | `color: const Color(0xFF5D5373), // [UBAH_WARNA: Warna Hint Input Chat AI]` |
+| 24 | `L1546` | `// [UBAH_WARNA: Tombol Kirim Pesan Chat AI]` | `color: const Color(0xFF00F4FE), // [UBAH_WARNA: Tombol Kirim Pesan Chat AI]` |
+| 25 | `L1559` | `// [UBAH_WARNA: Ikon Send Pesan Chat AI]` | `color: Color(0xFF08050E), // [UBAH_WARNA: Ikon Send Pesan Chat AI]` |
 
 ---
 
-## 8. DIALOG & POPUP INTERAKTIF
-
-### File: `lib/widgets/avatar_adjust_dialog.dart` (Dialog Pengaturan & Crop Avatar)
+### File: `lib/widgets/avatar_adjust_dialog.dart` (Dialog Pengatur Posisi Avatar)
 **Total Penanda:** 18 titik visual
 
 | No | Baris | Tag Pencarian (`Ctrl + F`) | Potongan Kode Asli |
@@ -684,7 +674,7 @@ Jika penguji berkata: *"Coba ubah warna tema aplikasi secara keseluruhan dari Cy
 
 ---
 
-### File: `lib/widgets/face_scan_dialog.dart` (Dialog Biometrik Face Recognition Scanner)
+### File: `lib/widgets/face_scan_dialog.dart` (Dialog Simulasi Biometrik Face Scan)
 **Total Penanda:** 25 titik visual
 
 | No | Baris | Tag Pencarian (`Ctrl + F`) | Potongan Kode Asli |
@@ -716,25 +706,3 @@ Jika penguji berkata: *"Coba ubah warna tema aplikasi secara keseluruhan dari Cy
 | 25 | `L779` | `// [UBAH_WARNA: Teks Tombol Rekam Wajah]` | `foregroundColor: Colors.black, // [UBAH_WARNA: Teks Tombol Rekam Wajah]` |
 
 ---
-
-## 9. CHEAT-SHEET SKENARIO TANTANGAN PENGUJI
-
-| Jika Penguji Meminta... | Buka File | Cari Tag (`Ctrl + F`) | Ganti Menjadi Contoh |
-|:---|:---|:---|:---|
-| Ubah Warna Background Dashboard Tab Home | `tab_home.dart` | `[UBAH_WARNA: Latar Belakang Layar Dashboard Tab Home]` | `Colors.black` / `Color(0xFF0A0F1D)` |
-| Ubah Warna Kartu Hunter Matrix di Home | `tab_home.dart` | `[UBAH_WARNA: Card Hunter Matrix Background]` | `Colors.blueGrey.shade900` |
-| Ubah Warna HP Heart Player | `tab_home.dart` | `[UBAH_WARNA: Ikon HP Heart Hunter]` | `Colors.purpleAccent` |
-| Ubah Warna Background Bottom Navigation Bar | `main_navigation.dart` | `[UBAH_WARNA: Nav - Background Bar]` | `Colors.deepPurple.shade900` |
-| Ubah Warna Ikon Tab Aktif di Navigasi | `main_navigation.dart` | `[UBAH_WARNA: Nav - Ikon Tab Aktif]` | `Colors.amber` |
-| Ubah Warna Tombol Login Awaken | `login_screen.dart` | `[UBAH_WARNA: Tombol Login Awaken` | `Colors.cyan` / `Colors.teal` |
-| Ubah Warna Input Username & Password | `login_screen.dart` | `[UBAH_WARNA: Background Input Username]` | `Color(0xFF221133)` |
-| Ubah Warna Bola Mana Core Mini Game | `tab_game.dart` | `[UBAH_WARNA: Bola Mana Core Glow Cyan]` | `Colors.redAccent` |
-| Ubah Warna Radar Sweep Peta LBS | `tab_map.dart` | `[UBAH_WARNA: Ring Radar Peta]` | `Colors.greenAccent` |
-| Ubah Warna Tombol Klaim Hadiah Peta | `tab_map.dart` | `[UBAH_WARNA: Tombol Klaim Mystery Gift` | `Colors.orange` |
-| Ubah Warna Timer Pomodoro Belajar | `study_focus_screen.dart` | `[UBAH_WARNA: Tombol Timer Pomodoro` | `Colors.green` |
-| Ubah Warna Bubble Chat AI | `chat_ai_screen.dart` | `[UBAH_WARNA: Background Bubble Pesan AI]` | `Color(0xFF0F2B38)` |
-| Ubah Warna Tombol Kirim Chat AI | `chat_ai_screen.dart` | `[UBAH_WARNA: Tombol Kirim Pesan Chat AI]` | `Colors.purpleAccent` |
-| Ubah Warna Tombol Logout di Profil | `tab_profile.dart` | `[UBAH_WARNA: Tombol Logout Background]` | `Colors.red` |
-| Ubah Warna Tombol Selesai Latihan Workout | `workout_hub_screen.dart` | `[UBAH_WARNA: Tombol Selesaikan Latihan` | `Colors.deepOrange` |
-
-> **CATATAN PENTING:** Selalu simpan file (`Ctrl + S`) dan tekan **`r`** di terminal yang menjalankan Flutter untuk langsung melihat efeknya di layar perangkat secara instan!
