@@ -67,7 +67,7 @@ class _ChatAiScreenState extends State<ChatAiScreen> {
     super.dispose();
   }
 
-  // [POIN PRESENTASI]: Modal kustomisasi personifikasi AI (Nama, Peran, Gaya Bahasa, Sifat, Avatar) yang tersimpan secara lokal di Hive
+  // EXPLANATION: Modal kustomisasi personifikasi AI (Nama, Peran, Gaya Bahasa, Sifat, Avatar) yang tersimpan secara lokal di Hive
   void _openPersonaSettingsDialog(BuildContext context) {
     _persona = HiveService.getAIPersona();
     final nameController = TextEditingController(text: _persona.name);
@@ -667,7 +667,7 @@ class _ChatAiScreenState extends State<ChatAiScreen> {
     );
   }
 
-  // [POIN PRESENTASI]: Mengirimkan input pertanyaan ke Google Gemini API secara asynchronous dan memperbarui UI dengan rendering Markdown
+  // EXPLANATION: Mengirimkan input pertanyaan ke Google Gemini API secara asynchronous dan memperbarui UI dengan rendering Markdown
   Future<void> _handleSendMessage() async {
     final String prompt = _textController.text.trim();
     if (prompt.isEmpty || _isLoading) return;

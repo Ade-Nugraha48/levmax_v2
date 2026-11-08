@@ -157,7 +157,7 @@ class _TabGameState extends State<TabGame> with SingleTickerProviderStateMixin {
     });
   }
 
-  // [POIN PRESENTASI]: Pemanfaatan sensor Gyroscope (rotasi sumbu pitch & roll): memetakan kemiringan fisik ponsel ke koordinat bola dengan pembatas kecepatan render (throttling 30ms)
+  // EXPLANATION: Pemanfaatan sensor Gyroscope (rotasi sumbu pitch & roll): memetakan kemiringan fisik ponsel ke koordinat bola dengan pembatas kecepatan render (throttling 30ms)
   void _initGyroscope() {
     try {
       _gyroSubscription = gyroscopeEventStream().listen(
@@ -206,7 +206,7 @@ class _TabGameState extends State<TabGame> with SingleTickerProviderStateMixin {
     }
   }
 
-  // [POIN PRESENTASI]: Algoritma deteksi zona target: menghitung jarak Euclidean pusat bola ke titik pusat arena (150, 150) dengan radius toleransi 35px
+  // EXPLANATION: Algoritma deteksi zona target: menghitung jarak Euclidean pusat bola ke titik pusat arena (150, 150) dengan radius toleransi 35px
   void _checkTargetZone() {
     if (!isPlaying) return;
 
@@ -245,7 +245,7 @@ class _TabGameState extends State<TabGame> with SingleTickerProviderStateMixin {
     _showFailedDialog();
   }
 
-  // [POIN PRESENTASI]: Eksekusi kemenangan mini game: anugerah +50 Gold dan penguncian tanggal server WIB agar hanya dapat dimainkan 1 kali per hari
+  // EXPLANATION: Eksekusi kemenangan mini game: anugerah +50 Gold dan penguncian tanggal server WIB agar hanya dapat dimainkan 1 kali per hari
   Future<void> _handleGameVictory() async {
     _survivalTimer?.cancel();
     _survivalTimer = null;

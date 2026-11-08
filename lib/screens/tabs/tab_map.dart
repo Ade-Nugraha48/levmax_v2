@@ -128,7 +128,7 @@ class _TabMapState extends State<TabMap> with SingleTickerProviderStateMixin {
     });
   }
 
-  // [POIN PRESENTASI]: Pemanfaatan sensor GPS hardware (Geolocator): meminta izin lokasi runtime, memantau satelit, dan melacak koordinat lintang-bujur
+  // EXPLANATION: Pemanfaatan sensor GPS hardware (Geolocator): meminta izin lokasi runtime, memantau satelit, dan melacak koordinat lintang-bujur
   Future<void> _initLocationService() async {
     setState(() {
       _isLocating = true;
@@ -354,7 +354,7 @@ class _TabMapState extends State<TabMap> with SingleTickerProviderStateMixin {
   }
 
   /// Fungsi klaim reward jika hunter berada dalam radius <= 100 meter
-  // [POIN PRESENTASI]: Geofencing LBS: verifikasi jarak radius < 100 meter dari koordinat Dungeon Gate fisik sebelum reward EXP & Gold dapat diklaim
+  // EXPLANATION: Geofencing LBS: verifikasi jarak radius < 100 meter dari koordinat Dungeon Gate fisik sebelum reward EXP & Gold dapat diklaim
   void _claimDungeonReward() {
     if (hasClaimed) return;
     if (distance > 100) {

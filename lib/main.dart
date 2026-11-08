@@ -12,13 +12,13 @@ Future<void> main() async {
   // Memastikan engine Flutter terhubung sempurna sebelum mengeksekusi operasi asynchronous
   WidgetsFlutterBinding.ensureInitialized();
 
-  // [POIN PRESENTASI]: Inisialisasi Hive (NoSQL Local Database) untuk penyimpanan sesi, data quest offline, dan verifikasi blok
+  // EXPLANATION: Inisialisasi Hive (NoSQL Local Database) untuk penyimpanan sesi, data quest offline, dan verifikasi blok
   await Hive.initFlutter();
   await Hive.openBox(AppConstants.sessionBox);
   await Hive.openBox(AppConstants.blockchainBox);
   await Hive.openBox(AppConstants.questBox);
 
-  // [POIN PRESENTASI]: Inisialisasi Supabase (BaaS) sebagai remote database untuk autentikasi dan sinkronisasi data online
+  // EXPLANATION: Inisialisasi Supabase (BaaS) sebagai remote database untuk autentikasi dan sinkronisasi data online
   await Supabase.initialize(
     url: 'https://urpfytwepfgaybbautcf.supabase.co',
     // ignore: deprecated_member_use
@@ -39,7 +39,7 @@ Future<void> main() async {
 class LevMaxApp extends StatelessWidget {
   const LevMaxApp({super.key});
 
-  // [POIN PRESENTASI]: Membangun konfigurasi dasar aplikasi (MaterialApp), menerapkan dark theme secara konsisten, dan memuat SplashScreen sebagai halaman awal
+  // EXPLANATION: Membangun konfigurasi dasar aplikasi (MaterialApp), menerapkan dark theme secara konsisten, dan memuat SplashScreen sebagai halaman awal
   @override
   Widget build(BuildContext context) {
     return MaterialApp(

@@ -18,7 +18,7 @@ class AIPersona {
     this.avatarPath,
   });
 
-  // [POIN PRESENTASI]: Persona default bergaya System Guide Solo Leveling untuk mengarahkan respon Gemini AI secara tematik
+  // EXPLANATION: Persona default bergaya System Guide Solo Leveling untuk mengarahkan respon Gemini AI secara tematik
   static AIPersona get defaultPersona => const AIPersona(
         name: 'SYSTEM GUIDE',
         identity: 'HUNTER SUPPORT AI',
@@ -44,7 +44,7 @@ class AIPersona {
     );
   }
 
-  // [POIN PRESENTASI]: Konversi data persona ke format Map JSON untuk disimpan persisten di local database Hive
+  // EXPLANATION: Konversi data persona ke format Map JSON untuk disimpan persisten di local database Hive
   Map<String, dynamic> toJson() => {
         'name': name,
         'identity': identity,

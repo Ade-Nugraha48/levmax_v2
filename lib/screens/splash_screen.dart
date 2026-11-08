@@ -54,7 +54,7 @@ class _SplashScreenState extends State<SplashScreen>
     _handleInitializationAndRouting();
   }
 
-  // [POIN PRESENTASI]: Sekuens inisialisasi 4-tahap berdurasi 5 detik dengan animasi sinkron sebelum mengarahkan ke LoginScreen
+  // EXPLANATION: Sekuens inisialisasi 4-tahap berdurasi 5 detik dengan animasi sinkron sebelum mengarahkan ke LoginScreen
   Future<void> _handleInitializationAndRouting() async {
     _progressController.forward();
 

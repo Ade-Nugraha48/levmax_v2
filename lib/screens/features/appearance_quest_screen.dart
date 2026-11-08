@@ -37,7 +37,7 @@ class _AppearanceQuestScreenState extends State<AppearanceQuestScreen> {
   bool isPhase4Done = false;
   bool isPhase5Done = false;
 
-  // [POIN PRESENTASI]: Evaluasi progres dinamis: menghitung akumulasi checklist sub-quest yang sudah dituntaskan oleh Hunter
+  // EXPLANATION: Evaluasi progres dinamis: menghitung akumulasi checklist sub-quest yang sudah dituntaskan oleh Hunter
   int get completedCount => [
         isPhase1Done,
         isPhase2Done,
@@ -87,7 +87,7 @@ class _AppearanceQuestScreenState extends State<AppearanceQuestScreen> {
     });
   }
 
-  // [POIN PRESENTASI]: Master dataset 5 fase perawatan fisik harian: Pagi, Hidrasi, Tabir Surya UV, Purifikasi Malam, dan Regenerasi
+  // EXPLANATION: Master dataset 5 fase perawatan fisik harian: Pagi, Hidrasi, Tabir Surya UV, Purifikasi Malam, dan Regenerasi
   final List<Map<String, dynamic>> _checklistPhases = [
     {
       'phase': 'FASE I • PAGI',

@@ -55,7 +55,7 @@ class _QuestSensorScreenState extends State<QuestSensorScreen> {
     _startCountdownTimer();
   }
 
-  // [POIN PRESENTASI]: Pemanfaatan sensor Accelerometer hardware: menghitung magnitudo akselerasi total dan memvalidasi guncangan fisik dengan ambang batas delta > 15 m/s² dan debounce 320ms
+  // EXPLANATION: Pemanfaatan sensor Accelerometer hardware: menghitung magnitudo akselerasi total dan memvalidasi guncangan fisik dengan ambang batas delta > 15 m/s² dan debounce 320ms
   void _startAccelerometerSubscription() {
     _accelerometerSubscription = accelerometerEventStream().listen((AccelerometerEvent event) {
       if (_isCompleted) return;
@@ -121,7 +121,7 @@ class _QuestSensorScreenState extends State<QuestSensorScreen> {
     return const Color(0xFF9B8BA1);
   }
 
-  // [POIN PRESENTASI]: Klasifikasi intensitas gerak real-time berbasis gaya G-Force (STANDBY, RENDAH, OPTIMAL, MAKSIMAL, MENURUN)
+  // EXPLANATION: Klasifikasi intensitas gerak real-time berbasis gaya G-Force (STANDBY, RENDAH, OPTIMAL, MAKSIMAL, MENURUN)
   String get _intensityLabel {
     if (_isCompleted || _shakeCount >= _targetShakes) {
       return 'LENGKAP';
@@ -178,7 +178,7 @@ class _QuestSensorScreenState extends State<QuestSensorScreen> {
     });
   }
 
-  // [POIN PRESENTASI]: Eksekusi reward penyelesaian quest sensor (+20 EXP & +15 Gold) secara atomik ke local storage Hive dan Supabase cloud
+  // EXPLANATION: Eksekusi reward penyelesaian quest sensor (+20 EXP & +15 Gold) secara atomik ke local storage Hive dan Supabase cloud
   Future<void> _handleProtocolComplete() async {
     _isCompleted = true;
     _accelerometerSubscription?.cancel();

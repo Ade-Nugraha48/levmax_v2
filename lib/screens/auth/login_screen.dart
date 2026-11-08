@@ -45,7 +45,7 @@ class _LoginScreenState extends State<LoginScreen> {
     super.dispose();
   }
 
-  // [POIN PRESENTASI]: Login Biometrik: Memeriksa ketersediaan sensor (Fingerprint via local_auth / Face Scan kamera depan) untuk bypass login
+  // EXPLANATION: Login Biometrik: Memeriksa ketersediaan sensor (Fingerprint via local_auth / Face Scan kamera depan) untuk bypass login
   Future<void> _triggerBiometricAuth({String type = 'fingerprint'}) async {
     // a. Cek terlebih dahulu apakah isBiometricEnabled bernilai true di penyimpanan lokal
     final bool isEnabled = HiveService.isBiometricEnabled();
@@ -175,7 +175,7 @@ class _LoginScreenState extends State<LoginScreen> {
     }
   }
 
-  // [POIN PRESENTASI]: Eksekusi login otomatis ke Supabase menggunakan kredensial biometrik yang tersimpan di Hive
+  // EXPLANATION: Eksekusi login otomatis ke Supabase menggunakan kredensial biometrik yang tersimpan di Hive
   Future<void> _performBiometricLogin({
     required String username,
     required String password,
@@ -255,7 +255,7 @@ class _LoginScreenState extends State<LoginScreen> {
     }
   }
 
-  // [POIN PRESENTASI]: Pipeline autentikasi manual: hashing kata sandi SHA-256 client-side -> verifikasi ke Supabase (Non-Firebase) -> penyimpanan sesi lokal ke Hive
+  // EXPLANATION: Pipeline autentikasi manual: hashing kata sandi SHA-256 client-side -> verifikasi ke Supabase (Non-Firebase) -> penyimpanan sesi lokal ke Hive
   Future<void> _handleLogin() async {
     final username = _usernameController.text.trim();
     final password = _passwordController.text;

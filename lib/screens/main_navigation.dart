@@ -29,7 +29,7 @@ class _MainNavigationState extends State<MainNavigation> {
     }
   }
 
-  // [POIN PRESENTASI]: 5 Tab Menu Utama: 1. Quests (Habit Tracker), 2. Dungeon (LBS Map), 3. Mana (Gyroscope Balancer), 4. Exchange (Kurs & Blockchain), 5. Status (Profil & Feedback)
+  // EXPLANATION: 5 Tab Menu Utama: 1. Quests (Habit Tracker), 2. Dungeon (LBS Map), 3. Mana (Gyroscope Balancer), 4. Exchange (Kurs & Blockchain), 5. Status (Profil & Feedback)
   late final List<Widget> _tabs;
 
   @override
@@ -46,7 +46,7 @@ class _MainNavigationState extends State<MainNavigation> {
     ];
   }
 
-  // [POIN PRESENTASI]: Pemanfaatan widget IndexedStack agar seluruh state data, controller sensor, dan peta di setiap tab tidak hilang saat berpindah tab
+  // EXPLANATION: Pemanfaatan widget IndexedStack agar seluruh state data, controller sensor, dan peta di setiap tab tidak hilang saat berpindah tab
   @override
   Widget build(BuildContext context) {
     return Scaffold(

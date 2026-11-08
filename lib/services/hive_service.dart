@@ -12,12 +12,12 @@ import 'package:levmax_v2/utils/constants.dart';
 /// Service untuk manajemen penyimpanan lokal Hive (Session & Ledger Blockchain).
 /// Sesuai aturan arsitektur: tidak mengandung kode UI dan mengembalikan tipe data standar / Future.
 class HiveService {
-  // [POIN PRESENTASI]: 3 Box Hive utama: sessionBox (sesi & status), blockchainBox (buku besar transaksi), dan questBox (progress offline)
+  // EXPLANATION: 3 Box Hive utama: sessionBox (sesi & status), blockchainBox (buku besar transaksi), dan questBox (progress offline)
   static Box get sessionBox => Hive.box(AppConstants.sessionBox);
   static Box get blockchainBox => Hive.box(AppConstants.blockchainBox);
   static Box get questBox => Hive.box(AppConstants.questBox);
 
-  // [POIN PRESENTASI]: Menyimpan data sesi login Hunter secara persisten di Hive agar status autentikasi bertahan saat aplikasi ditutup
+  // EXPLANATION: Menyimpan data sesi login Hunter secara persisten di Hive agar status autentikasi bertahan saat aplikasi ditutup
   static Future<void> saveSession({
     required String userId,
     required String username,
@@ -107,7 +107,7 @@ class HiveService {
     }
   }
 
-  // [POIN PRESENTASI]: Menyimpan kredensial biometrik pengguna (fingerprint & face scan) untuk fitur bypass login cepat
+  // EXPLANATION: Menyimpan kredensial biometrik pengguna (fingerprint & face scan) untuk fitur bypass login cepat
   static Future<void> saveBiometricCredentials({
     required String username,
     required String password,
@@ -203,7 +203,7 @@ class HiveService {
     await box.delete('enrolled_face_thumbnail');
   }
 
-  // [POIN PRESENTASI]: Pencatatan data transaksi title ke buku besar blockchain lokal (ledger) dengan chaining hash SHA-256
+  // EXPLANATION: Pencatatan data transaksi title ke buku besar blockchain lokal (ledger) dengan chaining hash SHA-256
   static Future<void> saveBlockchainLog({
     required String item,
     required String prevHash,
@@ -232,7 +232,7 @@ class HiveService {
     return logs;
   }
 
-  // [POIN PRESENTASI]: Mengambil hash blok sebelumnya (atau 64-karakter nol untuk Genesis Block) sebagai fondasi rantai integritas SHA-256
+  // EXPLANATION: Mengambil hash blok sebelumnya (atau 64-karakter nol untuk Genesis Block) sebagai fondasi rantai integritas SHA-256
   static String getLastBlockHash() {
     final box = blockchainBox;
     if (box.isEmpty) {
@@ -311,7 +311,7 @@ class HiveService {
     return AlarmModel.defaultAlarm;
   }
 
-  // [POIN PRESENTASI]: Mencatat waktu penyelesaian quest harian di local storage Hive untuk validasi offline
+  // EXPLANATION: Mencatat waktu penyelesaian quest harian di local storage Hive untuk validasi offline
   static Future<void> saveQuestCompletion({
     required String userId,
     required String questId,

@@ -192,7 +192,7 @@ class _TabProfileState extends State<TabProfile> {
     super.dispose();
   }
 
-  // [POIN PRESENTASI]: Formulir kesan & pesan mata kuliah: dikirim ke tabel 'feedbacks' Supabase dan disimpan secara offline di Hive
+  // EXPLANATION: Formulir kesan & pesan mata kuliah: dikirim ke tabel 'feedbacks' Supabase dan disimpan secara offline di Hive
   Future<void> _submitFeedback() async {
     final text = _feedbackController.text.trim();
     if (text.isEmpty) {
@@ -294,7 +294,7 @@ class _TabProfileState extends State<TabProfile> {
     }
   }
 
-  // [POIN PRESENTASI]: Pembersihan sesi logout: memanggil HiveService.clearSession() dan menghapus tumpukan rute navigasi untuk kembali ke LoginScreen
+  // EXPLANATION: Pembersihan sesi logout: memanggil HiveService.clearSession() dan menghapus tumpukan rute navigasi untuk kembali ke LoginScreen
   Future<void> _logout() async {
     final bool? confirm = await showDialog<bool>(
       context: context,
@@ -380,7 +380,7 @@ class _TabProfileState extends State<TabProfile> {
     );
   }
 
-  // [POIN PRESENTASI]: Pipeline update foto profil: pemilihan foto via image_picker, cropping 1:1 di AvatarAdjustDialog, dan upload ke Supabase S3 Storage
+  // EXPLANATION: Pipeline update foto profil: pemilihan foto via image_picker, cropping 1:1 di AvatarAdjustDialog, dan upload ke Supabase S3 Storage
   Future<void> _pickAndUploadAvatar() async {
     try {
       final picker = ImagePicker();

@@ -31,7 +31,7 @@ class QuestModel {
     );
   }
 
-  // [POIN PRESENTASI]: Master dataset quest harian bawaan sistem yang mencakup latihan beban, sensor kardio, checklist grooming, dan timer belajar
+  // EXPLANATION: Master dataset quest harian bawaan sistem yang mencakup latihan beban, sensor kardio, checklist grooming, dan timer belajar
   static const List<QuestModel> defaultQuests = [
     QuestModel(
       id: 'pushup',

@@ -21,7 +21,7 @@ class GeminiService {
   static GenerativeModel _model = _createModel('gemini-3.5-flash-lite', _currentPrompt);
   static ChatSession _chatSession = _model.startChat();
 
-  // [POIN PRESENTASI]: Prompt Engineering: Membangun System Instruction dinamis dari konfigurasi persona di Hive agar gaya respons AI sesuai tema
+  // EXPLANATION: Prompt Engineering: Membangun System Instruction dinamis dari konfigurasi persona di Hive agar gaya respons AI sesuai tema
   static String _buildSystemPrompt([AIPersona? persona]) {
     final p = persona ?? HiveService.getAIPersona();
     return '''
@@ -60,7 +60,7 @@ PANDUAN & ATURAN UTAMA:
     _chatSession = _model.startChat();
   }
 
-  // [POIN PRESENTASI]: Eksekusi API call percakapan multi-turn ke Google Gemini dengan penanganan otomatis fallback model
+  // EXPLANATION: Eksekusi API call percakapan multi-turn ke Google Gemini dengan penanganan otomatis fallback model
   static Future<String> sendMessage(String prompt) async {
     try {
       final response = await _chatSession.sendMessage(Content.text(prompt));
@@ -78,7 +78,7 @@ PANDUAN & ATURAN UTAMA:
     }
   }
 
-  // [POIN PRESENTASI]: Generative AI narasi Hidden Quest adaptif berbasis LLM untuk tantangan opsional Self-Improvement (Maksimal 3x/hari)
+  // EXPLANATION: Generative AI narasi Hidden Quest adaptif berbasis LLM untuk tantangan opsional Self-Improvement (Maksimal 3x/hari)
   static Future<String> generateHiddenQuest(String rank, int exp) async {
     final prompt = '''
 Kamu adalah "The System" ala Solo Leveling yang memberikan Misi Rahasia Opsional (Hidden Optional Quest) kepada Hunter Rank $rank (EXP: $exp).

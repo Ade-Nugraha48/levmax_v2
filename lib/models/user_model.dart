@@ -20,7 +20,7 @@ class UserModel {
     this.hp = 3,
   });
 
-  // [POIN PRESENTASI]: Serialisasi data pengguna menjadi Map key-value untuk dikirim ke backend Supabase atau disimpan di sesi lokal Hive
+  // EXPLANATION: Serialisasi data pengguna menjadi Map key-value untuk dikirim ke backend Supabase atau disimpan di sesi lokal Hive
   Map<String, dynamic> toMap() {
     return {
       'id': id,
@@ -32,7 +32,7 @@ class UserModel {
     };
   }
 
-  // [POIN PRESENTASI]: Deserialisasi data respon database menjadi objek UserModel dengan proteksi fallback nilai bawaan
+  // EXPLANATION: Deserialisasi data respon database menjadi objek UserModel dengan proteksi fallback nilai bawaan
   factory UserModel.fromMap(Map<String, dynamic> map) {
     return UserModel(
       id: map['id']?.toString() ?? '',

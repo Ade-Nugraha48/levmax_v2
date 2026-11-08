@@ -169,24 +169,24 @@ class AppConstants {
   static const String appName = 'LevMax';
   static const String appTagline = 'The Hunter Awakening System';
 
-  // [POIN PRESENTASI]: Nama box penyimpanan lokal Hive (Sesi, Blockchain Ledger, dan Quest)
+  // [EXPLANATION]: Nama box penyimpanan lokal Hive (Sesi, Blockchain Ledger, dan Quest)
   static const String sessionBox = 'sessionBox';
   static const String blockchainBox = 'blockchainBox';
   static const String questBox = 'questBox';
 
-  // [POIN PRESENTASI]: Parameter gamifikasi (Batas Max HP = 3, Target Harian = 3 quest, Threshold Gyro = 5s, Radius LBS = 100m)
+  // [EXPLANATION]: Parameter gamifikasi (Batas Max HP = 3, Target Harian = 3 quest, Threshold Gyro = 5s, Radius LBS = 100m)
   static const int maxHp = 3;
   static const int minDailyQuests = 3;
   static const int gyroHoldSeconds = 5;
   static const double portalClaimRadiusMeters = 100.0;
 
-  // [POIN PRESENTASI]: Rasio dasar konversi nilai ekonomi Hunter (100 Gold ke IDR, USD, dan EUR)
+  // [EXPLANATION]: Rasio dasar konversi nilai ekonomi Hunter (100 Gold ke IDR, USD, dan EUR)
   static const int goldReferenceUnit = 100;
   static const int goldToIdrRate = 15000;
   static const double goldToUsdRate = 1.00;
   static const double goldToEurRate = 0.95;
 
-  // [POIN PRESENTASI]: Ambang batas (threshold) EXP untuk setiap tingkatan Rank Hunter
+  // [EXPLANATION]: Ambang batas (threshold) EXP untuk setiap tingkatan Rank Hunter
   static const int expRankE = 100;
   static const int expRankD = 300;
   static const int expRankC = 600;
@@ -194,7 +194,7 @@ class AppConstants {
   static const int expRankA = 1500;
   static const int expRankS = 2500;
 
-  // [POIN PRESENTASI]: Algoritma penentuan Rank Hunter (F -> E -> D -> C -> B -> A -> S) berdasarkan perolehan EXP
+  // [EXPLANATION]: Algoritma penentuan Rank Hunter (F -> E -> D -> C -> B -> A -> S) berdasarkan perolehan EXP
   static String calculateRank(int exp) {
     if (exp >= expRankS) return 'S';
     if (exp >= expRankA) return 'A';
@@ -296,7 +296,7 @@ class AppConstants {
 
 /// Konfigurasi ThemeData Resmi LevMax (Solo Leveling Dark-Purple Theme)
 class AppTheme {
-  // [POIN PRESENTASI]: Konfigurasi tema global Material 3 bernuansa Dark-Purple (Shadow Monarch) untuk seluruh aplikasi
+  // [EXPLANATION]: Konfigurasi tema global Material 3 bernuansa Dark-Purple (Shadow Monarch) untuk seluruh aplikasi
   static ThemeData get darkTheme {
     return ThemeData(
       useMaterial3: true,

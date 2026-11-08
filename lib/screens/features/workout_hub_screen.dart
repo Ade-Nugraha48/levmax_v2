@@ -86,7 +86,7 @@ class _WorkoutHubScreenState extends State<WorkoutHubScreen>
     return clean.isEmpty ? 'F' : clean;
   }
 
-  // [POIN PRESENTASI]: Master dataset biomekanik latihan (Push Up, Pull Up, Sit Up, Squat) mencakup target repetisi, set, fokus otot, dan reward
+  // EXPLANATION: Master dataset biomekanik latihan (Push Up, Pull Up, Sit Up, Squat) mencakup target repetisi, set, fokus otot, dan reward
   static final Map<String, WorkoutProtocol> _protocolsData = {
     'pushup': const WorkoutProtocol(
       id: 'pushup',
@@ -349,7 +349,7 @@ class _WorkoutHubScreenState extends State<WorkoutHubScreen>
     });
   }
 
-  // [POIN PRESENTASI]: Validasi penyelesaian latihan: memastikan seluruh 3 set dan target repetisi terpenuhi sebelum reward dikirim ke caller
+  // EXPLANATION: Validasi penyelesaian latihan: memastikan seluruh 3 set dan target repetisi terpenuhi sebelum reward dikirim ke caller
   void _handleCompleteProtocol() {
     final protocol = _currentProtocol;
 

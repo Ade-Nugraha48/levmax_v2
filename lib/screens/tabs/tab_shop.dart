@@ -300,7 +300,7 @@ class _TabShopState extends State<TabShop> {
     }
   }
 
-  // [POIN PRESENTASI]: Panggilan REST API Web Service real-time (open.er-api.com) untuk live konversi nilai ekonomi Gold ke IDR, USD, dan EUR
+  // EXPLANATION: Panggilan REST API Web Service real-time (open.er-api.com) untuk live konversi nilai ekonomi Gold ke IDR, USD, dan EUR
   Future<void> _fetchLiveExchangeRates() async {
     if (_isLoadingRates) return;
     if (mounted) setState(() => _isLoadingRates = true);
@@ -333,7 +333,7 @@ class _TabShopState extends State<TabShop> {
     }
   }
 
-  // [POIN PRESENTASI]: Kalkulator konversi kurs interaktif untuk menghitung valuasi saldo Gold Hunter ke mata uang riil (IDR, USD, EUR)
+  // EXPLANATION: Kalkulator konversi kurs interaktif untuk menghitung valuasi saldo Gold Hunter ke mata uang riil (IDR, USD, EUR)
   void _showGoldConverterDialog() {
     int testGold = _gold > 0 ? _gold : 1000;
     final controller = TextEditingController(text: testGold.toString());
@@ -858,7 +858,7 @@ class _TabShopState extends State<TabShop> {
     }
   }
 
-  // [POIN PRESENTASI]: Transaksi pembelian Title: mencatat transaksi on-chain Web3 Ethereum Sepolia serta menyisipkan blok berantai (prev_hash -> current_hash) ke ledger Blockchain Hive
+  // EXPLANATION: Transaksi pembelian Title: mencatat transaksi on-chain Web3 Ethereum Sepolia serta menyisipkan blok berantai (prev_hash -> current_hash) ke ledger Blockchain Hive
   Future<void> _buyTitle({
     required String itemName,
     required int price,

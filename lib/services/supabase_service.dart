@@ -14,7 +14,7 @@ class SupabaseService {
   /// Mengambil instance SupabaseClient aktif
   static SupabaseClient get client => Supabase.instance.client;
 
-  // [POIN PRESENTASI]: Pengunggahan file avatar profil Hunter ke cloud storage Supabase (S3 Bucket) dengan sistem fallback
+  // EXPLANATION: Pengunggahan file avatar profil Hunter ke cloud storage Supabase (S3 Bucket) dengan sistem fallback
   static Future<String?> uploadAvatar(File imageFile, String userId) async {
     try {
       final bytes = await imageFile.readAsBytes();
@@ -96,7 +96,7 @@ class SupabaseService {
     }
   }
 
-  // [POIN PRESENTASI]: Pendaftaran Hunter baru ke tabel 'users' Supabase dengan password yang telah di-hash SHA-256
+  // EXPLANATION: Pendaftaran Hunter baru ke tabel 'users' Supabase dengan password yang telah di-hash SHA-256
   static Future<Map<String, dynamic>?> register({
     required String username,
     required String passwordHash,
@@ -131,7 +131,7 @@ class SupabaseService {
     }
   }
 
-  // [POIN PRESENTASI]: Validasi login akun secara remote dengan membandingkan username & password_hash (Non-Firebase Auth)
+  // EXPLANATION: Validasi login akun secara remote dengan membandingkan username & password_hash (Non-Firebase Auth)
   static Future<Map<String, dynamic>?> login({
     required String username,
     required String passwordHash,
@@ -149,7 +149,7 @@ class SupabaseService {
     }
   }
 
-  // [POIN PRESENTASI]: Sinkronisasi real-time parameter RPG (EXP, Gold, Rank, HP) ke database PostgreSQL Supabase
+  // EXPLANATION: Sinkronisasi real-time parameter RPG (EXP, Gold, Rank, HP) ke database PostgreSQL Supabase
   static Future<bool> updateUserStats({
     required String userId,
     int? exp,
@@ -173,7 +173,7 @@ class SupabaseService {
     }
   }
 
-  // [POIN PRESENTASI]: Pengiriman kesan & pesan mata kuliah ke tabel 'feedbacks' Supabase (Pemenuhan Syarat Tugas Akhir No. 6)
+  // EXPLANATION: Pengiriman kesan & pesan mata kuliah ke tabel 'feedbacks' Supabase (Pemenuhan Syarat Tugas Akhir No. 6)
   static Future<bool> submitFeedback({
     required String userId,
     required String message,

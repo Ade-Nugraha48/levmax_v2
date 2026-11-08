@@ -44,7 +44,7 @@ class _StudyFocusScreenState extends State<StudyFocusScreen> with SingleTickerPr
     super.dispose();
   }
 
-  // [POIN PRESENTASI]: Timer Pomodoro 30 menit (1800 detik) menggunakan Timer.periodic dengan validasi penyelesaian dan reward +15 EXP & +10 Gold
+  // EXPLANATION: Timer Pomodoro 30 menit (1800 detik) menggunakan Timer.periodic dengan validasi penyelesaian dan reward +15 EXP & +10 Gold
   void startTimer() {
     if (isRunning) return;
 

@@ -42,7 +42,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
     super.dispose();
   }
 
-  // [POIN PRESENTASI]: Mengambil foto profil dari galeri ponsel menggunakan package image_picker dengan kompresi kualitas
+  // EXPLANATION: Mengambil foto profil dari galeri ponsel menggunakan package image_picker dengan kompresi kualitas
   Future<void> _pickAvatar() async {
     try {
       final picker = ImagePicker();
@@ -62,7 +62,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
     }
   }
 
-  // [POIN PRESENTASI]: Registrasi Hunter baru: enkripsi password SHA-256 client-side, insert data awal (Rank F, 0 EXP, 3 HP) ke Supabase, dan upload foto avatar
+  // EXPLANATION: Registrasi Hunter baru: enkripsi password SHA-256 client-side, insert data awal (Rank F, 0 EXP, 3 HP) ke Supabase, dan upload foto avatar
   Future<void> _handleRegister() async {
     final username = _usernameController.text.trim();
     final password = _passwordController.text;

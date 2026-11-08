@@ -47,7 +47,7 @@ class _AvatarAdjustDialogState extends State<AvatarAdjustDialog> {
     });
   }
 
-  // [POIN PRESENTASI]: Merender tampilan kanvas interaktif menjadi bitmap PNG tajam (pixelRatio 2.5x) via RenderRepaintBoundary
+  // EXPLANATION: Merender tampilan kanvas interaktif menjadi bitmap PNG tajam (pixelRatio 2.5x) via RenderRepaintBoundary
   Future<void> _applyCrop() async {
     setState(() => _isProcessing = true);
     try {

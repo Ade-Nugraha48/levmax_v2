@@ -29,7 +29,7 @@ class NotifService {
   static const int idAiMissesUser = 2010;
   static const int idEndOfDayWarning = 2011;
 
-  // [POIN PRESENTASI]: Inisialisasi engine notifikasi lokal, channel beraksen Solo Leveling, serta permintaan izin Android 13+ & Exact Alarm
+  // EXPLANATION: Inisialisasi engine notifikasi lokal, channel beraksen Solo Leveling, serta permintaan izin Android 13+ & Exact Alarm
   static Future<void> init() async {
     if (_isInitialized) return;
 
@@ -131,7 +131,7 @@ class NotifService {
     );
   }
 
-  // [POIN PRESENTASI]: Skenario 1: Penjadwalan notifikasi reset quest harian berulang setiap tengah malam (00:00) menggunakan timezone lokal
+  // EXPLANATION: Skenario 1: Penjadwalan notifikasi reset quest harian berulang setiap tengah malam (00:00) menggunakan timezone lokal
   static Future<void> scheduleDailyResetNotif() async {
     if (!_isInitialized) await init();
 
@@ -200,7 +200,7 @@ class NotifService {
     );
   }
 
-  // [POIN PRESENTASI]: Skenario 3: Penjadwalan pengingat berkala setiap 3 jam (09:00, 12:00, 15:00, 18:00, 21:00) agar user menyelesaikan quest
+  // EXPLANATION: Skenario 3: Penjadwalan pengingat berkala setiap 3 jam (09:00, 12:00, 15:00, 18:00, 21:00) agar user menyelesaikan quest
   static Future<void> schedulePeriodic3HourReminders() async {
     if (!_isInitialized) await init();
 
@@ -244,7 +244,7 @@ class NotifService {
     );
   }
 
-  // [POIN PRESENTASI]: Skenario 4: Personalisasi notifikasi otomatis pada pukul 19:30 malam dengan memanggil nama kustom AI Guide dari Hive
+  // EXPLANATION: Skenario 4: Personalisasi notifikasi otomatis pada pukul 19:30 malam dengan memanggil nama kustom AI Guide dari Hive
   static Future<void> scheduleAiMissesUserNotif() async {
     if (!_isInitialized) await init();
 
@@ -303,7 +303,7 @@ class NotifService {
   // MASTER AUTOMATED SCHEDULER & CONTROLS
   // ===========================================================================
 
-  // [POIN PRESENTASI]: Master Scheduler: Mengaktifkan seluruh 5 jadwal notifikasi sistem secara simultan ke background OS
+  // EXPLANATION: Master Scheduler: Mengaktifkan seluruh 5 jadwal notifikasi sistem secara simultan ke background OS
   static Future<void> scheduleAllAutomatedNotifications() async {
     if (!_isInitialized) await init();
 

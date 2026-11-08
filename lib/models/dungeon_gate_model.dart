@@ -68,7 +68,7 @@ class DungeonGateModel {
     );
   }
 
-  // [POIN PRESENTASI]: Dataset koordinat nyata lokasi Dungeon Gate di Yogyakarta untuk pengujian fitur Location-Based Service (LBS)
+  // EXPLANATION: Dataset koordinat nyata lokasi Dungeon Gate di Yogyakarta untuk pengujian fitur Location-Based Service (LBS)
   static const List<DungeonGateModel> positiveDungeons = [
     // 1. Kampus 2 UPN Veteran Babarsari (Pusat Riset & Akademik)
     DungeonGateModel(
@@ -176,7 +176,7 @@ class DungeonGateModel {
     ),
   ];
 
-  // [POIN PRESENTASI]: Algoritma deterministik pemilihan Dungeon Gate harian berdasarkan indeks hari dalam setahun (1 hari = 1 gate aktif)
+  // EXPLANATION: Algoritma deterministik pemilihan Dungeon Gate harian berdasarkan indeks hari dalam setahun (1 hari = 1 gate aktif)
   static DungeonGateModel getDailyGate({DateTime? date}) {
     final targetDate = date ?? DateTime.now();
     final startOfYear = DateTime(targetDate.year, 1, 1);

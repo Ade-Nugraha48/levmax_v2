@@ -30,7 +30,7 @@ class S3StorageService {
     return kSigning;
   }
 
-  // [POIN PRESENTASI]: Upload biner foto profil ke Supabase S3 bucket dengan otorisasi AWS Signature Version 4 (SigV4) murni di Dart
+  // EXPLANATION: Upload biner foto profil ke Supabase S3 bucket dengan otorisasi AWS Signature Version 4 (SigV4) murni di Dart
   static Future<String?> uploadFile({
     required String path,
     required Uint8List bytes,
@@ -83,7 +83,7 @@ class S3StorageService {
     }
   }
 
-  // [POIN PRESENTASI]: Pembuatan Presigned URL bertanda tangan kriptografis untuk memuat foto profil secara aman di widget Image.network
+  // EXPLANATION: Pembuatan Presigned URL bertanda tangan kriptografis untuk memuat foto profil secara aman di widget Image.network
   static String getPresignedDownloadUrl({required String path, int expiresInSeconds = 604800}) {
     final now = DateTime.now().toUtc();
     final amzDate = _formatAmzDate(now);

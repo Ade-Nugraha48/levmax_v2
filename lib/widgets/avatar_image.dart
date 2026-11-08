@@ -22,7 +22,7 @@ class HunterAvatar extends StatelessWidget {
     this.borderRadius,
   });
 
-  // [POIN PRESENTASI]: Rendering gambar fleksibel yang membedakan URL jaringan (Supabase Storage) dan file sistem lokal dengan graceful fallback
+  // EXPLANATION: Rendering gambar fleksibel yang membedakan URL jaringan (Supabase Storage) dan file sistem lokal dengan graceful fallback
   @override
   Widget build(BuildContext context) {
     if (avatarUrl == null || avatarUrl!.isEmpty) {

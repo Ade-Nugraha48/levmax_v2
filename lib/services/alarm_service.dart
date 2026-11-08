@@ -90,7 +90,7 @@ class AlarmService {
     }
   }
 
-  // [POIN PRESENTASI]: Penjadwalan alarm dual-layer: Timer lokal untuk mode foreground dan Android Exact AlarmClock saat aplikasi ditutup
+  // EXPLANATION: Penjadwalan alarm dual-layer: Timer lokal untuk mode foreground dan Android Exact AlarmClock saat aplikasi ditutup
   static Future<void> scheduleAlarm(AlarmModel alarm) async {
     await init();
     await HiveService.saveAlarm(alarm);
@@ -159,7 +159,7 @@ class AlarmService {
     } catch (_) {}
   }
 
-  // [POIN PRESENTASI]: Eksekusi dering alarm: AudioPlayer berputar looping dengan gain kustom dan notifikasi ongoing (tidak bisa di-swipe)
+  // EXPLANATION: Eksekusi dering alarm: AudioPlayer berputar looping dengan gain kustom dan notifikasi ongoing (tidak bisa di-swipe)
   static Future<void> triggerAlarm({AlarmModel? alarm}) async {
     await init();
     final targetAlarm = alarm ?? HiveService.getAlarm();
@@ -213,7 +213,7 @@ class AlarmService {
     } catch (_) {}
   }
 
-  // [POIN PRESENTASI]: Mematikan pemutaran audio alarm, menghapus notifikasi aktif, dan otomatis menjadwalkan siklus hari berikutnya
+  // EXPLANATION: Mematikan pemutaran audio alarm, menghapus notifikasi aktif, dan otomatis menjadwalkan siklus hari berikutnya
   static Future<void> stopAlarm() async {
     _isRinging = false;
     onAlarmStateChanged?.call();

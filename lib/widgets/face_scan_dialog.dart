@@ -97,7 +97,7 @@ class _FaceScanDialogState extends State<FaceScanDialog>
     _initCamera();
   }
 
-  // [POIN PRESENTASI]: Inisialisasi controller kamera depan (front lens) untuk memindai wajah secara real-time di dalam retikel HUD
+  // EXPLANATION: Inisialisasi controller kamera depan (front lens) untuk memindai wajah secara real-time di dalam retikel HUD
   Future<void> _initCamera() async {
     setState(() {
       _visualState = _ScannerVisualState.initializing;
@@ -177,7 +177,7 @@ class _FaceScanDialogState extends State<FaceScanDialog>
     });
   }
 
-  // [POIN PRESENTASI]: Eksekusi pencocokan biometrik: mengambil frame gambar dan memanggil FaceRecognitionService untuk komparasi dengan template Hive
+  // EXPLANATION: Eksekusi pencocokan biometrik: mengambil frame gambar dan memanggil FaceRecognitionService untuk komparasi dengan template Hive
   Future<void> _executeScan() async {
     if (_cameraController == null ||
         !_cameraController!.value.isInitialized ||

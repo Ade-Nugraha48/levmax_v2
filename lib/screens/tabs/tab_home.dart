@@ -108,7 +108,7 @@ class _TabHomeState extends State<TabHome> {
     }
   }
 
-  // [POIN PRESENTASI]: Mekanisme penalti HP: jika login pada hari berbeda dan quest yang diselesaikan kemarin < 3, HP berkurang 1 dan disinkronkan ke Hive & Supabase
+  // EXPLANATION: Mekanisme penalti HP: jika login pada hari berbeda dan quest yang diselesaikan kemarin < 3, HP berkurang 1 dan disinkronkan ke Hive & Supabase
   void _checkDailyHpPenalty() {
     final now = DateTime.now();
     final todayDateStr =
@@ -331,7 +331,7 @@ class _TabHomeState extends State<TabHome> {
     });
   }
 
-  // [POIN PRESENTASI]: Konversi 4 zona waktu simultan: WIB (UTC+7), WITA (UTC+8), WIT (UTC+9), dan London GMT (UTC+0) yang berdetik setiap detik
+  // EXPLANATION: Konversi 4 zona waktu simultan: WIB (UTC+7), WITA (UTC+8), WIT (UTC+9), dan London GMT (UTC+0) yang berdetik setiap detik
   void _updateClock() {
     final now = DateTime.now();
     // Pengecekan otomatis saat pergantian hari melewati pukul 00:00 (Reset Jam 12 Malam)
@@ -1574,7 +1574,7 @@ class _TabHomeState extends State<TabHome> {
 
     // Filter berdasarkan Kategori & Pencarian
     final filteredQuests = quests.where((q) {
-      // [POIN PRESENTASI]: Algoritma filter pencarian ganda: mencocokkan kategori aktif dan substring kata kunci judul/deskripsi quest
+      // EXPLANATION: Algoritma filter pencarian ganda: mencocokkan kategori aktif dan substring kata kunci judul/deskripsi quest
       final matchesCategory =
           _selectedCategory == 'ALL' || q['category'] == _selectedCategory;
       final matchesSearch =
@@ -2077,7 +2077,7 @@ class _TabHomeState extends State<TabHome> {
     );
 
     try {
-      // [POIN PRESENTASI]: Panggilan generative AI Gemini untuk menciptakan tantangan opsional Self-Improvement
+      // EXPLANATION: Panggilan generative AI Gemini untuk menciptakan tantangan opsional Self-Improvement
       final questText = await GeminiService.generateHiddenQuest(
         _rank,
         _currentExp,
