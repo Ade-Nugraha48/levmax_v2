@@ -119,7 +119,6 @@ Jika penguji berkata: *"Coba ubah warna tema aplikasi secara keseluruhan dari Cy
 | 78 | `L418` | `// [UBAH_WARNA: GLOBAL - Latar Belakang Modal Dialog]` | `backgroundColor: AppColors.surface, // [UBAH_WARNA: GLOBAL - Latar Belakang M...` |
 | 79 | `L422` | `// [UBAH_WARNA: GLOBAL - Garis Border Modal Dialog]` | `side: const BorderSide(color: AppColors.border, width: 1), // [UBAH_WARNA: GL...` |
 | 80 | `L428` | `// [UBAH_WARNA: GLOBAL - Garis Pembatas Divider Tema]` | `color: AppColors.divider, // [UBAH_WARNA: GLOBAL - Garis Pembatas Divider Tema]` |
-
 ---
 
 ## 4. DAFTAR LENGKAP LOKASI UBAH WARNA PER FILE UI (SCREEN & WIDGET)
@@ -131,7 +130,6 @@ Jika penguji berkata: *"Coba ubah warna tema aplikasi secara keseluruhan dari Cy
 |:---:|:---:|:---|:---|
 | 1 | `L49` | `// [UBAH_WARNA: Konfigurasi Tema Utama Aplikasi]` | `AppTheme.darkTheme, // [UBAH_WARNA: Konfigurasi Tema Utama Aplikasi]` |
 | 2 | `L50` | `// [UBAH_WARNA: Mode Tema Global (Dark Mode)]` | `themeMode: ThemeMode.dark, // [UBAH_WARNA: Mode Tema Global (Dark Mode)]` |
-
 ---
 
 ### File: `lib/screens/splash_screen.dart` (Splash Screen & System Booting)
@@ -161,7 +159,6 @@ Jika penguji berkata: *"Coba ubah warna tema aplikasi secara keseluruhan dari Cy
 | 20 | `L671` | `// [UBAH_WARNA: Teks Label Konsol Bawah]` | `), // [UBAH_WARNA: Teks Label Konsol Bawah]` |
 | 21 | `L691` | `// [UBAH_WARNA: Status Sensor Biometrik Hijau]` | `), // [UBAH_WARNA: Status Sensor Biometrik Hijau]` |
 | 22 | `L716` | `// [UBAH_WARNA: Teks Versi Footer Splash]` | `), // [UBAH_WARNA: Teks Versi Footer Splash]` |
-
 ---
 
 ### File: `lib/screens/auth/login_screen.dart` (Login Hunter (Password & Biometrics))
@@ -207,7 +204,6 @@ Jika penguji berkata: *"Coba ubah warna tema aplikasi secara keseluruhan dari Cy
 | 36 | `L1195` | `// [UBAH_WARNA: Pod Biometrik Inner]` | `), // [UBAH_WARNA: Pod Biometrik Inner]` |
 | 37 | `L1215` | `// [UBAH_WARNA: Judul Pod Biometrik]` | `), // [UBAH_WARNA: Judul Pod Biometrik]` |
 | 38 | `L1225` | `// [UBAH_WARNA: Subtitle Pod Biometrik]` | `), // [UBAH_WARNA: Subtitle Pod Biometrik]` |
-
 ---
 
 ### File: `lib/screens/auth/register_screen.dart` (Registrasi Hunter Baru & Avatar Upload)
@@ -244,7 +240,6 @@ Jika penguji berkata: *"Coba ubah warna tema aplikasi secara keseluruhan dari Cy
 | 27 | `L847` | `// [UBAH_WARNA: Subtitle Biometrik Enroll]` | `), // [UBAH_WARNA: Subtitle Biometrik Enroll]` |
 | 28 | `L878` | `// [UBAH_WARNA: Teks Already Awakened]` | `), // [UBAH_WARNA: Teks Already Awakened]` |
 | 29 | `L893` | `// [UBAH_WARNA: Link Login Screen]` | `), // [UBAH_WARNA: Link Login Screen]` |
-
 ---
 
 ### File: `lib/screens/main_navigation.dart` (Bottom Navigation Bar Utama)
@@ -261,7 +256,6 @@ Jika penguji berkata: *"Coba ubah warna tema aplikasi secara keseluruhan dari Cy
 | 7 | `L180` | `// [UBAH_WARNA: Teks Label Navigasi Aktif]` | `? const Color(0xFFE5B5FF) // [UBAH_WARNA: Teks Label Navigasi Aktif]` |
 | 8 | `L181` | `// [UBAH_WARNA: Teks Label Navigasi Tidak Aktif]` | `: const Color(0xFF6E6485), // [UBAH_WARNA: Teks Label Navigasi Tidak Aktif]` |
 | 9 | `L185` | `// [UBAH_WARNA: Bayangan Teks Navigasi Aktif]` | `color: const Color(0xFFB026FF).withValues(alpha: 0.8), // [UBAH_WARNA: Bayang...` |
-
 ---
 
 ### File: `lib/screens/tabs/tab_home.dart` (Tab 1: Quests & Daily Status HUD)
@@ -322,7 +316,6 @@ Jika penguji berkata: *"Coba ubah warna tema aplikasi secara keseluruhan dari Cy
 | 51 | `L2578` | `// [UBAH_WARNA: FAB Tombol Alarm Background]` | `), // [UBAH_WARNA: FAB Tombol Alarm Background]` |
 | 52 | `L4639` | `// [UBAH_WARNA: FAB Hunter AI Brain Background]` | `), // [UBAH_WARNA: FAB Hunter AI Brain Background]` |
 | 53 | `L4652` | `// [UBAH_WARNA: FAB Hunter AI Brain Icon]` | `color: Colors.white, // [UBAH_WARNA: FAB Hunter AI Brain Icon]` |
-
 ---
 
 ### File: `lib/screens/tabs/tab_map.dart` (Tab 2: Dungeon Radar & Mystery Gate (LBS))
@@ -359,7 +352,6 @@ Jika penguji berkata: *"Coba ubah warna tema aplikasi secara keseluruhan dari Cy
 | 27 | `L1814` | `// [UBAH_WARNA: Ikon Bintang Mystery Gift]` | `const Icon(Icons.stars_rounded, color: Color(0xFFFFD166), size: 16), // [UBAH...` |
 | 28 | `L1955` | `// [UBAH_WARNA: Tombol Klaim Dungeon Expedition - Gradien Cyan]` | `colors: [Color(0xFF00F4FE), Color(0xFF00DCE5), Color(0xFF008389)], // [UBAH_W...` |
 | 29 | `L2001` | `// [UBAH_WARNA: Teks Tombol Klaim Mystery Gift]` | `color: hasClaimed // [UBAH_WARNA: Teks Tombol Klaim Mystery Gift]` |
-
 ---
 
 ### File: `lib/screens/tabs/tab_game.dart` (Tab 3: Mana Core & Gyroscope Calibration Minigame)
@@ -387,16 +379,15 @@ Jika penguji berkata: *"Coba ubah warna tema aplikasi secara keseluruhan dari Cy
 | 18 | `L1168` | `// [UBAH_WARNA: Box Pitch Tilt Meter]` | `color: const Color(0xFF2D2736).withValues(alpha: 0.7), // [UBAH_WARNA: Box Pi...` |
 | 19 | `L1202` | `// [UBAH_WARNA: Box Roll Tilt Meter]` | `color: const Color(0xFF2D2736).withValues(alpha: 0.7), // [UBAH_WARNA: Box Ro...` |
 | 20 | `L1254` | `// [UBAH_WARNA: Card Status Game Timer Background]` | `color: const Color(0xFF1F1927), // [UBAH_WARNA: Card Status Game Timer Backgr...` |
-| 21 | `L1312` | `// [UBAH_WARNA: Teks Display Timer Game]` | `color: const Color(0xFFE9DEF2), // [UBAH_WARNA: Teks Display Timer Game]` |
-| 22 | `L1356` | `// [UBAH_WARNA: Track Progress Bar Timer]` | `backgroundColor: const Color(0xFF110C19), // [UBAH_WARNA: Track Progress Bar ...` |
-| 23 | `L1372` | `// [UBAH_WARNA: Card Reward Gold Game Background]` | `color: const Color(0xFF1B1406), // [UBAH_WARNA: Card Reward Gold Game Backgro...` |
-| 24 | `L1375` | `// [UBAH_WARNA: Card Reward Gold Game Border]` | `color: const Color(0xFFFFD166).withValues(alpha: 0.35), // [UBAH_WARNA: Card ...` |
-| 25 | `L1411` | `// [UBAH_WARNA: Teks Nilai Reward Gold]` | `color: const Color(0xFFFFD166), // [UBAH_WARNA: Teks Nilai Reward Gold]` |
-| 26 | `L1454` | `// [UBAH_WARNA: Banner Daily Reward Claimed Background]` | `color: const Color(0xFF1E1728), // [UBAH_WARNA: Banner Daily Reward Claimed B...` |
-| 27 | `L1546` | `// [UBAH_WARNA: Tombol Mini Game Retry - Merah Gagal]` | `? [const Color(0xFF93000A), const Color(0xFFFF5449)] // [UBAH_WARNA: Tombol M...` |
-| 28 | `L1547` | `// [UBAH_WARNA: Tombol Mini Game Start - Ungu Aktif]` | `: [const Color(0xFF7B2CBF), const Color(0xFFB026FF)], // [UBAH_WARNA: Tombol ...` |
-| 29 | `L1577` | `// [UBAH_WARNA: Teks Tombol Mainkan Game]` | `color: Colors.white, // [UBAH_WARNA: Teks Tombol Mainkan Game]` |
-
+| 21 | `L1331` | `// [UBAH_WARNA: Teks Display Timer Game]` | `color: const Color(0xFFE9DEF2), // [UBAH_WARNA: Teks Display Timer Game]` |
+| 22 | `L1375` | `// [UBAH_WARNA: Track Progress Bar Timer]` | `backgroundColor: const Color(0xFF110C19), // [UBAH_WARNA: Track Progress Bar ...` |
+| 23 | `L1391` | `// [UBAH_WARNA: Card Reward Gold Game Background]` | `color: const Color(0xFF1B1406), // [UBAH_WARNA: Card Reward Gold Game Backgro...` |
+| 24 | `L1394` | `// [UBAH_WARNA: Card Reward Gold Game Border]` | `color: const Color(0xFFFFD166).withValues(alpha: 0.35), // [UBAH_WARNA: Card ...` |
+| 25 | `L1430` | `// [UBAH_WARNA: Teks Nilai Reward Gold]` | `color: const Color(0xFFFFD166), // [UBAH_WARNA: Teks Nilai Reward Gold]` |
+| 26 | `L1473` | `// [UBAH_WARNA: Banner Daily Reward Claimed Background]` | `color: const Color(0xFF1E1728), // [UBAH_WARNA: Banner Daily Reward Claimed B...` |
+| 27 | `L1569` | `// [UBAH_WARNA: Tombol Mini Game Retry - Merah Gagal]` | `? [const Color(0xFF93000A), const Color(0xFFFF5449)] // [UBAH_WARNA: Tombol M...` |
+| 28 | `L1570` | `// [UBAH_WARNA: Tombol Mini Game Start - Ungu Aktif]` | `: [const Color(0xFF7B2CBF), const Color(0xFFB026FF)], // [UBAH_WARNA: Tombol ...` |
+| 29 | `L1600` | `// [UBAH_WARNA: Teks Tombol Mainkan Game]` | `color: Colors.white, // [UBAH_WARNA: Teks Tombol Mainkan Game]` |
 ---
 
 ### File: `lib/screens/tabs/tab_shop.dart` (Tab 4: Exchange Shop & DEX Token Valuation)
@@ -434,7 +425,6 @@ Jika penguji berkata: *"Coba ubah warna tema aplikasi secara keseluruhan dari Cy
 | 28 | `L2604` | `// [UBAH_WARNA: Tombol Blockchain Explorer Background]` | `color: const Color(0xFF1F1927), // [UBAH_WARNA: Tombol Blockchain Explorer Ba...` |
 | 29 | `L2621` | `// [UBAH_WARNA: Ikon Tombol Blockchain Explorer]` | `child: const Icon(Icons.hub_rounded, size: 18, color: Color(0xFF00F4FE)), // ...` |
 | 30 | `L2630` | `// [UBAH_WARNA: Teks Tombol Blockchain Explorer]` | `color: const Color(0xFFE9DEF2), // [UBAH_WARNA: Teks Tombol Blockchain Explorer]` |
-
 ---
 
 ### File: `lib/screens/tabs/tab_profile.dart` (Tab 5: Hunter Status & Kesan Pesan)
@@ -479,7 +469,6 @@ Jika penguji berkata: *"Coba ubah warna tema aplikasi secara keseluruhan dari Cy
 | 35 | `L2389` | `// [UBAH_WARNA: Tombol Logout Border]` | `), // [UBAH_WARNA: Tombol Logout Border]` |
 | 36 | `L2404` | `// [UBAH_WARNA: Ikon Tombol Logout]` | `), // [UBAH_WARNA: Ikon Tombol Logout]` |
 | 37 | `L2414` | `// [UBAH_WARNA: Teks Tombol Logout]` | `), // [UBAH_WARNA: Teks Tombol Logout]` |
-
 ---
 
 ### File: `lib/screens/features/appearance_quest_screen.dart` (Appearance / Skincare Quest Time-Locked)
@@ -510,7 +499,6 @@ Jika penguji berkata: *"Coba ubah warna tema aplikasi secara keseluruhan dari Cy
 | 21 | `L908` | `// [UBAH_WARNA: Tombol Selesai Appearance - Ungu Aktif]` | `colors: [Color(0xFF7B2CBF), Color(0xFFB026FF)], // [UBAH_WARNA: Tombol Selesa...` |
 | 22 | `L913` | `// [UBAH_WARNA: Tombol Selesai Appearance - Ungu Belum Selesai]` | `colors: [Color(0xFF5A1E8F), Color(0xFF7B2CBF)], // [UBAH_WARNA: Tombol Selesa...` |
 | 23 | `L970` | `// [UBAH_WARNA: Teks Tombol Submit Appearance]` | `color: Colors.white, // [UBAH_WARNA: Teks Tombol Submit Appearance]` |
-
 ---
 
 ### File: `lib/screens/features/workout_hub_screen.dart` (Workout Hub / Camera ML-Kit Pose Detection)
@@ -546,7 +534,6 @@ Jika penguji berkata: *"Coba ubah warna tema aplikasi secara keseluruhan dari Cy
 | 26 | `L1705` | `// [UBAH_WARNA: Tombol Selesaikan Latihan - Cyan Aksen]` | `Color(0xFF00F4FE), // [UBAH_WARNA: Tombol Selesaikan Latihan - Cyan Aksen]` |
 | 27 | `L1743` | `// [UBAH_WARNA: Ikon Tombol Selesaikan Latihan]` | `? Colors.white // [UBAH_WARNA: Ikon Tombol Selesaikan Latihan]` |
 | 28 | `L1758` | `// [UBAH_WARNA: Teks Tombol Selesaikan Latihan]` | `? Colors.white // [UBAH_WARNA: Teks Tombol Selesaikan Latihan]` |
-
 ---
 
 ### File: `lib/screens/features/quest_sensor.dart` (Sensor Calibration & Accelerometer HUD)
@@ -583,7 +570,6 @@ Jika penguji berkata: *"Coba ubah warna tema aplikasi secara keseluruhan dari Cy
 | 27 | `L1084` | `// [UBAH_WARNA: Box Sync Rate Shake]` | `color: const Color(0xFF1F1927), // [UBAH_WARNA: Box Sync Rate Shake]` |
 | 28 | `L1153` | `// [UBAH_WARNA: Tombol Batal Sensor Background]` | `color: const Color(0xFF2D121B), // [UBAH_WARNA: Tombol Batal Sensor Background]` |
 | 29 | `L1182` | `// [UBAH_WARNA: Teks Tombol Batal Sensor]` | `color: const Color(0xFFFF4D6D), // [UBAH_WARNA: Teks Tombol Batal Sensor]` |
-
 ---
 
 ### File: `lib/screens/features/study_focus_screen.dart` (Study Focus / Pomodoro Hunter Timer)
@@ -612,7 +598,6 @@ Jika penguji berkata: *"Coba ubah warna tema aplikasi secara keseluruhan dari Cy
 | 19 | `L797` | `// [UBAH_WARNA: Tombol Reset Timer Background]` | `color: const Color(0xFF93000A).withValues(alpha: 0.28), // [UBAH_WARNA: Tombo...` |
 | 20 | `L809` | `// [UBAH_WARNA: Ikon Tombol Reset Timer]` | `color: Color(0xFFFFB4AB), // [UBAH_WARNA: Ikon Tombol Reset Timer]` |
 | 21 | `L819` | `// [UBAH_WARNA: Teks Tombol Reset Timer]` | `color: const Color(0xFFFFB4AB), // [UBAH_WARNA: Teks Tombol Reset Timer]` |
-
 ---
 
 ### File: `lib/screens/features/chat_ai_screen.dart` (System Guide AI & Chat Assistant)
@@ -645,7 +630,6 @@ Jika penguji berkata: *"Coba ubah warna tema aplikasi secara keseluruhan dari Cy
 | 23 | `L1502` | `// [UBAH_WARNA: Warna Hint Input Chat AI]` | `color: const Color(0xFF5D5373), // [UBAH_WARNA: Warna Hint Input Chat AI]` |
 | 24 | `L1546` | `// [UBAH_WARNA: Tombol Kirim Pesan Chat AI]` | `color: const Color(0xFF00F4FE), // [UBAH_WARNA: Tombol Kirim Pesan Chat AI]` |
 | 25 | `L1559` | `// [UBAH_WARNA: Ikon Send Pesan Chat AI]` | `color: Color(0xFF08050E), // [UBAH_WARNA: Ikon Send Pesan Chat AI]` |
-
 ---
 
 ### File: `lib/widgets/avatar_adjust_dialog.dart` (Dialog Pengatur Posisi Avatar)
@@ -671,7 +655,6 @@ Jika penguji berkata: *"Coba ubah warna tema aplikasi secara keseluruhan dari Cy
 | 16 | `L367` | `// [UBAH_WARNA: Border Tool Button Crop]` | `border: Border.all(color: const Color(0xFF383241), width: 0.8), // [UBAH_WARN...` |
 | 17 | `L372` | `// [UBAH_WARNA: Ikon Tool Button Crop]` | `Icon(icon, size: 15, color: const Color(0xFF00F4FE)), // [UBAH_WARNA: Ikon To...` |
 | 18 | `L379` | `// [UBAH_WARNA: Teks Tool Button Crop]` | `color: const Color(0xFFE9DEF2), // [UBAH_WARNA: Teks Tool Button Crop]` |
-
 ---
 
 ### File: `lib/widgets/face_scan_dialog.dart` (Dialog Simulasi Biometrik Face Scan)
@@ -704,5 +687,4 @@ Jika penguji berkata: *"Coba ubah warna tema aplikasi secara keseluruhan dari Cy
 | 23 | `L768` | `// [UBAH_WARNA: Teks Tombol Batalkan Face Scan]` | `color: const Color(0xFF9B8BA1), // [UBAH_WARNA: Teks Tombol Batalkan Face Scan]` |
 | 24 | `L778` | `// [UBAH_WARNA: Tombol Rekam Wajah / Pindai Sekarang]` | `backgroundColor: currentAccent, // [UBAH_WARNA: Tombol Rekam Wajah / Pindai S...` |
 | 25 | `L779` | `// [UBAH_WARNA: Teks Tombol Rekam Wajah]` | `foregroundColor: Colors.black, // [UBAH_WARNA: Teks Tombol Rekam Wajah]` |
-
 ---

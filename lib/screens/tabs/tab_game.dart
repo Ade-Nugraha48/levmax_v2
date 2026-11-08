@@ -1163,7 +1163,7 @@ class _TabGameState extends State<TabGame> with SingleTickerProviderStateMixin {
       children: [
         Expanded(
           child: Container(
-            padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 8),
+            padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 8),
             decoration: BoxDecoration(
               color: const Color(0xFF2D2736).withValues(alpha: 0.7), // [UBAH_WARNA: Box Pitch Tilt Meter]
               borderRadius: BorderRadius.circular(12),
@@ -1197,7 +1197,7 @@ class _TabGameState extends State<TabGame> with SingleTickerProviderStateMixin {
         const SizedBox(width: 10),
         Expanded(
           child: Container(
-            padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 8),
+            padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 8),
             decoration: BoxDecoration(
               color: const Color(0xFF2D2736).withValues(alpha: 0.7), // [UBAH_WARNA: Box Roll Tilt Meter]
               borderRadius: BorderRadius.circular(12),
@@ -1266,30 +1266,49 @@ class _TabGameState extends State<TabGame> with SingleTickerProviderStateMixin {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
-              Row(
-                children: [
-                  const Icon(Icons.timer_outlined, size: 16, color: Color(0xFFE5B5FF)),
-                  const SizedBox(width: 6),
-                  Text(
-                    'SURVIVAL PROTOCOL DURATION',
-                    style: GoogleFonts.spaceGrotesk(
-                      fontSize: 9.5,
-                      fontWeight: FontWeight.w700,
-                      letterSpacing: 1.0,
-                      color: const Color(0xFFD2C1D7),
+              Expanded(
+                child: Row(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    const Icon(Icons.timer_outlined, size: 14, color: Color(0xFFE5B5FF)),
+                    const SizedBox(width: 5),
+                    Flexible(
+                      child: Text(
+                        'PROTOCOL DURATION',
+                        maxLines: 1,
+                        overflow: TextOverflow.ellipsis,
+                        style: GoogleFonts.spaceGrotesk(
+                          fontSize: 9,
+                          fontWeight: FontWeight.w700,
+                          letterSpacing: 0.8,
+                          color: const Color(0xFFD2C1D7),
+                        ),
+                      ),
                     ),
-                  ),
-                ],
+                  ],
+                ),
               ),
-              Text(
-                statusText,
-                style: GoogleFonts.spaceGrotesk(
-                  fontSize: 9.5,
-                  fontWeight: FontWeight.w800,
-                  letterSpacing: 0.8,
-                  color: statusColor,
+              const SizedBox(width: 8),
+              Container(
+                padding: const EdgeInsets.symmetric(horizontal: 7, vertical: 2.5),
+                decoration: BoxDecoration(
+                  color: statusColor.withValues(alpha: 0.12),
+                  borderRadius: BorderRadius.circular(4),
+                  border: Border.all(
+                    color: statusColor.withValues(alpha: 0.4),
+                    width: 0.8,
+                  ),
+                ),
+                child: Text(
+                  statusText,
+                  maxLines: 1,
+                  style: GoogleFonts.spaceGrotesk(
+                    fontSize: 8.5,
+                    fontWeight: FontWeight.w800,
+                    letterSpacing: 0.4,
+                    color: statusColor,
+                  ),
                 ),
               ),
             ],
@@ -1518,13 +1537,17 @@ class _TabGameState extends State<TabGame> with SingleTickerProviderStateMixin {
               ),
             ),
             const SizedBox(width: 10),
-            Text(
-              'BERTAHAN DI ZONA TENGAH! ($timeRemaining s)',
-              style: GoogleFonts.spaceGrotesk(
-                fontSize: 12,
-                fontWeight: FontWeight.w900,
-                letterSpacing: 1.0,
-                color: Colors.black,
+            Flexible(
+              child: Text(
+                'BERTAHAN DI ZONA TENGAH! ($timeRemaining s)',
+                maxLines: 1,
+                overflow: TextOverflow.ellipsis,
+                style: GoogleFonts.spaceGrotesk(
+                  fontSize: 11.5,
+                  fontWeight: FontWeight.w900,
+                  letterSpacing: 0.8,
+                  color: Colors.black,
+                ),
               ),
             ),
           ],
