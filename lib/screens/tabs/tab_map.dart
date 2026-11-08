@@ -990,35 +990,58 @@ class _TabMapState extends State<TabMap> with SingleTickerProviderStateMixin {
 
               // Header
               Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 18, vertical: 8),
+                padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
                 child: Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
-                    Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Text(
-                          'DUNGEON GATE DIRECTORY',
-                          style: GoogleFonts.orbitron(
-                            fontSize: 14,
-                            fontWeight: FontWeight.w900,
-                            letterSpacing: 1.2,
-                            color: const Color(0xFF00F4FE),
+                    Expanded(
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text(
+                            'DUNGEON GATE DIRECTORY',
+                            maxLines: 1,
+                            overflow: TextOverflow.ellipsis,
+                            style: GoogleFonts.orbitron(
+                              fontSize: 13,
+                              fontWeight: FontWeight.w900,
+                              letterSpacing: 1.0,
+                              color: const Color(0xFF00F4FE),
+                            ),
                           ),
-                        ),
-                        const SizedBox(height: 2),
-                        Text(
-                          'Rotasi Harian Lokasi Positif (Kampus, Stadion, Taman)',
-                          style: GoogleFonts.plusJakartaSans(
-                            fontSize: 10.5,
-                            color: const Color(0xFF9B8BA1),
+                          const SizedBox(height: 2),
+                          Text(
+                            'Rotasi Harian Lokasi Positif (Kampus, Stadion, Taman)',
+                            maxLines: 1,
+                            overflow: TextOverflow.ellipsis,
+                            style: GoogleFonts.plusJakartaSans(
+                              fontSize: 10,
+                              color: const Color(0xFF9B8BA1),
+                            ),
                           ),
-                        ),
-                      ],
+                        ],
+                      ),
                     ),
-                    IconButton(
-                      icon: const Icon(Icons.close_rounded, color: Color(0xFF9B8BA1)),
-                      onPressed: () => Navigator.pop(modalCtx),
+                    const SizedBox(width: 8),
+                    InkWell(
+                      borderRadius: BorderRadius.circular(16),
+                      onTap: () => Navigator.pop(modalCtx),
+                      child: Container(
+                        width: 32,
+                        height: 32,
+                        decoration: BoxDecoration(
+                          shape: BoxShape.circle,
+                          color: const Color(0xFF1F1927),
+                          border: Border.all(
+                            color: const Color(0xFF383241),
+                            width: 0.8,
+                          ),
+                        ),
+                        child: const Icon(
+                          Icons.close_rounded,
+                          size: 18,
+                          color: Color(0xFF9B8BA1),
+                        ),
+                      ),
                     ),
                   ],
                 ),
@@ -1215,34 +1238,41 @@ class _TabMapState extends State<TabMap> with SingleTickerProviderStateMixin {
                               Row(
                                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                                 children: [
-                                  Row(
-                                    children: [
-                                      Container(
-                                        padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
-                                        decoration: BoxDecoration(
-                                          color: gateColor.withValues(alpha: 0.2),
-                                          borderRadius: BorderRadius.circular(4),
-                                        ),
-                                        child: Text(
-                                          '${gate.rank} • ${gate.gateType}',
-                                          style: GoogleFonts.spaceGrotesk(
-                                            fontSize: 8.5,
-                                            fontWeight: FontWeight.w800,
-                                            color: gateColor,
+                                  Flexible(
+                                    child: Row(
+                                      mainAxisSize: MainAxisSize.min,
+                                      children: [
+                                        Container(
+                                          padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
+                                          decoration: BoxDecoration(
+                                            color: gateColor.withValues(alpha: 0.2),
+                                            borderRadius: BorderRadius.circular(4),
+                                          ),
+                                          child: Text(
+                                            '${gate.rank} • ${gate.gateType}',
+                                            style: GoogleFonts.spaceGrotesk(
+                                              fontSize: 8.5,
+                                              fontWeight: FontWeight.w800,
+                                              color: gateColor,
+                                            ),
                                           ),
                                         ),
-                                      ),
-                                      const SizedBox(width: 6),
-                                      Text(
-                                        '+${gate.expReward} EXP / +${gate.goldReward} G',
-                                        style: GoogleFonts.spaceGrotesk(
-                                          fontSize: 9.5,
-                                          fontWeight: FontWeight.w700,
-                                          color: const Color(0xFFFFD166),
+                                        const SizedBox(width: 6),
+                                        Flexible(
+                                          child: Text(
+                                            '+${gate.expReward} EXP / +${gate.goldReward} G',
+                                            overflow: TextOverflow.ellipsis,
+                                            style: GoogleFonts.spaceGrotesk(
+                                              fontSize: 9.5,
+                                              fontWeight: FontWeight.w700,
+                                              color: const Color(0xFFFFD166),
+                                            ),
+                                          ),
                                         ),
-                                      ),
-                                    ],
+                                      ],
+                                    ),
                                   ),
+                                  const SizedBox(width: 8),
                                   if (distFromUser != null)
                                     Text(
                                       distFromUser >= 1000

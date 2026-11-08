@@ -344,21 +344,21 @@ Jika penguji berkata: *"Coba ubah warna tema aplikasi secara keseluruhan dari Cy
 | 12 | `L837` | `// [UBAH_WARNA: Teks Koordinat Radar Peta]` | `color: const Color(0xFFDCB8FC), // [UBAH_WARNA: Teks Koordinat Radar Peta]` |
 | 13 | `L852` | `// [UBAH_WARNA: Pill GPS Accuracy Background]` | `color: const Color(0xFF2D2736).withValues(alpha: 0.9), // [UBAH_WARNA: Pill G...` |
 | 14 | `L858` | `// [UBAH_WARNA: Ikon Satelit GPS Peta]` | `const Icon(Icons.satellite_alt_rounded, size: 13, color: Color(0xFF00F4FE)), ...` |
-| 15 | `L1395` | `// [UBAH_WARNA: Pill Jarak Gate Background]` | `color: const Color(0xFF2D2736).withValues(alpha: 0.9), // [UBAH_WARNA: Pill J...` |
-| 16 | `L1413` | `// [UBAH_WARNA: Teks Jarak Gate Peta]` | `color: const Color(0xFFFF4D4D), // [UBAH_WARNA: Teks Jarak Gate Peta]` |
-| 17 | `L1585` | `// [UBAH_WARNA: FAB Recenter GPS Background]` | `color: const Color(0xFF110C19).withValues(alpha: 0.92), // [UBAH_WARNA: FAB R...` |
-| 18 | `L1587` | `// [UBAH_WARNA: FAB Recenter GPS Border]` | `border: Border.all(color: const Color(0xFF00F4FE), width: 0.8), // [UBAH_WARN...` |
-| 19 | `L1601` | `// [UBAH_WARNA: FAB Recenter GPS Icon]` | `color: const Color(0xFF00F4FE), // [UBAH_WARNA: FAB Recenter GPS Icon]` |
-| 20 | `L1615` | `// [UBAH_WARNA: Bottom Sheet Panel Ekspedisi Background]` | `color: const Color(0xFF1F1927), // [UBAH_WARNA: Bottom Sheet Panel Ekspedisi ...` |
-| 21 | `L1666` | `// [UBAH_WARNA: Card Target Gate Panel]` | `color: const Color(0xFF110C19).withValues(alpha: 0.65), // [UBAH_WARNA: Card ...` |
-| 22 | `L1675` | `// [UBAH_WARNA: Ikon Target Gate Panel]` | `const Icon(Icons.near_me_rounded, color: Color(0xFF00F4FE), size: 16), // [UB...` |
-| 23 | `L1687` | `// [UBAH_WARNA: Teks Rank Target Gate Panel]` | `color: const Color(0xFFDCB8FC), // [UBAH_WARNA: Teks Rank Target Gate Panel]` |
-| 24 | `L1695` | `// [UBAH_WARNA: Teks Nama Target Gate Panel]` | `color: const Color(0xFFE9DEF2), // [UBAH_WARNA: Teks Nama Target Gate Panel]` |
-| 25 | `L1759` | `// [UBAH_WARNA: Card Mystery Gift Box]` | `color: const Color(0xFF110C19).withValues(alpha: 0.65), // [UBAH_WARNA: Card ...` |
-| 26 | `L1781` | `// [UBAH_WARNA: Teks Judul Mystery Gift]` | `color: const Color(0xFFFFD166), // [UBAH_WARNA: Teks Judul Mystery Gift]` |
-| 27 | `L1784` | `// [UBAH_WARNA: Ikon Bintang Mystery Gift]` | `const Icon(Icons.stars_rounded, color: Color(0xFFFFD166), size: 16), // [UBAH...` |
-| 28 | `L1925` | `// [UBAH_WARNA: Tombol Klaim Dungeon Expedition - Gradien Cyan]` | `colors: [Color(0xFF00F4FE), Color(0xFF00DCE5), Color(0xFF008389)], // [UBAH_W...` |
-| 29 | `L1971` | `// [UBAH_WARNA: Teks Tombol Klaim Mystery Gift]` | `color: hasClaimed // [UBAH_WARNA: Teks Tombol Klaim Mystery Gift]` |
+| 15 | `L1425` | `// [UBAH_WARNA: Pill Jarak Gate Background]` | `color: const Color(0xFF2D2736).withValues(alpha: 0.9), // [UBAH_WARNA: Pill J...` |
+| 16 | `L1443` | `// [UBAH_WARNA: Teks Jarak Gate Peta]` | `color: const Color(0xFFFF4D4D), // [UBAH_WARNA: Teks Jarak Gate Peta]` |
+| 17 | `L1615` | `// [UBAH_WARNA: FAB Recenter GPS Background]` | `color: const Color(0xFF110C19).withValues(alpha: 0.92), // [UBAH_WARNA: FAB R...` |
+| 18 | `L1617` | `// [UBAH_WARNA: FAB Recenter GPS Border]` | `border: Border.all(color: const Color(0xFF00F4FE), width: 0.8), // [UBAH_WARN...` |
+| 19 | `L1631` | `// [UBAH_WARNA: FAB Recenter GPS Icon]` | `color: const Color(0xFF00F4FE), // [UBAH_WARNA: FAB Recenter GPS Icon]` |
+| 20 | `L1645` | `// [UBAH_WARNA: Bottom Sheet Panel Ekspedisi Background]` | `color: const Color(0xFF1F1927), // [UBAH_WARNA: Bottom Sheet Panel Ekspedisi ...` |
+| 21 | `L1696` | `// [UBAH_WARNA: Card Target Gate Panel]` | `color: const Color(0xFF110C19).withValues(alpha: 0.65), // [UBAH_WARNA: Card ...` |
+| 22 | `L1705` | `// [UBAH_WARNA: Ikon Target Gate Panel]` | `const Icon(Icons.near_me_rounded, color: Color(0xFF00F4FE), size: 16), // [UB...` |
+| 23 | `L1717` | `// [UBAH_WARNA: Teks Rank Target Gate Panel]` | `color: const Color(0xFFDCB8FC), // [UBAH_WARNA: Teks Rank Target Gate Panel]` |
+| 24 | `L1725` | `// [UBAH_WARNA: Teks Nama Target Gate Panel]` | `color: const Color(0xFFE9DEF2), // [UBAH_WARNA: Teks Nama Target Gate Panel]` |
+| 25 | `L1789` | `// [UBAH_WARNA: Card Mystery Gift Box]` | `color: const Color(0xFF110C19).withValues(alpha: 0.65), // [UBAH_WARNA: Card ...` |
+| 26 | `L1811` | `// [UBAH_WARNA: Teks Judul Mystery Gift]` | `color: const Color(0xFFFFD166), // [UBAH_WARNA: Teks Judul Mystery Gift]` |
+| 27 | `L1814` | `// [UBAH_WARNA: Ikon Bintang Mystery Gift]` | `const Icon(Icons.stars_rounded, color: Color(0xFFFFD166), size: 16), // [UBAH...` |
+| 28 | `L1955` | `// [UBAH_WARNA: Tombol Klaim Dungeon Expedition - Gradien Cyan]` | `colors: [Color(0xFF00F4FE), Color(0xFF00DCE5), Color(0xFF008389)], // [UBAH_W...` |
+| 29 | `L2001` | `// [UBAH_WARNA: Teks Tombol Klaim Mystery Gift]` | `color: hasClaimed // [UBAH_WARNA: Teks Tombol Klaim Mystery Gift]` |
 
 ---
 
