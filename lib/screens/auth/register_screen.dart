@@ -4,9 +4,11 @@
 /// dan pengunggahan opsional foto avatar ke Cloud Storage.
 
 import 'dart:io';
+
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:image_picker/image_picker.dart';
+
 import '../../services/hash_service.dart';
 import '../../services/hive_service.dart';
 import '../../services/supabase_service.dart';
@@ -23,7 +25,8 @@ class RegisterScreen extends StatefulWidget {
 class _RegisterScreenState extends State<RegisterScreen> {
   final TextEditingController _usernameController = TextEditingController();
   final TextEditingController _passwordController = TextEditingController();
-  final TextEditingController _confirmPasswordController = TextEditingController();
+  final TextEditingController _confirmPasswordController =
+      TextEditingController();
   bool _isObscure = true;
   bool _isConfirmObscure = true;
   bool _isLoading = false;
@@ -115,9 +118,15 @@ class _RegisterScreenState extends State<RegisterScreen> {
 
         // 3. JIKA user memilih foto: upload ke Supabase bucket 'Avatar' lalu update tabel users
         if (_selectedAvatar != null) {
-          final avatarUrl = await SupabaseService.uploadAvatar(_selectedAvatar!, userId);
+          final avatarUrl = await SupabaseService.uploadAvatar(
+            _selectedAvatar!,
+            userId,
+          );
           if (avatarUrl != null) {
-            await SupabaseService.updateAvatarUrl(userId: userId, avatarUrl: avatarUrl);
+            await SupabaseService.updateAvatarUrl(
+              userId: userId,
+              avatarUrl: avatarUrl,
+            );
             await HiveService.saveAvatarUrl(avatarUrl);
           } else {
             // Simpan foto lokal ke Hive jika upload Supabase terkendala RLS
@@ -131,7 +140,9 @@ class _RegisterScreenState extends State<RegisterScreen> {
         // 4. Notifikasi SnackBar sukses dan kembali ke LoginScreen
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
-            content: Text('Hunter $username berhasil terdaftar! Silakan login.'),
+            content: Text(
+              'Hunter $username berhasil terdaftar! Silakan login.',
+            ),
             backgroundColor: AppColors.neonViolet,
           ),
         );
@@ -140,7 +151,9 @@ class _RegisterScreenState extends State<RegisterScreen> {
         setState(() => _isLoading = false);
         ScaffoldMessenger.of(context).showSnackBar(
           const SnackBar(
-            content: Text('Registrasi gagal. Username mungkin sudah digunakan.'),
+            content: Text(
+              'Registrasi gagal. Username mungkin sudah digunakan.',
+            ),
             backgroundColor: AppColors.hpRed,
           ),
         );
@@ -160,7 +173,9 @@ class _RegisterScreenState extends State<RegisterScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: const Color(0xFF16111E), // [UBAH_WARNA: Latar Belakang Layar Register]
+      backgroundColor: const Color(
+        0xFF16111E,
+      ), // [UBAH_WARNA: Latar Belakang Layar Register]
       body: SafeArea(
         child: Stack(
           children: [
@@ -193,7 +208,10 @@ class _RegisterScreenState extends State<RegisterScreen> {
             // Main Content Area
             SingleChildScrollView(
               physics: const BouncingScrollPhysics(),
-              padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 10.0),
+              padding: const EdgeInsets.symmetric(
+                horizontal: 16.0,
+                vertical: 10.0,
+              ),
               child: Center(
                 child: ConstrainedBox(
                   constraints: const BoxConstraints(maxWidth: 420),
@@ -248,7 +266,9 @@ class _RegisterScreenState extends State<RegisterScreen> {
             width: 36,
             height: 36,
             decoration: BoxDecoration(
-              color: const Color(0xFF2D2736), // [UBAH_WARNA: Tombol Kembali Background]
+              color: const Color(
+                0xFF2D2736,
+              ), // [UBAH_WARNA: Tombol Kembali Background]
               borderRadius: BorderRadius.circular(12),
             ),
             child: const Center(
@@ -265,7 +285,9 @@ class _RegisterScreenState extends State<RegisterScreen> {
         Container(
           padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4.5),
           decoration: BoxDecoration(
-            color: const Color(0xFF110C19), // [UBAH_WARNA: Protocol Header Background]
+            color: const Color(
+              0xFF110C19,
+            ), // [UBAH_WARNA: Protocol Header Background]
             borderRadius: BorderRadius.circular(999),
           ),
           child: Row(
@@ -276,7 +298,9 @@ class _RegisterScreenState extends State<RegisterScreen> {
                 height: 6,
                 decoration: const BoxDecoration(
                   shape: BoxShape.circle,
-                  color: Color(0xFF00F4FE), // [UBAH_WARNA: Protocol Header Status Dot]
+                  color: Color(
+                    0xFF00F4FE,
+                  ), // [UBAH_WARNA: Protocol Header Status Dot]
                   boxShadow: [
                     BoxShadow(
                       color: Color(0xFF00F4FE),
@@ -293,7 +317,9 @@ class _RegisterScreenState extends State<RegisterScreen> {
                   fontSize: 10,
                   fontWeight: FontWeight.w600,
                   letterSpacing: 1.2,
-                  color: const Color(0xFFE6FEFF), // [UBAH_WARNA: Protocol Header Title]
+                  color: const Color(
+                    0xFFE6FEFF,
+                  ), // [UBAH_WARNA: Protocol Header Title]
                 ),
               ),
             ],
@@ -345,8 +371,13 @@ class _RegisterScreenState extends State<RegisterScreen> {
                   height: 64,
                   decoration: BoxDecoration(
                     shape: BoxShape.circle,
-                    color: const Color(0xFF2D2736), // [UBAH_WARNA: Avatar Circle Background]
-                    border: Border.all(color: const Color(0xFFB026FF), width: 2.0), // [UBAH_WARNA: Avatar Circle Border]
+                    color: const Color(
+                      0xFF2D2736,
+                    ), // [UBAH_WARNA: Avatar Circle Background]
+                    border: Border.all(
+                      color: const Color(0xFFB026FF),
+                      width: 2.0,
+                    ), // [UBAH_WARNA: Avatar Circle Border]
                   ),
                   child: Center(
                     child: Container(
@@ -383,8 +414,13 @@ class _RegisterScreenState extends State<RegisterScreen> {
                     padding: const EdgeInsets.all(4),
                     decoration: BoxDecoration(
                       shape: BoxShape.circle,
-                      color: const Color(0xFFB026FF), // [UBAH_WARNA: Badge Kamera Background]
-                      border: Border.all(color: const Color(0xFF110C19), width: 1.5),
+                      color: const Color(
+                        0xFFB026FF,
+                      ), // [UBAH_WARNA: Badge Kamera Background]
+                      border: Border.all(
+                        color: const Color(0xFF110C19),
+                        width: 1.5,
+                      ),
                       boxShadow: [
                         BoxShadow(
                           color: Colors.black.withValues(alpha: 0.5),
@@ -406,12 +442,16 @@ class _RegisterScreenState extends State<RegisterScreen> {
         ),
         const SizedBox(height: 6),
         Text(
-          _selectedAvatar != null ? 'FOTO TERPILIH (KETUK UNTUK GANTI)' : 'PILIH FOTO PROFIL (OPSIONAL)',
+          _selectedAvatar != null
+              ? 'FOTO TERPILIH (KETUK UNTUK GANTI)'
+              : 'PILIH FOTO PROFIL (OPSIONAL)',
           style: GoogleFonts.spaceGrotesk(
             fontSize: 8.5,
             fontWeight: FontWeight.w700,
             letterSpacing: 0.8,
-            color: const Color(0xFFDCB8FC), // [UBAH_WARNA: Judul Awaken New Hunter]
+            color: const Color(
+              0xFFDCB8FC,
+            ), // [UBAH_WARNA: Judul Awaken New Hunter]
           ),
         ),
 
@@ -424,7 +464,9 @@ class _RegisterScreenState extends State<RegisterScreen> {
             fontSize: 10.5,
             fontWeight: FontWeight.w700,
             letterSpacing: 2.0,
-            color: const Color(0xFF00DCE5), // [UBAH_WARNA: Subtitle System Init]
+            color: const Color(
+              0xFF00DCE5,
+            ), // [UBAH_WARNA: Subtitle System Init]
           ),
         ),
 
@@ -437,7 +479,9 @@ class _RegisterScreenState extends State<RegisterScreen> {
             fontSize: 21,
             fontWeight: FontWeight.w700,
             letterSpacing: 0.4,
-            color: const Color(0xFFE9DEF2), // [UBAH_WARNA: Teks Instruksi Registrasi]
+            color: const Color(
+              0xFFE9DEF2,
+            ), // [UBAH_WARNA: Teks Instruksi Registrasi]
           ),
         ),
 
@@ -531,7 +575,8 @@ class _RegisterScreenState extends State<RegisterScreen> {
                     prefixIcon: Icons.key_rounded,
                     isPassword: true,
                     isObscured: _isObscure,
-                    onToggleVisibility: () => setState(() => _isObscure = !_isObscure),
+                    onToggleVisibility: () =>
+                        setState(() => _isObscure = !_isObscure),
                   ),
 
                   const SizedBox(height: 11),
@@ -551,24 +596,30 @@ class _RegisterScreenState extends State<RegisterScreen> {
                     prefixIcon: Icons.shield_rounded,
                     isPassword: true,
                     isObscured: _isConfirmObscure,
-                    onToggleVisibility: () => setState(() => _isConfirmObscure = !_isConfirmObscure),
+                    onToggleVisibility: () =>
+                        setState(() => _isConfirmObscure = !_isConfirmObscure),
                   ),
 
-                    const SizedBox(height: 18),
+                  const SizedBox(height: 18),
 
-                    // Submit Button: DAFTAR SEKARANG (REGISTER)
+                  // Submit Button: DAFTAR SEKARANG (REGISTER)
                   Container(
                     height: 46,
                     decoration: BoxDecoration(
                       borderRadius: BorderRadius.circular(10),
                       gradient: const LinearGradient(
-                        colors: [Color(0xFF7B2CBF), Color(0xFFB026FF)], // [UBAH_WARNA: Tombol Register - Gradien Ungu]
+                        colors: [
+                          Color(0xFF7B2CBF),
+                          Color(0xFFB026FF),
+                        ], // [UBAH_WARNA: Tombol Register - Gradien Ungu]
                         begin: Alignment.centerLeft,
                         end: Alignment.centerRight,
                       ),
                       boxShadow: [
                         BoxShadow(
-                          color: const Color(0xFFB026FF).withValues(alpha: 0.35), // [UBAH_WARNA: Glow Tombol Register]
+                          color: const Color(0xFFB026FF).withValues(
+                            alpha: 0.35,
+                          ), // [UBAH_WARNA: Glow Tombol Register]
                           blurRadius: 14,
                           offset: const Offset(0, 3),
                         ),
@@ -692,7 +743,9 @@ class _RegisterScreenState extends State<RegisterScreen> {
         obscureText: isPassword ? isObscured : false,
         style: GoogleFonts.plusJakartaSans(
           fontSize: 13,
-          color: const Color(0xFFE9DEF2), // [UBAH_WARNA: Warna Teks Input Field]
+          color: const Color(
+            0xFFE9DEF2,
+          ), // [UBAH_WARNA: Warna Teks Input Field]
         ),
         cursorColor: const Color(0xFFB026FF),
         decoration: InputDecoration(
@@ -710,21 +763,26 @@ class _RegisterScreenState extends State<RegisterScreen> {
           suffixIcon: isPassword
               ? IconButton(
                   icon: Icon(
-                    isObscured ? Icons.visibility_outlined : Icons.visibility_off_outlined,
-                    color: const Color(0xFF9B8BA1), // [UBAH_WARNA: Icon Prefix Input Field]
+                    isObscured
+                        ? Icons.visibility_outlined
+                        : Icons.visibility_off_outlined,
+                    color: const Color(
+                      0xFF9B8BA1,
+                    ), // [UBAH_WARNA: Icon Prefix Input Field]
                     size: 18,
                   ),
                   onPressed: onToggleVisibility,
                 )
               : null,
           border: InputBorder.none,
-          contentPadding: const EdgeInsets.symmetric(horizontal: 10, vertical: 12),
+          contentPadding: const EdgeInsets.symmetric(
+            horizontal: 10,
+            vertical: 12,
+          ),
         ),
       ),
     );
   }
-
-
 
   /// 4. Monarch Directive Lore Banner
   Widget _buildMonarchBanner() {
@@ -733,10 +791,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
       decoration: BoxDecoration(
         color: const Color(0xFF1F1927), // [UBAH_WARNA: Container Biometrik]
         borderRadius: BorderRadius.circular(10),
-        border: Border.all(
-          color: const Color(0xFF383241),
-          width: 1.0,
-        ),
+        border: Border.all(color: const Color(0xFF383241), width: 1.0),
       ),
       child: Row(
         children: [
@@ -775,17 +830,21 @@ class _RegisterScreenState extends State<RegisterScreen> {
                     fontSize: 9.5,
                     fontWeight: FontWeight.w700,
                     letterSpacing: 1.1,
-                    color: const Color(0xFFE5B5FF), // [UBAH_WARNA: Judul Biometrik Enroll]
+                    color: const Color(
+                      0xFFE5B5FF,
+                    ), // [UBAH_WARNA: Judul Biometrik Enroll]
                   ),
                 ),
                 const SizedBox(height: 1),
                 Text(
-                  '"You have been chosen as a System Player. Do not fall."',
+                  '"You have been chosen. Do not fall."',
                   maxLines: 1,
                   overflow: TextOverflow.ellipsis,
                   style: GoogleFonts.plusJakartaSans(
                     fontSize: 10.5,
-                    color: const Color(0xFFD2C1D7), // [UBAH_WARNA: Subtitle Biometrik Enroll]
+                    color: const Color(
+                      0xFFD2C1D7,
+                    ), // [UBAH_WARNA: Subtitle Biometrik Enroll]
                   ),
                 ),
               ],
@@ -794,11 +853,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
 
           const SizedBox(width: 6),
 
-          const Icon(
-            Icons.auto_awesome,
-            size: 16,
-            color: Color(0xFF9B8BA1),
-          ),
+          const Icon(Icons.auto_awesome, size: 16, color: Color(0xFF9B8BA1)),
         ],
       ),
     );
@@ -818,7 +873,9 @@ class _RegisterScreenState extends State<RegisterScreen> {
                 'Sudah punya akun? ',
                 style: GoogleFonts.plusJakartaSans(
                   fontSize: 12,
-                  color: const Color(0xFFD2C1D7), // [UBAH_WARNA: Teks Already Awakened]
+                  color: const Color(
+                    0xFFD2C1D7,
+                  ), // [UBAH_WARNA: Teks Already Awakened]
                 ),
               ),
               GestureDetector(
@@ -831,7 +888,9 @@ class _RegisterScreenState extends State<RegisterScreen> {
                       style: GoogleFonts.spaceGrotesk(
                         fontSize: 12,
                         fontWeight: FontWeight.w600,
-                        color: const Color(0xFFE6FEFF), // [UBAH_WARNA: Link Login Screen]
+                        color: const Color(
+                          0xFFE6FEFF,
+                        ), // [UBAH_WARNA: Link Login Screen]
                         decoration: TextDecoration.underline,
                         decorationColor: const Color(0xFFE6FEFF),
                       ),

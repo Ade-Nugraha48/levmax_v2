@@ -45,7 +45,8 @@ class LevMaxApp extends StatelessWidget {
     return MaterialApp(
       title: AppConstants.appName,
       debugShowCheckedModeBanner: false,
-      theme: AppTheme.darkTheme, // [UBAH_WARNA: Konfigurasi Tema Utama Aplikasi]
+      theme:
+          AppTheme.darkTheme, // [UBAH_WARNA: Konfigurasi Tema Utama Aplikasi]
       themeMode: ThemeMode.dark, // [UBAH_WARNA: Mode Tema Global (Dark Mode)]
       home: const SplashScreen(),
     );

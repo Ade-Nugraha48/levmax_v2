@@ -4,12 +4,14 @@
 /// dan No. 11 (Pencarian Live Query & Filter Kategori).
 
 import 'dart:async';
+
 import 'package:file_picker/file_picker.dart';
 import 'package:flutter_markdown/flutter_markdown.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:intl/intl.dart';
 import 'package:hive_flutter/hive_flutter.dart';
+
 import '../../models/alarm_model.dart';
 import '../../services/alarm_service.dart';
 import '../../services/hive_service.dart';
@@ -20,8 +22,10 @@ import '../features/appearance_quest_screen.dart';
 import '../features/chat_ai_screen.dart';
 import '../features/quest_sensor.dart';
 import '../features/study_focus_screen.dart';
+
 import 'package:geolocator/geolocator.dart';
 import 'package:latlong2/latlong.dart';
+
 import '../features/workout_hub_screen.dart';
 import '../../widgets/avatar_image.dart';
 
@@ -45,9 +49,12 @@ class _TabHomeState extends State<TabHome> {
   String _hunterName = 'hunter_sung';
   String _rank = 'Rank F';
   String get _currentRankLetter {
-    final clean = _rank.replaceAll(RegExp(r'^Rank\s*', caseSensitive: false), '').trim();
+    final clean = _rank
+        .replaceAll(RegExp(r'^Rank\s*', caseSensitive: false), '')
+        .trim();
     return clean.isEmpty ? 'F' : clean;
   }
+
   int _currentExp = 25;
   int _currentHp = 3;
   final int _maxHp = 3;
@@ -104,7 +111,8 @@ class _TabHomeState extends State<TabHome> {
   // [POIN PRESENTASI]: Mekanisme penalti HP: jika login pada hari berbeda dan quest yang diselesaikan kemarin < 3, HP berkurang 1 dan disinkronkan ke Hive & Supabase
   void _checkDailyHpPenalty() {
     final now = DateTime.now();
-    final todayDateStr = '${now.year}-${now.month.toString().padLeft(2, '0')}-${now.day.toString().padLeft(2, '0')}';
+    final todayDateStr =
+        '${now.year}-${now.month.toString().padLeft(2, '0')}-${now.day.toString().padLeft(2, '0')}';
     final lastLoginDateStr = HiveService.getLastLoginDate();
 
     if (lastLoginDateStr != null && lastLoginDateStr.isNotEmpty) {
@@ -114,12 +122,17 @@ class _TabHomeState extends State<TabHome> {
       } catch (_) {
         final parts = lastLoginDateStr.split('-');
         if (parts.length >= 3) {
-          lastDate = DateTime(int.parse(parts[0]), int.parse(parts[1]), int.parse(parts[2]));
+          lastDate = DateTime(
+            int.parse(parts[0]),
+            int.parse(parts[1]),
+            int.parse(parts[2]),
+          );
         }
       }
 
       if (lastDate != null) {
-        final bool isDifferentDay = now.year != lastDate.year ||
+        final bool isDifferentDay =
+            now.year != lastDate.year ||
             now.month != lastDate.month ||
             now.day != lastDate.day;
 
@@ -148,10 +161,7 @@ class _TabHomeState extends State<TabHome> {
 
             // Update ke Supabase jika login
             if (userId != 'anonymous') {
-              SupabaseService.updateUserStats(
-                userId: userId,
-                hp: newHp,
-              );
+              SupabaseService.updateUserStats(userId: userId, hp: newHp);
             }
 
             // Notifikasi UI peringatan penalti HP
@@ -161,7 +171,11 @@ class _TabHomeState extends State<TabHome> {
                   SnackBar(
                     content: Row(
                       children: [
-                        const Icon(Icons.favorite_border_rounded, color: Color(0xFFFF5252), size: 20),
+                        const Icon(
+                          Icons.favorite_border_rounded,
+                          color: Color(0xFFFF5252),
+                          size: 20,
+                        ),
                         const SizedBox(width: 8),
                         Expanded(
                           child: Text(
@@ -209,25 +223,27 @@ class _TabHomeState extends State<TabHome> {
       }
 
       final permission = await Geolocator.checkPermission();
-      if (permission == LocationPermission.always || permission == LocationPermission.whileInUse) {
-        _homePositionSubscription = Geolocator.getPositionStream(
-          locationSettings: const LocationSettings(
-            accuracy: LocationAccuracy.medium,
-            distanceFilter: 5,
-          ),
-        ).listen((pos) {
-          if (mounted) {
-            final d = Geolocator.distanceBetween(
-              pos.latitude,
-              pos.longitude,
-              _dungeonGate.latitude,
-              _dungeonGate.longitude,
-            );
-            setState(() {
-              _gateDistance = d;
+      if (permission == LocationPermission.always ||
+          permission == LocationPermission.whileInUse) {
+        _homePositionSubscription =
+            Geolocator.getPositionStream(
+              locationSettings: const LocationSettings(
+                accuracy: LocationAccuracy.medium,
+                distanceFilter: 5,
+              ),
+            ).listen((pos) {
+              if (mounted) {
+                final d = Geolocator.distanceBetween(
+                  pos.latitude,
+                  pos.longitude,
+                  _dungeonGate.latitude,
+                  _dungeonGate.longitude,
+                );
+                setState(() {
+                  _gateDistance = d;
+                });
+              }
             });
-          }
-        });
       }
     } catch (_) {}
   }
@@ -261,7 +277,9 @@ class _TabHomeState extends State<TabHome> {
     if (userId == null || userId == 'anonymous') return;
 
     try {
-      final cloudRecords = await SupabaseService.fetchTodayCompletedQuests(userId: userId);
+      final cloudRecords = await SupabaseService.fetchTodayCompletedQuests(
+        userId: userId,
+      );
       if (cloudRecords.isNotEmpty) {
         await HiveService.syncCompletedQuestsFromCloud(
           userId: userId,
@@ -282,7 +300,9 @@ class _TabHomeState extends State<TabHome> {
     }
     final savedRank = session['rank']?.toString();
     if (savedRank != null && savedRank.isNotEmpty) {
-      _rank = savedRank.toUpperCase().startsWith('RANK') ? savedRank : 'Rank $savedRank';
+      _rank = savedRank.toUpperCase().startsWith('RANK')
+          ? savedRank
+          : 'Rank $savedRank';
     }
     final loadedExp = session['exp'] as int?;
     if (loadedExp != null) {
@@ -321,7 +341,9 @@ class _TabHomeState extends State<TabHome> {
       _lastMidnightCheck = now;
       _checkDailyHpPenalty();
       _loadLocalQuestStatus();
-      _hiddenQuestScansToday = HiveService.getHiddenQuestScanCountToday(_userId);
+      _hiddenQuestScansToday = HiveService.getHiddenQuestScanCountToday(
+        _userId,
+      );
     }
 
     final nowUtc = now.toUtc();
@@ -409,12 +431,19 @@ class _TabHomeState extends State<TabHome> {
   }
 
   /// Menyelesaikan quest: menambah EXP & Gold, memeriksa rank-up, dan sinkronisasi ke DB
-  void completeQuest(int expReward, int goldReward, [String? questId, String? questTitle]) {
+  void completeQuest(
+    int expReward,
+    int goldReward, [
+    String? questId,
+    String? questTitle,
+  ]) {
     final qId = questId ?? '${expReward}_$goldReward';
     if (_completedQuests.contains(qId)) {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
-          content: Text('${questTitle ?? 'Quest'} sudah diselesaikan hari ini!'),
+          content: Text(
+            '${questTitle ?? 'Quest'} sudah diselesaikan hari ini!',
+          ),
           backgroundColor: const Color(0xFF2C1E4E),
           duration: const Duration(seconds: 1),
         ),
@@ -439,7 +468,10 @@ class _TabHomeState extends State<TabHome> {
     // 1. Simpan langsung ke Hive sessionBox agar real-time listener (Shop & Profile) langsung terpicu
     final sessionBox = Hive.box('sessionBox');
     sessionBox.put('gold', _gold);
-    final int currentTotal = (sessionBox.get('total_quests_done', defaultValue: sessionBox.get('quests_done_count', defaultValue: 0)) as num).toInt();
+    final int currentTotal = (sessionBox.get(
+      'total_quests_done',
+      defaultValue: sessionBox.get('quests_done_count', defaultValue: 0),
+    ) as num).toInt();
     sessionBox.put('total_quests_done', currentTotal + 1);
     sessionBox.put('quests_done_count', currentTotal + 1);
 
@@ -456,10 +488,7 @@ class _TabHomeState extends State<TabHome> {
     );
 
     // 2. Simpan status quest ke Hive questBox (Local Primary)
-    HiveService.saveQuestCompletion(
-      userId: userId,
-      questId: qId,
-    );
+    HiveService.saveQuestCompletion(userId: userId, questId: qId);
 
     // 3. Sinkronisasi asinkron ke Supabase (Cloud Backup jika user login)
     if (userId != 'anonymous') {
@@ -470,14 +499,8 @@ class _TabHomeState extends State<TabHome> {
         rank: _rank,
         hp: _currentHp,
       );
-      SupabaseService.backupQuestCompletion(
-        userId: userId,
-        questId: qId,
-      );
-      SupabaseService.recordQuestCompleted(
-        userId: userId,
-        questId: qId,
-      );
+      SupabaseService.backupQuestCompletion(userId: userId, questId: qId);
+      SupabaseService.recordQuestCompleted(userId: userId, questId: qId);
     }
 
     ScaffoldMessenger.of(context).showSnackBar(
@@ -521,7 +544,9 @@ class _TabHomeState extends State<TabHome> {
     _hiddenQuestScansToday = HiveService.getHiddenQuestScanCountToday(_userId);
 
     return Scaffold(
-      backgroundColor: const Color(0xFF16111E), // [UBAH_WARNA: Latar Belakang Layar Dashboard Tab Home]
+      backgroundColor: const Color(
+        0xFF16111E,
+      ), // [UBAH_WARNA: Latar Belakang Layar Dashboard Tab Home]
       body: SafeArea(
         child: Stack(
           children: [
@@ -575,16 +600,8 @@ class _TabHomeState extends State<TabHome> {
             ),
 
             // Floating Action Buttons (Left: Bell Notification, Right: Hunter AI Brain)
-            Positioned(
-              left: 16,
-              bottom: 16,
-              child: _buildLeftFab(),
-            ),
-            Positioned(
-              right: 16,
-              bottom: 16,
-              child: _buildRightFab(),
-            ),
+            Positioned(left: 16, bottom: 16, child: _buildLeftFab()),
+            Positioned(right: 16, bottom: 16, child: _buildRightFab()),
           ],
         ),
       ),
@@ -597,10 +614,14 @@ class _TabHomeState extends State<TabHome> {
       margin: const EdgeInsets.only(top: 2.0),
       padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6.5),
       decoration: BoxDecoration(
-        color: const Color(0xFF140D28), // [UBAH_WARNA: Banner Awakening Header Background]
+        color: const Color(
+          0xFF140D28,
+        ), // [UBAH_WARNA: Banner Awakening Header Background]
         borderRadius: BorderRadius.circular(24),
         border: Border.all(
-          color: const Color(0xFF2C1E4E), // [UBAH_WARNA: Banner Awakening Header Border]
+          color: const Color(
+            0xFF2C1E4E,
+          ), // [UBAH_WARNA: Banner Awakening Header Border]
           width: 1.0,
         ),
       ),
@@ -615,7 +636,9 @@ class _TabHomeState extends State<TabHome> {
               height: 7,
               decoration: const BoxDecoration(
                 shape: BoxShape.circle,
-                color: Color(0xFF00F4FE), // [UBAH_WARNA: Dot Status Sistem Header]
+                color: Color(
+                  0xFF00F4FE,
+                ), // [UBAH_WARNA: Dot Status Sistem Header]
                 boxShadow: [
                   BoxShadow(
                     color: Color(0xFF00F4FE),
@@ -636,14 +659,18 @@ class _TabHomeState extends State<TabHome> {
                   TextSpan(
                     text: 'SYSTEM AWAKENING: ',
                     style: TextStyle(
-                      color: Color(0xFF00F4FE), // [UBAH_WARNA: Teks Tag Hunter Header]
+                      color: Color(
+                        0xFF00F4FE,
+                      ), // [UBAH_WARNA: Teks Tag Hunter Header]
                       fontWeight: FontWeight.w700,
                     ),
                   ),
                   TextSpan(
                     text: 'COMPLETE MIN. 3 DAILY QUESTS TO AVOID PENALTY',
                     style: TextStyle(
-                      color: Color(0xFFE9DEF2), // [UBAH_WARNA: Teks Greeting Hunter]
+                      color: Color(
+                        0xFFE9DEF2,
+                      ), // [UBAH_WARNA: Teks Greeting Hunter]
                       fontWeight: FontWeight.w500,
                     ),
                   ),
@@ -664,10 +691,14 @@ class _TabHomeState extends State<TabHome> {
 
     return Container(
       decoration: BoxDecoration(
-        color: const Color(0xFF110C19), // [UBAH_WARNA: Card Hunter Matrix Background]
+        color: const Color(
+          0xFF110C19,
+        ), // [UBAH_WARNA: Card Hunter Matrix Background]
         borderRadius: BorderRadius.circular(16),
         border: Border.all(
-          color: const Color(0xFF2C1E4E), // [UBAH_WARNA: Card Hunter Matrix Border]
+          color: const Color(
+            0xFF2C1E4E,
+          ), // [UBAH_WARNA: Card Hunter Matrix Border]
           width: 1.0,
         ),
         boxShadow: [
@@ -693,15 +724,20 @@ class _TabHomeState extends State<TabHome> {
                     width: 50,
                     height: 50,
                     decoration: BoxDecoration(
-                      color: const Color(0xFF1F1927), // [UBAH_WARNA: Avatar Frame Background]
+                      color: const Color(
+                        0xFF1F1927,
+                      ), // [UBAH_WARNA: Avatar Frame Background]
                       borderRadius: BorderRadius.circular(14),
                       border: Border.all(
-                        color: const Color(0xFF00F4FE).withValues(alpha: 0.6), // [UBAH_WARNA: Avatar Frame Border]
+                        color: const Color(0xFF00F4FE).withValues(
+                          alpha: 0.6,
+                        ), // [UBAH_WARNA: Avatar Frame Border]
                         width: 1.5,
                       ),
                       boxShadow: [
                         BoxShadow(
-                          color: const Color(0xFF00F4FE).withValues(alpha: 0.25),
+                          color: const Color(0xFF00F4FE)
+                              .withValues(alpha: 0.25),
                           blurRadius: 10,
                         ),
                       ],
@@ -727,23 +763,23 @@ class _TabHomeState extends State<TabHome> {
                       height: 18,
                       decoration: BoxDecoration(
                         shape: BoxShape.circle,
-                        color: const Color(0xFF00F4FE), // [UBAH_WARNA: Tombol Edit Avatar Background]
+                        color: const Color(
+                          0xFF00F4FE,
+                        ), // [UBAH_WARNA: Tombol Edit Avatar Background]
                         border: Border.all(
                           color: const Color(0xFF110C19),
                           width: 1.5,
                         ),
                         boxShadow: const [
-                          BoxShadow(
-                            color: Color(0xFF00F4FE),
-                            blurRadius: 6,
-                          ),
+                          BoxShadow(color: Color(0xFF00F4FE), blurRadius: 6),
                         ],
                       ),
                       child: const Center(
                         child: Icon(
                           Icons.bolt_rounded,
                           size: 13,
-                          color: Colors.black, // [UBAH_WARNA: Tombol Edit Avatar Icon]
+                          color: Colors
+                              .black, // [UBAH_WARNA: Tombol Edit Avatar Icon]
                         ),
                       ),
                     ),
@@ -768,7 +804,9 @@ class _TabHomeState extends State<TabHome> {
                             style: GoogleFonts.sora(
                               fontSize: 16.5,
                               fontWeight: FontWeight.w700,
-                              color: const Color(0xFFE9DEF2), // [UBAH_WARNA: Teks Nama Hunter]
+                              color: const Color(
+                                0xFFE9DEF2,
+                              ), // [UBAH_WARNA: Teks Nama Hunter]
                             ),
                           ),
                         ),
@@ -776,7 +814,9 @@ class _TabHomeState extends State<TabHome> {
                         const Icon(
                           Icons.verified_rounded,
                           size: 15,
-                          color: Color(0xFF00F4FE), // [UBAH_WARNA: Ikon Verified Hunter]
+                          color: Color(
+                            0xFF00F4FE,
+                          ), // [UBAH_WARNA: Ikon Verified Hunter]
                         ),
                       ],
                     ),
@@ -787,7 +827,9 @@ class _TabHomeState extends State<TabHome> {
                         fontSize: 9.0,
                         fontWeight: FontWeight.w600,
                         letterSpacing: 0.8,
-                        color: const Color(0xFF9B8BA1), // [UBAH_WARNA: Teks Subtitle Rank Hunter]
+                        color: const Color(
+                          0xFF9B8BA1,
+                        ), // [UBAH_WARNA: Teks Subtitle Rank Hunter]
                       ),
                     ),
                   ],
@@ -796,12 +838,19 @@ class _TabHomeState extends State<TabHome> {
 
               // Rank Badge di Kanan
               Container(
-                padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 10,
+                  vertical: 5,
+                ),
                 decoration: BoxDecoration(
-                  color: const Color(0xFF2D164D), // [UBAH_WARNA: Badge Rank Hunter Background]
+                  color: const Color(
+                    0xFF2D164D,
+                  ), // [UBAH_WARNA: Badge Rank Hunter Background]
                   borderRadius: BorderRadius.circular(10),
                   border: Border.all(
-                    color: const Color(0xFFB026FF).withValues(alpha: 0.5), // [UBAH_WARNA: Badge Rank Hunter Border]
+                    color: const Color(0xFFB026FF).withValues(
+                      alpha: 0.5,
+                    ), // [UBAH_WARNA: Badge Rank Hunter Border]
                     width: 1.0,
                   ),
                   boxShadow: [
@@ -817,7 +866,9 @@ class _TabHomeState extends State<TabHome> {
                     const Icon(
                       Icons.military_tech_outlined,
                       size: 14,
-                      color: Color(0xFFE5B5FF), // [UBAH_WARNA: Ikon Badge Rank Hunter]
+                      color: Color(
+                        0xFFE5B5FF,
+                      ), // [UBAH_WARNA: Ikon Badge Rank Hunter]
                     ),
                     const SizedBox(width: 4),
                     Text(
@@ -826,7 +877,9 @@ class _TabHomeState extends State<TabHome> {
                         fontSize: 11,
                         fontWeight: FontWeight.w800,
                         letterSpacing: 0.6,
-                        color: const Color(0xFFE5B5FF), // [UBAH_WARNA: Teks Badge Rank Hunter]
+                        color: const Color(
+                          0xFFE5B5FF,
+                        ), // [UBAH_WARNA: Teks Badge Rank Hunter]
                       ),
                     ),
                   ],
@@ -854,9 +907,15 @@ class _TabHomeState extends State<TabHome> {
                   ),
                   for (int i = 1; i <= _maxHp; i++) ...[
                     Icon(
-                      i <= _currentHp ? Icons.favorite_rounded : Icons.favorite_border_rounded,
+                      i <= _currentHp
+                          ? Icons.favorite_rounded
+                          : Icons.favorite_border_rounded,
                       size: 16,
-                      color: i <= _currentHp ? const Color(0xFFFF5252) : const Color(0xFF5A4A63), // [UBAH_WARNA: Ikon HP Heart Hunter]
+                      color: i <= _currentHp
+                          ? const Color(0xFFFF5252)
+                          : const Color(
+                              0xFF5A4A63,
+                            ), // [UBAH_WARNA: Ikon HP Heart Hunter]
                     ),
                     const SizedBox(width: 3),
                   ],
@@ -874,12 +933,19 @@ class _TabHomeState extends State<TabHome> {
 
               // Gold Badge Pill
               Container(
-                padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 10,
+                  vertical: 4,
+                ),
                 decoration: BoxDecoration(
-                  color: const Color(0xFF261D0C), // [UBAH_WARNA: Pill Gold Hunter Background]
+                  color: const Color(
+                    0xFF261D0C,
+                  ), // [UBAH_WARNA: Pill Gold Hunter Background]
                   borderRadius: BorderRadius.circular(20),
                   border: Border.all(
-                    color: const Color(0xFFFFD166).withValues(alpha: 0.5), // [UBAH_WARNA: Pill Gold Hunter Border]
+                    color: const Color(0xFFFFD166).withValues(
+                      alpha: 0.5,
+                    ), // [UBAH_WARNA: Pill Gold Hunter Border]
                     width: 1.0,
                   ),
                 ),
@@ -889,20 +955,28 @@ class _TabHomeState extends State<TabHome> {
                     const Icon(
                       Icons.monetization_on_rounded,
                       size: 13,
-                      color: Color(0xFFFFD166), // [UBAH_WARNA: Ikon Pill Gold Hunter]
+                      color: Color(
+                        0xFFFFD166,
+                      ), // [UBAH_WARNA: Ikon Pill Gold Hunter]
                     ),
                     const SizedBox(width: 4),
                     ValueListenableBuilder<Box>(
-                      valueListenable: Hive.box('sessionBox').listenable(keys: ['gold']),
+                      valueListenable: Hive.box('sessionBox')
+                          .listenable(keys: ['gold']),
                       builder: (context, box, _) {
-                        final currentGold = (box.get('gold', defaultValue: _gold) as num).toInt();
+                        final currentGold = (box.get(
+                          'gold',
+                          defaultValue: _gold,
+                        ) as num).toInt();
                         return Text(
                           '$currentGold GOLD',
                           style: GoogleFonts.spaceGrotesk(
                             fontSize: 10.5,
                             fontWeight: FontWeight.w700,
                             letterSpacing: 0.5,
-                            color: const Color(0xFFFFD166), // [UBAH_WARNA: Teks Jumlah Gold Hunter]
+                            color: const Color(
+                              0xFFFFD166,
+                            ), // [UBAH_WARNA: Teks Jumlah Gold Hunter]
                           ),
                         );
                       },
@@ -945,7 +1019,9 @@ class _TabHomeState extends State<TabHome> {
               Container(
                 height: 6,
                 decoration: BoxDecoration(
-                  color: const Color(0xFF1F1927), // [UBAH_WARNA: Track EXP Bar Hunter]
+                  color: const Color(
+                    0xFF1F1927,
+                  ), // [UBAH_WARNA: Track EXP Bar Hunter]
                   borderRadius: BorderRadius.circular(3),
                 ),
                 alignment: Alignment.centerLeft,
@@ -959,7 +1035,9 @@ class _TabHomeState extends State<TabHome> {
                       borderRadius: BorderRadius.circular(3),
                       boxShadow: [
                         BoxShadow(
-                          color: const Color(0xFF00F4FE).withValues(alpha: 0.5), // [UBAH_WARNA: Glow Fill EXP Bar Hunter]
+                          color: const Color(0xFF00F4FE).withValues(
+                            alpha: 0.5,
+                          ), // [UBAH_WARNA: Glow Fill EXP Bar Hunter]
                           blurRadius: 6,
                         ),
                       ],
@@ -979,10 +1057,14 @@ class _TabHomeState extends State<TabHome> {
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 7),
       decoration: BoxDecoration(
-        color: const Color(0xFF110C19), // [UBAH_WARNA: Banner Server Time Background]
+        color: const Color(
+          0xFF110C19,
+        ), // [UBAH_WARNA: Banner Server Time Background]
         borderRadius: BorderRadius.circular(8),
         border: Border.all(
-          color: const Color(0xFF2C1E4E), // [UBAH_WARNA: Banner Server Time Border]
+          color: const Color(
+            0xFF2C1E4E,
+          ), // [UBAH_WARNA: Banner Server Time Border]
           width: 1.0,
         ),
       ),
@@ -1077,7 +1159,9 @@ class _TabHomeState extends State<TabHome> {
               style: GoogleFonts.spaceGrotesk(
                 fontSize: 9.5,
                 fontWeight: FontWeight.w800,
-                color: const Color(0xFF00F4FE), // [UBAH_WARNA: Teks Jam London Server Time]
+                color: const Color(
+                  0xFF00F4FE,
+                ), // [UBAH_WARNA: Teks Jam London Server Time]
               ),
             ),
           ],
@@ -1096,10 +1180,14 @@ class _TabHomeState extends State<TabHome> {
         Container(
           height: 42,
           decoration: BoxDecoration(
-            color: const Color(0xFF110C19), // [UBAH_WARNA: Latar Belakang Kolom Pencarian Quest]
+            color: const Color(
+              0xFF110C19,
+            ), // [UBAH_WARNA: Latar Belakang Kolom Pencarian Quest]
             borderRadius: BorderRadius.circular(10),
             border: Border.all(
-              color: const Color(0xFF2C1E4E), // [UBAH_WARNA: Garis Border Kolom Pencarian Quest]
+              color: const Color(
+                0xFF2C1E4E,
+              ), // [UBAH_WARNA: Garis Border Kolom Pencarian Quest]
               width: 1.0,
             ),
           ),
@@ -1108,7 +1196,9 @@ class _TabHomeState extends State<TabHome> {
             onChanged: (val) => setState(() {}),
             style: GoogleFonts.plusJakartaSans(
               fontSize: 13,
-              color: const Color(0xFFE9DEF2), // [UBAH_WARNA: Warna Teks Input Cari Quest]
+              color: const Color(
+                0xFFE9DEF2,
+              ), // [UBAH_WARNA: Warna Teks Input Cari Quest]
             ),
             cursorColor: const Color(0xFFB026FF),
             decoration: InputDecoration(
@@ -1116,7 +1206,9 @@ class _TabHomeState extends State<TabHome> {
               hintText: 'Cari nama quest hunter...',
               hintStyle: GoogleFonts.plusJakartaSans(
                 fontSize: 12.5,
-                color: const Color(0xFF5D5373), // [UBAH_WARNA: Warna Hint Cari Quest]
+                color: const Color(
+                  0xFF5D5373,
+                ), // [UBAH_WARNA: Warna Hint Cari Quest]
               ),
               prefixIcon: const Icon(
                 Icons.search_rounded,
@@ -1129,7 +1221,10 @@ class _TabHomeState extends State<TabHome> {
                 size: 18,
               ),
               border: InputBorder.none,
-              contentPadding: const EdgeInsets.symmetric(horizontal: 10, vertical: 12),
+              contentPadding: const EdgeInsets.symmetric(
+                horizontal: 10,
+                vertical: 12,
+              ),
             ),
           ),
         ),
@@ -1153,9 +1248,16 @@ class _TabHomeState extends State<TabHome> {
                     });
                   },
                   child: Container(
-                    padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 7),
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 14,
+                      vertical: 7,
+                    ),
                     decoration: BoxDecoration(
-                      color: isSelected ? const Color(0xFFB026FF) : const Color(0xFF1F1927), // [UBAH_WARNA: Background Filter Chip Quest]
+                      color: isSelected
+                          ? const Color(0xFFB026FF)
+                          : const Color(
+                              0xFF1F1927,
+                            ), // [UBAH_WARNA: Background Filter Chip Quest]
                       borderRadius: BorderRadius.circular(8),
                       border: isSelected
                           ? null
@@ -1166,7 +1268,8 @@ class _TabHomeState extends State<TabHome> {
                       boxShadow: isSelected
                           ? [
                               BoxShadow(
-                                color: const Color(0xFFB026FF).withValues(alpha: 0.35),
+                                color: const Color(0xFFB026FF)
+                                    .withValues(alpha: 0.35),
                                 blurRadius: 10,
                               ),
                             ]
@@ -1178,7 +1281,9 @@ class _TabHomeState extends State<TabHome> {
                         fontSize: 10.5,
                         fontWeight: FontWeight.w700,
                         letterSpacing: 0.8,
-                        color: isSelected ? Colors.white : const Color(0xFF9B8BA1),
+                        color: isSelected
+                            ? Colors.white
+                            : const Color(0xFF9B8BA1),
                       ),
                     ),
                   ),
@@ -1207,7 +1312,9 @@ class _TabHomeState extends State<TabHome> {
               const Icon(
                 Icons.local_fire_department_rounded,
                 size: 17,
-                color: Color(0xFFFF7A00), // [UBAH_WARNA: Ikon Api Daily Quests Header]
+                color: Color(
+                  0xFFFF7A00,
+                ), // [UBAH_WARNA: Ikon Api Daily Quests Header]
               ),
               const SizedBox(width: 5),
               Flexible(
@@ -1218,7 +1325,9 @@ class _TabHomeState extends State<TabHome> {
                     fontSize: 12,
                     fontWeight: FontWeight.w700,
                     letterSpacing: 0.8,
-                    color: const Color(0xFFE9DEF2), // [UBAH_WARNA: Judul Daily Quests Header]
+                    color: const Color(
+                      0xFFE9DEF2,
+                    ), // [UBAH_WARNA: Judul Daily Quests Header]
                   ),
                 ),
               ),
@@ -1229,9 +1338,7 @@ class _TabHomeState extends State<TabHome> {
         Container(
           padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 3.5),
           decoration: BoxDecoration(
-            color: isSafe
-                ? const Color(0xFF0C242B)
-                : const Color(0xFF26121E),
+            color: isSafe ? const Color(0xFF0C242B) : const Color(0xFF26121E),
             borderRadius: BorderRadius.circular(6),
             border: Border.all(
               color: isSafe
@@ -1246,7 +1353,9 @@ class _TabHomeState extends State<TabHome> {
               Icon(
                 isSafe ? Icons.shield_rounded : Icons.shield_outlined,
                 size: 11,
-                color: isSafe ? const Color(0xFF00F4FE) : const Color(0xFFFF5252),
+                color: isSafe
+                    ? const Color(0xFF00F4FE)
+                    : const Color(0xFFFF5252),
               ),
               const SizedBox(width: 4),
               Text(
@@ -1255,7 +1364,9 @@ class _TabHomeState extends State<TabHome> {
                   fontSize: 10,
                   fontWeight: FontWeight.w700,
                   letterSpacing: 0.4,
-                  color: isSafe ? const Color(0xFF00F4FE) : const Color(0xFFFFB4AB),
+                  color: isSafe
+                      ? const Color(0xFF00F4FE)
+                      : const Color(0xFFFFB4AB),
                 ),
               ),
             ],
@@ -1417,9 +1528,8 @@ class _TabHomeState extends State<TabHome> {
         final result = await Navigator.push<bool>(
           context,
           MaterialPageRoute(
-            builder: (context) => AppearanceQuestScreen(
-              currentRank: _currentRankLetter,
-            ),
+            builder: (context) =>
+                AppearanceQuestScreen(currentRank: _currentRankLetter),
           ),
         );
         if (result == true) {
@@ -1429,9 +1539,8 @@ class _TabHomeState extends State<TabHome> {
         final result = await Navigator.push<bool>(
           context,
           MaterialPageRoute(
-            builder: (context) => QuestSensorScreen(
-              currentRank: _currentRankLetter,
-            ),
+            builder: (context) =>
+                QuestSensorScreen(currentRank: _currentRankLetter),
           ),
         );
         if (result == true) {
@@ -1441,9 +1550,8 @@ class _TabHomeState extends State<TabHome> {
         final result = await Navigator.push<Map<String, dynamic>>(
           context,
           MaterialPageRoute(
-            builder: (context) => StudyFocusScreen(
-              currentRank: _currentRankLetter,
-            ),
+            builder: (context) =>
+                StudyFocusScreen(currentRank: _currentRankLetter),
           ),
         );
         if (result != null) {
@@ -1467,9 +1575,10 @@ class _TabHomeState extends State<TabHome> {
     // Filter berdasarkan Kategori & Pencarian
     final filteredQuests = quests.where((q) {
       // [POIN PRESENTASI]: Algoritma filter pencarian ganda: mencocokkan kategori aktif dan substring kata kunci judul/deskripsi quest
-      final matchesCategory = _selectedCategory == 'ALL' ||
-          q['category'] == _selectedCategory;
-      final matchesSearch = searchQuery.isEmpty ||
+      final matchesCategory =
+          _selectedCategory == 'ALL' || q['category'] == _selectedCategory;
+      final matchesSearch =
+          searchQuery.isEmpty ||
           (q['title'] as String).toLowerCase().contains(searchQuery) ||
           (q['desc'] as String).toLowerCase().contains(searchQuery);
       return matchesCategory && matchesSearch;
@@ -1489,10 +1598,18 @@ class _TabHomeState extends State<TabHome> {
               onTap: isDone ? null : () => handleQuestAction(q),
               child: Container(
                 decoration: BoxDecoration(
-                  color: isDone ? const Color(0xFF16121D) : const Color(0xFF1F1927), // [UBAH_WARNA: Background Card Quest]
+                  color: isDone
+                      ? const Color(0xFF16121D)
+                      : const Color(
+                          0xFF1F1927,
+                        ), // [UBAH_WARNA: Background Card Quest]
                   borderRadius: BorderRadius.circular(12),
                   border: Border.all(
-                    color: isDone ? const Color(0xFF2C2436) : const Color(0xFF383241), // [UBAH_WARNA: Border Card Quest]
+                    color: isDone
+                        ? const Color(0xFF2C2436)
+                        : const Color(
+                            0xFF383241,
+                          ), // [UBAH_WARNA: Border Card Quest]
                     width: 1.0,
                   ),
                   boxShadow: [
@@ -1503,7 +1620,10 @@ class _TabHomeState extends State<TabHome> {
                     ),
                   ],
                 ),
-                padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 10),
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 10,
+                  vertical: 10,
+                ),
                 child: Row(
                   crossAxisAlignment: CrossAxisAlignment.center,
                   children: [
@@ -1512,12 +1632,16 @@ class _TabHomeState extends State<TabHome> {
                       width: 40,
                       height: 40,
                       decoration: BoxDecoration(
-                        color: isDone ? const Color(0xFF1A1524) : (q['iconBg'] as Color),
+                        color: isDone
+                            ? const Color(0xFF1A1524)
+                            : (q['iconBg'] as Color),
                         borderRadius: BorderRadius.circular(10),
                       ),
                       child: Icon(
                         q['icon'] as IconData,
-                        color: isDone ? const Color(0xFF6B6178) : (q['iconColor'] as Color),
+                        color: isDone
+                            ? const Color(0xFF6B6178)
+                            : (q['iconColor'] as Color),
                         size: 20,
                       ),
                     ),
@@ -1538,7 +1662,11 @@ class _TabHomeState extends State<TabHome> {
                             style: GoogleFonts.sora(
                               fontSize: 12.8,
                               fontWeight: FontWeight.w700,
-                              color: isDone ? const Color(0xFF7E728C) : const Color(0xFFE9DEF2), // [UBAH_WARNA: Judul Card Quest]
+                              color: isDone
+                                  ? const Color(0xFF7E728C)
+                                  : const Color(
+                                      0xFFE9DEF2,
+                                    ), // [UBAH_WARNA: Judul Card Quest]
                             ),
                           ),
                           const SizedBox(height: 4),
@@ -1547,9 +1675,14 @@ class _TabHomeState extends State<TabHome> {
                             children: [
                               Container(
                                 margin: const EdgeInsets.only(top: 1),
-                                padding: const EdgeInsets.symmetric(horizontal: 5, vertical: 2),
+                                padding: const EdgeInsets.symmetric(
+                                  horizontal: 5,
+                                  vertical: 2,
+                                ),
                                 decoration: BoxDecoration(
-                                  color: isDone ? const Color(0xFF1F1A28) : const Color(0xFF2D164D),
+                                  color: isDone
+                                      ? const Color(0xFF1F1A28)
+                                      : const Color(0xFF2D164D),
                                   borderRadius: BorderRadius.circular(4),
                                 ),
                                 child: Text(
@@ -1557,7 +1690,9 @@ class _TabHomeState extends State<TabHome> {
                                   style: GoogleFonts.spaceGrotesk(
                                     fontSize: 8.5,
                                     fontWeight: FontWeight.w700,
-                                    color: isDone ? const Color(0xFF6E637D) : const Color(0xFFE5B5FF),
+                                    color: isDone
+                                        ? const Color(0xFF6E637D)
+                                        : const Color(0xFFE5B5FF),
                                   ),
                                 ),
                               ),
@@ -1571,7 +1706,9 @@ class _TabHomeState extends State<TabHome> {
                                   style: GoogleFonts.plusJakartaSans(
                                     fontSize: 9.8,
                                     fontWeight: FontWeight.w500,
-                                    color: isDone ? const Color(0xFF635870) : const Color(0xFF9B8BA1),
+                                    color: isDone
+                                        ? const Color(0xFF635870)
+                                        : const Color(0xFF9B8BA1),
                                   ),
                                 ),
                               ),
@@ -1596,7 +1733,9 @@ class _TabHomeState extends State<TabHome> {
                               style: GoogleFonts.spaceGrotesk(
                                 fontSize: 9.5,
                                 fontWeight: FontWeight.w700,
-                                color: isDone ? const Color(0xFF6E637D) : Colors.white,
+                                color: isDone
+                                    ? const Color(0xFF6E637D)
+                                    : Colors.white,
                               ),
                             ),
                             const SizedBox(width: 4),
@@ -1605,7 +1744,9 @@ class _TabHomeState extends State<TabHome> {
                               style: GoogleFonts.spaceGrotesk(
                                 fontSize: 9.5,
                                 fontWeight: FontWeight.w700,
-                                color: isDone ? const Color(0xFF6E5821) : const Color(0xFFFFD166),
+                                color: isDone
+                                    ? const Color(0xFF6E5821)
+                                    : const Color(0xFFFFD166),
                               ),
                             ),
                           ],
@@ -1620,25 +1761,30 @@ class _TabHomeState extends State<TabHome> {
                             decoration: BoxDecoration(
                               color: isDone
                                   ? const Color(0xFF201B28)
-                                  : (q['btnColor'] as Color == Colors.transparent
-                                      ? const Color(0xFF231B33)
-                                      : q['btnColor'] as Color),
+                                  : (q['btnColor'] as Color ==
+                                            Colors.transparent
+                                        ? const Color(0xFF231B33)
+                                        : q['btnColor'] as Color),
                               borderRadius: BorderRadius.circular(8),
                               border: Border.all(
                                 color: isDone
                                     ? const Color(0xFF352D40)
-                                    : (q['btnColor'] as Color == Colors.transparent
-                                        ? const Color(0xFFDCB8FC).withValues(alpha: 0.5)
-                                        : Colors.transparent),
+                                    : (q['btnColor'] as Color ==
+                                              Colors.transparent
+                                          ? const Color(0xFFDCB8FC)
+                                                .withValues(alpha: 0.5)
+                                          : Colors.transparent),
                               ),
                               boxShadow: isDone
                                   ? null
                                   : [
                                       BoxShadow(
-                                        color: (q['btnColor'] as Color == Colors.transparent
-                                                ? const Color(0xFFB026FF)
-                                                : q['btnColor'] as Color)
-                                            .withValues(alpha: 0.3),
+                                        color:
+                                            (q['btnColor'] as Color ==
+                                                        Colors.transparent
+                                                    ? const Color(0xFFB026FF)
+                                                    : q['btnColor'] as Color)
+                                                .withValues(alpha: 0.3),
                                         blurRadius: 8,
                                       ),
                                     ],
@@ -1652,10 +1798,12 @@ class _TabHomeState extends State<TabHome> {
                                   isDone
                                       ? Icons.check_circle_rounded
                                       : (q['isActionCyan'] == true
-                                          ? Icons.navigation_rounded
-                                          : Icons.bolt_rounded),
+                                            ? Icons.navigation_rounded
+                                            : Icons.bolt_rounded),
                                   size: 12,
-                                  color: isDone ? const Color(0xFF8B8097) : q['btnTextColor'] as Color,
+                                  color: isDone
+                                      ? const Color(0xFF8B8097)
+                                      : q['btnTextColor'] as Color,
                                 ),
                                 const SizedBox(width: 3),
                                 Text(
@@ -1664,7 +1812,9 @@ class _TabHomeState extends State<TabHome> {
                                     fontSize: 9.0,
                                     fontWeight: FontWeight.w800,
                                     letterSpacing: 0.3,
-                                    color: isDone ? const Color(0xFF8B8097) : q['btnTextColor'] as Color,
+                                    color: isDone
+                                        ? const Color(0xFF8B8097)
+                                        : q['btnTextColor'] as Color,
                                   ),
                                 ),
                               ],
@@ -1689,15 +1839,14 @@ class _TabHomeState extends State<TabHome> {
       decoration: BoxDecoration(
         borderRadius: BorderRadius.circular(16),
         gradient: const LinearGradient(
-          colors: [
-            Color(0xFF28071E),
-            Color(0xFF1E0A2D),
-          ],
+          colors: [Color(0xFF28071E), Color(0xFF1E0A2D)],
           begin: Alignment.topLeft,
           end: Alignment.bottomRight,
         ),
         border: Border.all(
-          color: const Color(0xFFFF0055).withValues(alpha: 0.8), // [UBAH_WARNA: Border Tombol Scan Hidden Dungeon]
+          color: const Color(0xFFFF0055).withValues(
+            alpha: 0.8,
+          ), // [UBAH_WARNA: Border Tombol Scan Hidden Dungeon]
           width: 1.5,
         ),
         boxShadow: [
@@ -1731,10 +1880,7 @@ class _TabHomeState extends State<TabHome> {
                   decoration: BoxDecoration(
                     shape: BoxShape.circle,
                     gradient: const RadialGradient(
-                      colors: [
-                        Color(0xFFFF0055),
-                        Color(0xFFB026FF),
-                      ],
+                      colors: [Color(0xFFFF0055), Color(0xFFB026FF)],
                     ),
                     boxShadow: [
                       BoxShadow(
@@ -1746,7 +1892,8 @@ class _TabHomeState extends State<TabHome> {
                   ),
                   child: const Icon(
                     Icons.radar_rounded,
-                    color: Colors.white, // [UBAH_WARNA: Ikon Tombol Scan Hidden Dungeon]
+                    color: Colors
+                        .white, // [UBAH_WARNA: Ikon Tombol Scan Hidden Dungeon]
                     size: 24,
                   ),
                 ),
@@ -1760,7 +1907,7 @@ class _TabHomeState extends State<TabHome> {
                         children: [
                           Flexible(
                             child: Text(
-                              'SCAN HIDDEN DUNGEON',
+                              'SCAN HIDDEN QUEST',
                               style: GoogleFonts.orbitron(
                                 fontSize: 12.5,
                                 fontWeight: FontWeight.w900,
@@ -1771,12 +1918,17 @@ class _TabHomeState extends State<TabHome> {
                           ),
                           const SizedBox(width: 6),
                           Container(
-                            padding: const EdgeInsets.symmetric(horizontal: 5, vertical: 2),
+                            padding: const EdgeInsets.symmetric(
+                              horizontal: 5,
+                              vertical: 2,
+                            ),
                             decoration: BoxDecoration(
-                              color: const Color(0xFFB026FF).withValues(alpha: 0.25),
+                              color: const Color(0xFFB026FF)
+                                  .withValues(alpha: 0.25),
                               borderRadius: BorderRadius.circular(4),
                               border: Border.all(
-                                color: const Color(0xFFB026FF).withValues(alpha: 0.6),
+                                color: const Color(0xFFB026FF)
+                                    .withValues(alpha: 0.6),
                                 width: 0.8,
                               ),
                             ),
@@ -1791,16 +1943,23 @@ class _TabHomeState extends State<TabHome> {
                           ),
                           const SizedBox(width: 5),
                           Container(
-                            padding: const EdgeInsets.symmetric(horizontal: 5, vertical: 2),
+                            padding: const EdgeInsets.symmetric(
+                              horizontal: 5,
+                              vertical: 2,
+                            ),
                             decoration: BoxDecoration(
                               color: _hiddenQuestScansToday < 3
-                                  ? const Color(0xFF00F4FE).withValues(alpha: 0.15)
-                                  : const Color(0xFFFF0055).withValues(alpha: 0.2),
+                                  ? const Color(0xFF00F4FE)
+                                        .withValues(alpha: 0.15)
+                                  : const Color(0xFFFF0055)
+                                        .withValues(alpha: 0.2),
                               borderRadius: BorderRadius.circular(4),
                               border: Border.all(
                                 color: _hiddenQuestScansToday < 3
-                                    ? const Color(0xFF00F4FE).withValues(alpha: 0.6)
-                                    : const Color(0xFFFF0055).withValues(alpha: 0.6),
+                                    ? const Color(0xFF00F4FE)
+                                          .withValues(alpha: 0.6)
+                                    : const Color(0xFFFF0055)
+                                          .withValues(alpha: 0.6),
                                 width: 0.8,
                               ),
                             ),
@@ -1819,7 +1978,7 @@ class _TabHomeState extends State<TabHome> {
                       ),
                       const SizedBox(height: 3),
                       Text(
-                        'Pindai tantangan rahasia pengembangan diri & mental Hunter (Maks 3x/hari)',
+                        'Pindai tantangan rahasia pengembangan diri & mental Hunter',
                         style: GoogleFonts.plusJakartaSans(
                           fontSize: 10.5,
                           fontWeight: FontWeight.w500,
@@ -1867,10 +2026,7 @@ class _TabHomeState extends State<TabHome> {
               decoration: BoxDecoration(
                 color: const Color(0xFF140D22),
                 borderRadius: BorderRadius.circular(20),
-                border: Border.all(
-                  color: const Color(0xFFFF0055),
-                  width: 1.6,
-                ),
+                border: Border.all(color: const Color(0xFFFF0055), width: 1.6),
                 boxShadow: [
                   BoxShadow(
                     color: const Color(0xFFFF0055).withValues(alpha: 0.35),
@@ -1887,7 +2043,9 @@ class _TabHomeState extends State<TabHome> {
                     height: 48,
                     child: CircularProgressIndicator(
                       strokeWidth: 3.5,
-                      valueColor: AlwaysStoppedAnimation<Color>(Color(0xFFFF0055)),
+                      valueColor: AlwaysStoppedAnimation<Color>(
+                        Color(0xFFFF0055),
+                      ),
                     ),
                   ),
                   const SizedBox(height: 20),
@@ -1920,10 +2078,15 @@ class _TabHomeState extends State<TabHome> {
 
     try {
       // [POIN PRESENTASI]: Panggilan generative AI Gemini untuk menciptakan tantangan opsional Self-Improvement
-      final questText = await GeminiService.generateHiddenQuest(_rank, _currentExp);
+      final questText = await GeminiService.generateHiddenQuest(
+        _rank,
+        _currentExp,
+      );
 
       // Tingkatkan kuota pemindaian hari ini
-      final nextCount = await HiveService.incrementHiddenQuestScanCount(_userId);
+      final nextCount = await HiveService.incrementHiddenQuestScanCount(
+        _userId,
+      );
       if (mounted) {
         setState(() {
           _hiddenQuestScansToday = nextCount;
@@ -1939,7 +2102,10 @@ class _TabHomeState extends State<TabHome> {
     } catch (e) {
       if (!mounted) return;
       Navigator.of(context, rootNavigator: true).pop();
-      _showHiddenQuestResultDialog('Gagal memindai gelombang mana: $e', currentScan: countToday);
+      _showHiddenQuestResultDialog(
+        'Gagal memindai gelombang mana: $e',
+        currentScan: countToday,
+      );
     }
   }
 
@@ -1978,14 +2144,18 @@ class _TabHomeState extends State<TabHome> {
         fontSize: 13.2,
         height: 1.6,
         fontWeight: FontWeight.w800,
-        color: const Color(0xFF00F4FE), // Neon cyan highlight untuk keyword penting
+        color: const Color(
+          0xFF00F4FE,
+        ), // Neon cyan highlight untuk keyword penting
       ),
       em: GoogleFonts.plusJakartaSans(
         fontSize: 12.8,
         height: 1.6,
         fontStyle: FontStyle.italic,
         fontWeight: FontWeight.w600,
-        color: const Color(0xFFE5B5FF), // Lilac purple untuk istilah latihan fisik
+        color: const Color(
+          0xFFE5B5FF,
+        ), // Lilac purple untuk istilah latihan fisik
       ),
       h1: GoogleFonts.orbitron(
         fontSize: 14.5,
@@ -2021,16 +2191,16 @@ class _TabHomeState extends State<TabHome> {
       builder: (dialogCtx) {
         return Dialog(
           backgroundColor: Colors.transparent,
-          insetPadding: const EdgeInsets.symmetric(horizontal: 20, vertical: 24),
+          insetPadding: const EdgeInsets.symmetric(
+            horizontal: 20,
+            vertical: 24,
+          ),
           child: Container(
             padding: const EdgeInsets.all(22),
             decoration: BoxDecoration(
               color: const Color(0xFF140D22),
               borderRadius: BorderRadius.circular(22),
-              border: Border.all(
-                color: const Color(0xFFFF0055),
-                width: 2.0,
-              ),
+              border: Border.all(color: const Color(0xFFFF0055), width: 2.0),
               boxShadow: [
                 BoxShadow(
                   color: const Color(0xFFFF0055).withValues(alpha: 0.4),
@@ -2129,7 +2299,8 @@ class _TabHomeState extends State<TabHome> {
                       backgroundColor: const Color(0xFFFF0055),
                       foregroundColor: Colors.white,
                       elevation: 6,
-                      shadowColor: const Color(0xFFFF0055).withValues(alpha: 0.5),
+                      shadowColor: const Color(0xFFFF0055)
+                          .withValues(alpha: 0.5),
                       shape: RoundedRectangleBorder(
                         borderRadius: BorderRadius.circular(12),
                       ),
@@ -2138,7 +2309,10 @@ class _TabHomeState extends State<TabHome> {
                     child: Row(
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: [
-                        const Icon(Icons.check_circle_outline_rounded, size: 18),
+                        const Icon(
+                          Icons.check_circle_outline_rounded,
+                          size: 18,
+                        ),
                         const SizedBox(width: 8),
                         Text(
                           'TUTUP',
@@ -2167,16 +2341,16 @@ class _TabHomeState extends State<TabHome> {
       builder: (ctx) {
         return Dialog(
           backgroundColor: Colors.transparent,
-          insetPadding: const EdgeInsets.symmetric(horizontal: 24, vertical: 24),
+          insetPadding: const EdgeInsets.symmetric(
+            horizontal: 24,
+            vertical: 24,
+          ),
           child: Container(
             padding: const EdgeInsets.all(22),
             decoration: BoxDecoration(
               color: const Color(0xFF140D22),
               borderRadius: BorderRadius.circular(22),
-              border: Border.all(
-                color: const Color(0xFFFF2A6D),
-                width: 1.8,
-              ),
+              border: Border.all(color: const Color(0xFFFF2A6D), width: 1.8),
               boxShadow: [
                 BoxShadow(
                   color: const Color(0xFFFF0055).withValues(alpha: 0.35),
@@ -2228,9 +2402,7 @@ class _TabHomeState extends State<TabHome> {
                   decoration: BoxDecoration(
                     color: const Color(0xFF1B112B),
                     borderRadius: BorderRadius.circular(12),
-                    border: Border.all(
-                      color: const Color(0xFF2C1E4E),
-                    ),
+                    border: Border.all(color: const Color(0xFF2C1E4E)),
                   ),
                   child: Text(
                     'Kapasitas pemindaian gerbang rahasia telah mencapai batas maksimal 3 kali untuk hari ini.\n\n'
@@ -2251,7 +2423,10 @@ class _TabHomeState extends State<TabHome> {
                     style: ElevatedButton.styleFrom(
                       backgroundColor: const Color(0xFF28071E),
                       foregroundColor: const Color(0xFFFF80AB),
-                      side: const BorderSide(color: Color(0xFFFF0055), width: 1.2),
+                      side: const BorderSide(
+                        color: Color(0xFFFF0055),
+                        width: 1.2,
+                      ),
                       shape: RoundedRectangleBorder(
                         borderRadius: BorderRadius.circular(12),
                       ),
@@ -2285,10 +2460,14 @@ class _TabHomeState extends State<TabHome> {
       child: Container(
         padding: const EdgeInsets.all(12),
         decoration: BoxDecoration(
-          color: const Color(0xFF1F1927), // [UBAH_WARNA: Background Card Nearby Gate]
+          color: const Color(
+            0xFF1F1927,
+          ), // [UBAH_WARNA: Background Card Nearby Gate]
           borderRadius: BorderRadius.circular(12),
           border: Border.all(
-            color: const Color(0xFF383241), // [UBAH_WARNA: Border Card Nearby Gate]
+            color: const Color(
+              0xFF383241,
+            ), // [UBAH_WARNA: Border Card Nearby Gate]
             width: 1.0,
           ),
         ),
@@ -2303,7 +2482,9 @@ class _TabHomeState extends State<TabHome> {
                       const Icon(
                         Icons.radar_rounded,
                         size: 14,
-                        color: Color(0xFF00F4FE), // [UBAH_WARNA: Ikon Radar Nearby Gate]
+                        color: Color(
+                          0xFF00F4FE,
+                        ), // [UBAH_WARNA: Ikon Radar Nearby Gate]
                       ),
                       const SizedBox(width: 4),
                       Text(
@@ -2342,7 +2523,9 @@ class _TabHomeState extends State<TabHome> {
               width: 96,
               height: 32,
               decoration: BoxDecoration(
-                color: const Color(0xFF00F4FE), // [UBAH_WARNA: Tombol Enter Gate Background]
+                color: const Color(
+                  0xFF00F4FE,
+                ), // [UBAH_WARNA: Tombol Enter Gate Background]
                 borderRadius: BorderRadius.circular(8),
                 boxShadow: [
                   BoxShadow(
@@ -2368,7 +2551,8 @@ class _TabHomeState extends State<TabHome> {
                       fontSize: 9.5,
                       fontWeight: FontWeight.w800,
                       letterSpacing: 0.4,
-                      color: Colors.black, // [UBAH_WARNA: Tombol Enter Gate Teks]
+                      color:
+                          Colors.black, // [UBAH_WARNA: Tombol Enter Gate Teks]
                     ),
                   ),
                 ],
@@ -2389,7 +2573,9 @@ class _TabHomeState extends State<TabHome> {
       width: 44,
       height: 44,
       decoration: BoxDecoration(
-        color: const Color(0xFF1F1927), // [UBAH_WARNA: FAB Tombol Alarm Background]
+        color: const Color(
+          0xFF1F1927,
+        ), // [UBAH_WARNA: FAB Tombol Alarm Background]
         shape: BoxShape.circle,
         border: Border.all(
           color: isAlarmOn
@@ -2414,7 +2600,9 @@ class _TabHomeState extends State<TabHome> {
             tooltip: 'Hunter System Awakening Alarm',
             icon: Icon(
               isAlarmOn ? Icons.alarm_on_rounded : Icons.alarm_rounded,
-              color: isAlarmOn ? const Color(0xFF00F4FE) : const Color(0xFF9B8BA1),
+              color: isAlarmOn
+                  ? const Color(0xFF00F4FE)
+                  : const Color(0xFF9B8BA1),
               size: 20,
             ),
             onPressed: () => _openAlarmSettingModal(context),
@@ -2482,12 +2670,15 @@ class _TabHomeState extends State<TabHome> {
         return StatefulBuilder(
           builder: (dialogCtx, setModalState) {
             final screenHeight = MediaQuery.of(dialogCtx).size.height;
-            final isKeyboardOpen = MediaQuery.of(dialogCtx).viewInsets.bottom > 0;
+            final isKeyboardOpen =
+                MediaQuery.of(dialogCtx).viewInsets.bottom > 0;
 
             return Material(
               color: Colors.transparent,
               child: Container(
-                height: isKeyboardOpen ? screenHeight * 0.95 : screenHeight * 0.88,
+                height: isKeyboardOpen
+                    ? screenHeight * 0.95
+                    : screenHeight * 0.88,
                 clipBehavior: Clip.antiAlias,
                 decoration: BoxDecoration(
                   color: const Color(0xFF110C19),
@@ -2524,7 +2715,10 @@ class _TabHomeState extends State<TabHome> {
 
                     // Header Bar
                     Padding(
-                      padding: const EdgeInsets.symmetric(horizontal: 18, vertical: 8),
+                      padding: const EdgeInsets.symmetric(
+                        horizontal: 18,
+                        vertical: 8,
+                      ),
                       child: Row(
                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         children: [
@@ -2533,10 +2727,12 @@ class _TabHomeState extends State<TabHome> {
                               Container(
                                 padding: const EdgeInsets.all(7),
                                 decoration: BoxDecoration(
-                                  color: const Color(0xFF00F4FE).withValues(alpha: 0.15),
+                                  color: const Color(0xFF00F4FE)
+                                      .withValues(alpha: 0.15),
                                   borderRadius: BorderRadius.circular(8),
                                   border: Border.all(
-                                    color: const Color(0xFF00F4FE).withValues(alpha: 0.4),
+                                    color: const Color(0xFF00F4FE)
+                                        .withValues(alpha: 0.4),
                                   ),
                                 ),
                                 child: const Icon(
@@ -2571,7 +2767,11 @@ class _TabHomeState extends State<TabHome> {
                             ],
                           ),
                           IconButton(
-                            icon: const Icon(Icons.close_rounded, color: Color(0xFF9B8BA1), size: 20),
+                            icon: const Icon(
+                              Icons.close_rounded,
+                              color: Color(0xFF9B8BA1),
+                              size: 20,
+                            ),
                             onPressed: () {
                               AlarmService.stopPreview();
                               Navigator.pop(sheetContext);
@@ -2593,13 +2793,17 @@ class _TabHomeState extends State<TabHome> {
                           children: [
                             // 1. Status Toggle & Countdown Banner
                             Container(
-                              padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 12),
+                              padding: const EdgeInsets.symmetric(
+                                horizontal: 14,
+                                vertical: 12,
+                              ),
                               decoration: BoxDecoration(
                                 color: const Color(0xFF1F1927),
                                 borderRadius: BorderRadius.circular(14),
                                 border: Border.all(
                                   color: isEnabled
-                                      ? const Color(0xFF00F4FE).withValues(alpha: 0.5)
+                                      ? const Color(0xFF00F4FE)
+                                            .withValues(alpha: 0.5)
                                       : const Color(0xFF2C1E4E),
                                   width: 1.2,
                                 ),
@@ -2611,7 +2815,9 @@ class _TabHomeState extends State<TabHome> {
                                     height: 10,
                                     decoration: BoxDecoration(
                                       shape: BoxShape.circle,
-                                      color: isEnabled ? const Color(0xFF00F4FE) : const Color(0xFF70657B),
+                                      color: isEnabled
+                                          ? const Color(0xFF00F4FE)
+                                          : const Color(0xFF70657B),
                                       boxShadow: isEnabled
                                           ? [
                                               const BoxShadow(
@@ -2626,24 +2832,34 @@ class _TabHomeState extends State<TabHome> {
                                   const SizedBox(width: 10),
                                   Expanded(
                                     child: Column(
-                                      crossAxisAlignment: CrossAxisAlignment.start,
+                                      crossAxisAlignment:
+                                          CrossAxisAlignment.start,
                                       children: [
                                         Text(
-                                          isEnabled ? 'ALARM AKTIF' : 'ALARM NONAKTIF',
+                                          isEnabled
+                                              ? 'ALARM AKTIF'
+                                              : 'ALARM NONAKTIF',
                                           style: GoogleFonts.spaceGrotesk(
                                             fontSize: 12,
                                             fontWeight: FontWeight.w800,
                                             letterSpacing: 0.6,
-                                            color: isEnabled ? const Color(0xFF00F4FE) : const Color(0xFF9B8BA1),
+                                            color: isEnabled
+                                                ? const Color(0xFF00F4FE)
+                                                : const Color(0xFF9B8BA1),
                                           ),
                                         ),
                                         Text(
                                           isEnabled
-                                              ? _getRemainingAlarmText(selectedHour, selectedMinute)
+                                              ? _getRemainingAlarmText(
+                                                  selectedHour,
+                                                  selectedMinute,
+                                                )
                                               : 'Nyalakan switch untuk mengaktifkan jadwal alarm.',
                                           style: GoogleFonts.plusJakartaSans(
                                             fontSize: 10.5,
-                                            color: isEnabled ? const Color(0xFFD4C7E3) : const Color(0xFF70657B),
+                                            color: isEnabled
+                                                ? const Color(0xFFD4C7E3)
+                                                : const Color(0xFF70657B),
                                           ),
                                         ),
                                       ],
@@ -2652,7 +2868,8 @@ class _TabHomeState extends State<TabHome> {
                                   Switch(
                                     value: isEnabled,
                                     activeThumbColor: const Color(0xFF00F4FE),
-                                    activeTrackColor: const Color(0xFF00F4FE).withValues(alpha: 0.3),
+                                    activeTrackColor: const Color(0xFF00F4FE)
+                                        .withValues(alpha: 0.3),
                                     inactiveThumbColor: const Color(0xFF70657B),
                                     inactiveTrackColor: const Color(0xFF2C1E4E),
                                     onChanged: (val) {
@@ -2667,7 +2884,10 @@ class _TabHomeState extends State<TabHome> {
 
                             // 2. Large Digital Time Display & Picker
                             Container(
-                              padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 16),
+                              padding: const EdgeInsets.symmetric(
+                                horizontal: 14,
+                                vertical: 16,
+                              ),
                               decoration: BoxDecoration(
                                 color: const Color(0xFF171022),
                                 borderRadius: BorderRadius.circular(16),
@@ -2679,7 +2899,8 @@ class _TabHomeState extends State<TabHome> {
                               child: Column(
                                 children: [
                                   Row(
-                                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                    mainAxisAlignment:
+                                        MainAxisAlignment.spaceBetween,
                                     children: [
                                       Text(
                                         'WAKTU ALARM (FORMAT 24 JAM)',
@@ -2694,16 +2915,28 @@ class _TabHomeState extends State<TabHome> {
                                         onTap: () async {
                                           final picked = await showTimePicker(
                                             context: dialogCtx,
-                                            initialTime: TimeOfDay(hour: selectedHour, minute: selectedMinute),
+                                            initialTime: TimeOfDay(
+                                              hour: selectedHour,
+                                              minute: selectedMinute,
+                                            ),
                                             builder: (ctx, child) {
                                               return Theme(
                                                 data: ThemeData.dark().copyWith(
-                                                  colorScheme: const ColorScheme.dark(
-                                                    primary: Color(0xFF00F4FE),
-                                                    onPrimary: Color(0xFF0D0814),
-                                                    surface: Color(0xFF1A1325),
-                                                    onSurface: Color(0xFFE9DEF2),
-                                                  ),
+                                                  colorScheme:
+                                                      const ColorScheme.dark(
+                                                        primary: Color(
+                                                          0xFF00F4FE,
+                                                        ),
+                                                        onPrimary: Color(
+                                                          0xFF0D0814,
+                                                        ),
+                                                        surface: Color(
+                                                          0xFF1A1325,
+                                                        ),
+                                                        onSurface: Color(
+                                                          0xFFE9DEF2,
+                                                        ),
+                                                      ),
                                                 ),
                                                 child: child!,
                                               );
@@ -2717,25 +2950,38 @@ class _TabHomeState extends State<TabHome> {
                                           }
                                         },
                                         child: Container(
-                                          padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                                          padding: const EdgeInsets.symmetric(
+                                            horizontal: 8,
+                                            vertical: 4,
+                                          ),
                                           decoration: BoxDecoration(
-                                            color: const Color(0xFF00F4FE).withValues(alpha: 0.15),
-                                            borderRadius: BorderRadius.circular(6),
+                                            color: const Color(0xFF00F4FE)
+                                                .withValues(alpha: 0.15),
+                                            borderRadius: BorderRadius.circular(
+                                              6,
+                                            ),
                                             border: Border.all(
-                                              color: const Color(0xFF00F4FE).withValues(alpha: 0.4),
+                                              color: const Color(0xFF00F4FE)
+                                                  .withValues(alpha: 0.4),
                                             ),
                                           ),
                                           child: Row(
                                             mainAxisSize: MainAxisSize.min,
                                             children: [
-                                              const Icon(Icons.access_time_rounded, size: 12, color: Color(0xFF00F4FE)),
+                                              const Icon(
+                                                Icons.access_time_rounded,
+                                                size: 12,
+                                                color: Color(0xFF00F4FE),
+                                              ),
                                               const SizedBox(width: 4),
                                               Text(
                                                 'DIAL PICKER',
                                                 style: GoogleFonts.spaceGrotesk(
                                                   fontSize: 10,
                                                   fontWeight: FontWeight.w700,
-                                                  color: const Color(0xFF00F4FE),
+                                                  color: const Color(
+                                                    0xFF00F4FE,
+                                                  ),
                                                 ),
                                               ),
                                             ],
@@ -2754,10 +3000,14 @@ class _TabHomeState extends State<TabHome> {
                                       Column(
                                         children: [
                                           IconButton(
-                                            icon: const Icon(Icons.keyboard_arrow_up_rounded, color: Color(0xFF00F4FE)),
+                                            icon: const Icon(
+                                              Icons.keyboard_arrow_up_rounded,
+                                              color: Color(0xFF00F4FE),
+                                            ),
                                             onPressed: () {
                                               setModalState(() {
-                                                selectedHour = (selectedHour + 1) % 24;
+                                                selectedHour =
+                                                    (selectedHour + 1) % 24;
                                               });
                                             },
                                           ),
@@ -2767,20 +3017,26 @@ class _TabHomeState extends State<TabHome> {
                                             alignment: Alignment.center,
                                             decoration: BoxDecoration(
                                               color: const Color(0xFF1F1927),
-                                              borderRadius: BorderRadius.circular(12),
+                                              borderRadius:
+                                                  BorderRadius.circular(12),
                                               border: Border.all(
-                                                color: const Color(0xFF00F4FE).withValues(alpha: 0.6),
+                                                color: const Color(0xFF00F4FE)
+                                                    .withValues(alpha: 0.6),
                                                 width: 1.5,
                                               ),
                                               boxShadow: [
                                                 BoxShadow(
-                                                  color: const Color(0xFF00F4FE).withValues(alpha: 0.15),
+                                                  color: const Color(0xFF00F4FE)
+                                                      .withValues(alpha: 0.15),
                                                   blurRadius: 10,
                                                 ),
                                               ],
                                             ),
                                             child: Text(
-                                              selectedHour.toString().padLeft(2, '0'),
+                                              selectedHour.toString().padLeft(
+                                                2,
+                                                '0',
+                                              ),
                                               style: GoogleFonts.spaceGrotesk(
                                                 fontSize: 42,
                                                 fontWeight: FontWeight.w900,
@@ -2789,10 +3045,15 @@ class _TabHomeState extends State<TabHome> {
                                             ),
                                           ),
                                           IconButton(
-                                            icon: const Icon(Icons.keyboard_arrow_down_rounded, color: Color(0xFF00F4FE)),
+                                            icon: const Icon(
+                                              Icons.keyboard_arrow_down_rounded,
+                                              color: Color(0xFF00F4FE),
+                                            ),
                                             onPressed: () {
                                               setModalState(() {
-                                                selectedHour = (selectedHour - 1 + 24) % 24;
+                                                selectedHour =
+                                                    (selectedHour - 1 + 24) %
+                                                    24;
                                               });
                                             },
                                           ),
@@ -2809,7 +3070,10 @@ class _TabHomeState extends State<TabHome> {
 
                                       // Colon Separator
                                       Padding(
-                                        padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 20),
+                                        padding: const EdgeInsets.symmetric(
+                                          horizontal: 12,
+                                          vertical: 20,
+                                        ),
                                         child: Text(
                                           ':',
                                           style: GoogleFonts.spaceGrotesk(
@@ -2824,10 +3088,14 @@ class _TabHomeState extends State<TabHome> {
                                       Column(
                                         children: [
                                           IconButton(
-                                            icon: const Icon(Icons.keyboard_arrow_up_rounded, color: Color(0xFF00F4FE)),
+                                            icon: const Icon(
+                                              Icons.keyboard_arrow_up_rounded,
+                                              color: Color(0xFF00F4FE),
+                                            ),
                                             onPressed: () {
                                               setModalState(() {
-                                                selectedMinute = (selectedMinute + 1) % 60;
+                                                selectedMinute =
+                                                    (selectedMinute + 1) % 60;
                                               });
                                             },
                                           ),
@@ -2837,20 +3105,26 @@ class _TabHomeState extends State<TabHome> {
                                             alignment: Alignment.center,
                                             decoration: BoxDecoration(
                                               color: const Color(0xFF1F1927),
-                                              borderRadius: BorderRadius.circular(12),
+                                              borderRadius:
+                                                  BorderRadius.circular(12),
                                               border: Border.all(
-                                                color: const Color(0xFF00F4FE).withValues(alpha: 0.6),
+                                                color: const Color(0xFF00F4FE)
+                                                    .withValues(alpha: 0.6),
                                                 width: 1.5,
                                               ),
                                               boxShadow: [
                                                 BoxShadow(
-                                                  color: const Color(0xFF00F4FE).withValues(alpha: 0.15),
+                                                  color: const Color(0xFF00F4FE)
+                                                      .withValues(alpha: 0.15),
                                                   blurRadius: 10,
                                                 ),
                                               ],
                                             ),
                                             child: Text(
-                                              selectedMinute.toString().padLeft(2, '0'),
+                                              selectedMinute.toString().padLeft(
+                                                2,
+                                                '0',
+                                              ),
                                               style: GoogleFonts.spaceGrotesk(
                                                 fontSize: 42,
                                                 fontWeight: FontWeight.w900,
@@ -2859,10 +3133,15 @@ class _TabHomeState extends State<TabHome> {
                                             ),
                                           ),
                                           IconButton(
-                                            icon: const Icon(Icons.keyboard_arrow_down_rounded, color: Color(0xFF00F4FE)),
+                                            icon: const Icon(
+                                              Icons.keyboard_arrow_down_rounded,
+                                              color: Color(0xFF00F4FE),
+                                            ),
                                             onPressed: () {
                                               setModalState(() {
-                                                selectedMinute = (selectedMinute - 1 + 60) % 60;
+                                                selectedMinute =
+                                                    (selectedMinute - 1 + 60) %
+                                                    60;
                                               });
                                             },
                                           ),
@@ -2903,16 +3182,29 @@ class _TabHomeState extends State<TabHome> {
                                             });
                                           },
                                           child: Container(
-                                            padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
+                                            padding: const EdgeInsets.symmetric(
+                                              horizontal: 10,
+                                              vertical: 5,
+                                            ),
                                             decoration: BoxDecoration(
-                                              color: (selectedHour == preset.hour && selectedMinute == preset.minute)
-                                                  ? const Color(0xFF00F4FE).withValues(alpha: 0.2)
-                                                  : const Color(0xFF1F1927),
-                                              borderRadius: BorderRadius.circular(8),
-                                              border: Border.all(
-                                                color: (selectedHour == preset.hour && selectedMinute == preset.minute)
+                                              color:
+                                                  (selectedHour ==
+                                                          preset.hour &&
+                                                      selectedMinute ==
+                                                          preset.minute)
                                                   ? const Color(0xFF00F4FE)
-                                                  : const Color(0xFF2C1E4E),
+                                                        .withValues(alpha: 0.2)
+                                                  : const Color(0xFF1F1927),
+                                              borderRadius:
+                                                  BorderRadius.circular(8),
+                                              border: Border.all(
+                                                color:
+                                                    (selectedHour ==
+                                                            preset.hour &&
+                                                        selectedMinute ==
+                                                            preset.minute)
+                                                    ? const Color(0xFF00F4FE)
+                                                    : const Color(0xFF2C1E4E),
                                               ),
                                             ),
                                             child: Text(
@@ -2920,7 +3212,11 @@ class _TabHomeState extends State<TabHome> {
                                               style: GoogleFonts.spaceGrotesk(
                                                 fontSize: 11,
                                                 fontWeight: FontWeight.w700,
-                                                color: (selectedHour == preset.hour && selectedMinute == preset.minute)
+                                                color:
+                                                    (selectedHour ==
+                                                            preset.hour &&
+                                                        selectedMinute ==
+                                                            preset.minute)
                                                     ? const Color(0xFF00F4FE)
                                                     : const Color(0xFFB5A9C2),
                                               ),
@@ -2950,7 +3246,8 @@ class _TabHomeState extends State<TabHome> {
                                 crossAxisAlignment: CrossAxisAlignment.start,
                                 children: [
                                   Row(
-                                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                    mainAxisAlignment:
+                                        MainAxisAlignment.spaceBetween,
                                     children: [
                                       Text(
                                         'RINGTONE / NADA ALARM',
@@ -2962,21 +3259,33 @@ class _TabHomeState extends State<TabHome> {
                                         ),
                                       ),
                                       Container(
-                                        padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
+                                        padding: const EdgeInsets.symmetric(
+                                          horizontal: 6,
+                                          vertical: 2,
+                                        ),
                                         decoration: BoxDecoration(
-                                          color: (ringtonePath != null && ringtonePath!.isNotEmpty)
-                                              ? const Color(0xFFB026FF).withValues(alpha: 0.2)
-                                              : const Color(0xFF00F4FE).withValues(alpha: 0.2),
-                                          borderRadius: BorderRadius.circular(6),
+                                          color:
+                                              (ringtonePath != null &&
+                                                  ringtonePath!.isNotEmpty)
+                                              ? const Color(0xFFB026FF)
+                                                    .withValues(alpha: 0.2)
+                                              : const Color(0xFF00F4FE)
+                                                    .withValues(alpha: 0.2),
+                                          borderRadius: BorderRadius.circular(
+                                            6,
+                                          ),
                                         ),
                                         child: Text(
-                                          (ringtonePath != null && ringtonePath!.isNotEmpty)
+                                          (ringtonePath != null &&
+                                                  ringtonePath!.isNotEmpty)
                                               ? 'MP3 LOKAL'
                                               : 'SYSTEM DEFAULT',
                                           style: GoogleFonts.spaceGrotesk(
                                             fontSize: 9,
                                             fontWeight: FontWeight.w800,
-                                            color: (ringtonePath != null && ringtonePath!.isNotEmpty)
+                                            color:
+                                                (ringtonePath != null &&
+                                                    ringtonePath!.isNotEmpty)
                                                 ? const Color(0xFFB026FF)
                                                 : const Color(0xFF00F4FE),
                                           ),
@@ -2988,16 +3297,22 @@ class _TabHomeState extends State<TabHome> {
 
                                   // Ringtone Name Display
                                   Container(
-                                    padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
+                                    padding: const EdgeInsets.symmetric(
+                                      horizontal: 12,
+                                      vertical: 10,
+                                    ),
                                     decoration: BoxDecoration(
                                       color: const Color(0xFF1F1927),
                                       borderRadius: BorderRadius.circular(10),
-                                      border: Border.all(color: const Color(0xFF2C1E4E)),
+                                      border: Border.all(
+                                        color: const Color(0xFF2C1E4E),
+                                      ),
                                     ),
                                     child: Row(
                                       children: [
                                         Icon(
-                                          (ringtonePath != null && ringtonePath!.isNotEmpty)
+                                          (ringtonePath != null &&
+                                                  ringtonePath!.isNotEmpty)
                                               ? Icons.audio_file_rounded
                                               : Icons.graphic_eq_rounded,
                                           size: 18,
@@ -3028,15 +3343,23 @@ class _TabHomeState extends State<TabHome> {
                                       Expanded(
                                         child: ElevatedButton.icon(
                                           style: ElevatedButton.styleFrom(
-                                            backgroundColor: const Color(0xFFB026FF),
+                                            backgroundColor: const Color(
+                                              0xFFB026FF,
+                                            ),
                                             foregroundColor: Colors.white,
-                                            padding: const EdgeInsets.symmetric(vertical: 10),
+                                            padding: const EdgeInsets.symmetric(
+                                              vertical: 10,
+                                            ),
                                             shape: RoundedRectangleBorder(
-                                              borderRadius: BorderRadius.circular(10),
+                                              borderRadius:
+                                                  BorderRadius.circular(10),
                                             ),
                                             elevation: 0,
                                           ),
-                                          icon: const Icon(Icons.file_upload_outlined, size: 16),
+                                          icon: const Icon(
+                                            Icons.file_upload_outlined,
+                                            size: 16,
+                                          ),
                                           label: Text(
                                             'PILIH MP3',
                                             style: GoogleFonts.spaceGrotesk(
@@ -3046,11 +3369,19 @@ class _TabHomeState extends State<TabHome> {
                                           ),
                                           onPressed: () async {
                                             try {
-                                              final res = await FilePicker.pickFiles(
-                                                type: FileType.custom,
-                                                allowedExtensions: ['mp3', 'wav', 'm4a', 'aac', 'ogg'],
-                                              );
-                                              if (res.isNotEmpty && res.first.path != null) {
+                                              final res =
+                                                  await FilePicker.pickFiles(
+                                                    type: FileType.custom,
+                                                    allowedExtensions: [
+                                                      'mp3',
+                                                      'wav',
+                                                      'm4a',
+                                                      'aac',
+                                                      'ogg',
+                                                    ],
+                                                  );
+                                              if (res.isNotEmpty &&
+                                                  res.first.path != null) {
                                                 final f = res.first;
                                                 setModalState(() {
                                                   ringtoneName = f.name;
@@ -3058,7 +3389,9 @@ class _TabHomeState extends State<TabHome> {
                                                 });
                                                 if (isPreviewing) {
                                                   await AlarmService.stopPreview();
-                                                  setModalState(() => isPreviewing = false);
+                                                  setModalState(
+                                                    () => isPreviewing = false,
+                                                  );
                                                 }
                                               }
                                             } catch (e) {
@@ -3070,17 +3403,27 @@ class _TabHomeState extends State<TabHome> {
                                       const SizedBox(width: 8),
 
                                       // Reset to Default
-                                      if (ringtonePath != null && ringtonePath!.isNotEmpty) ...[
+                                      if (ringtonePath != null &&
+                                          ringtonePath!.isNotEmpty) ...[
                                         IconButton(
                                           tooltip: 'Kembali ke Default Siren',
                                           style: IconButton.styleFrom(
-                                            backgroundColor: const Color(0xFF1F1927),
+                                            backgroundColor: const Color(
+                                              0xFF1F1927,
+                                            ),
                                             shape: RoundedRectangleBorder(
-                                              borderRadius: BorderRadius.circular(10),
-                                              side: const BorderSide(color: Color(0xFF2C1E4E)),
+                                              borderRadius:
+                                                  BorderRadius.circular(10),
+                                              side: const BorderSide(
+                                                color: Color(0xFF2C1E4E),
+                                              ),
                                             ),
                                           ),
-                                          icon: const Icon(Icons.restart_alt_rounded, color: Color(0xFF9B8BA1), size: 18),
+                                          icon: const Icon(
+                                            Icons.restart_alt_rounded,
+                                            color: Color(0xFF9B8BA1),
+                                            size: 18,
+                                          ),
                                           onPressed: () async {
                                             setModalState(() {
                                               ringtoneName = 'Solo Leveling Siren System (Default WAV)';
@@ -3088,7 +3431,9 @@ class _TabHomeState extends State<TabHome> {
                                             });
                                             if (isPreviewing) {
                                               await AlarmService.stopPreview();
-                                              setModalState(() => isPreviewing = false);
+                                              setModalState(
+                                                () => isPreviewing = false,
+                                              );
                                             }
                                           },
                                         ),
@@ -3100,21 +3445,32 @@ class _TabHomeState extends State<TabHome> {
                                         style: ElevatedButton.styleFrom(
                                           backgroundColor: isPreviewing
                                               ? const Color(0xFFFF2A6D)
-                                              : const Color(0xFF00F4FE).withValues(alpha: 0.15),
-                                          foregroundColor: isPreviewing ? Colors.white : const Color(0xFF00F4FE),
-                                          padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 10),
+                                              : const Color(0xFF00F4FE)
+                                                    .withValues(alpha: 0.15),
+                                          foregroundColor: isPreviewing
+                                              ? Colors.white
+                                              : const Color(0xFF00F4FE),
+                                          padding: const EdgeInsets.symmetric(
+                                            horizontal: 14,
+                                            vertical: 10,
+                                          ),
                                           shape: RoundedRectangleBorder(
-                                            borderRadius: BorderRadius.circular(10),
+                                            borderRadius: BorderRadius.circular(
+                                              10,
+                                            ),
                                             side: BorderSide(
                                               color: isPreviewing
                                                   ? const Color(0xFFFF2A6D)
-                                                  : const Color(0xFF00F4FE).withValues(alpha: 0.5),
+                                                  : const Color(0xFF00F4FE)
+                                                        .withValues(alpha: 0.5),
                                             ),
                                           ),
                                           elevation: 0,
                                         ),
                                         icon: Icon(
-                                          isPreviewing ? Icons.stop_rounded : Icons.play_arrow_rounded,
+                                          isPreviewing
+                                              ? Icons.stop_rounded
+                                              : Icons.play_arrow_rounded,
                                           size: 18,
                                         ),
                                         label: Text(
@@ -3127,9 +3483,13 @@ class _TabHomeState extends State<TabHome> {
                                         onPressed: () async {
                                           if (isPreviewing) {
                                             await AlarmService.stopPreview();
-                                            setModalState(() => isPreviewing = false);
+                                            setModalState(
+                                              () => isPreviewing = false,
+                                            );
                                           } else {
-                                            setModalState(() => isPreviewing = true);
+                                            setModalState(
+                                              () => isPreviewing = true,
+                                            );
                                             await AlarmService.previewRingtone(
                                               ringtonePath: ringtonePath,
                                               volume: volume,
@@ -3160,7 +3520,8 @@ class _TabHomeState extends State<TabHome> {
                                 crossAxisAlignment: CrossAxisAlignment.start,
                                 children: [
                                   Row(
-                                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                    mainAxisAlignment:
+                                        MainAxisAlignment.spaceBetween,
                                     children: [
                                       Row(
                                         children: [
@@ -3168,8 +3529,8 @@ class _TabHomeState extends State<TabHome> {
                                             volume == 0
                                                 ? Icons.volume_off_rounded
                                                 : volume < 0.5
-                                                    ? Icons.volume_down_rounded
-                                                    : Icons.volume_up_rounded,
+                                                ? Icons.volume_down_rounded
+                                                : Icons.volume_up_rounded,
                                             size: 18,
                                             color: const Color(0xFF00F4FE),
                                           ),
@@ -3199,10 +3560,15 @@ class _TabHomeState extends State<TabHome> {
                                   SliderTheme(
                                     data: SliderTheme.of(dialogCtx).copyWith(
                                       activeTrackColor: const Color(0xFF00F4FE),
-                                      inactiveTrackColor: const Color(0xFF2C1E4E),
+                                      inactiveTrackColor: const Color(
+                                        0xFF2C1E4E,
+                                      ),
                                       thumbColor: const Color(0xFF00F4FE),
-                                      overlayColor: const Color(0xFF00F4FE).withValues(alpha: 0.2),
-                                      thumbShape: const RoundSliderThumbShape(enabledThumbRadius: 8),
+                                      overlayColor: const Color(0xFF00F4FE)
+                                          .withValues(alpha: 0.2),
+                                      thumbShape: const RoundSliderThumbShape(
+                                        enabledThumbRadius: 8,
+                                      ),
                                       trackHeight: 4,
                                     ),
                                     child: Slider(
@@ -3213,7 +3579,10 @@ class _TabHomeState extends State<TabHome> {
                                       onChanged: (val) {
                                         setModalState(() => volume = val);
                                         if (isPreviewing) {
-                                          AlarmService.previewRingtone(ringtonePath: ringtonePath, volume: val);
+                                          AlarmService.previewRingtone(
+                                            ringtonePath: ringtonePath,
+                                            volume: val,
+                                          );
                                         }
                                       },
                                     ),
@@ -3239,11 +3608,16 @@ class _TabHomeState extends State<TabHome> {
                                 crossAxisAlignment: CrossAxisAlignment.start,
                                 children: [
                                   Row(
-                                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                    mainAxisAlignment:
+                                        MainAxisAlignment.spaceBetween,
                                     children: [
                                       Row(
                                         children: [
-                                          const Icon(Icons.vibration_rounded, size: 18, color: Color(0xFF00F4FE)),
+                                          const Icon(
+                                            Icons.vibration_rounded,
+                                            size: 18,
+                                            color: Color(0xFF00F4FE),
+                                          ),
                                           const SizedBox(width: 8),
                                           Text(
                                             'GETAR SAAT ALARM BERBUNYI',
@@ -3258,15 +3632,27 @@ class _TabHomeState extends State<TabHome> {
                                       ),
                                       Switch(
                                         value: vibrate,
-                                        activeThumbColor: const Color(0xFF00F4FE),
-                                        activeTrackColor: const Color(0xFF00F4FE).withValues(alpha: 0.3),
-                                        inactiveThumbColor: const Color(0xFF70657B),
-                                        inactiveTrackColor: const Color(0xFF2C1E4E),
-                                        onChanged: (val) => setModalState(() => vibrate = val),
+                                        activeThumbColor: const Color(
+                                          0xFF00F4FE,
+                                        ),
+                                        activeTrackColor: const Color(
+                                          0xFF00F4FE,
+                                        ).withValues(alpha: 0.3),
+                                        inactiveThumbColor: const Color(
+                                          0xFF70657B,
+                                        ),
+                                        inactiveTrackColor: const Color(
+                                          0xFF2C1E4E,
+                                        ),
+                                        onChanged: (val) =>
+                                            setModalState(() => vibrate = val),
                                       ),
                                     ],
                                   ),
-                                  const Divider(color: Color(0xFF2C1E4E), height: 16),
+                                  const Divider(
+                                    color: Color(0xFF2C1E4E),
+                                    height: 16,
+                                  ),
                                   Text(
                                     'LABEL ALARM',
                                     style: GoogleFonts.spaceGrotesk(
@@ -3291,18 +3677,28 @@ class _TabHomeState extends State<TabHome> {
                                       ),
                                       filled: true,
                                       fillColor: const Color(0xFF1F1927),
-                                      contentPadding: const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
+                                      contentPadding:
+                                          const EdgeInsets.symmetric(
+                                            horizontal: 12,
+                                            vertical: 10,
+                                          ),
                                       border: OutlineInputBorder(
                                         borderRadius: BorderRadius.circular(10),
-                                        borderSide: const BorderSide(color: Color(0xFF2C1E4E)),
+                                        borderSide: const BorderSide(
+                                          color: Color(0xFF2C1E4E),
+                                        ),
                                       ),
                                       enabledBorder: OutlineInputBorder(
                                         borderRadius: BorderRadius.circular(10),
-                                        borderSide: const BorderSide(color: Color(0xFF2C1E4E)),
+                                        borderSide: const BorderSide(
+                                          color: Color(0xFF2C1E4E),
+                                        ),
                                       ),
                                       focusedBorder: OutlineInputBorder(
                                         borderRadius: BorderRadius.circular(10),
-                                        borderSide: const BorderSide(color: Color(0xFF00F4FE)),
+                                        borderSide: const BorderSide(
+                                          color: Color(0xFF00F4FE),
+                                        ),
                                       ),
                                     ),
                                   ),
@@ -3321,8 +3717,13 @@ class _TabHomeState extends State<TabHome> {
                                   child: OutlinedButton(
                                     style: OutlinedButton.styleFrom(
                                       foregroundColor: const Color(0xFFFF2A6D),
-                                      side: const BorderSide(color: Color(0xFFFF2A6D), width: 1.4),
-                                      padding: const EdgeInsets.symmetric(vertical: 14),
+                                      side: const BorderSide(
+                                        color: Color(0xFFFF2A6D),
+                                        width: 1.4,
+                                      ),
+                                      padding: const EdgeInsets.symmetric(
+                                        vertical: 14,
+                                      ),
                                       shape: RoundedRectangleBorder(
                                         borderRadius: BorderRadius.circular(12),
                                       ),
@@ -3333,20 +3734,29 @@ class _TabHomeState extends State<TabHome> {
                                         hour: selectedHour,
                                         minute: selectedMinute,
                                         isEnabled: true,
-                                        label: labelCtrl.text.trim().isEmpty ? 'Uji Alarm Hunter' : labelCtrl.text.trim(),
+                                        label: labelCtrl.text.trim().isEmpty
+                                            ? 'Uji Alarm Hunter'
+                                            : labelCtrl.text.trim(),
                                         ringtoneName: ringtoneName,
                                         ringtonePath: ringtonePath,
                                         volume: volume,
                                         vibrate: vibrate,
                                       );
                                       await AlarmService.stopPreview();
-                                      if (sheetContext.mounted) Navigator.pop(sheetContext);
-                                      await AlarmService.triggerAlarm(alarm: testAlarm);
+                                      if (sheetContext.mounted)
+                                        Navigator.pop(sheetContext);
+                                      await AlarmService.triggerAlarm(
+                                        alarm: testAlarm,
+                                      );
                                     },
                                     child: Row(
-                                      mainAxisAlignment: MainAxisAlignment.center,
+                                      mainAxisAlignment:
+                                          MainAxisAlignment.center,
                                       children: [
-                                        const Icon(Icons.bolt_rounded, size: 18),
+                                        const Icon(
+                                          Icons.bolt_rounded,
+                                          size: 18,
+                                        ),
                                         const SizedBox(width: 4),
                                         Text(
                                           'UJI ALARM',
@@ -3368,12 +3778,15 @@ class _TabHomeState extends State<TabHome> {
                                     style: ElevatedButton.styleFrom(
                                       backgroundColor: const Color(0xFF00F4FE),
                                       foregroundColor: const Color(0xFF0D0814),
-                                      padding: const EdgeInsets.symmetric(vertical: 14),
+                                      padding: const EdgeInsets.symmetric(
+                                        vertical: 14,
+                                      ),
                                       shape: RoundedRectangleBorder(
                                         borderRadius: BorderRadius.circular(12),
                                       ),
                                       elevation: 6,
-                                      shadowColor: const Color(0xFF00F4FE).withValues(alpha: 0.5),
+                                      shadowColor: const Color(0xFF00F4FE)
+                                          .withValues(alpha: 0.5),
                                     ),
                                     onPressed: () async {
                                       final updatedAlarm = AlarmModel(
@@ -3381,18 +3794,25 @@ class _TabHomeState extends State<TabHome> {
                                         hour: selectedHour,
                                         minute: selectedMinute,
                                         isEnabled: isEnabled,
-                                        label: labelCtrl.text.trim().isEmpty ? 'Waktunya Bangkit!' : labelCtrl.text.trim(),
+                                        label: labelCtrl.text.trim().isEmpty
+                                            ? 'Waktunya Bangkit!'
+                                            : labelCtrl.text.trim(),
                                         ringtoneName: ringtoneName,
                                         ringtonePath: ringtonePath,
                                         volume: volume,
                                         vibrate: vibrate,
                                       );
 
-                                      final messenger = ScaffoldMessenger.of(context);
+                                      final messenger = ScaffoldMessenger.of(
+                                        context,
+                                      );
                                       await AlarmService.stopPreview();
-                                      await AlarmService.scheduleAlarm(updatedAlarm);
+                                      await AlarmService.scheduleAlarm(
+                                        updatedAlarm,
+                                      );
 
-                                      if (sheetContext.mounted) Navigator.pop(sheetContext);
+                                      if (sheetContext.mounted)
+                                        Navigator.pop(sheetContext);
                                       if (mounted) {
                                         setState(() {});
                                         messenger.showSnackBar(
@@ -3401,17 +3821,25 @@ class _TabHomeState extends State<TabHome> {
                                               isEnabled
                                                   ? '⏰ Alarm berhasil diset untuk ${updatedAlarm.formattedTime} WIB (${_getRemainingAlarmText(selectedHour, selectedMinute)})'
                                                   : '🔕 Alarm dinonaktifkan.',
-                                              style: GoogleFonts.spaceGrotesk(fontWeight: FontWeight.w700),
+                                              style: GoogleFonts.spaceGrotesk(
+                                                fontWeight: FontWeight.w700,
+                                              ),
                                             ),
-                                            backgroundColor: isEnabled ? const Color(0xFF00F4FE) : const Color(0xFF70657B),
+                                            backgroundColor: isEnabled
+                                                ? const Color(0xFF00F4FE)
+                                                : const Color(0xFF70657B),
                                           ),
                                         );
                                       }
                                     },
                                     child: Row(
-                                      mainAxisAlignment: MainAxisAlignment.center,
+                                      mainAxisAlignment:
+                                          MainAxisAlignment.center,
                                       children: [
-                                        const Icon(Icons.save_rounded, size: 18),
+                                        const Icon(
+                                          Icons.save_rounded,
+                                          size: 18,
+                                        ),
                                         const SizedBox(width: 6),
                                         Text(
                                           'SIMPAN ALARM',
@@ -3436,7 +3864,10 @@ class _TabHomeState extends State<TabHome> {
                                 style: TextButton.styleFrom(
                                   foregroundColor: const Color(0xFF9B8BA1),
                                 ),
-                                icon: const Icon(Icons.notifications_active_outlined, size: 16),
+                                icon: const Icon(
+                                  Icons.notifications_active_outlined,
+                                  size: 16,
+                                ),
                                 label: Text(
                                   'Akses 5 Protokol Push Notifikasi Sistem',
                                   style: GoogleFonts.spaceGrotesk(
@@ -3485,16 +3916,16 @@ class _TabHomeState extends State<TabHome> {
           canPop: false,
           child: Dialog(
             backgroundColor: Colors.transparent,
-            insetPadding: const EdgeInsets.symmetric(horizontal: 20, vertical: 24),
+            insetPadding: const EdgeInsets.symmetric(
+              horizontal: 20,
+              vertical: 24,
+            ),
             child: Container(
               padding: const EdgeInsets.all(22),
               decoration: BoxDecoration(
                 color: const Color(0xFF140D22),
                 borderRadius: BorderRadius.circular(24),
-                border: Border.all(
-                  color: const Color(0xFF00F4FE),
-                  width: 2.0,
-                ),
+                border: Border.all(color: const Color(0xFF00F4FE), width: 2.0),
                 boxShadow: [
                   BoxShadow(
                     color: const Color(0xFF00F4FE).withValues(alpha: 0.4),
@@ -3534,7 +3965,10 @@ class _TabHomeState extends State<TabHome> {
 
                   // Header tag
                   Container(
-                    padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 10,
+                      vertical: 4,
+                    ),
                     decoration: BoxDecoration(
                       color: const Color(0xFFFF2A6D).withValues(alpha: 0.15),
                       borderRadius: BorderRadius.circular(8),
@@ -3580,18 +4014,23 @@ class _TabHomeState extends State<TabHome> {
 
                   // Ringtone info badge
                   Container(
-                    padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 12,
+                      vertical: 6,
+                    ),
                     decoration: BoxDecoration(
                       color: const Color(0xFF1F1927),
                       borderRadius: BorderRadius.circular(10),
-                      border: Border.all(
-                        color: const Color(0xFF2C1E4E),
-                      ),
+                      border: Border.all(color: const Color(0xFF2C1E4E)),
                     ),
                     child: Row(
                       mainAxisSize: MainAxisSize.min,
                       children: [
-                        const Icon(Icons.music_note_rounded, size: 14, color: Color(0xFFE5B5FF)),
+                        const Icon(
+                          Icons.music_note_rounded,
+                          size: 14,
+                          color: Color(0xFFE5B5FF),
+                        ),
                         const SizedBox(width: 6),
                         Flexible(
                           child: Text(
@@ -3630,7 +4069,8 @@ class _TabHomeState extends State<TabHome> {
                           borderRadius: BorderRadius.circular(14),
                         ),
                         elevation: 6,
-                        shadowColor: const Color(0xFF00F4FE).withValues(alpha: 0.5),
+                        shadowColor: const Color(0xFF00F4FE)
+                            .withValues(alpha: 0.5),
                       ),
                       onPressed: () async {
                         await AlarmService.stopAlarm();
@@ -3672,7 +4112,9 @@ class _TabHomeState extends State<TabHome> {
                         ),
                       ),
                       onPressed: () async {
-                        final snoozeTime = DateTime.now().add(const Duration(minutes: 5));
+                        final snoozeTime = DateTime.now().add(
+                          const Duration(minutes: 5),
+                        );
                         final snoozed = alarm.copyWith(
                           hour: snoozeTime.hour,
                           minute: snoozeTime.minute,
@@ -3687,7 +4129,9 @@ class _TabHomeState extends State<TabHome> {
                             SnackBar(
                               content: Text(
                                 '💤 Alarm ditunda 5 menit (${DateFormat('HH:mm').format(snoozeTime)} WIB)',
-                                style: GoogleFonts.spaceGrotesk(fontWeight: FontWeight.w700),
+                                style: GoogleFonts.spaceGrotesk(
+                                  fontWeight: FontWeight.w700,
+                                ),
                               ),
                               backgroundColor: const Color(0xFFB026FF),
                             ),
@@ -3768,7 +4212,10 @@ class _TabHomeState extends State<TabHome> {
 
                     // Header Bar
                     Padding(
-                      padding: const EdgeInsets.symmetric(horizontal: 18, vertical: 8),
+                      padding: const EdgeInsets.symmetric(
+                        horizontal: 18,
+                        vertical: 8,
+                      ),
                       child: Row(
                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         children: [
@@ -3777,10 +4224,12 @@ class _TabHomeState extends State<TabHome> {
                               Container(
                                 padding: const EdgeInsets.all(6),
                                 decoration: BoxDecoration(
-                                  color: const Color(0xFF00F4FE).withValues(alpha: 0.15),
+                                  color: const Color(0xFF00F4FE)
+                                      .withValues(alpha: 0.15),
                                   borderRadius: BorderRadius.circular(8),
                                   border: Border.all(
-                                    color: const Color(0xFF00F4FE).withValues(alpha: 0.4),
+                                    color: const Color(0xFF00F4FE)
+                                        .withValues(alpha: 0.4),
                                   ),
                                 ),
                                 child: const Icon(
@@ -3815,7 +4264,11 @@ class _TabHomeState extends State<TabHome> {
                             ],
                           ),
                           IconButton(
-                            icon: const Icon(Icons.close_rounded, color: Color(0xFF9B8BA1), size: 20),
+                            icon: const Icon(
+                              Icons.close_rounded,
+                              color: Color(0xFF9B8BA1),
+                              size: 20,
+                            ),
                             onPressed: () => Navigator.pop(sheetContext),
                           ),
                         ],
@@ -3839,7 +4292,8 @@ class _TabHomeState extends State<TabHome> {
                                 color: const Color(0xFF1F1927),
                                 borderRadius: BorderRadius.circular(12),
                                 border: Border.all(
-                                  color: const Color(0xFF00F4FE).withValues(alpha: 0.3),
+                                  color: const Color(0xFF00F4FE)
+                                      .withValues(alpha: 0.3),
                                   width: 1.0,
                                 ),
                               ),
@@ -3863,7 +4317,8 @@ class _TabHomeState extends State<TabHome> {
                                   const SizedBox(width: 10),
                                   Expanded(
                                     child: Column(
-                                      crossAxisAlignment: CrossAxisAlignment.start,
+                                      crossAxisAlignment:
+                                          CrossAxisAlignment.start,
                                       children: [
                                         Text(
                                           'AUTO-SCHEDULER: AKTIF',
@@ -3889,23 +4344,33 @@ class _TabHomeState extends State<TabHome> {
                                     onTap: () async {
                                       await NotifService.scheduleAllAutomatedNotifications();
                                       if (!context.mounted) return;
-                                      ScaffoldMessenger.of(context).showSnackBar(
-                                        SnackBar(
-                                          content: Text(
-                                            '5 Jadwal Notifikasi Berhasil Disinkronkan!',
-                                            style: GoogleFonts.spaceGrotesk(fontWeight: FontWeight.w700),
-                                          ),
-                                          backgroundColor: const Color(0xFF00F4FE),
-                                        ),
-                                      );
+                                      ScaffoldMessenger.of(context)
+                                          .showSnackBar(
+                                            SnackBar(
+                                              content: Text(
+                                                '5 Jadwal Notifikasi Berhasil Disinkronkan!',
+                                                style: GoogleFonts.spaceGrotesk(
+                                                  fontWeight: FontWeight.w700,
+                                                ),
+                                              ),
+                                              backgroundColor: const Color(
+                                                0xFF00F4FE,
+                                              ),
+                                            ),
+                                          );
                                     },
                                     child: Container(
-                                      padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 6),
+                                      padding: const EdgeInsets.symmetric(
+                                        horizontal: 8,
+                                        vertical: 6,
+                                      ),
                                       decoration: BoxDecoration(
-                                        color: const Color(0xFF00F4FE).withValues(alpha: 0.15),
+                                        color: const Color(0xFF00F4FE)
+                                            .withValues(alpha: 0.15),
                                         borderRadius: BorderRadius.circular(6),
                                         border: Border.all(
-                                          color: const Color(0xFF00F4FE).withValues(alpha: 0.5),
+                                          color: const Color(0xFF00F4FE)
+                                              .withValues(alpha: 0.5),
                                         ),
                                       ),
                                       child: Text(
@@ -3948,7 +4413,9 @@ class _TabHomeState extends State<TabHome> {
                                 if (!context.mounted) return;
                                 ScaffoldMessenger.of(context).showSnackBar(
                                   const SnackBar(
-                                    content: Text('⚡ Notifikasi Reset Quest Harian terkirim ke status bar!'),
+                                    content: Text(
+                                      '⚡ Notifikasi Reset Quest Harian terkirim ke status bar!',
+                                    ),
                                     duration: Duration(seconds: 2),
                                   ),
                                 );
@@ -3968,7 +4435,9 @@ class _TabHomeState extends State<TabHome> {
                                 if (!context.mounted) return;
                                 ScaffoldMessenger.of(context).showSnackBar(
                                   const SnackBar(
-                                    content: Text('⚠️ Notifikasi Aktivitas Tertunda terkirim ke status bar!'),
+                                    content: Text(
+                                      '⚠️ Notifikasi Aktivitas Tertunda terkirim ke status bar!',
+                                    ),
                                     duration: Duration(seconds: 2),
                                   ),
                                 );
@@ -3988,7 +4457,9 @@ class _TabHomeState extends State<TabHome> {
                                 if (!context.mounted) return;
                                 ScaffoldMessenger.of(context).showSnackBar(
                                   const SnackBar(
-                                    content: Text('⚔️ Notifikasi Siklus 3 Jam terkirim ke status bar!'),
+                                    content: Text(
+                                      '⚔️ Notifikasi Siklus 3 Jam terkirim ke status bar!',
+                                    ),
                                     duration: Duration(seconds: 2),
                                   ),
                                 );
@@ -4002,13 +4473,16 @@ class _TabHomeState extends State<TabHome> {
                               iconColor: const Color(0xFFB026FF),
                               title: '[$aiName] Kangen User',
                               schedule: 'Setiap 19:30 (Malam Hari)',
-                              desc: 'Pesan personal dari AI pendamping Anda ($aiName) untuk kembali berlatih bersama.',
+                              desc:
+                                  'Pesan personal dari AI pendamping Anda ($aiName) untuk kembali berlatih bersama.',
                               onTest: () async {
                                 await NotifService.showAiMissesUserNotif();
                                 if (!context.mounted) return;
                                 ScaffoldMessenger.of(context).showSnackBar(
                                   SnackBar(
-                                    content: Text('💬 Notifikasi [$aiName Kangen] terkirim ke status bar!'),
+                                    content: Text(
+                                      '💬 Notifikasi [$aiName Kangen] terkirim ke status bar!',
+                                    ),
                                     duration: const Duration(seconds: 2),
                                   ),
                                 );
@@ -4028,7 +4502,9 @@ class _TabHomeState extends State<TabHome> {
                                 if (!context.mounted) return;
                                 ScaffoldMessenger.of(context).showSnackBar(
                                   const SnackBar(
-                                    content: Text('🚨 Notifikasi Peringatan Akhir Hari terkirim ke status bar!'),
+                                    content: Text(
+                                      '🚨 Notifikasi Peringatan Akhir Hari terkirim ke status bar!',
+                                    ),
                                     duration: Duration(seconds: 2),
                                   ),
                                 );
@@ -4066,10 +4542,7 @@ class _TabHomeState extends State<TabHome> {
       decoration: BoxDecoration(
         color: const Color(0xFF171022),
         borderRadius: BorderRadius.circular(12),
-        border: Border.all(
-          color: const Color(0xFF2C1E4E),
-          width: 1.0,
-        ),
+        border: Border.all(color: const Color(0xFF2C1E4E), width: 1.0),
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -4081,9 +4554,7 @@ class _TabHomeState extends State<TabHome> {
                 decoration: BoxDecoration(
                   color: iconColor.withValues(alpha: 0.15),
                   borderRadius: BorderRadius.circular(8),
-                  border: Border.all(
-                    color: iconColor.withValues(alpha: 0.4),
-                  ),
+                  border: Border.all(color: iconColor.withValues(alpha: 0.4)),
                 ),
                 child: Icon(icon, color: iconColor, size: 16),
               ),
@@ -4115,13 +4586,14 @@ class _TabHomeState extends State<TabHome> {
               GestureDetector(
                 onTap: onTest,
                 child: Container(
-                  padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 10,
+                    vertical: 6,
+                  ),
                   decoration: BoxDecoration(
                     color: iconColor.withValues(alpha: 0.15),
                     borderRadius: BorderRadius.circular(8),
-                    border: Border.all(
-                      color: iconColor.withValues(alpha: 0.6),
-                    ),
+                    border: Border.all(color: iconColor.withValues(alpha: 0.6)),
                   ),
                   child: Row(
                     mainAxisSize: MainAxisSize.min,
@@ -4162,7 +4634,9 @@ class _TabHomeState extends State<TabHome> {
       width: 44,
       height: 44,
       decoration: BoxDecoration(
-        color: const Color(0xFFB026FF), // [UBAH_WARNA: FAB Hunter AI Brain Background]
+        color: const Color(
+          0xFFB026FF,
+        ), // [UBAH_WARNA: FAB Hunter AI Brain Background]
         shape: BoxShape.circle,
         boxShadow: [
           BoxShadow(
@@ -4181,9 +4655,7 @@ class _TabHomeState extends State<TabHome> {
         onPressed: () {
           Navigator.push(
             context,
-            MaterialPageRoute(
-              builder: (context) => const ChatAiScreen(),
-            ),
+            MaterialPageRoute(builder: (context) => const ChatAiScreen()),
           );
         },
       ),

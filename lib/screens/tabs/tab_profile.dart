@@ -3,12 +3,14 @@
 /// Mengimplementasikan Syarat Tugas Akhir No. 6: Profil Hunter, sinkronisasi feedback ke Supabase, dan sesi logout Hive.
 
 import 'dart:io';
+
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:intl/intl.dart';
 import 'package:hive_flutter/hive_flutter.dart';
 import 'package:local_auth/local_auth.dart';
+
 import '../../services/hive_service.dart';
 import '../../services/supabase_service.dart';
 import '../../widgets/avatar_adjust_dialog.dart';
@@ -46,6 +48,7 @@ class _TabProfileState extends State<TabProfile> {
     if (_exp >= 100) return 300;
     return 100;
   }
+
   final int _hp = 3;
 
   // Biometric Security Protocol State
@@ -153,7 +156,10 @@ class _TabProfileState extends State<TabProfile> {
 
     // 3. Sinkronisasi data profil Hunter (avatar_url) dari tabel 'users' Supabase
     try {
-      final userProfile = await SupabaseService.getUserProfile(_userId, username: _username);
+      final userProfile = await SupabaseService.getUserProfile(
+        _userId,
+        username: _username,
+      );
       if (userProfile != null) {
         final remoteAvatar = userProfile['avatar_url']?.toString();
         if (remoteAvatar != null && remoteAvatar.isNotEmpty) {
@@ -194,7 +200,10 @@ class _TabProfileState extends State<TabProfile> {
         SnackBar(
           content: Text(
             'Harap isi formulir kesan dan pesan sebelum mengirim.',
-            style: GoogleFonts.spaceGrotesk(color: Colors.white, fontWeight: FontWeight.w600),
+            style: GoogleFonts.spaceGrotesk(
+              color: Colors.white,
+              fontWeight: FontWeight.w600,
+            ),
           ),
           backgroundColor: const Color(0xFF93000A),
           duration: const Duration(seconds: 2),
@@ -234,12 +243,19 @@ class _TabProfileState extends State<TabProfile> {
         SnackBar(
           content: Row(
             children: [
-              const Icon(Icons.cloud_done_rounded, color: Colors.black, size: 20),
+              const Icon(
+                Icons.cloud_done_rounded,
+                color: Colors.black,
+                size: 20,
+              ),
               const SizedBox(width: 8),
               Expanded(
                 child: Text(
-                  'Kesan & pesan berhasil dikirim dan tersimpan di database!',
-                  style: GoogleFonts.spaceGrotesk(color: Colors.black, fontWeight: FontWeight.w800),
+                  'Kesan & pesan berhasil dikirim dan tersimpan!',
+                  style: GoogleFonts.spaceGrotesk(
+                    color: Colors.black,
+                    fontWeight: FontWeight.w800,
+                  ),
                 ),
               ),
             ],
@@ -254,12 +270,19 @@ class _TabProfileState extends State<TabProfile> {
         SnackBar(
           content: Row(
             children: [
-              const Icon(Icons.check_circle_rounded, color: Colors.white, size: 20),
+              const Icon(
+                Icons.check_circle_rounded,
+                color: Colors.white,
+                size: 20,
+              ),
               const SizedBox(width: 8),
               Expanded(
                 child: Text(
                   'Kesan & pesan berhasil diperbarui secara lokal!',
-                  style: GoogleFonts.spaceGrotesk(color: Colors.white, fontWeight: FontWeight.w700),
+                  style: GoogleFonts.spaceGrotesk(
+                    color: Colors.white,
+                    fontWeight: FontWeight.w700,
+                  ),
                 ),
               ),
             ],
@@ -276,14 +299,23 @@ class _TabProfileState extends State<TabProfile> {
     final bool? confirm = await showDialog<bool>(
       context: context,
       builder: (ctx) => AlertDialog(
-        backgroundColor: const Color(0xFF140D24), // [UBAH_WARNA: Dialog Logout Background]
+        backgroundColor: const Color(
+          0xFF140D24,
+        ), // [UBAH_WARNA: Dialog Logout Background]
         shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.circular(16),
-          side: const BorderSide(color: Color(0xFFFF4D4D), width: 1.0), // [UBAH_WARNA: Dialog Logout Border]
+          side: const BorderSide(
+            color: Color(0xFFFF4D4D),
+            width: 1.0,
+          ), // [UBAH_WARNA: Dialog Logout Border]
         ),
         title: Row(
           children: [
-            const Icon(Icons.power_settings_new_rounded, color: Color(0xFFFF4D4D), size: 22),
+            const Icon(
+              Icons.power_settings_new_rounded,
+              color: Color(0xFFFF4D4D),
+              size: 22,
+            ),
             const SizedBox(width: 8),
             Text(
               'SYSTEM LOGOUT',
@@ -297,21 +329,31 @@ class _TabProfileState extends State<TabProfile> {
         ),
         content: Text(
           'Apakah Anda yakin ingin memutuskan sinkronisasi terminal Monarch dan keluar dari aplikasi?',
-          style: GoogleFonts.plusJakartaSans(color: const Color(0xFFD2C1D7), fontSize: 13),
+          style: GoogleFonts.plusJakartaSans(
+            color: const Color(0xFFD2C1D7),
+            fontSize: 13,
+          ),
         ),
         actions: [
           TextButton(
             onPressed: () => Navigator.of(ctx).pop(false),
             child: Text(
               'BATAL',
-              style: GoogleFonts.spaceGrotesk(color: Colors.grey, fontWeight: FontWeight.bold),
+              style: GoogleFonts.spaceGrotesk(
+                color: Colors.grey,
+                fontWeight: FontWeight.bold,
+              ),
             ),
           ),
           ElevatedButton(
             style: ElevatedButton.styleFrom(
-              backgroundColor: const Color(0xFF93000A), // [UBAH_WARNA: Tombol Konfirmasi Logout Background]
+              backgroundColor: const Color(
+                0xFF93000A,
+              ), // [UBAH_WARNA: Tombol Konfirmasi Logout Background]
               foregroundColor: Colors.white,
-              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(8),
+              ),
             ),
             onPressed: () => Navigator.of(ctx).pop(true),
             child: Text(
@@ -358,7 +400,8 @@ class _TabProfileState extends State<TabProfile> {
         barrierDismissible: false,
         builder: (ctx) => AvatarAdjustDialog(imageFile: File(picked.path)),
       );
-      if (adjustedFile == null) return; // Pengguna membatalkan proses penyesuaian
+      if (adjustedFile == null)
+        return; // Pengguna membatalkan proses penyesuaian
 
       setState(() {
         _isUploadingAvatar = true;
@@ -385,7 +428,10 @@ class _TabProfileState extends State<TabProfile> {
           SnackBar(
             content: Text(
               'Avatar berhasil diunggah ke Supabase Storage & diperbarui!',
-              style: GoogleFonts.spaceGrotesk(color: Colors.white, fontWeight: FontWeight.bold),
+              style: GoogleFonts.spaceGrotesk(
+                color: Colors.white,
+                fontWeight: FontWeight.bold,
+              ),
             ),
             backgroundColor: const Color(0xFF00F4FE),
           ),
@@ -405,7 +451,10 @@ class _TabProfileState extends State<TabProfile> {
           SnackBar(
             content: Text(
               'Upload Supabase ditolak RLS. Foto berhasil diterapkan secara lokal! Harap aktifkan RLS policy bucket "Avatar".',
-              style: GoogleFonts.spaceGrotesk(color: Colors.white, fontWeight: FontWeight.w700),
+              style: GoogleFonts.spaceGrotesk(
+                color: Colors.white,
+                fontWeight: FontWeight.w700,
+              ),
             ),
             backgroundColor: const Color(0xFFB026FF),
             duration: const Duration(seconds: 4),
@@ -421,7 +470,10 @@ class _TabProfileState extends State<TabProfile> {
         SnackBar(
           content: Text(
             'Terjadi kesalahan: $e',
-            style: GoogleFonts.spaceGrotesk(color: Colors.white, fontWeight: FontWeight.bold),
+            style: GoogleFonts.spaceGrotesk(
+              color: Colors.white,
+              fontWeight: FontWeight.bold,
+            ),
           ),
           backgroundColor: const Color(0xFF93000A),
         ),
@@ -445,7 +497,9 @@ class _TabProfileState extends State<TabProfile> {
     final double expProgress = (_exp / _maxExp).clamp(0.0, 1.0);
 
     return Scaffold(
-      backgroundColor: const Color(0xFF16111E), // [UBAH_WARNA: Latar Belakang Layar Tab Profile]
+      backgroundColor: const Color(
+        0xFF16111E,
+      ), // [UBAH_WARNA: Latar Belakang Layar Tab Profile]
       body: SafeArea(
         child: SingleChildScrollView(
           physics: const BouncingScrollPhysics(),
@@ -502,7 +556,9 @@ class _TabProfileState extends State<TabProfile> {
             Container(
               padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
               decoration: BoxDecoration(
-                color: const Color(0xFF2D2736), // [UBAH_WARNA: Header Rank Pill Background]
+                color: const Color(
+                  0xFF2D2736,
+                ), // [UBAH_WARNA: Header Rank Pill Background]
                 borderRadius: BorderRadius.circular(6),
               ),
               child: Text(
@@ -511,7 +567,9 @@ class _TabProfileState extends State<TabProfile> {
                   fontSize: 10,
                   fontWeight: FontWeight.w800,
                   letterSpacing: 0.8,
-                  color: const Color(0xFF00F4FE), // [UBAH_WARNA: Header Rank Pill Teks]
+                  color: const Color(
+                    0xFF00F4FE,
+                  ), // [UBAH_WARNA: Header Rank Pill Teks]
                 ),
               ),
             ),
@@ -546,7 +604,9 @@ class _TabProfileState extends State<TabProfile> {
                   style: GoogleFonts.sora(
                     fontSize: 14,
                     fontWeight: FontWeight.w700,
-                    color: const Color(0xFFE9DEF2), // [UBAH_WARNA: Header Judul Profil]
+                    color: const Color(
+                      0xFFE9DEF2,
+                    ), // [UBAH_WARNA: Header Judul Profil]
                   ),
                 ),
               ],
@@ -554,7 +614,8 @@ class _TabProfileState extends State<TabProfile> {
           ],
         ),
         ValueListenableBuilder<Box>(
-          valueListenable: Hive.box('sessionBox').listenable(keys: ['avatar_url']),
+          valueListenable: Hive.box('sessionBox')
+              .listenable(keys: ['avatar_url']),
           builder: (context, box, _) {
             final avatarUrl = box.get('avatar_url')?.toString() ?? _avatarUrl;
             return Container(
@@ -633,7 +694,11 @@ class _TabProfileState extends State<TabProfile> {
           ),
           child: Row(
             children: [
-              const Icon(Icons.fingerprint_rounded, size: 14, color: Color(0xFFE5B5FF)),
+              const Icon(
+                Icons.fingerprint_rounded,
+                size: 14,
+                color: Color(0xFFE5B5FF),
+              ),
               const SizedBox(width: 4),
               Text(
                 'AUTH: BIOMETRIC',
@@ -656,9 +721,14 @@ class _TabProfileState extends State<TabProfile> {
     return Container(
       width: double.infinity,
       decoration: BoxDecoration(
-        color: const Color(0xFF1F1927), // [UBAH_WARNA: Card Hunter ID Background]
+        color: const Color(
+          0xFF1F1927,
+        ), // [UBAH_WARNA: Card Hunter ID Background]
         borderRadius: BorderRadius.circular(16),
-        border: Border.all(color: const Color(0xFF2C1E4E), width: 0.8), // [UBAH_WARNA: Card Hunter ID Border]
+        border: Border.all(
+          color: const Color(0xFF2C1E4E),
+          width: 0.8,
+        ), // [UBAH_WARNA: Card Hunter ID Border]
         boxShadow: [
           BoxShadow(
             color: const Color(0xFFB026FF).withValues(alpha: 0.15),
@@ -678,7 +748,11 @@ class _TabProfileState extends State<TabProfile> {
             child: Container(
               decoration: const BoxDecoration(
                 gradient: LinearGradient(
-                  colors: [Colors.transparent, Color(0xFFB026FF), Color(0xFF00F4FE)],
+                  colors: [
+                    Colors.transparent,
+                    Color(0xFFB026FF),
+                    Color(0xFF00F4FE),
+                  ],
                 ),
               ),
             ),
@@ -709,11 +783,13 @@ class _TabProfileState extends State<TabProfile> {
                             ),
                             boxShadow: [
                               BoxShadow(
-                                color: const Color(0xFFB026FF).withValues(alpha: 0.5),
+                                color: const Color(0xFFB026FF)
+                                    .withValues(alpha: 0.5),
                                 blurRadius: 20,
                               ),
                               BoxShadow(
-                                color: const Color(0xFF00F4FE).withValues(alpha: 0.4),
+                                color: const Color(0xFF00F4FE)
+                                    .withValues(alpha: 0.4),
                                 blurRadius: 16,
                               ),
                             ],
@@ -765,7 +841,8 @@ class _TabProfileState extends State<TabProfile> {
                               ),
                               boxShadow: [
                                 BoxShadow(
-                                  color: const Color(0xFF00F4FE).withValues(alpha: 0.6),
+                                  color: const Color(0xFF00F4FE)
+                                      .withValues(alpha: 0.6),
                                   blurRadius: 8,
                                 ),
                               ],
@@ -793,12 +870,18 @@ class _TabProfileState extends State<TabProfile> {
                       style: GoogleFonts.sora(
                         fontSize: 18,
                         fontWeight: FontWeight.w800,
-                        color: const Color(0xFFE9DEF2), // [UBAH_WARNA: Nama Hunter Profile]
+                        color: const Color(
+                          0xFFE9DEF2,
+                        ), // [UBAH_WARNA: Nama Hunter Profile]
                         letterSpacing: -0.3,
                       ),
                     ),
                     const SizedBox(width: 6),
-                    const Icon(Icons.verified_rounded, size: 18, color: Color(0xFF00F4FE)), // [UBAH_WARNA: Ikon Verified Hunter Profile]
+                    const Icon(
+                      Icons.verified_rounded,
+                      size: 18,
+                      color: Color(0xFF00F4FE),
+                    ), // [UBAH_WARNA: Ikon Verified Hunter Profile]
                   ],
                 ),
 
@@ -812,7 +895,10 @@ class _TabProfileState extends State<TabProfile> {
                   runSpacing: 6,
                   children: [
                     Container(
-                      padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
+                      padding: const EdgeInsets.symmetric(
+                        horizontal: 10,
+                        vertical: 4,
+                      ),
                       decoration: BoxDecoration(
                         color: const Color(0xFF2C1E4E).withValues(alpha: 0.6),
                         borderRadius: BorderRadius.circular(12),
@@ -831,9 +917,15 @@ class _TabProfileState extends State<TabProfile> {
                           ),
                           const SizedBox(width: 4),
                           ValueListenableBuilder<Box>(
-                            valueListenable: Hive.box('sessionBox').listenable(keys: ['${_userId}_equipped_title']),
+                            valueListenable: Hive.box(
+                              'sessionBox',
+                            ).listenable(keys: ['${_userId}_equipped_title']),
                             builder: (context, box, _) {
-                              final currentTitle = box.get('${_userId}_equipped_title')?.toString() ?? _equippedTitle;
+                              final currentTitle =
+                                  box
+                                      .get('${_userId}_equipped_title')
+                                      ?.toString() ??
+                                  _equippedTitle;
                               return Text(
                                 'TITLE: ${currentTitle.toUpperCase()}',
                                 style: GoogleFonts.spaceGrotesk(
@@ -851,7 +943,10 @@ class _TabProfileState extends State<TabProfile> {
                     GestureDetector(
                       onTap: _showTitleInventoryModal,
                       child: Container(
-                        padding: const EdgeInsets.symmetric(horizontal: 9, vertical: 4),
+                        padding: const EdgeInsets.symmetric(
+                          horizontal: 9,
+                          vertical: 4,
+                        ),
                         decoration: BoxDecoration(
                           color: const Color(0xFF140D24),
                           borderRadius: BorderRadius.circular(12),
@@ -861,7 +956,8 @@ class _TabProfileState extends State<TabProfile> {
                           ),
                           boxShadow: [
                             BoxShadow(
-                              color: const Color(0xFF00F4FE).withValues(alpha: 0.25),
+                              color: const Color(0xFF00F4FE)
+                                  .withValues(alpha: 0.25),
                               blurRadius: 8,
                             ),
                           ],
@@ -895,7 +991,10 @@ class _TabProfileState extends State<TabProfile> {
 
                 // HP & Awakened Status Bar
                 Container(
-                  padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 5),
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 14,
+                    vertical: 5,
+                  ),
                   decoration: BoxDecoration(
                     color: const Color(0xFF110C19),
                     borderRadius: BorderRadius.circular(20),
@@ -917,12 +1016,20 @@ class _TabProfileState extends State<TabProfile> {
                           3,
                           (i) => const Padding(
                             padding: EdgeInsets.only(right: 2.0),
-                            child: Icon(Icons.favorite_rounded, size: 12, color: Color(0xFFFF4D4D)),
+                            child: Icon(
+                              Icons.favorite_rounded,
+                              size: 12,
+                              color: Color(0xFFFF4D4D),
+                            ),
                           ),
                         ),
                       ),
                       const SizedBox(width: 8),
-                      Container(width: 1, height: 10, color: const Color(0xFF383241)),
+                      Container(
+                        width: 1,
+                        height: 10,
+                        color: const Color(0xFF383241),
+                      ),
                       const SizedBox(width: 8),
                       Text(
                         'STATE: ',
@@ -952,9 +1059,13 @@ class _TabProfileState extends State<TabProfile> {
                   width: double.infinity,
                   padding: const EdgeInsets.all(10),
                   decoration: BoxDecoration(
-                    color: const Color(0xFF2D2736), // [UBAH_WARNA: Box Classification Badge Background]
+                    color: const Color(
+                      0xFF2D2736,
+                    ), // [UBAH_WARNA: Box Classification Badge Background]
                     borderRadius: BorderRadius.circular(10),
-                    border: Border.all(color: const Color(0xFF383241)), // [UBAH_WARNA: Box Classification Badge Border]
+                    border: Border.all(
+                      color: const Color(0xFF383241),
+                    ), // [UBAH_WARNA: Box Classification Badge Border]
                   ),
                   child: Row(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -965,7 +1076,8 @@ class _TabProfileState extends State<TabProfile> {
                             width: 36,
                             height: 36,
                             decoration: BoxDecoration(
-                              color: const Color(0xFFB026FF).withValues(alpha: 0.2),
+                              color: const Color(0xFFB026FF)
+                                  .withValues(alpha: 0.2),
                               borderRadius: BorderRadius.circular(8),
                             ),
                             child: const Icon(
@@ -1003,9 +1115,14 @@ class _TabProfileState extends State<TabProfile> {
                         crossAxisAlignment: CrossAxisAlignment.end,
                         children: [
                           Container(
-                            padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
+                            padding: const EdgeInsets.symmetric(
+                              horizontal: 6,
+                              vertical: 2,
+                            ),
                             decoration: BoxDecoration(
-                              color: const Color(0xFF110C19), // [UBAH_WARNA: Tier Badge World Background]
+                              color: const Color(
+                                0xFF110C19,
+                              ), // [UBAH_WARNA: Tier Badge World Background]
                               borderRadius: BorderRadius.circular(4),
                             ),
                             child: Text(
@@ -1013,7 +1130,9 @@ class _TabProfileState extends State<TabProfile> {
                               style: GoogleFonts.spaceGrotesk(
                                 fontSize: 8,
                                 fontWeight: FontWeight.w800,
-                                color: const Color(0xFF00F4FE), // [UBAH_WARNA: Tier Badge World Teks]
+                                color: const Color(
+                                  0xFF00F4FE,
+                                ), // [UBAH_WARNA: Tier Badge World Teks]
                               ),
                             ),
                           ),
@@ -1067,7 +1186,9 @@ class _TabProfileState extends State<TabProfile> {
                         value: expProgress,
                         minHeight: 8,
                         backgroundColor: const Color(0xFF110C19),
-                        valueColor: const AlwaysStoppedAnimation<Color>(Color(0xFF00F4FE)),
+                        valueColor: const AlwaysStoppedAnimation<Color>(
+                          Color(0xFF00F4FE),
+                        ),
                       ),
                     ),
                   ],
@@ -1089,9 +1210,14 @@ class _TabProfileState extends State<TabProfile> {
           child: Container(
             padding: const EdgeInsets.all(12),
             decoration: BoxDecoration(
-              color: const Color(0xFF1F1927), // [UBAH_WARNA: Card Total Gold Profile Background]
+              color: const Color(
+                0xFF1F1927,
+              ), // [UBAH_WARNA: Card Total Gold Profile Background]
               borderRadius: BorderRadius.circular(14),
-              border: Border.all(color: const Color(0xFF2C1E4E), width: 0.8), // [UBAH_WARNA: Card Total Gold Profile Border]
+              border: Border.all(
+                color: const Color(0xFF2C1E4E),
+                width: 0.8,
+              ), // [UBAH_WARNA: Card Total Gold Profile Border]
             ),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
@@ -1108,26 +1234,37 @@ class _TabProfileState extends State<TabProfile> {
                         color: const Color(0xFFE5B5FF),
                       ),
                     ),
-                    const Icon(Icons.monetization_on_rounded, size: 16, color: Color(0xFFFFD166)), // [UBAH_WARNA: Ikon Total Gold Profile]
+                    const Icon(
+                      Icons.monetization_on_rounded,
+                      size: 16,
+                      color: Color(0xFFFFD166),
+                    ), // [UBAH_WARNA: Ikon Total Gold Profile]
                   ],
                 ),
                 const SizedBox(height: 8),
                 Container(
-                  padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 8,
+                    vertical: 3,
+                  ),
                   decoration: BoxDecoration(
                     color: const Color(0xFF110C19),
                     borderRadius: BorderRadius.circular(6),
                   ),
                   child: ValueListenableBuilder<Box>(
-                    valueListenable: Hive.box('sessionBox').listenable(keys: ['gold']),
+                    valueListenable: Hive.box('sessionBox')
+                        .listenable(keys: ['gold']),
                     builder: (context, box, _) {
-                      final int currentGold = (box.get('gold', defaultValue: _gold) as num).toInt();
+                      final int currentGold =
+                          (box.get('gold', defaultValue: _gold) as num).toInt();
                       return Text(
                         '$currentGold G',
                         style: GoogleFonts.spaceGrotesk(
                           fontSize: 16,
                           fontWeight: FontWeight.w900,
-                          color: const Color(0xFFFFD166), // [UBAH_WARNA: Teks Nilai Total Gold Profile]
+                          color: const Color(
+                            0xFFFFD166,
+                          ), // [UBAH_WARNA: Teks Nilai Total Gold Profile]
                         ),
                       );
                     },
@@ -1152,9 +1289,14 @@ class _TabProfileState extends State<TabProfile> {
           child: Container(
             padding: const EdgeInsets.all(12),
             decoration: BoxDecoration(
-              color: const Color(0xFF1F1927), // [UBAH_WARNA: Card Quests Done Profile Background]
+              color: const Color(
+                0xFF1F1927,
+              ), // [UBAH_WARNA: Card Quests Done Profile Background]
               borderRadius: BorderRadius.circular(14),
-              border: Border.all(color: const Color(0xFF2C1E4E), width: 0.8), // [UBAH_WARNA: Card Quests Done Profile Border]
+              border: Border.all(
+                color: const Color(0xFF2C1E4E),
+                width: 0.8,
+              ), // [UBAH_WARNA: Card Quests Done Profile Border]
             ),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
@@ -1171,20 +1313,30 @@ class _TabProfileState extends State<TabProfile> {
                         color: const Color(0xFF00F4FE),
                       ),
                     ),
-                    const Icon(Icons.task_alt_rounded, size: 16, color: Color(0xFF00F4FE)), // [UBAH_WARNA: Ikon Quests Done Profile]
+                    const Icon(
+                      Icons.task_alt_rounded,
+                      size: 16,
+                      color: Color(0xFF00F4FE),
+                    ), // [UBAH_WARNA: Ikon Quests Done Profile]
                   ],
                 ),
                 const SizedBox(height: 8),
                 Container(
-                  padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 8,
+                    vertical: 3,
+                  ),
                   decoration: BoxDecoration(
                     color: const Color(0xFF110C19),
                     borderRadius: BorderRadius.circular(6),
                   ),
                   child: ValueListenableBuilder<Box>(
-                    valueListenable: Hive.box('sessionBox').listenable(keys: ['total_quests_done']),
+                    valueListenable: Hive.box('sessionBox')
+                        .listenable(keys: ['total_quests_done']),
                     builder: (context, box, _) {
-                      if (_isLoadingQuests && !box.containsKey('total_quests_done') && !box.containsKey('quests_done_count')) {
+                      if (_isLoadingQuests &&
+                          !box.containsKey('total_quests_done') &&
+                          !box.containsKey('quests_done_count')) {
                         return const SizedBox(
                           width: 14,
                           height: 14,
@@ -1194,13 +1346,21 @@ class _TabProfileState extends State<TabProfile> {
                           ),
                         );
                       }
-                      final int totalDone = (box.get('total_quests_done', defaultValue: box.get('quests_done_count', defaultValue: _questsCompletedCount)) as num).toInt();
+                      final int totalDone = (box.get(
+                        'total_quests_done',
+                        defaultValue: box.get(
+                          'quests_done_count',
+                          defaultValue: _questsCompletedCount,
+                        ),
+                      ) as num).toInt();
                       return Text(
                         '$totalDone SELESAI',
                         style: GoogleFonts.spaceGrotesk(
                           fontSize: 14,
                           fontWeight: FontWeight.w900,
-                          color: const Color(0xFF00F4FE), // [UBAH_WARNA: Teks Nilai Quests Done Profile]
+                          color: const Color(
+                            0xFF00F4FE,
+                          ), // [UBAH_WARNA: Teks Nilai Quests Done Profile]
                         ),
                       );
                     },
@@ -1229,7 +1389,8 @@ class _TabProfileState extends State<TabProfile> {
       if (!_isFaceScanEnabled) {
         await HiveService.clearBiometricCredentials();
       } else {
-        final password = HiveService.getActivePassword() ??
+        final password =
+            HiveService.getActivePassword() ??
             HiveService.getBiometricCredentials()?['password'] ??
             '';
         await HiveService.saveBiometricCredentials(
@@ -1243,8 +1404,10 @@ class _TabProfileState extends State<TabProfile> {
     }
 
     try {
-      final bool canAuthenticateWithBiometrics = await _localAuth.canCheckBiometrics;
-      final bool canAuthenticate = canAuthenticateWithBiometrics || await _localAuth.isDeviceSupported();
+      final bool canAuthenticateWithBiometrics =
+          await _localAuth.canCheckBiometrics;
+      final bool canAuthenticate =
+          canAuthenticateWithBiometrics || await _localAuth.isDeviceSupported();
 
       if (!canAuthenticate) {
         if (mounted) {
@@ -1252,7 +1415,10 @@ class _TabProfileState extends State<TabProfile> {
             SnackBar(
               content: Text(
                 'Perangkat tidak mendukung atau belum mengonfigurasi sensor biometrik sidik jari.',
-                style: GoogleFonts.spaceGrotesk(color: Colors.white, fontWeight: FontWeight.w600),
+                style: GoogleFonts.spaceGrotesk(
+                  color: Colors.white,
+                  fontWeight: FontWeight.w600,
+                ),
               ),
               backgroundColor: const Color(0xFF93000A),
             ),
@@ -1269,7 +1435,8 @@ class _TabProfileState extends State<TabProfile> {
       if (!mounted) return;
 
       if (authenticated) {
-        String? password = HiveService.getActivePassword() ??
+        String? password =
+            HiveService.getActivePassword() ??
             HiveService.getBiometricCredentials()?['password'];
 
         if (password == null || password.isEmpty) {
@@ -1297,7 +1464,11 @@ class _TabProfileState extends State<TabProfile> {
           SnackBar(
             content: Row(
               children: [
-                const Icon(Icons.fingerprint_rounded, color: Colors.black, size: 20),
+                const Icon(
+                  Icons.fingerprint_rounded,
+                  color: Colors.black,
+                  size: 20,
+                ),
                 const SizedBox(width: 8),
                 Expanded(
                   child: Text(
@@ -1339,7 +1510,8 @@ class _TabProfileState extends State<TabProfile> {
       if (!_isFingerprintEnabled) {
         await HiveService.clearBiometricCredentials();
       } else {
-        final password = HiveService.getActivePassword() ??
+        final password =
+            HiveService.getActivePassword() ??
             HiveService.getBiometricCredentials()?['password'] ??
             '';
         await HiveService.saveBiometricCredentials(
@@ -1362,7 +1534,8 @@ class _TabProfileState extends State<TabProfile> {
       if (!mounted) return;
 
       if (faceEnrolled) {
-        String? password = HiveService.getActivePassword() ??
+        String? password =
+            HiveService.getActivePassword() ??
             HiveService.getBiometricCredentials()?['password'];
 
         if (password == null || password.isEmpty) {
@@ -1391,7 +1564,11 @@ class _TabProfileState extends State<TabProfile> {
           SnackBar(
             content: Row(
               children: [
-                const Icon(Icons.verified_rounded, color: Colors.black, size: 20),
+                const Icon(
+                  Icons.verified_rounded,
+                  color: Colors.black,
+                  size: 20,
+                ),
                 const SizedBox(width: 8),
                 Expanded(
                   child: Text(
@@ -1440,7 +1617,11 @@ class _TabProfileState extends State<TabProfile> {
           ),
           title: Row(
             children: [
-              const Icon(Icons.security_rounded, color: Color(0xFF00F4FE), size: 20),
+              const Icon(
+                Icons.security_rounded,
+                color: Color(0xFF00F4FE),
+                size: 20,
+              ),
               const SizedBox(width: 8),
               Text(
                 'SECURITY CONFIRMATION',
@@ -1458,7 +1639,10 @@ class _TabProfileState extends State<TabProfile> {
             children: [
               Text(
                 'Masukkan Passcode (Cipher) akun Anda untuk menautkan biometrik:',
-                style: GoogleFonts.plusJakartaSans(color: const Color(0xFFD2C1D7), fontSize: 12),
+                style: GoogleFonts.plusJakartaSans(
+                  color: const Color(0xFFD2C1D7),
+                  fontSize: 12,
+                ),
               ),
               const SizedBox(height: 12),
               Container(
@@ -1470,19 +1654,31 @@ class _TabProfileState extends State<TabProfile> {
                 child: TextField(
                   controller: controller,
                   obscureText: isObscure,
-                  style: GoogleFonts.plusJakartaSans(color: Colors.white, fontSize: 13),
+                  style: GoogleFonts.plusJakartaSans(
+                    color: Colors.white,
+                    fontSize: 13,
+                  ),
                   decoration: InputDecoration(
                     hintText: 'Passcode (Cipher)',
-                    hintStyle: GoogleFonts.plusJakartaSans(color: const Color(0xFF9B8BA1), fontSize: 12),
-                    contentPadding: const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
+                    hintStyle: GoogleFonts.plusJakartaSans(
+                      color: const Color(0xFF9B8BA1),
+                      fontSize: 12,
+                    ),
+                    contentPadding: const EdgeInsets.symmetric(
+                      horizontal: 12,
+                      vertical: 10,
+                    ),
                     border: InputBorder.none,
                     suffixIcon: IconButton(
                       icon: Icon(
-                        isObscure ? Icons.visibility_outlined : Icons.visibility_off_outlined,
+                        isObscure
+                            ? Icons.visibility_outlined
+                            : Icons.visibility_off_outlined,
                         color: const Color(0xFF9B8BA1),
                         size: 18,
                       ),
-                      onPressed: () => setDialogState(() => isObscure = !isObscure),
+                      onPressed: () =>
+                          setDialogState(() => isObscure = !isObscure),
                     ),
                   ),
                 ),
@@ -1494,14 +1690,19 @@ class _TabProfileState extends State<TabProfile> {
               onPressed: () => Navigator.pop(ctx, null),
               child: Text(
                 'BATAL',
-                style: GoogleFonts.spaceGrotesk(color: Colors.grey, fontWeight: FontWeight.bold),
+                style: GoogleFonts.spaceGrotesk(
+                  color: Colors.grey,
+                  fontWeight: FontWeight.bold,
+                ),
               ),
             ),
             ElevatedButton(
               style: ElevatedButton.styleFrom(
                 backgroundColor: const Color(0xFFB026FF),
                 foregroundColor: Colors.white,
-                shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(8),
+                ),
               ),
               onPressed: () => Navigator.pop(ctx, controller.text),
               child: Text(
@@ -1547,7 +1748,9 @@ class _TabProfileState extends State<TabProfile> {
                     decoration: BoxDecoration(
                       color: const Color(0xFF2D2736),
                       borderRadius: BorderRadius.circular(7),
-                      border: Border.all(color: const Color(0xFFB026FF).withValues(alpha: 0.3)),
+                      border: Border.all(
+                        color: const Color(0xFFB026FF).withValues(alpha: 0.3),
+                      ),
                     ),
                     child: const Icon(
                       Icons.shield_outlined,
@@ -1607,7 +1810,9 @@ class _TabProfileState extends State<TabProfile> {
                     ),
                     const SizedBox(width: 5),
                     Text(
-                      (_isFingerprintEnabled || _isFaceScanEnabled) ? 'ACTIVE' : 'STANDBY',
+                      (_isFingerprintEnabled || _isFaceScanEnabled)
+                          ? 'ACTIVE'
+                          : 'STANDBY',
                       style: GoogleFonts.spaceGrotesk(
                         fontSize: 8,
                         fontWeight: FontWeight.w800,
@@ -1646,9 +1851,15 @@ class _TabProfileState extends State<TabProfile> {
                   decoration: BoxDecoration(
                     color: const Color(0xFF1F1638),
                     borderRadius: BorderRadius.circular(9),
-                    border: Border.all(color: const Color(0xFFB026FF).withValues(alpha: 0.35)),
+                    border: Border.all(
+                      color: const Color(0xFFB026FF).withValues(alpha: 0.35),
+                    ),
                   ),
-                  child: const Icon(Icons.fingerprint_rounded, size: 20, color: Color(0xFFE5B5FF)),
+                  child: const Icon(
+                    Icons.fingerprint_rounded,
+                    size: 20,
+                    color: Color(0xFFE5B5FF),
+                  ),
                 ),
                 const SizedBox(width: 10),
                 Expanded(
@@ -1684,7 +1895,9 @@ class _TabProfileState extends State<TabProfile> {
                       value: _isFingerprintEnabled,
                       onChanged: _handleToggleFingerprint,
                       activeThumbColor: Colors.white,
-                      activeTrackColor: const Color(0xFFB026FF), // [UBAH_WARNA: Switch Fingerprint Aktif]
+                      activeTrackColor: const Color(
+                        0xFFB026FF,
+                      ), // [UBAH_WARNA: Switch Fingerprint Aktif]
                       inactiveThumbColor: const Color(0xFF9B8BA1),
                       inactiveTrackColor: const Color(0xFF383241),
                     ),
@@ -1717,9 +1930,15 @@ class _TabProfileState extends State<TabProfile> {
                   decoration: BoxDecoration(
                     color: const Color(0xFF0A2730),
                     borderRadius: BorderRadius.circular(9),
-                    border: Border.all(color: const Color(0xFF00F4FE).withValues(alpha: 0.35)),
+                    border: Border.all(
+                      color: const Color(0xFF00F4FE).withValues(alpha: 0.35),
+                    ),
                   ),
-                  child: const Icon(Icons.document_scanner_outlined, size: 20, color: Color(0xFF00F4FE)),
+                  child: const Icon(
+                    Icons.document_scanner_outlined,
+                    size: 20,
+                    color: Color(0xFF00F4FE),
+                  ),
                 ),
                 const SizedBox(width: 10),
                 Expanded(
@@ -1755,7 +1974,9 @@ class _TabProfileState extends State<TabProfile> {
                       value: _isFaceScanEnabled,
                       onChanged: _handleToggleFaceScan,
                       activeThumbColor: Colors.white,
-                      activeTrackColor: const Color(0xFF00F4FE), // [UBAH_WARNA: Switch Face Scan Aktif]
+                      activeTrackColor: const Color(
+                        0xFF00F4FE,
+                      ), // [UBAH_WARNA: Switch Face Scan Aktif]
                       inactiveThumbColor: const Color(0xFF9B8BA1),
                       inactiveTrackColor: const Color(0xFF383241),
                     ),
@@ -1771,7 +1992,8 @@ class _TabProfileState extends State<TabProfile> {
 
   /// Academic Feedback Form & Display Card
   Widget _buildFeedbackCard() {
-    final hasExistingFeedback = _submittedFeedback != null && _submittedFeedback!.trim().isNotEmpty;
+    final hasExistingFeedback =
+        _submittedFeedback != null && _submittedFeedback!.trim().isNotEmpty;
 
     return Container(
       width: double.infinity,
@@ -1811,7 +2033,11 @@ class _TabProfileState extends State<TabProfile> {
                     children: [
                       Row(
                         children: [
-                          const Icon(Icons.verified_rounded, size: 16, color: Color(0xFF00F4FE)),
+                          const Icon(
+                            Icons.verified_rounded,
+                            size: 16,
+                            color: Color(0xFF00F4FE),
+                          ),
                           const SizedBox(width: 6),
                           Text(
                             'KESAN & PESAN ANDA',
@@ -1825,11 +2051,18 @@ class _TabProfileState extends State<TabProfile> {
                         ],
                       ),
                       Container(
-                        padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
+                        padding: const EdgeInsets.symmetric(
+                          horizontal: 6,
+                          vertical: 2,
+                        ),
                         decoration: BoxDecoration(
-                          color: const Color(0xFF00F4FE).withValues(alpha: 0.15),
+                          color: const Color(0xFF00F4FE)
+                              .withValues(alpha: 0.15),
                           borderRadius: BorderRadius.circular(4),
-                          border: Border.all(color: const Color(0xFF00F4FE).withValues(alpha: 0.4)),
+                          border: Border.all(
+                            color: const Color(0xFF00F4FE)
+                                .withValues(alpha: 0.4),
+                          ),
                         ),
                         child: Text(
                           'TERVERIFIKASI',
@@ -1874,10 +2107,14 @@ class _TabProfileState extends State<TabProfile> {
                     children: [
                       Row(
                         children: [
-                          const Icon(Icons.storage_rounded, size: 11, color: Color(0xFF9B8BA1)),
+                          const Icon(
+                            Icons.storage_rounded,
+                            size: 11,
+                            color: Color(0xFF9B8BA1),
+                          ),
                           const SizedBox(width: 4),
                           Text(
-                            'Tersimpan di Supabase',
+                            'Tersimpan',
                             style: GoogleFonts.spaceGrotesk(
                               fontSize: 8.5,
                               color: const Color(0xFF9B8BA1), // [UBAH_WARNA: Label Tipe Penyimpanan Feedback]
@@ -1887,7 +2124,11 @@ class _TabProfileState extends State<TabProfile> {
                       ),
                       Row(
                         children: [
-                          const Icon(Icons.schedule_rounded, size: 11, color: Color(0xFF00F4FE)),
+                          const Icon(
+                            Icons.schedule_rounded,
+                            size: 11,
+                            color: Color(0xFF00F4FE),
+                          ),
                           const SizedBox(width: 4),
                           Text(
                             _formatFeedbackDate(_feedbackCreatedAt),
@@ -1908,7 +2149,9 @@ class _TabProfileState extends State<TabProfile> {
             // Garis Pembatas Aksen
             Row(
               children: [
-                const Expanded(child: Divider(color: Color(0xFF2C1E4E), thickness: 1)),
+                const Expanded(
+                  child: Divider(color: Color(0xFF2C1E4E), thickness: 1),
+                ),
                 Padding(
                   padding: const EdgeInsets.symmetric(horizontal: 10),
                   child: Text(
@@ -1921,7 +2164,9 @@ class _TabProfileState extends State<TabProfile> {
                     ),
                   ),
                 ),
-                const Expanded(child: Divider(color: Color(0xFF2C1E4E), thickness: 1)),
+                const Expanded(
+                  child: Divider(color: Color(0xFF2C1E4E), thickness: 1),
+                ),
               ],
             ),
             const SizedBox(height: 12),
@@ -1939,7 +2184,9 @@ class _TabProfileState extends State<TabProfile> {
                   borderRadius: BorderRadius.circular(8),
                 ),
                 child: Icon(
-                  hasExistingFeedback ? Icons.edit_note_rounded : Icons.rate_review_rounded,
+                  hasExistingFeedback
+                      ? Icons.edit_note_rounded
+                      : Icons.rate_review_rounded,
                   size: 18,
                   color: const Color(0xFFB026FF),
                 ),
@@ -1963,8 +2210,8 @@ class _TabProfileState extends State<TabProfile> {
                     const SizedBox(height: 2),
                     Text(
                       hasExistingFeedback
-                          ? 'Isi formulir di bawah untuk memperbarui kesan & pesan Anda di basis data Supabase.'
-                          : 'Kirimkan kesan, pesan, dan saran akademik langsung ke basis data Supabase pengampu.',
+                          ? 'Isi formulir di bawah untuk memperbarui kesan & pesan Anda terhadap matkul tercinta.'
+                          : 'Kirimkan kesan, pesan, dan saran akademik.',
                       style: GoogleFonts.plusJakartaSans(
                         fontSize: 10,
                         color: const Color(0xFFD2C1D7),
@@ -1982,20 +2229,30 @@ class _TabProfileState extends State<TabProfile> {
           // Textarea Form
           Container(
             decoration: BoxDecoration(
-              color: const Color(0xFF110C19), // [UBAH_WARNA: Background Input Saran Kesan]
+              color: const Color(
+                0xFF110C19,
+              ), // [UBAH_WARNA: Background Input Saran Kesan]
               borderRadius: BorderRadius.circular(10),
-              border: Border.all(color: const Color(0xFF383241)), // [UBAH_WARNA: Border Input Saran Kesan]
+              border: Border.all(
+                color: const Color(0xFF383241),
+              ), // [UBAH_WARNA: Border Input Saran Kesan]
             ),
             child: TextField(
               controller: _feedbackController,
               maxLines: 4,
               maxLength: 500,
-              style: GoogleFonts.plusJakartaSans(fontSize: 12, color: const Color(0xFFE9DEF2)), // [UBAH_WARNA: Warna Teks Input Saran Kesan]
+              style: GoogleFonts.plusJakartaSans(
+                fontSize: 12,
+                color: const Color(0xFFE9DEF2),
+              ), // [UBAH_WARNA: Warna Teks Input Saran Kesan]
               decoration: InputDecoration(
                 hintText: hasExistingFeedback
-                    ? 'Tuliskan pembaruan kesan, pesan, atau saran untuk pengampu di sini...'
+                    ? 'Tuliskan pembaruan kesan, pesan, atau saran untuk dosen tercinta di sini...'
                     : 'Tuliskan kesan perkuliahan, tantangan Flutter, serta saran pengembangan aplikasi LevMax ke depan...',
-                hintStyle: GoogleFonts.plusJakartaSans(fontSize: 11, color: const Color(0xFF9B8BA1)), // [UBAH_WARNA: Hint Input Saran Kesan]
+                hintStyle: GoogleFonts.plusJakartaSans(
+                  fontSize: 11,
+                  color: const Color(0xFF9B8BA1),
+                ), // [UBAH_WARNA: Hint Input Saran Kesan]
                 contentPadding: const EdgeInsets.all(12),
                 border: InputBorder.none,
                 counterText: '', // Kustom counter di bawah
@@ -2012,7 +2269,11 @@ class _TabProfileState extends State<TabProfile> {
                 if (_feedbackSentSuccess)
                   Row(
                     children: [
-                      const Icon(Icons.cloud_done_rounded, size: 12, color: Color(0xFF00F4FE)),
+                      const Icon(
+                        Icons.cloud_done_rounded,
+                        size: 12,
+                        color: Color(0xFF00F4FE),
+                      ),
                       const SizedBox(width: 4),
                       Text(
                         'DISINKRONKAN DENGAN SUPABASE',
@@ -2030,7 +2291,9 @@ class _TabProfileState extends State<TabProfile> {
                   '$_charCount / 500',
                   style: GoogleFonts.spaceGrotesk(
                     fontSize: 9.5,
-                    color: _charCount > 500 ? const Color(0xFFFFB4AB) : const Color(0xFF9B8BA1),
+                    color: _charCount > 500
+                        ? const Color(0xFFFFB4AB)
+                        : const Color(0xFF9B8BA1),
                   ),
                 ),
               ],
@@ -2049,7 +2312,10 @@ class _TabProfileState extends State<TabProfile> {
               decoration: BoxDecoration(
                 borderRadius: BorderRadius.circular(10),
                 gradient: const LinearGradient(
-                  colors: [Color(0xFFB026FF), Color(0xFF9200DB)], // [UBAH_WARNA: Tombol Submit Feedback]
+                  colors: [
+                    Color(0xFFB026FF),
+                    Color(0xFF9200DB),
+                  ], // [UBAH_WARNA: Tombol Submit Feedback]
                   begin: Alignment.centerLeft,
                   end: Alignment.centerRight,
                 ),
@@ -2068,10 +2334,15 @@ class _TabProfileState extends State<TabProfile> {
                       ? const SizedBox(
                           width: 16,
                           height: 16,
-                          child: CircularProgressIndicator(strokeWidth: 2, color: Colors.white),
+                          child: CircularProgressIndicator(
+                            strokeWidth: 2,
+                            color: Colors.white,
+                          ),
                         )
                       : Icon(
-                          hasExistingFeedback ? Icons.published_with_changes_rounded : Icons.send_rounded,
+                          hasExistingFeedback
+                              ? Icons.published_with_changes_rounded
+                              : Icons.send_rounded,
                           size: 16,
                           color: Colors.white, // [UBAH_WARNA: Teks Tombol Submit Feedback]
                         ),
@@ -2079,7 +2350,9 @@ class _TabProfileState extends State<TabProfile> {
                   Text(
                     _isSubmittingFeedback
                         ? 'MENYIMPAN KE SUPABASE...'
-                        : (hasExistingFeedback ? 'PERBARUI PESAN & KESAN' : 'KIRIM PESAN & KESAN'),
+                        : (hasExistingFeedback
+                              ? 'PERBARUI PESAN & KESAN'
+                              : 'KIRIM PESAN & KESAN'),
                     style: GoogleFonts.spaceGrotesk(
                       fontSize: 11.5,
                       fontWeight: FontWeight.w800,
@@ -2107,9 +2380,13 @@ class _TabProfileState extends State<TabProfile> {
             width: double.infinity,
             height: 44,
             decoration: BoxDecoration(
-              color: const Color(0xFF93000A).withValues(alpha: 0.2), // [UBAH_WARNA: Tombol Logout Background]
+              color: const Color(0xFF93000A).withValues(
+                alpha: 0.2,
+              ), // [UBAH_WARNA: Tombol Logout Background]
               borderRadius: BorderRadius.circular(10),
-              border: Border.all(color: const Color(0xFF93000A).withValues(alpha: 0.6)), // [UBAH_WARNA: Tombol Logout Border]
+              border: Border.all(
+                color: const Color(0xFF93000A).withValues(alpha: 0.6),
+              ), // [UBAH_WARNA: Tombol Logout Border]
               boxShadow: [
                 BoxShadow(
                   color: const Color(0xFF93000A).withValues(alpha: 0.25),
@@ -2120,7 +2397,11 @@ class _TabProfileState extends State<TabProfile> {
             child: Row(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
-                const Icon(Icons.power_settings_new_rounded, size: 18, color: Color(0xFFFFB4AB)), // [UBAH_WARNA: Ikon Tombol Logout]
+                const Icon(
+                  Icons.power_settings_new_rounded,
+                  size: 18,
+                  color: Color(0xFFFFB4AB),
+                ), // [UBAH_WARNA: Ikon Tombol Logout]
                 const SizedBox(width: 8),
                 Text(
                   'SYSTEM LOGOUT',
@@ -2128,7 +2409,9 @@ class _TabProfileState extends State<TabProfile> {
                     fontSize: 12,
                     fontWeight: FontWeight.w900,
                     letterSpacing: 1.0,
-                    color: const Color(0xFFFFB4AB), // [UBAH_WARNA: Teks Tombol Logout]
+                    color: const Color(
+                      0xFFFFB4AB,
+                    ), // [UBAH_WARNA: Teks Tombol Logout]
                   ),
                 ),
               ],
@@ -2137,7 +2420,7 @@ class _TabProfileState extends State<TabProfile> {
         ),
         const SizedBox(height: 8),
         Text(
-          'TERMINAL SESSION: 0x7E3 // MONARCH ARCHIVE',
+          'DONT BE AFRAID OF THE DARKNESS, HUNTER.',
           style: GoogleFonts.spaceGrotesk(
             fontSize: 8.5,
             fontWeight: FontWeight.w600,
@@ -2216,10 +2499,12 @@ class _TabProfileState extends State<TabProfile> {
                           Container(
                             padding: const EdgeInsets.all(7),
                             decoration: BoxDecoration(
-                              color: const Color(0xFF00F4FE).withValues(alpha: 0.15),
+                              color: const Color(0xFF00F4FE)
+                                  .withValues(alpha: 0.15),
                               borderRadius: BorderRadius.circular(10),
                               border: Border.all(
-                                color: const Color(0xFF00F4FE).withValues(alpha: 0.5),
+                                color: const Color(0xFF00F4FE)
+                                    .withValues(alpha: 0.5),
                               ),
                             ),
                             child: const Icon(
@@ -2255,7 +2540,11 @@ class _TabProfileState extends State<TabProfile> {
                       ),
                       IconButton(
                         onPressed: () => Navigator.pop(bottomSheetContext),
-                        icon: const Icon(Icons.close_rounded, color: Color(0xFF9B8BA1), size: 22),
+                        icon: const Icon(
+                          Icons.close_rounded,
+                          color: Color(0xFF9B8BA1),
+                          size: 22,
+                        ),
                         padding: EdgeInsets.zero,
                         constraints: const BoxConstraints(),
                       ),
@@ -2267,7 +2556,10 @@ class _TabProfileState extends State<TabProfile> {
                   // Instruction Badge
                   Container(
                     width: double.infinity,
-                    padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 12,
+                      vertical: 8,
+                    ),
                     decoration: BoxDecoration(
                       color: const Color(0xFF1E1433),
                       borderRadius: BorderRadius.circular(8),
@@ -2308,7 +2600,9 @@ class _TabProfileState extends State<TabProfile> {
                       separatorBuilder: (ctx, i) => const SizedBox(height: 10),
                       itemBuilder: (context, index) {
                         final title = ownedTitles[index];
-                        final isEquipped = title.trim().toLowerCase() == currentEquipped.trim().toLowerCase();
+                        final isEquipped =
+                            title.trim().toLowerCase() ==
+                            currentEquipped.trim().toLowerCase();
 
                         return InkWell(
                           onTap: () async {
@@ -2352,7 +2646,10 @@ class _TabProfileState extends State<TabProfile> {
                           borderRadius: BorderRadius.circular(12),
                           child: AnimatedContainer(
                             duration: const Duration(milliseconds: 200),
-                            padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 12),
+                            padding: const EdgeInsets.symmetric(
+                              horizontal: 14,
+                              vertical: 12,
+                            ),
                             decoration: BoxDecoration(
                               color: isEquipped
                                   ? const Color(0xFF1E1433)
@@ -2367,7 +2664,8 @@ class _TabProfileState extends State<TabProfile> {
                               boxShadow: isEquipped
                                   ? [
                                       BoxShadow(
-                                        color: const Color(0xFF00F4FE).withValues(alpha: 0.25),
+                                        color: const Color(0xFF00F4FE)
+                                            .withValues(alpha: 0.25),
                                         blurRadius: 10,
                                       ),
                                     ]
@@ -2380,7 +2678,8 @@ class _TabProfileState extends State<TabProfile> {
                                   height: 38,
                                   decoration: BoxDecoration(
                                     color: isEquipped
-                                        ? const Color(0xFF00F4FE).withValues(alpha: 0.15)
+                                        ? const Color(0xFF00F4FE)
+                                              .withValues(alpha: 0.15)
                                         : const Color(0xFF2D2736),
                                     shape: BoxShape.circle,
                                     border: Border.all(
@@ -2402,7 +2701,8 @@ class _TabProfileState extends State<TabProfile> {
                                 const SizedBox(width: 12),
                                 Expanded(
                                   child: Column(
-                                    crossAxisAlignment: CrossAxisAlignment.start,
+                                    crossAxisAlignment:
+                                        CrossAxisAlignment.start,
                                     children: [
                                       Text(
                                         title,

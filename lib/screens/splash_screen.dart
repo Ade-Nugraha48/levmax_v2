@@ -3,8 +3,10 @@
 /// Menampilkan animasi rotasi reaktor mana, simulasi inisialisasi vault kriptografi, dan routing otomatis ke LoginScreen.
 
 import 'dart:math' as math;
+
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
+
 import 'auth/login_screen.dart';
 
 /// Halaman Pertama: Awakening Splash Screen bertema Solo Leveling
@@ -23,9 +25,12 @@ class _SplashScreenState extends State<SplashScreen>
   late final Animation<double> _progressAnimation;
 
   String _currentStatusTitle = 'INITIALIZING HUNTER SYSTEM CORE...';
-  String _currentStatusSubtitle = 'Connecting to Solo Leveling Node-Alpha & Shadow Gateway...';
+  String _currentStatusSubtitle =
+      'Connecting to Solo Leveling Node-Alpha & Shadow Gateway...';
   String _rpcStatus = 'CONNECTING';
-  Color _rpcColor = const Color(0xFF00F0FF); // [UBAH_WARNA: Indikator Status RPC Splash]
+  Color _rpcColor = const Color(
+    0xFF00F0FF,
+  ); // [UBAH_WARNA: Indikator Status RPC Splash]
 
   @override
   void initState() {
@@ -58,7 +63,8 @@ class _SplashScreenState extends State<SplashScreen>
     if (!mounted) return;
     setState(() {
       _currentStatusTitle = 'VERIFYING CRYPTOGRAPHIC VAULT...';
-      _currentStatusSubtitle = 'Securing Hive database & local session tokens...';
+      _currentStatusSubtitle =
+          'Securing Hive database & local session tokens...';
       _rpcStatus = 'AUTHENTICATED';
       _rpcColor = const Color(0xFF00FF9D);
     });
@@ -68,7 +74,8 @@ class _SplashScreenState extends State<SplashScreen>
     if (!mounted) return;
     setState(() {
       _currentStatusTitle = 'CALIBRATING AWAKENING SENSORS...';
-      _currentStatusSubtitle = 'Biometric face matrix & mana stabilizers ready...';
+      _currentStatusSubtitle =
+          'Biometric face matrix & mana stabilizers ready...';
       _rpcStatus = 'SYNCHRONIZED';
       _rpcColor = const Color(0xFF00F0FF);
     });
@@ -107,7 +114,9 @@ class _SplashScreenState extends State<SplashScreen>
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: const Color(0xFF08050E), // [UBAH_WARNA: Latar Belakang Layar Splash]
+      backgroundColor: const Color(
+        0xFF08050E,
+      ), // [UBAH_WARNA: Latar Belakang Layar Splash]
       body: Container(
         width: double.infinity,
         height: double.infinity,
@@ -166,10 +175,13 @@ class _SplashScreenState extends State<SplashScreen>
       margin: const EdgeInsets.only(top: 4.0),
       padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 6),
       decoration: BoxDecoration(
-        color: const Color(0xFF0F091A).withValues(alpha: 0.85), // [UBAH_WARNA: Kartu Bar Atas Splash]
+        color: const Color(0xFF0F091A)
+            .withValues(alpha: 0.85), // [UBAH_WARNA: Kartu Bar Atas Splash]
         borderRadius: BorderRadius.circular(24),
         border: Border.all(
-          color: const Color(0xFF2C1E4E), // [UBAH_WARNA: Border Kartu Bar Atas Splash]
+          color: const Color(
+            0xFF2C1E4E,
+          ), // [UBAH_WARNA: Border Kartu Bar Atas Splash]
           width: 1.0,
         ),
         boxShadow: [
@@ -191,7 +203,9 @@ class _SplashScreenState extends State<SplashScreen>
               height: 8,
               decoration: const BoxDecoration(
                 shape: BoxShape.circle,
-                color: Color(0xFF00F0FF), // [UBAH_WARNA: Titik Status Dot Bar Atas Splash]
+                color: Color(
+                  0xFF00F0FF,
+                ), // [UBAH_WARNA: Titik Status Dot Bar Atas Splash]
                 boxShadow: [
                   BoxShadow(
                     color: Color(0xFF00F0FF),
@@ -208,7 +222,9 @@ class _SplashScreenState extends State<SplashScreen>
                 fontSize: 9.0,
                 fontWeight: FontWeight.w700,
                 letterSpacing: 1.2,
-                color: const Color(0xFFCBD5E1), // [UBAH_WARNA: Teks Label Bar Atas Splash]
+                color: const Color(
+                  0xFFCBD5E1,
+                ), // [UBAH_WARNA: Teks Label Bar Atas Splash]
               ),
             ),
           ],
@@ -267,12 +283,7 @@ class _SplashScreenState extends State<SplashScreen>
             fontWeight: FontWeight.w700,
             letterSpacing: 2.8,
             color: const Color(0xFFF3EFF5),
-            shadows: const [
-              Shadow(
-                color: Color(0xFFB026FF),
-                blurRadius: 16,
-              ),
-            ],
+            shadows: const [Shadow(color: Color(0xFFB026FF), blurRadius: 16)],
           ),
         ),
 
@@ -300,7 +311,9 @@ class _SplashScreenState extends State<SplashScreen>
                   fontSize: 8.5,
                   fontWeight: FontWeight.w600,
                   letterSpacing: 2.0,
-                  color: const Color(0xFFD8B4F8), // [UBAH_WARNA: Teks Header Status Sinkronisasi]
+                  color: const Color(
+                    0xFFD8B4F8,
+                  ), // [UBAH_WARNA: Teks Header Status Sinkronisasi]
                 ),
               ),
               const SizedBox(width: 8),
@@ -340,7 +353,9 @@ class _SplashScreenState extends State<SplashScreen>
               fontSize: 14.5,
               fontWeight: FontWeight.w700,
               letterSpacing: 0.8,
-              color: const Color(0xFFD8B4F8), // [UBAH_WARNA: Teks Judul Status Sinkronisasi Splash]
+              color: const Color(
+                0xFFD8B4F8,
+              ), // [UBAH_WARNA: Teks Judul Status Sinkronisasi Splash]
             ),
           ),
         ),
@@ -355,7 +370,9 @@ class _SplashScreenState extends State<SplashScreen>
               fontSize: 11.5,
               fontWeight: FontWeight.w500,
               letterSpacing: 0.4,
-              color: const Color(0xFF8B829E), // [UBAH_WARNA: Teks Subjudul Status Sinkronisasi Splash]
+              color: const Color(
+                0xFF8B829E,
+              ), // [UBAH_WARNA: Teks Subjudul Status Sinkronisasi Splash]
             ),
           ),
         ),
@@ -375,10 +392,14 @@ class _SplashScreenState extends State<SplashScreen>
               width: 220,
               height: 4.5,
               decoration: BoxDecoration(
-                color: const Color(0xFF140D24), // [UBAH_WARNA: Latar Belakang Progress Bar]
+                color: const Color(
+                  0xFF140D24,
+                ), // [UBAH_WARNA: Latar Belakang Progress Bar]
                 borderRadius: BorderRadius.circular(3),
                 border: Border.all(
-                  color: const Color(0xFF2C1E4E), // [UBAH_WARNA: Garis Border Progress Bar]
+                  color: const Color(
+                    0xFF2C1E4E,
+                  ), // [UBAH_WARNA: Garis Border Progress Bar]
                   width: 0.8,
                 ),
               ),
@@ -390,14 +411,20 @@ class _SplashScreenState extends State<SplashScreen>
                       decoration: BoxDecoration(
                         gradient: const LinearGradient(
                           colors: [
-                            Color(0xFFB026FF), // [UBAH_WARNA: Gradien Progress Bar Ungu]
-                            Color(0xFF00F0FF), // [UBAH_WARNA: Gradien Progress Bar Cyan]
+                            Color(
+                              0xFFB026FF,
+                            ), // [UBAH_WARNA: Gradien Progress Bar Ungu]
+                            Color(
+                              0xFF00F0FF,
+                            ), // [UBAH_WARNA: Gradien Progress Bar Cyan]
                           ],
                         ),
                         borderRadius: BorderRadius.circular(3),
                         boxShadow: const [
                           BoxShadow(
-                            color: Color(0xFF00F0FF), // [UBAH_WARNA: Cahaya Glow Progress Bar]
+                            color: Color(
+                              0xFF00F0FF,
+                            ), // [UBAH_WARNA: Cahaya Glow Progress Bar]
                             blurRadius: 6,
                             spreadRadius: 1,
                           ),
@@ -415,7 +442,9 @@ class _SplashScreenState extends State<SplashScreen>
                 fontSize: 8.5,
                 fontWeight: FontWeight.w700,
                 letterSpacing: 1.6,
-                color: const Color(0xFF00F0FF), // [UBAH_WARNA: Teks Persentase Progress Bar]
+                color: const Color(
+                  0xFF00F0FF,
+                ), // [UBAH_WARNA: Teks Persentase Progress Bar]
               ),
             ),
           ],
@@ -540,9 +569,8 @@ class _SplashScreenState extends State<SplashScreen>
                     ),
                     boxShadow: [
                       BoxShadow(
-                        color: const Color(0xFFB026FF).withValues(
-                          alpha: 0.35 + (0.35 * breath),
-                        ),
+                        color: const Color(0xFFB026FF)
+                            .withValues(alpha: 0.35 + (0.35 * breath)),
                         blurRadius: 18 + (12 * breath),
                         spreadRadius: 2,
                       ),
@@ -563,9 +591,8 @@ class _SplashScreenState extends State<SplashScreen>
                           ),
                           boxShadow: [
                             BoxShadow(
-                              color: const Color(0xFF00F0FF).withValues(
-                                alpha: 0.8,
-                              ),
+                              color: const Color(0xFF00F0FF)
+                                  .withValues(alpha: 0.8),
                               blurRadius: 10 + (6 * breath),
                               spreadRadius: 1,
                             ),
@@ -592,10 +619,14 @@ class _SplashScreenState extends State<SplashScreen>
         Container(
           padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 8),
           decoration: BoxDecoration(
-            color: const Color(0xFF0D0818).withValues(alpha: 0.9), // [UBAH_WARNA: Kotak Status Konsol Bawah Splash]
+            color: const Color(0xFF0D0818).withValues(
+              alpha: 0.9,
+            ), // [UBAH_WARNA: Kotak Status Konsol Bawah Splash]
             borderRadius: BorderRadius.circular(8),
             border: Border.all(
-              color: const Color(0xFF2C1E4E), // [UBAH_WARNA: Border Konsol Bawah Splash]
+              color: const Color(
+                0xFF2C1E4E,
+              ), // [UBAH_WARNA: Border Konsol Bawah Splash]
               width: 1.0,
             ),
             boxShadow: [
@@ -617,7 +648,9 @@ class _SplashScreenState extends State<SplashScreen>
                   height: 7,
                   decoration: const BoxDecoration(
                     shape: BoxShape.circle,
-                    color: Color(0xFFB026FF), // [UBAH_WARNA: Titik Status Dot Konsol Bawah]
+                    color: Color(
+                      0xFFB026FF,
+                    ), // [UBAH_WARNA: Titik Status Dot Konsol Bawah]
                     boxShadow: [
                       BoxShadow(
                         color: Color(0xFFB026FF),
@@ -633,7 +666,9 @@ class _SplashScreenState extends State<SplashScreen>
                     style: GoogleFonts.orbitron(
                       fontSize: 9.5,
                       letterSpacing: 1.1,
-                      color: const Color(0xFFCBD5E1), // [UBAH_WARNA: Teks Label Konsol Bawah]
+                      color: const Color(
+                        0xFFCBD5E1,
+                      ), // [UBAH_WARNA: Teks Label Konsol Bawah]
                     ),
                     children: [
                       const TextSpan(text: 'SUPABASE RPC: '),
@@ -651,7 +686,9 @@ class _SplashScreenState extends State<SplashScreen>
                       TextSpan(
                         text: 'ARMED',
                         style: TextStyle(
-                          color: Color(0xFF00FF88), // [UBAH_WARNA: Status Sensor Biometrik Hijau]
+                          color: Color(
+                            0xFF00FF88,
+                          ), // [UBAH_WARNA: Status Sensor Biometrik Hijau]
                           fontWeight: FontWeight.bold,
                         ),
                       ),
@@ -669,12 +706,14 @@ class _SplashScreenState extends State<SplashScreen>
         FittedBox(
           fit: BoxFit.scaleDown,
           child: Text(
-            'V1.0.0  •  MOBILE ARCHITECTURE CORE',
+            'V2.0  •  MOBILE ARCHITECTURE CORE',
             style: GoogleFonts.orbitron(
               fontSize: 9.0,
               fontWeight: FontWeight.w600,
               letterSpacing: 2.0,
-              color: const Color(0xFF6E6485), // [UBAH_WARNA: Teks Versi Footer Splash]
+              color: const Color(
+                0xFF6E6485,
+              ), // [UBAH_WARNA: Teks Versi Footer Splash]
             ),
           ),
         ),
@@ -727,10 +766,7 @@ class _ArcRingPainter extends CustomPainter {
   final Color color;
   final double strokeWidth;
 
-  const _ArcRingPainter({
-    required this.color,
-    this.strokeWidth = 2.0,
-  });
+  const _ArcRingPainter({required this.color, this.strokeWidth = 2.0});
 
   @override
   void paint(Canvas canvas, Size size) {

@@ -6,6 +6,7 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:local_auth/local_auth.dart';
+
 import '../../services/hash_service.dart';
 import '../../services/hive_service.dart';
 import '../../services/supabase_service.dart';
@@ -44,7 +45,6 @@ class _LoginScreenState extends State<LoginScreen> {
     super.dispose();
   }
 
-
   // [POIN PRESENTASI]: Login Biometrik: Memeriksa ketersediaan sensor (Fingerprint via local_auth / Face Scan kamera depan) untuk bypass login
   Future<void> _triggerBiometricAuth({String type = 'fingerprint'}) async {
     // a. Cek terlebih dahulu apakah isBiometricEnabled bernilai true di penyimpanan lokal
@@ -58,7 +58,11 @@ class _LoginScreenState extends State<LoginScreen> {
           SnackBar(
             content: Row(
               children: [
-                const Icon(Icons.lock_person_rounded, color: Colors.white, size: 20),
+                const Icon(
+                  Icons.lock_person_rounded,
+                  color: Colors.white,
+                  size: 20,
+                ),
                 const SizedBox(width: 8),
                 Expanded(
                   child: Text(
@@ -87,7 +91,11 @@ class _LoginScreenState extends State<LoginScreen> {
           SnackBar(
             content: Row(
               children: [
-                const Icon(Icons.warning_amber_rounded, color: Colors.white, size: 20),
+                const Icon(
+                  Icons.warning_amber_rounded,
+                  color: Colors.white,
+                  size: 20,
+                ),
                 const SizedBox(width: 8),
                 Expanded(
                   child: Text(
@@ -120,14 +128,18 @@ class _LoginScreenState extends State<LoginScreen> {
 
     // Untuk Fingerprint: Gunakan sensor biometrik local_auth
     try {
-      final bool canAuthenticateWithBiometrics = await _localAuth.canCheckBiometrics;
-      final bool canAuthenticate = canAuthenticateWithBiometrics || await _localAuth.isDeviceSupported();
+      final bool canAuthenticateWithBiometrics =
+          await _localAuth.canCheckBiometrics;
+      final bool canAuthenticate =
+          canAuthenticateWithBiometrics || await _localAuth.isDeviceSupported();
 
       if (!canAuthenticate) {
         if (mounted) {
           ScaffoldMessenger.of(context).showSnackBar(
             const SnackBar(
-              content: Text('Sensor biometrik sidik jari tidak tersedia atau tidak didukung pada perangkat ini.'),
+              content: Text(
+                'Sensor biometrik sidik jari tidak tersedia atau tidak didukung pada perangkat ini.',
+              ),
               backgroundColor: AppColors.hpRed,
             ),
           );
@@ -136,7 +148,8 @@ class _LoginScreenState extends State<LoginScreen> {
       }
 
       final bool didAuthenticate = await _localAuth.authenticate(
-        localizedReason: 'Pindai sidik jari untuk otorisasi akses cepat ke Hunter System',
+        localizedReason:
+            'Pindai sidik jari untuk otorisasi akses cepat ke Hunter System',
       );
 
       if (!mounted) return;
@@ -197,7 +210,11 @@ class _LoginScreenState extends State<LoginScreen> {
           SnackBar(
             content: Row(
               children: [
-                const Icon(Icons.verified_rounded, color: Colors.black, size: 20),
+                const Icon(
+                  Icons.verified_rounded,
+                  color: Colors.black,
+                  size: 20,
+                ),
                 const SizedBox(width: 8),
                 Expanded(
                   child: Text(
@@ -219,7 +236,9 @@ class _LoginScreenState extends State<LoginScreen> {
       } else {
         ScaffoldMessenger.of(context).showSnackBar(
           const SnackBar(
-            content: Text('Kredensial biometrik kadaluarsa. Silakan login manual.'),
+            content: Text(
+              'Kredensial biometrik kadaluarsa. Silakan login manual.',
+            ),
             backgroundColor: AppColors.hpRed,
           ),
         );
@@ -283,7 +302,9 @@ class _LoginScreenState extends State<LoginScreen> {
 
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
-            content: Text('Selamat datang kembali, Hunter ${user['username']}!'),
+            content: Text(
+              'Selamat datang kembali, Hunter ${user['username']}!',
+            ),
             backgroundColor: AppColors.neonViolet,
           ),
         );
@@ -312,16 +333,16 @@ class _LoginScreenState extends State<LoginScreen> {
   void _navigateToMain() {
     Navigator.pushReplacement(
       context,
-      MaterialPageRoute(
-        builder: (context) => const MainNavigation(),
-      ),
+      MaterialPageRoute(builder: (context) => const MainNavigation()),
     );
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: const Color(0xFF16111E), // [UBAH_WARNA: Latar Belakang Layar Login]
+      backgroundColor: const Color(
+        0xFF16111E,
+      ), // [UBAH_WARNA: Latar Belakang Layar Login]
       body: SafeArea(
         child: Stack(
           children: [
@@ -381,15 +402,23 @@ class _LoginScreenState extends State<LoginScreen> {
               children: [
                 // Top Header: Pinned to Top-Left & Top-Right of Screen
                 Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 8.0),
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 16.0,
+                    vertical: 8.0,
+                  ),
                   child: Row(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
                       // Left: Pill "HUNTER AUTHENTICATION PORTAL"
                       Container(
-                        padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
+                        padding: const EdgeInsets.symmetric(
+                          horizontal: 10,
+                          vertical: 4,
+                        ),
                         decoration: BoxDecoration(
-                          color: const Color(0xFF110C19).withValues(alpha: 0.80), // [UBAH_WARNA: Header System Window Card]
+                          color: const Color(0xFF110C19).withValues(
+                            alpha: 0.80,
+                          ), // [UBAH_WARNA: Header System Window Card]
                           borderRadius: BorderRadius.circular(999),
                         ),
                         child: Row(
@@ -400,7 +429,9 @@ class _LoginScreenState extends State<LoginScreen> {
                               height: 6,
                               decoration: const BoxDecoration(
                                 shape: BoxShape.circle,
-                                color: Color(0xFF00F4FE), // [UBAH_WARNA: Dot Status System Window]
+                                color: Color(
+                                  0xFF00F4FE,
+                                ), // [UBAH_WARNA: Dot Status System Window]
                                 boxShadow: [
                                   BoxShadow(
                                     color: Color(0xFF00F4FE),
@@ -417,30 +448,36 @@ class _LoginScreenState extends State<LoginScreen> {
                                 fontSize: 10,
                                 fontWeight: FontWeight.w500,
                                 letterSpacing: 1.0,
-                                color: const Color(0xFFE6FEFF), // [UBAH_WARNA: Teks Title System Window]
+                                color: const Color(
+                                  0xFFE6FEFF,
+                                ), // [UBAH_WARNA: Teks Title System Window]
                               ),
                             ),
                           ],
                         ),
                       ),
 
-                      // Right: Shield & SYS_V2.4
+                      // Right: Shield & SYS_V2.0
                       Row(
                         mainAxisSize: MainAxisSize.min,
                         children: [
                           const Icon(
                             Icons.shield_outlined,
                             size: 15,
-                            color: Color(0xFFE5B5FF), // [UBAH_WARNA: Judul Utama LEVMAX]
+                            color: Color(
+                              0xFFE5B5FF,
+                            ), // [UBAH_WARNA: Judul Utama LEVMAX]
                           ),
                           const SizedBox(width: 4),
                           Text(
-                            'SYS_V2.4',
+                            'SYS_V2.0',
                             style: GoogleFonts.spaceGrotesk(
                               fontSize: 10,
                               fontWeight: FontWeight.w500,
                               letterSpacing: 0.8,
-                              color: const Color(0xFFD2C1D7), // [UBAH_WARNA: Teks Subtitle Login]
+                              color: const Color(
+                                0xFFD2C1D7,
+                              ), // [UBAH_WARNA: Teks Subtitle Login]
                             ),
                           ),
                         ],
@@ -454,7 +491,10 @@ class _LoginScreenState extends State<LoginScreen> {
                   child: Center(
                     child: SingleChildScrollView(
                       physics: const BouncingScrollPhysics(),
-                      padding: const EdgeInsets.symmetric(horizontal: 18.0, vertical: 6.0),
+                      padding: const EdgeInsets.symmetric(
+                        horizontal: 18.0,
+                        vertical: 6.0,
+                      ),
                       child: Column(
                         mainAxisSize: MainAxisSize.min,
                         crossAxisAlignment: CrossAxisAlignment.stretch,
@@ -473,7 +513,8 @@ class _LoginScreenState extends State<LoginScreen> {
                                       shape: BoxShape.circle,
                                       gradient: RadialGradient(
                                         colors: [
-                                          const Color(0xFFB026FF).withValues(alpha: 0.35),
+                                          const Color(0xFFB026FF)
+                                              .withValues(alpha: 0.35),
                                           Colors.transparent,
                                         ],
                                       ),
@@ -495,7 +536,10 @@ class _LoginScreenState extends State<LoginScreen> {
                                     height: 1,
                                     decoration: const BoxDecoration(
                                       gradient: LinearGradient(
-                                        colors: [Colors.transparent, Color(0xFFE5B5FF)],
+                                        colors: [
+                                          Colors.transparent,
+                                          Color(0xFFE5B5FF),
+                                        ],
                                       ),
                                     ),
                                   ),
@@ -515,7 +559,10 @@ class _LoginScreenState extends State<LoginScreen> {
                                     height: 1,
                                     decoration: const BoxDecoration(
                                       gradient: LinearGradient(
-                                        colors: [Color(0xFFE5B5FF), Colors.transparent],
+                                        colors: [
+                                          Color(0xFFE5B5FF),
+                                          Colors.transparent,
+                                        ],
                                       ),
                                     ),
                                   ),
@@ -529,7 +576,9 @@ class _LoginScreenState extends State<LoginScreen> {
                           // Main System Auth Card
                           Container(
                             decoration: BoxDecoration(
-                              color: const Color(0xFF1F1927).withValues(alpha: 0.95), // [UBAH_WARNA: Background Card Form Login]
+                              color: const Color(0xFF1F1927).withValues(
+                                alpha: 0.95,
+                              ), // [UBAH_WARNA: Background Card Form Login]
                               borderRadius: BorderRadius.circular(12),
                               boxShadow: [
                                 BoxShadow(
@@ -552,7 +601,8 @@ class _LoginScreenState extends State<LoginScreen> {
                                       gradient: LinearGradient(
                                         colors: [
                                           Colors.transparent,
-                                          const Color(0xFFE5B5FF).withValues(alpha: 0.8),
+                                          const Color(0xFFE5B5FF)
+                                              .withValues(alpha: 0.8),
                                           Colors.transparent,
                                         ],
                                       ),
@@ -563,11 +613,13 @@ class _LoginScreenState extends State<LoginScreen> {
                                 Padding(
                                   padding: const EdgeInsets.all(16.0),
                                   child: Column(
-                                    crossAxisAlignment: CrossAxisAlignment.stretch,
+                                    crossAxisAlignment:
+                                        CrossAxisAlignment.stretch,
                                     children: [
                                       // Field 1: Hunter Identity
                                       Row(
-                                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                        mainAxisAlignment:
+                                            MainAxisAlignment.spaceBetween,
                                         children: [
                                           Row(
                                             children: [
@@ -583,7 +635,9 @@ class _LoginScreenState extends State<LoginScreen> {
                                                   fontSize: 10,
                                                   fontWeight: FontWeight.w500,
                                                   letterSpacing: 1.0,
-                                                  color: const Color(0xFFD2C1D7),
+                                                  color: const Color(
+                                                    0xFFD2C1D7,
+                                                  ),
                                                 ),
                                               ),
                                             ],
@@ -606,7 +660,9 @@ class _LoginScreenState extends State<LoginScreen> {
                                         height: 42,
                                         decoration: BoxDecoration(
                                           color: const Color(0xFF110C19), // [UBAH_WARNA: Background Input Username]
-                                          borderRadius: BorderRadius.circular(8),
+                                          borderRadius: BorderRadius.circular(
+                                            8,
+                                          ),
                                         ),
                                         child: TextField(
                                           controller: _usernameController,
@@ -618,20 +674,23 @@ class _LoginScreenState extends State<LoginScreen> {
                                           decoration: InputDecoration(
                                             isDense: true,
                                             hintText: 'Sung Jin-Woo / Codename',
-                                            hintStyle: GoogleFonts.plusJakartaSans(
-                                              color: const Color(0xFF9B8BA1).withValues(alpha: 0.40), // [UBAH_WARNA: Hint Input Username]
-                                              fontSize: 14,
-                                            ),
+                                            hintStyle:
+                                                GoogleFonts.plusJakartaSans(
+                                                  color: const Color(0xFF9B8BA1)
+                                                      .withValues(alpha: 0.40), // [UBAH_WARNA: Hint Input Username]
+                                                  fontSize: 14,
+                                                ),
                                             prefixIcon: const Icon(
                                               Icons.person_outline,
                                               color: Color(0xFF9B8BA1), // [UBAH_WARNA: Ikon Input Username]
                                               size: 18,
                                             ),
                                             border: InputBorder.none,
-                                            contentPadding: const EdgeInsets.symmetric(
-                                              horizontal: 12,
-                                              vertical: 11,
-                                            ),
+                                            contentPadding:
+                                                const EdgeInsets.symmetric(
+                                                  horizontal: 12,
+                                                  vertical: 11,
+                                                ),
                                           ),
                                         ),
                                       ),
@@ -640,7 +699,8 @@ class _LoginScreenState extends State<LoginScreen> {
 
                                       // Field 2: Security Cipher
                                       Row(
-                                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                        mainAxisAlignment:
+                                            MainAxisAlignment.spaceBetween,
                                         children: [
                                           Row(
                                             children: [
@@ -656,7 +716,9 @@ class _LoginScreenState extends State<LoginScreen> {
                                                   fontSize: 10,
                                                   fontWeight: FontWeight.w500,
                                                   letterSpacing: 1.0,
-                                                  color: const Color(0xFFD2C1D7),
+                                                  color: const Color(
+                                                    0xFFD2C1D7,
+                                                  ),
                                                 ),
                                               ),
                                             ],
@@ -668,7 +730,8 @@ class _LoginScreenState extends State<LoginScreen> {
                                             ),
                                             decoration: BoxDecoration(
                                               color: const Color(0xFF2D2736), // [UBAH_WARNA: Box Security Cipher]
-                                              borderRadius: BorderRadius.circular(4),
+                                              borderRadius:
+                                                  BorderRadius.circular(4),
                                             ),
                                             child: Row(
                                               mainAxisSize: MainAxisSize.min,
@@ -676,20 +739,25 @@ class _LoginScreenState extends State<LoginScreen> {
                                                 Container(
                                                   width: 4,
                                                   height: 4,
-                                                  decoration: const BoxDecoration(
-                                                    shape: BoxShape.circle,
-                                                    color: Color(0xFF00F4FE), // [UBAH_WARNA: Dot Status SHA-256]
-                                                  ),
+                                                  decoration:
+                                                      const BoxDecoration(
+                                                        shape: BoxShape.circle,
+                                                        color: Color(0xFF00F4FE), // [UBAH_WARNA: Dot Status SHA-256]
+                                                      ),
                                                 ),
                                                 const SizedBox(width: 4),
                                                 Text(
                                                   'SHA-256 READY',
-                                                  style: GoogleFonts.spaceGrotesk(
-                                                    fontSize: 9,
-                                                    fontWeight: FontWeight.w600,
-                                                    letterSpacing: 0.8,
-                                                    color: const Color(0xFFE6FEFF), // [UBAH_WARNA: Teks Hash SHA-256]
-                                                  ),
+                                                  style:
+                                                      GoogleFonts.spaceGrotesk(
+                                                        fontSize: 9,
+                                                        fontWeight:
+                                                            FontWeight.w600,
+                                                        letterSpacing: 0.8,
+                                                        color: const Color(
+                                                          0xFFE6FEFF,
+                                                        ), // [UBAH_WARNA: Teks Hash SHA-256]
+                                                      ),
                                                 ),
                                               ],
                                             ),
@@ -704,7 +772,9 @@ class _LoginScreenState extends State<LoginScreen> {
                                         height: 42,
                                         decoration: BoxDecoration(
                                           color: const Color(0xFF110C19), // [UBAH_WARNA: Background Input Password]
-                                          borderRadius: BorderRadius.circular(8),
+                                          borderRadius: BorderRadius.circular(
+                                            8,
+                                          ),
                                         ),
                                         child: TextField(
                                           controller: _passwordController,
@@ -712,17 +782,22 @@ class _LoginScreenState extends State<LoginScreen> {
                                           style: GoogleFonts.plusJakartaSans(
                                             color: const Color(0xFFE9DEF2), // [UBAH_WARNA: Warna Teks Input Password]
                                             fontSize: 14,
-                                            letterSpacing: _isObscure ? 2.0 : 0.5,
+                                            letterSpacing: _isObscure
+                                                ? 2.0
+                                                : 0.5,
                                           ),
                                           cursorColor: const Color(0xFFB026FF),
                                           decoration: InputDecoration(
                                             isDense: true,
-                                            hintText: 'Enter Awakened Keyphrase',
-                                            hintStyle: GoogleFonts.plusJakartaSans(
-                                              color: const Color(0xFF9B8BA1).withValues(alpha: 0.40), // [UBAH_WARNA: Hint Input Password]
-                                              fontSize: 14,
-                                              letterSpacing: 0,
-                                            ),
+                                            hintText:
+                                                'Enter Awakened Keyphrase',
+                                            hintStyle:
+                                                GoogleFonts.plusJakartaSans(
+                                                  color: const Color(0xFF9B8BA1)
+                                                      .withValues(alpha: 0.40), // [UBAH_WARNA: Hint Input Password]
+                                                  fontSize: 14,
+                                                  letterSpacing: 0,
+                                                ),
                                             prefixIcon: const Icon(
                                               Icons.lock_outline,
                                               color: Color(0xFF9B8BA1), // [UBAH_WARNA: Ikon Input Password]
@@ -737,16 +812,18 @@ class _LoginScreenState extends State<LoginScreen> {
                                               child: Icon(
                                                 _isObscure
                                                     ? Icons.visibility_outlined
-                                                    : Icons.visibility_off_outlined,
+                                                    : Icons
+                                                          .visibility_off_outlined,
                                                 color: const Color(0xFF9B8BA1), // [UBAH_WARNA: Ikon Mata Password]
                                                 size: 18,
                                               ),
                                             ),
                                             border: InputBorder.none,
-                                            contentPadding: const EdgeInsets.symmetric(
-                                              horizontal: 12,
-                                              vertical: 11,
-                                            ),
+                                            contentPadding:
+                                                const EdgeInsets.symmetric(
+                                                  horizontal: 12,
+                                                  vertical: 11,
+                                                ),
                                           ),
                                         ),
                                       ),
@@ -755,12 +832,14 @@ class _LoginScreenState extends State<LoginScreen> {
 
                                       // Stay Synchronized & Lost Cipher
                                       Row(
-                                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                        mainAxisAlignment:
+                                            MainAxisAlignment.spaceBetween,
                                         children: [
                                           GestureDetector(
                                             onTap: () {
                                               setState(() {
-                                                _staySynchronized = !_staySynchronized;
+                                                _staySynchronized =
+                                                    !_staySynchronized;
                                               });
                                             },
                                             child: Row(
@@ -770,10 +849,18 @@ class _LoginScreenState extends State<LoginScreen> {
                                                   width: 14,
                                                   height: 14,
                                                   decoration: BoxDecoration(
-                                                    color: _staySynchronized // [UBAH_WARNA: Kotak Checkbox Stay Synchronized]
-                                                        ? const Color(0xFFB026FF)
-                                                        : const Color(0xFF110C19),
-                                                    borderRadius: BorderRadius.circular(3),
+                                                    color:
+                                                        _staySynchronized // [UBAH_WARNA: Kotak Checkbox Stay Synchronized]
+                                                        ? const Color(
+                                                            0xFFB026FF,
+                                                          )
+                                                        : const Color(
+                                                            0xFF110C19,
+                                                          ),
+                                                    borderRadius:
+                                                        BorderRadius.circular(
+                                                          3,
+                                                        ),
                                                   ),
                                                   child: _staySynchronized
                                                       ? const Icon(
@@ -786,24 +873,30 @@ class _LoginScreenState extends State<LoginScreen> {
                                                 const SizedBox(width: 8),
                                                 Text(
                                                   'Stay Synchronized',
-                                                  style: GoogleFonts.spaceGrotesk(
-                                                    fontSize: 10,
-                                                    color: const Color(0xFFD2C1D7), // [UBAH_WARNA: Label Stay Synchronized]
-                                                  ),
+                                                  style:
+                                                      GoogleFonts.spaceGrotesk(
+                                                        fontSize: 10,
+                                                        color: const Color(
+                                                          0xFFD2C1D7,
+                                                        ), // [UBAH_WARNA: Label Stay Synchronized]
+                                                      ),
                                                 ),
                                               ],
                                             ),
                                           ),
                                           GestureDetector(
                                             onTap: () {
-                                              ScaffoldMessenger.of(context).showSnackBar(
-                                                const SnackBar(
-                                                  content: Text(
-                                                    'Cipher Recovery: Hubungi Sovereign Hunter System.',
-                                                  ),
-                                                  backgroundColor: Color(0xFF2D2736),
-                                                ),
-                                              );
+                                              ScaffoldMessenger.of(context)
+                                                  .showSnackBar(
+                                                    const SnackBar(
+                                                      content: Text(
+                                                        'Cipher Recovery: Hubungi Sovereign Hunter System.',
+                                                      ),
+                                                      backgroundColor: Color(
+                                                        0xFF2D2736,
+                                                      ),
+                                                    ),
+                                                  );
                                             },
                                             child: Text(
                                               'LOST CIPHER?',
@@ -824,7 +917,9 @@ class _LoginScreenState extends State<LoginScreen> {
                                         height: 44,
                                         width: double.infinity,
                                         decoration: BoxDecoration(
-                                          borderRadius: BorderRadius.circular(8),
+                                          borderRadius: BorderRadius.circular(
+                                            8,
+                                          ),
                                           gradient: const LinearGradient(
                                             colors: [
                                               Color(0xFF7B2CBF), // [UBAH_WARNA: Tombol Login Awaken - Gradien Ungu Gelap]
@@ -836,7 +931,8 @@ class _LoginScreenState extends State<LoginScreen> {
                                           ),
                                           boxShadow: [
                                             BoxShadow(
-                                              color: const Color(0xFFB026FF).withValues(alpha: 0.45), // [UBAH_WARNA: Glow Tombol Awaken]
+                                              color: const Color(0xFFB026FF)
+                                                  .withValues(alpha: 0.45), // [UBAH_WARNA: Glow Tombol Awaken]
                                               blurRadius: 24,
                                               spreadRadius: 0,
                                             ),
@@ -845,35 +941,53 @@ class _LoginScreenState extends State<LoginScreen> {
                                         child: Material(
                                           color: Colors.transparent,
                                           child: InkWell(
-                                            borderRadius: BorderRadius.circular(8),
-                                            onTap: _isLoading ? null : _handleLogin,
+                                            borderRadius: BorderRadius.circular(
+                                              8,
+                                            ),
+                                            onTap: _isLoading
+                                                ? null
+                                                : _handleLogin,
                                             child: Center(
                                               child: _isLoading
                                                   ? const SizedBox(
                                                       width: 20,
                                                       height: 20,
-                                                      child: CircularProgressIndicator(
-                                                        strokeWidth: 2.0,
-                                                        color: Colors.white,
-                                                      ),
+                                                      child:
+                                                          CircularProgressIndicator(
+                                                            strokeWidth: 2.0,
+                                                            color: Colors.white,
+                                                          ),
                                                     )
                                                   : Row(
-                                                      mainAxisAlignment: MainAxisAlignment.center,
+                                                      mainAxisAlignment:
+                                                          MainAxisAlignment
+                                                              .center,
                                                       children: [
                                                         const Icon(
                                                           Icons.bolt_rounded,
-                                                          color: Color(0xFF00F4FE), // [UBAH_WARNA: Ikon Tombol Login Awaken]
+                                                          color: Color(
+                                                            0xFF00F4FE,
+                                                          ), // [UBAH_WARNA: Ikon Tombol Login Awaken]
                                                           size: 18,
                                                         ),
-                                                        const SizedBox(width: 8),
+                                                        const SizedBox(
+                                                          width: 8,
+                                                        ),
                                                         Text(
                                                           'AWAKEN (LOGIN)',
-                                                          style: GoogleFonts.spaceGrotesk(
-                                                            fontSize: 13,
-                                                            fontWeight: FontWeight.w600,
-                                                            letterSpacing: 0.8,
-                                                            color: const Color(0xFFFFFDFF), // [UBAH_WARNA: Teks Tombol Login Awaken]
-                                                          ),
+                                                          style:
+                                                              GoogleFonts.spaceGrotesk(
+                                                                fontSize: 13,
+                                                                fontWeight:
+                                                                    FontWeight
+                                                                        .w600,
+                                                                letterSpacing:
+                                                                    0.8,
+                                                                color:
+                                                                    const Color(
+                                                                      0xFFFFFDFF,
+                                                                    ), // [UBAH_WARNA: Teks Tombol Login Awaken]
+                                                              ),
                                                         ),
                                                       ],
                                                     ),
@@ -922,9 +1036,16 @@ class _LoginScreenState extends State<LoginScreen> {
                                               title: 'FINGERPRINT',
                                               subtitle: 'Mana Resonance',
                                               icon: Icons.fingerprint_rounded,
-                                              iconColor: const Color(0xFFE5B5FF),
-                                              glowColor: const Color(0xFFB026FF),
-                                              onTap: () => _triggerBiometricAuth(type: 'fingerprint'),
+                                              iconColor: const Color(
+                                                0xFFE5B5FF,
+                                              ),
+                                              glowColor: const Color(
+                                                0xFFB026FF,
+                                              ),
+                                              onTap: () =>
+                                                  _triggerBiometricAuth(
+                                                    type: 'fingerprint',
+                                                  ),
                                             ),
                                           ),
                                           const SizedBox(width: 10),
@@ -933,10 +1054,18 @@ class _LoginScreenState extends State<LoginScreen> {
                                             child: _buildBiometricPod(
                                               title: 'FACE SCAN',
                                               subtitle: 'Neural Recognition',
-                                              icon: Icons.document_scanner_outlined,
-                                              iconColor: const Color(0xFF00F4FE),
-                                              glowColor: const Color(0xFF00F4FE),
-                                              onTap: () => _triggerBiometricAuth(type: 'facescan'),
+                                              icon: Icons
+                                                  .document_scanner_outlined,
+                                              iconColor: const Color(
+                                                0xFF00F4FE,
+                                              ),
+                                              glowColor: const Color(
+                                                0xFF00F4FE,
+                                              ),
+                                              onTap: () =>
+                                                  _triggerBiometricAuth(
+                                                    type: 'facescan',
+                                                  ),
                                             ),
                                           ),
                                         ],
@@ -958,7 +1087,8 @@ class _LoginScreenState extends State<LoginScreen> {
                                   Navigator.push(
                                     context,
                                     MaterialPageRoute(
-                                      builder: (context) => const RegisterScreen(),
+                                      builder: (context) =>
+                                          const RegisterScreen(),
                                     ),
                                   );
                                 },
@@ -1060,7 +1190,9 @@ class _LoginScreenState extends State<LoginScreen> {
                 height: 40,
                 decoration: BoxDecoration(
                   shape: BoxShape.circle,
-                  color: const Color(0xFF231D2B), // [UBAH_WARNA: Pod Biometrik Inner]
+                  color: const Color(
+                    0xFF231D2B,
+                  ), // [UBAH_WARNA: Pod Biometrik Inner]
                   boxShadow: [
                     BoxShadow(
                       color: glowColor.withValues(alpha: 0.35),
@@ -1069,13 +1201,7 @@ class _LoginScreenState extends State<LoginScreen> {
                     ),
                   ],
                 ),
-                child: Center(
-                  child: Icon(
-                    icon,
-                    size: 20,
-                    color: iconColor,
-                  ),
-                ),
+                child: Center(child: Icon(icon, size: 20, color: iconColor)),
               ),
               const SizedBox(height: 6),
               Text(
@@ -1084,7 +1210,9 @@ class _LoginScreenState extends State<LoginScreen> {
                   fontSize: 10,
                   fontWeight: FontWeight.w600,
                   letterSpacing: 0.8,
-                  color: const Color(0xFFE9DEF2), // [UBAH_WARNA: Judul Pod Biometrik]
+                  color: const Color(
+                    0xFFE9DEF2,
+                  ), // [UBAH_WARNA: Judul Pod Biometrik]
                 ),
               ),
               const SizedBox(height: 2),
@@ -1092,7 +1220,9 @@ class _LoginScreenState extends State<LoginScreen> {
                 subtitle,
                 style: GoogleFonts.spaceGrotesk(
                   fontSize: 9,
-                  color: const Color(0xFF9B8BA1), // [UBAH_WARNA: Subtitle Pod Biometrik]
+                  color: const Color(
+                    0xFF9B8BA1,
+                  ), // [UBAH_WARNA: Subtitle Pod Biometrik]
                 ),
               ),
             ],
